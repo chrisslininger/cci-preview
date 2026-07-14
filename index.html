@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The CranioCervical Institute — Precision Upper Cervical Education</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --midnight:#071A26;
+    --midnight-2:#0B2836;
+    --ink:#0E2530;
+    --teal-deep:#14607A;
+    --teal:#1F7F9C;
+    --gold:#C29A4B;
+    --bronze:#A87F35;
+    --gold-hi:#D9B96E;
+    --mist:#F4F7F9;
+    --line:#E3EAEE;
+    --body:#3C5461;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Figtree',sans-serif;color:var(--ink);background:#fff;line-height:1.65}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  h1,h2,h3,h4{font-family:'Outfit',sans-serif}
+  a{cursor:pointer}
+
+  /* ============ BUTTONS ============ */
+  .b{font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:16px 32px;cursor:pointer;border:none;position:relative;overflow:hidden;border-radius:3px;transition:all .28s ease;user-select:none;text-decoration:none}
+  .p-btn{background:var(--gold);color:var(--midnight)}
+  .p-btn::before{content:'';position:absolute;top:0;left:-80%;width:55%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-22deg);transition:left .5s ease}
+  .p-btn:hover::before{left:120%}
+  .p-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(194,154,75,.42)}
+  .s-btn{background:transparent;z-index:1}
+  .s-btn::before{content:'';position:absolute;inset:0;transform:scaleY(0);transform-origin:bottom;transition:transform .3s ease;z-index:-1}
+  .s-btn:hover::before{transform:scaleY(1)}
+  .s-btn.on-light{color:var(--teal-deep);box-shadow:inset 0 0 0 1.5px var(--teal)}
+  .s-btn.on-light::before{background:var(--teal-deep)}
+  .s-btn.on-light:hover{color:#fff}
+  .s-btn.on-dark{color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+  .s-btn.on-dark::before{background:#fff}
+  .s-btn.on-dark:hover{color:var(--midnight)}
+  .b.sm{padding:11px 20px;font-size:11.5px}
+  .b.lg{padding:19px 40px;font-size:14px}
+  .t-link{font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;position:relative;padding-bottom:4px;display:inline-flex;align-items:center;gap:8px;color:var(--bronze);text-decoration:none}
+  .t-link::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--gold);transform:scaleX(.3);transform-origin:left;transition:transform .3s ease}
+  .t-link:hover::after{transform:scaleX(1)}
+  .t-link .a{transition:transform .3s ease}
+  .t-link:hover .a{transform:translateX(5px)}
+
+  /* ============ STICKY MIDNIGHT HEADER ============ */
+  header.site{position:sticky;top:0;z-index:100;background:var(--midnight);box-shadow:0 2px 20px rgba(7,26,38,.35)}
+  .utility{border-bottom:1px solid rgba(255,255,255,.08);font-size:12px;color:#7f97a3;padding:7px 0}
+  .utility .wrap{display:flex;justify-content:space-between;align-items:center}
+  .utility b{color:var(--gold-hi);font-weight:500}
+  .navbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+  .logo{display:flex;align-items:center;gap:11px;cursor:pointer;user-select:none;flex-shrink:0}
+  .logo .t1{font-family:'Outfit',sans-serif;font-weight:700;font-size:15.5px;letter-spacing:.02em;color:#fff;line-height:1.1}
+  .logo .t2{font-family:'Outfit',sans-serif;font-weight:500;font-size:9.5px;letter-spacing:.4em;color:var(--gold);line-height:1.2}
+  .menu{display:flex;align-items:center;gap:2px}
+  .mi{position:relative}
+  .mi > a{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;letter-spacing:.05em;color:rgba(255,255,255,.85);text-decoration:none;padding:12px 13px;display:inline-flex;align-items:center;gap:6px;position:relative;transition:color .2s}
+  .mi > a::after{content:'';position:absolute;left:13px;right:13px;bottom:4px;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .28s ease}
+  .mi > a:hover,.mi > a.on{color:#fff}
+  .mi > a:hover::after,.mi > a.on::after{transform:scaleX(1)}
+  .mi .car{font-size:8px;color:var(--gold);transform:translateY(-1px)}
+  .drop{position:absolute;top:100%;left:0;min-width:250px;background:var(--midnight-2);border:1px solid rgba(255,255,255,.09);border-top:2px solid var(--gold);border-radius:0 0 6px 6px;padding:10px 0;opacity:0;visibility:hidden;transform:translateY(8px);transition:all .22s ease;box-shadow:0 18px 40px rgba(0,0,0,.4)}
+  .mi:hover .drop{opacity:1;visibility:visible;transform:translateY(0)}
+  .drop a{display:block;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;color:rgba(255,255,255,.78);text-decoration:none;padding:10px 22px;transition:all .18s}
+  .drop a:hover{color:#fff;background:rgba(194,154,75,.12);padding-left:27px}
+  .drop .grp{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);padding:10px 22px 4px}
+  .nav-cta{margin-left:12px}
+  .burger{display:none;background:none;border:1.5px solid rgba(255,255,255,.3);border-radius:3px;padding:9px 12px;cursor:pointer}
+  .burger span{display:block;width:20px;height:2px;background:#fff;margin:4px 0;transition:all .25s}
+  /* mobile panel */
+  .mpanel{display:none;background:var(--midnight-2);border-top:1px solid rgba(255,255,255,.08);max-height:75vh;overflow-y:auto}
+  .mpanel.open{display:block}
+  .mpanel a{display:block;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;color:rgba(255,255,255,.85);text-decoration:none;padding:13px 28px;border-bottom:1px solid rgba(255,255,255,.05)}
+  .mpanel a:active{background:rgba(194,154,75,.15)}
+  .mpanel .grp{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.22em;color:var(--gold);padding:16px 28px 6px}
+  .mpanel .sub{padding-left:44px;font-weight:500;font-size:13.5px;color:rgba(255,255,255,.7)}
+  @media(max-width:1020px){.menu{display:none}.burger{display:block}.utility{display:none}}
+
+  /* ============ PAGE MECHANICS ============ */
+  .page{display:none}
+  .page.on{display:block}
+
+  /* ============ HERO HEADERS (photo-led, replicable) ============ */
+  .hero-img{position:relative;overflow:hidden;color:#fff}
+  .hero-img .bg{position:absolute;inset:0}
+  .hero-img .duo{position:absolute;inset:0;background:linear-gradient(140deg, rgba(20,96,122,.7), rgba(7,26,38,.88));mix-blend-mode:multiply}
+  .hero-img .duo2{position:absolute;inset:0;background:linear-gradient(160deg, rgba(31,127,156,.22), transparent 60%);mix-blend-mode:screen}
+  .hero-img .scrim{position:absolute;inset:0;background:linear-gradient(to top, rgba(7,26,38,.72), rgba(7,26,38,.28) 55%, rgba(7,26,38,.35))}
+  .hero-img .inner{position:relative;z-index:2;padding:96px 28px 84px}
+  .hero-img.short .inner{padding:78px 28px 64px}
+  .hero-img .kick{color:var(--gold-hi)}
+  .hero-img h1{font-size:46px;font-weight:700;letter-spacing:-.015em;line-height:1.08;max-width:820px;text-shadow:0 2px 24px rgba(7,26,38,.5)}
+  .hero-img p.sub{margin-top:16px;font-size:16.5px;color:rgba(255,255,255,.88);max-width:600px}
+  .hero-img .goldrule{margin-top:26px}
+  .hero-img .crumbs{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;color:rgba(255,255,255,.65);margin-bottom:18px}
+  .hero-img .crumbs b{color:var(--gold-hi);font-weight:500}
+  .hmeta{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px}
+  .hmeta .hm{font-family:'Outfit',sans-serif}
+  .hmeta .hm b{display:block;font-size:16px;font-weight:700;color:#fff}
+  .hmeta .hm span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-hi);font-weight:600}
+
+  /* simulated photos */
+  .ph-a{background:radial-gradient(ellipse 45% 55% at 62% 45%, #7e97a8 0%, transparent 55%),radial-gradient(ellipse 40% 50% at 25% 60%, #5d7286 0%, transparent 60%),linear-gradient(135deg,#8fa3b5 0%,#5b7183 50%,#3a4f61 100%)}
+  .ph-b{background:radial-gradient(ellipse 50% 45% at 40% 50%, #93a3ae 0%, transparent 58%),radial-gradient(ellipse 45% 55% at 75% 40%, #6b8291 0%, transparent 55%),linear-gradient(150deg,#7d94a3 0%,#4d6577 55%,#2e4454 100%)}
+  .ph-c{background:radial-gradient(ellipse 55% 60% at 55% 45%, #a99277 0%, transparent 60%),linear-gradient(140deg,#8d7a62 0%,#5f5342 55%,#3b3529 100%)}
+
+  /* ============ SECTIONS ============ */
+  section{padding:72px 0}
+  section.tight{padding:52px 0}
+  section.mist{background:var(--mist)}
+  section.dark{background:var(--midnight);color:#fff}
+  .kick{font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--bronze);font-weight:600;margin-bottom:14px}
+  section.dark .kick{color:var(--gold)}
+  h2.t{font-size:33px;font-weight:700;line-height:1.16;margin-bottom:16px;letter-spacing:-.01em}
+  p.lede{font-size:16.5px;color:var(--body);max-width:760px}
+  section.dark p.lede{color:#a9bdc8}
+  .prose{max-width:800px}
+  .prose p{font-size:15.5px;color:var(--body);margin-bottom:18px}
+  .prose h3{font-size:21px;margin:32px 0 12px;color:var(--ink)}
+  .prose ul{margin:0 0 18px 22px}
+  .prose li{font-size:15.5px;color:var(--body);margin-bottom:8px}
+  .goldrule{width:56px;height:3px;background:linear-gradient(90deg,var(--gold),var(--bronze));border-radius:2px;margin-bottom:22px}
+
+  /* video placeholder */
+  .video{position:relative;border-radius:6px;overflow:hidden;background:linear-gradient(135deg,#0B2836,#14607A);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 24px 60px rgba(7,26,38,.25);transition:transform .3s ease, box-shadow .3s ease}
+  .video:hover{transform:translateY(-4px);box-shadow:0 32px 70px rgba(7,26,38,.32)}
+  .video::before{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border:1.5px solid rgba(194,154,75,.35);border-radius:50%}
+  .video .play{width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;transition:transform .3s ease, box-shadow .3s ease;z-index:2}
+  .video:hover .play{transform:scale(1.1);box-shadow:0 0 0 14px rgba(194,154,75,.18)}
+  .video .play svg{margin-left:5px}
+  .video .lbl{position:absolute;left:20px;bottom:16px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;color:rgba(255,255,255,.75);z-index:2}
+  .video .dur{position:absolute;right:20px;bottom:16px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.6);z-index:2}
+
+  /* cards */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:6px;overflow:hidden;position:relative;transition:transform .32s ease, box-shadow .32s ease}
+  .card::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--gold),var(--bronze));transform:scaleX(0);transform-origin:left;transition:transform .4s ease;z-index:2}
+  .card:hover{transform:translateY(-6px);box-shadow:0 22px 48px rgba(7,26,38,.16)}
+  .card:hover::after{transform:scaleX(1)}
+  .card .imgwrap{height:170px;position:relative;overflow:hidden}
+  .card .img{position:absolute;inset:0;transition:transform .6s ease}
+  .card:hover .img{transform:scale(1.06)}
+  .duo{position:absolute;inset:0;background:linear-gradient(140deg, rgba(20,96,122,.75), rgba(7,26,38,.85));mix-blend-mode:multiply}
+  .duo2{position:absolute;inset:0;background:linear-gradient(160deg, rgba(31,127,156,.25), transparent 60%);mix-blend-mode:screen}
+  .scrim{position:absolute;inset:0;background:linear-gradient(to top, rgba(7,26,38,.88) 0%, rgba(7,26,38,.25) 45%, transparent 100%)}
+  .card .datechip{position:absolute;left:16px;top:16px;background:var(--gold);color:var(--midnight);font-family:'Outfit',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.08em;padding:6px 12px;border-radius:3px;z-index:2}
+  .card .loc{position:absolute;left:16px;bottom:12px;color:#fff;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;letter-spacing:.14em;z-index:2}
+  .card .loc span{color:var(--gold-hi)}
+  .card .bd{padding:22px 24px 24px}
+  .card h3{font-size:19px;font-weight:700;margin-bottom:6px}
+  .card .meta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#6c838f;letter-spacing:.08em;margin-bottom:11px}
+  .card .meta b{color:var(--bronze);font-weight:500}
+  .card p.desc{font-size:13.5px;color:#54707e;line-height:1.6;margin-bottom:16px}
+  .card .foot{display:flex;justify-content:space-between;align-items:center}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .step{background:#fff;border:1px solid var(--line);border-radius:6px;padding:32px 30px;position:relative;transition:transform .3s ease, box-shadow .3s ease}
+  .step:hover{transform:translateY(-5px);box-shadow:0 18px 42px rgba(7,26,38,.12)}
+  .step .n{font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:var(--gold);letter-spacing:.2em;margin-bottom:14px}
+  .step h3{font-size:20px;margin-bottom:10px}
+  .step p{font-size:14px;color:var(--body)}
+  .step p+.b{margin-top:18px}
+
+  .quoteband{position:relative;overflow:hidden}
+  .quoteband::after{content:'';position:absolute;right:-140px;bottom:-140px;width:420px;height:420px;border:1.5px solid rgba(194,154,75,.25);border-radius:50%}
+  .quoteband .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+  blockquote{font-family:'Outfit',sans-serif;font-size:23px;font-weight:500;line-height:1.45;color:#fff}
+  blockquote em{font-style:normal;color:var(--gold-hi)}
+  .attr{margin-top:20px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.14em;color:#7f97a3}
+  .attr b{color:var(--gold);font-weight:500}
+
+  .ctaband{background:linear-gradient(120deg,var(--teal-deep),var(--teal));color:#fff;position:relative;overflow:hidden}
+  .ctaband::after{content:'';position:absolute;right:-90px;top:-90px;width:300px;height:300px;border:1.5px solid rgba(255,255,255,.2);border-radius:50%}
+  .ctaband .wrap{display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap}
+  .ctaband h3{font-size:25px;font-weight:700}
+  .ctaband p{font-size:14.5px;color:rgba(255,255,255,.85);margin-top:6px}
+
+  /* home hero (photo-led like all pages) */
+  #pg-home .hero-img .inner{padding:120px 28px 96px}
+
+  /* member savings banner */
+  .memberbar{background:linear-gradient(100deg,var(--gold),var(--bronze));color:var(--midnight);border-radius:6px;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-top:22px;box-shadow:0 10px 30px rgba(194,154,75,.3)}
+  .memberbar .mb-t{font-family:'Outfit',sans-serif;font-weight:800;font-size:16px;letter-spacing:.02em}
+  .memberbar .mb-s{font-size:13px;font-weight:600;opacity:.85}
+  .memberbar .b{background:var(--midnight);color:#fff}
+  .memberbar .b:hover{box-shadow:0 10px 24px rgba(7,26,38,.4)}
+
+  /* session picker */
+  .sessions{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .sess{background:#fff;border:1.5px solid var(--line);border-radius:6px;overflow:hidden;position:relative;transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease}
+  .sess:hover{transform:translateY(-5px);box-shadow:0 18px 44px rgba(7,26,38,.14);border-color:var(--gold)}
+  .sess .top{display:flex;align-items:center;gap:16px;padding:20px 22px;border-bottom:1px solid var(--line)}
+  .sess .cal{background:var(--midnight);color:#fff;border-radius:6px;text-align:center;padding:9px 13px;min-width:64px}
+  .sess .cal .mo{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:var(--gold-hi)}
+  .sess .cal .dy{font-family:'Outfit',sans-serif;font-size:19px;font-weight:800;line-height:1.15}
+  .sess .where h4{font-family:'Outfit',sans-serif;font-size:16.5px;font-weight:700}
+  .sess .where span{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#7b909b}
+  .sess .mid{padding:16px 22px;display:flex;justify-content:space-between;align-items:center}
+  .sess .prices .full{font-family:'Outfit',sans-serif;font-size:13px;color:#8a9ba5;text-decoration:line-through}
+  .sess .prices .mem{font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;color:var(--bronze)}
+  .sess .prices .lbl{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#8a9ba5;display:block}
+  .sess .seats{text-align:right}
+  .sess .seats b{font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:var(--teal-deep);display:block}
+  .sess .seats span{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#8a9ba5}
+  .sess .bot{padding:0 22px 22px}
+  .sess .bot .b{width:100%;justify-content:center}
+  .sess.soon .cal{background:#8a9ba5}
+  .sess .flag{position:absolute;top:14px;right:-1px;background:var(--teal);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;padding:4px 10px;border-radius:3px 0 0 3px}
+  @media(max-width:960px){.sessions{grid-template-columns:1fr}.featintro{grid-template-columns:1fr !important}.featintro > div:first-child{min-height:180px !important}}
+  #pg-home .hero-img h1{font-size:54px;max-width:760px}
+  .hero-flex{display:grid;grid-template-columns:1.05fr .95fr;gap:60px;align-items:center}
+
+  /* seminar detail */
+  .facts{background:#fff;border:1px solid var(--line);border-radius:6px;display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden;margin-top:-46px;position:relative;z-index:5;box-shadow:0 18px 50px rgba(7,26,38,.12)}
+  .fact{padding:22px 24px;border-right:1px solid var(--line)}
+  .fact:last-child{border-right:none}
+  .fact span{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#8a9ba5;margin-bottom:5px}
+  .fact b{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--ink)}
+  .fact b em{font-style:normal;color:var(--bronze);font-size:11px;display:block;font-weight:600}
+  .learn{display:grid;grid-template-columns:1fr 1fr;gap:14px 30px;max-width:860px}
+  .learn .li{display:flex;gap:14px;align-items:flex-start;font-size:14.5px;color:var(--body)}
+  .learn .li svg{flex-shrink:0;margin-top:3px}
+  .sched{max-width:860px}
+  .srow{display:grid;grid-template-columns:170px 1fr;gap:24px;padding:20px 0;border-bottom:1px solid var(--line)}
+  .srow .d{font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;color:var(--teal-deep);letter-spacing:.06em}
+  .srow p{font-size:14.5px;color:var(--body)}
+
+  /* board */
+  .people{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .person{background:#fff;border:1px solid var(--line);border-radius:6px;overflow:hidden;transition:transform .3s ease, box-shadow .3s ease}
+  .person:hover{transform:translateY(-5px);box-shadow:0 18px 42px rgba(7,26,38,.12)}
+  .person .photo{aspect-ratio:1/1;position:relative;display:flex;align-items:center;justify-content:center}
+  .person .photo svg{opacity:.5}
+  .person .bd{padding:20px 24px}
+  .person h3{font-size:17px;margin-bottom:2px}
+  .person .role{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--bronze)}
+
+  /* articles */
+  .arts{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .art{background:#fff;border:1px solid var(--line);border-radius:6px;overflow:hidden;transition:transform .3s ease, box-shadow .3s ease;cursor:pointer;position:relative}
+  .art::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--gold),var(--bronze));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+  .art:hover{transform:translateY(-6px);box-shadow:0 22px 48px rgba(7,26,38,.14)}
+  .art:hover::after{transform:scaleX(1)}
+  .art .imgwrap{height:180px;position:relative;overflow:hidden}
+  .art .img{position:absolute;inset:0;transition:transform .6s ease}
+  .art:hover .img{transform:scale(1.06)}
+  .art .cat{position:absolute;left:16px;top:16px;background:rgba(7,26,38,.78);backdrop-filter:blur(4px);color:var(--gold-hi);font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;padding:5px 11px;border-radius:3px;z-index:2}
+  .art .bd{padding:22px 24px}
+  .art .date{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8a9ba5;letter-spacing:.1em;margin-bottom:8px}
+  .art h3{font-size:17.5px;line-height:1.3;margin-bottom:8px}
+  .art p{font-size:13.5px;color:#54707e;line-height:1.6}
+
+  /* speakers on seminar page */
+  .avx{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:50%}
+  .avx .ini{position:relative;z-index:2;font-family:'Outfit',sans-serif;font-weight:800;color:rgba(255,255,255,.92)}
+  .avx .duo{border-radius:0}
+  .spk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .spk-card{background:#fff;border:1px solid var(--line);border-radius:6px;overflow:hidden;position:relative;transition:transform .3s ease, box-shadow .3s ease;cursor:pointer}
+  .spk-card::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--gold),var(--bronze));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+  .spk-card:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(7,26,38,.16)}
+  .spk-card:hover::after{transform:scaleX(1)}
+  .spk-card .pho{aspect-ratio:1/1;position:relative;display:flex;align-items:center;justify-content:center}
+  .spk-card .pho .ini{position:relative;z-index:2;font-family:'Outfit',sans-serif;font-weight:800;font-size:42px;color:rgba(255,255,255,.92)}
+  .spk-card .rtag{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--midnight);font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;padding:4px 9px;border-radius:3px;z-index:3}
+  .spk-card .bd{padding:16px 18px}
+  .spk-card h4{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700}
+  .spk-card .cred{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:var(--bronze);margin:3px 0 7px}
+  .spk-card p{font-size:12.5px;color:#54707e;line-height:1.55}
+  .keynote{display:grid;grid-template-columns:.9fr 1.1fr;background:var(--midnight);border-radius:6px;overflow:hidden;margin-bottom:22px;cursor:pointer;transition:transform .3s ease, box-shadow .3s ease}
+  .keynote:hover{transform:translateY(-4px);box-shadow:0 24px 52px rgba(7,26,38,.28)}
+  .keynote .pho{min-height:260px;position:relative;display:flex;align-items:center;justify-content:center}
+  .keynote .pho .ini{position:relative;z-index:2;font-family:'Outfit',sans-serif;font-weight:800;font-size:60px;color:rgba(255,255,255,.92)}
+  .keynote .bd{padding:36px 42px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative}
+  .keynote .flag{position:absolute;top:0;left:42px;background:var(--gold);color:var(--midnight);font-family:'Outfit',sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.18em;padding:6px 13px;border-radius:0 0 4px 4px}
+  .keynote h4{font-family:'Outfit',sans-serif;font-size:25px;font-weight:700;margin-bottom:4px}
+  .keynote .cred{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--gold-hi);margin-bottom:13px}
+  .keynote p{font-size:14px;color:#a9bdc8;line-height:1.65;margin-bottom:16px}
+  /* speaker pill */
+  .spk-pill{display:inline-flex;align-items:center;gap:8px;background:var(--mist);border:1px solid var(--line);border-radius:100px;padding:4px 14px 4px 4px;cursor:pointer;transition:all .25s ease;margin:8px 8px 0 0}
+  .spk-pill:hover{border-color:var(--gold);background:#fff;transform:translateY(-2px);box-shadow:0 8px 18px rgba(7,26,38,.14)}
+  .spk-pill .avx{width:26px;height:26px}
+  .spk-pill .avx .ini{font-size:9px}
+  .spk-pill span.nm{font-family:'Outfit',sans-serif;font-size:11.5px;font-weight:600;color:var(--teal-deep)}
+  .spk-pill .plus{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--bronze)}
+  /* agenda — time rail (A4) */
+  .agrow{display:grid;grid-template-columns:120px 1fr;position:relative}
+  .agrow .rail{position:relative;padding:20px 26px 20px 0;text-align:right;border-right:2px solid var(--line)}
+  .agrow .rail::after{content:'';position:absolute;right:-6px;top:26px;width:10px;height:10px;border-radius:50%;background:var(--gold);transition:transform .25s ease}
+  .agrow:hover .rail::after{transform:scale(1.4)}
+  .agrow .rail .tm{font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;color:var(--midnight)}
+  .agrow .rail .ap{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#8a9ba5;letter-spacing:.12em}
+  .agrow .acard{margin:12px 0 12px 26px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:18px 22px;transition:all .28s ease}
+  .agrow:hover .acard{border-color:var(--gold);box-shadow:0 12px 30px rgba(7,26,38,.1);transform:translateX(4px)}
+  .agrow .acard h4{font-family:'Outfit',sans-serif;font-size:15.5px;font-weight:700}
+  .agrow .acard p{font-size:12.5px;color:#54707e;margin-top:3px}
+  /* agenda — day tabs (A2 chrome) */
+  .agtabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+  .agtab{font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:11px 20px;border-radius:3px;cursor:pointer;border:1.5px solid var(--line);color:#54707e;transition:all .25s ease;background:#fff}
+  .agtab:hover{border-color:var(--teal);color:var(--teal-deep)}
+  .agtab.on{background:var(--midnight);border-color:var(--midnight);color:#fff}
+  .agtab small{display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;font-weight:400;color:#8a9ba5;text-transform:none;margin-top:2px}
+  .agtab.on small{color:var(--gold-hi)}
+  .agday{display:none}
+  .agday.on{display:block}
+  /* bio modal */
+  .bio-bg{position:fixed;inset:0;background:rgba(7,26,38,.72);z-index:300;display:none;align-items:center;justify-content:center;padding:24px}
+  .bio-bg.on{display:flex}
+  .bio-m{background:#fff;border-radius:8px;max-width:540px;width:100%;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.5);border-top:4px solid var(--gold);animation:bioin .3s ease}
+  @keyframes bioin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .bio-m .top{display:flex;gap:22px;align-items:center;padding:28px 32px 20px;border-bottom:1px solid var(--line)}
+  .bio-m .avx{width:84px;height:84px}
+  .bio-m .avx .ini{font-size:28px}
+  .bio-m h3{font-family:'Outfit',sans-serif;font-size:22px;font-weight:700}
+  .bio-m .cred{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--bronze);margin-top:3px}
+  .bio-m .rl{display:inline-block;margin-top:8px;background:var(--mist);color:var(--teal-deep);font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;padding:4px 12px;border-radius:100px}
+  .bio-m .body{padding:22px 32px 28px}
+  .bio-m .body p{font-size:14px;color:var(--body);line-height:1.7}
+  .bio-m .x{position:absolute;top:14px;right:16px;width:34px;height:34px;border-radius:50%;background:rgba(7,26,38,.08);border:none;cursor:pointer;font-size:15px;color:var(--midnight);transition:all .2s}
+  .bio-m .x:hover{background:var(--gold);transform:rotate(90deg)}
+  .bio-m{position:relative}
+  @media(max-width:960px){.spk-grid{grid-template-columns:1fr 1fr}.keynote{grid-template-columns:1fr}.agrow{grid-template-columns:86px 1fr}}
+
+  /* footer */
+  footer{background:var(--midnight);color:#9db4c0;padding:60px 0 32px}
+  .fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px}
+  footer h5{font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+  footer a{display:block;color:#9db4c0;text-decoration:none;font-size:14px;padding:5px 0;transition:color .2s}
+  footer a:hover{color:#fff}
+  footer .tag{font-size:14px;line-height:1.7;max-width:280px;margin-top:14px}
+  .fbot{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12.5px;color:#6c8592}
+
+  @media(max-width:960px){
+    .hero-flex,.quoteband .wrap,.grid2{grid-template-columns:1fr}
+    .grid3,.steps,.people,.arts{grid-template-columns:1fr}
+    #pg-home .hero-img h1{font-size:36px}
+    .hero-img h1{font-size:32px}
+    .facts{grid-template-columns:1fr 1fr;margin-top:-30px}
+    .fact{border-bottom:1px solid var(--line)}
+    .learn{grid-template-columns:1fr}
+    .fgrid{grid-template-columns:1fr 1fr}
+    .srow{grid-template-columns:1fr;gap:6px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== STICKY MIDNIGHT HEADER ==================== -->
+<header class="site">
+  <div class="utility">
+    <div class="wrap">
+      <span>Info@CranioCervicalInstitute.com</span>
+      <span>Call us: <b>(727) 677-0001</b></span>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="navbar">
+      <div class="logo" onclick="go('home')">
+        <svg width="38" height="38" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#1F7F9C" stroke-width="8"/><line x1="60" y1="4" x2="60" y2="24" stroke="#C29A4B" stroke-width="8" stroke-linecap="round"/><line x1="60" y1="96" x2="60" y2="116" stroke="#C29A4B" stroke-width="8" stroke-linecap="round"/><line x1="4" y1="60" x2="24" y2="60" stroke="#C29A4B" stroke-width="8" stroke-linecap="round"/><line x1="96" y1="60" x2="116" y2="60" stroke="#C29A4B" stroke-width="8" stroke-linecap="round"/><circle cx="60" cy="60" r="9" fill="#C29A4B"/></svg>
+        <div><div class="t1">CRANIOCERVICAL</div><div class="t2">INSTITUTE</div></div>
+      </div>
+
+      <nav class="menu">
+        <div class="mi"><a data-p="home" class="on" onclick="go('home')">Home</a></div>
+        <div class="mi">
+          <a data-p="about" onclick="go('about')">About <span class="car">▼</span></a>
+          <div class="drop">
+            <a onclick="go('about')">About the Institute</a>
+            <a onclick="go('difference')">The AdvO Difference</a>
+            <a onclick="go('board')">Board of Directors</a>
+          </div>
+        </div>
+        <div class="mi">
+          <a data-p="seminars" onclick="go('seminars')">Seminars <span class="car">▼</span></a>
+          <div class="drop">
+            <a onclick="go('sem','intro')">Intro to AdvO (FREE)</a>
+            <div class="grp">FUNDAMENTALS SERIES</div>
+            <a onclick="go('sem','fund1')">Fundamental 1</a>
+            <a onclick="go('sem','fund2')">Fundamental 2</a>
+            <a onclick="go('sem','fund3')">Fundamental 3</a>
+            <div class="grp">ADVANCED TRAINING</div>
+            <a onclick="go('sem','intensive')">AdvO Intensive (West)</a>
+            <a onclick="go('sem','bootcamp')">AdvO Bootcamp 2026</a>
+            <a onclick="go('sem','conference')">Annual Conference</a>
+            <div class="grp">IN PRACTICE</div>
+            <a onclick="go('sem','internship')">Internships</a>
+            <a onclick="go('seminars')">View All Events →</a>
+          </div>
+        </div>
+        <div class="mi">
+          <a data-p="certification" onclick="go('certification')">Certification <span class="car">▼</span></a>
+          <div class="drop">
+            <a onclick="go('certification')">Certification Overview</a>
+            <a onclick="go('certification')">AdvO Level 1</a>
+            <a onclick="go('certification')">AdvO Level 2</a>
+            <a onclick="go('certification')">Atlas Orthometrics</a>
+          </div>
+        </div>
+        <div class="mi"><a data-p="membership" onclick="go('membership')">Membership</a></div>
+        <div class="mi"><a data-p="articles" onclick="go('articles')">Articles &amp; Research</a></div>
+        <div class="mi"><a data-p="contact" onclick="go('contact')">Contact</a></div>
+        <span class="b sm p-btn nav-cta" onclick="go('membership')">Join CCI</span>
+      </nav>
+
+      <button class="burger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+
+  <div class="mpanel" id="mpanel">
+    <a onclick="go('home')">Home</a>
+    <div class="grp">ABOUT</div>
+    <a class="sub" onclick="go('about')">About the Institute</a>
+    <a class="sub" onclick="go('difference')">The AdvO Difference</a>
+    <a class="sub" onclick="go('board')">Board of Directors</a>
+    <div class="grp">SEMINARS</div>
+    <a class="sub" onclick="go('sem','intro')">Intro to AdvO (FREE)</a>
+    <a class="sub" onclick="go('sem','fund1')">Fundamental 1</a>
+    <a class="sub" onclick="go('sem','fund2')">Fundamental 2</a>
+    <a class="sub" onclick="go('sem','fund3')">Fundamental 3</a>
+    <a class="sub" onclick="go('sem','intensive')">AdvO Intensive (West)</a>
+    <a class="sub" onclick="go('sem','bootcamp')">AdvO Bootcamp 2026</a>
+    <a class="sub" onclick="go('sem','conference')">Annual Conference</a>
+    <a class="sub" onclick="go('sem','internship')">Internships</a>
+    <a class="sub" onclick="go('seminars')">View All Events</a>
+    <div class="grp">CERTIFICATION</div>
+    <a class="sub" onclick="go('certification')">Overview · Level 1 · Level 2 · Atlas Orthometrics</a>
+    <div class="grp">MORE</div>
+    <a onclick="go('membership')">Membership</a>
+    <a onclick="go('articles')">Articles &amp; Research</a>
+    <a onclick="go('contact')">Contact</a>
+  </div>
+</header>
+
+<!-- ==================== HOME ==================== -->
+<div class="page on" id="pg-home">
+  <div class="hero-img">
+    <div class="bg ph-b"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="hero-flex">
+        <div>
+          <div class="kick">The CranioCervical Institute</div>
+          <h1>Precision work for the most complicated upper cervical cases.</h1>
+          <p class="sub">The Advanced Orthogonal technique provides a cutting-edge approach to pinpoint and correct the root cause of many body dysfunctions. Its reproducible approach gives doctors the confidence that quality will never be compromised.</p>
+          <div style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap">
+            <span class="b lg p-btn" onclick="go('sem','intro')">Start the Free Intro Course</span>
+            <span class="b lg s-btn on-dark" onclick="go('seminars')">2026 Seminars</span>
+          </div>
+          <div class="hmeta">
+            <div class="hm"><b>1/100th°</b><span>X-ray measurement</span></div>
+            <div class="hm"><b>2 Techniques</b><span>AdvO · Atlas Orthometrics</span></div>
+            <div class="hm"><b>2 Levels</b><span>Certification</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="video" onclick="toast('Video placeholder — the final welcome video embeds here.')">
+            <div class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#071A26"><path d="M8 5v14l11-7z"/></svg></div>
+            <span class="lbl">WATCH — WHAT IS THE CRANIOCERVICAL INSTITUTE?</span>
+            <span class="dur">2:14</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="mist tight">
+    <div class="wrap">
+      <div class="kick">Founded on Advancement</div>
+      <h2 class="t">A legacy of precision, still moving forward.</h2>
+      <div class="goldrule"></div>
+      <div class="prose">
+        <p>The CranioCervical Institute is founded on the advancements of the chiropractic profession dating back to the original upper cervical philosophy presented by B.J. Palmer, and the extensive research by John F. Grostic, D.C., the developer of Orthogonal chiropractic. In the same nature as the Institute was founded on advancement to upper cervical chiropractic care, the Institute will continue to grow, expand, and refine the technique and procedure.</p>
+        <p>The CranioCervical Institute and its affiliated doctors are constantly striving to incorporate the latest research in chiropractic, developments in upper cervical care, and breaking discoveries in neurology. Furthermore, the Institute is dedicated to participating in and initiating research to further validate the functional and neurological changes of specific upper cervical procedures.</p>
+      </div>
+      <div style="margin-top:10px"><span class="t-link" onclick="go('about')">Discover the Institute<span class="a">→</span></span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="kick">How to Get Started</div>
+      <h2 class="t">Your path into precision upper cervical care.</h2>
+      <div class="goldrule"></div>
+      <div class="steps">
+        <div class="step">
+          <div class="n">STEP 01</div>
+          <h3>Free Intro Course</h3>
+          <p>New to Advanced Orthogonal? Start with our free two-hour Intro to AdvO course — a comprehensive overview of the technique, its principles, and the training pathways available through the Institute.</p>
+          <span class="b sm p-btn" onclick="go('sem','intro')">Claim Your Free Course</span>
+        </div>
+        <div class="step">
+          <div class="n">STEP 02</div>
+          <h3>Attend a Seminar</h3>
+          <p>Ready for hands-on training? Explore our Fundamentals Series, AdvO Intensive, or Bootcamp to build your skills with direct guidance from experienced instructors.</p>
+          <span class="b sm s-btn on-light" onclick="go('seminars')">Explore 2026 Seminars</span>
+        </div>
+        <div class="step">
+          <div class="n">STEP 03</div>
+          <h3>Get Certified</h3>
+          <p>Committed to mastery? Learn about the certification process and join the growing community of Certified Advanced Orthogonists delivering precision-based care.</p>
+          <span class="b sm s-btn on-light" onclick="go('certification')">Start Your Certification</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark quoteband">
+    <div class="wrap">
+      <div>
+        <div class="kick">From Our Doctors</div>
+        <blockquote>"The reproducible approach gives doctors the confidence that <em>quality will never be compromised.</em>"</blockquote>
+        <div class="attr">2019 TESTIMONIALS · <b>DR. JEFF KAHRS</b> · CRANIOCERVICAL INSTITUTE</div>
+      </div>
+      <div>
+        <div class="video" style="box-shadow:0 24px 60px rgba(0,0,0,.4)" onclick="toast('Video placeholder — doctor testimonial reel embeds here.')">
+          <div class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#071A26"><path d="M8 5v14l11-7z"/></svg></div>
+          <span class="lbl">VIDEO — DOCTOR TESTIMONIALS</span>
+          <span class="dur">1:18</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="kick">2026 · Upcoming Events</div>
+      <h2 class="t">Train with us this year.</h2>
+      <div class="goldrule"></div>
+      <div class="grid3">
+        <div class="card" onclick="go('sem','intensive')">
+          <div class="imgwrap"><div class="img ph-b"><div class="duo"></div><div class="duo2"></div></div><div class="scrim"></div><span class="datechip">MAR 27–28</span><span class="loc">OREM <span>· UT</span></span></div>
+          <div class="bd">
+            <h3>AdvO Intensive &amp; Bridging the Gap</h3>
+            <div class="meta">HANDS-ON · <b>A.O. TO ADVO TRANSITION DAY</b></div>
+            <p class="desc">A focused, hands-on training event designed for experienced doctors ready to refine their precision and consistency with the Advanced Orthogonal technique.</p>
+            <div class="foot"><span class="t-link">Details &amp; Registration<span class="a">→</span></span></div>
+          </div>
+        </div>
+        <div class="card" onclick="go('sem','bootcamp')">
+          <div class="imgwrap"><div class="img ph-a"><div class="duo"></div><div class="duo2"></div></div><div class="scrim"></div><span class="datechip">JUN 22–26</span><span class="loc">TAMPA BAY <span>· FL</span></span></div>
+          <div class="bd">
+            <h3>AdvO Bootcamp</h3>
+            <div class="meta">5 DAYS · <b>FREE WITH CCI MEMBERSHIP</b></div>
+            <p class="desc">Hands-on training, expert guest speakers, clinical research updates, and a celebratory Friday night awards dinner — the entire community, together.</p>
+            <div class="foot"><span class="t-link">Details &amp; Registration<span class="a">→</span></span></div>
+          </div>
+        </div>
+        <div class="card" onclick="go('sem','conference')">
+          <div class="imgwrap"><div class="img ph-c"><div class="duo"></div><div class="duo2"></div></div><div class="scrim"></div><span class="datechip">NOV 6–7</span><span class="loc">ST. PETERSBURG <span>· FL</span></span></div>
+          <div class="bd">
+            <h3>CCI Annual Conference</h3>
+            <div class="meta">2 DAYS · <b>ANNUAL BOARD MEETING</b></div>
+            <p class="desc">The premier gathering of the CranioCervical Institute community — advanced training, special topics, and connection with fellow practitioners.</p>
+            <div class="foot"><span class="t-link">Details<span class="a">→</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Membership pays for itself in one seminar.</h3>
+        <p>Annual Conference registration included · $200 off every seminar · doctor directory listing · voting rights</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('membership')">Join the Institute</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== ABOUT ==================== -->
+<div class="page" id="pg-about">
+  <div class="hero-img short">
+    <div class="bg ph-a"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> ABOUT</div>
+      <div class="kick">Remaining on the Cutting Edge</div>
+      <h1>About the Institute</h1>
+      <p class="sub">The training ground, the support system, and the professional community you need at every stage of your career.</p>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap grid2" style="align-items:center;gap:56px">
+      <div>
+        <h2 class="t" style="font-size:28px">An Institute built for you.</h2>
+        <div class="prose">
+          <p>The CranioCervical Institute exists for one reason: to help you become the best upper cervical doctor you can be.</p>
+          <p>Whether you're a student just discovering precision-based chiropractic, a practicing doctor looking to refine your skills, or an experienced clinician ready to master the most advanced applications of the technique—this is your home.</p>
+        </div>
+      </div>
+      <div class="video" onclick="toast('Video placeholder — the institute story video embeds here.')">
+        <div class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#071A26"><path d="M8 5v14l11-7z"/></svg></div>
+        <span class="lbl">VIDEO — INSIDE THE INSTITUTE</span>
+        <span class="dur">3:05</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="prose" style="max-width:860px">
+        <h3>Who We Are</h3>
+        <p>We are a nonprofit organization of doctors, educators, and leaders united by a shared commitment to precision upper cervical care. Our members practice across the country and around the world, but we share a common language: the Advanced Orthogonal technique.</p>
+        <p>What sets us apart isn't just the technique—it's the culture. CCI was founded on the belief that doctors grow best when they learn together, challenge one another, and share what works. We are clinicians first. We teach what we practice, and we practice what we teach. When you train with us, you're learning from doctors who are in the trenches every day, refining their skills and pushing the boundaries of what's possible in patient care.</p>
+        <h3>What We Believe</h3>
+        <p>We believe that precision matters—not for its own sake, but because your patients deserve care that is accurate, reproducible, and grounded in sound biomechanics and neurology.</p>
+        <p>We believe that growth is a lifelong pursuit. No matter how experienced you are, there's always more to learn, and we've designed our training pathways to meet you wherever you are and take you further.</p>
+        <p>We believe that collaboration accelerates progress. The most important breakthroughs in this work have come not from individuals working alone, but from doctors sharing insights, questioning assumptions, and building on one another's discoveries.</p>
+        <p>And we believe that you belong here. Whether you trained in Atlas Orthogonal, Orthospinology, EPIC, or are brand new to upper cervical care—if you're committed to precision and excellence, there's a place for you at CCI.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark quoteband">
+    <div class="wrap">
+      <div>
+        <div class="kick">Our Mission</div>
+        <blockquote>To preserve, advance, and expand the life-changing potential of precision upper cervical care by equipping doctors with the <em>training, tools, and collaborative ecosystem</em> needed to deliver reproducible, neurologically focused correction.</blockquote>
+        <div class="attr">THE CRANIOCERVICAL INSTITUTE · <b>MISSION</b></div>
+      </div>
+      <div class="prose">
+        <p style="color:#a9bdc8">We exist to cultivate a higher standard of clinical mastery—one that demands precision, objective application, and continual innovation grounded in reproducible results. Our aim is to unify and empower a growing community of upper cervical chiropractors who pursue clinical excellence for the sake of their patients.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="kick">How We Support You</div>
+      <h2 class="t">Four ways CCI has your back.</h2>
+      <div class="goldrule"></div>
+      <div class="steps" style="grid-template-columns:1fr 1fr">
+        <div class="step">
+          <div class="n">TRAINING</div>
+          <h3>Training that meets you where you are</h3>
+          <p>From our free Intro to AdvO online course to the immersive week-long Bootcamp, we offer a full spectrum of training options. Our Fundamentals Series builds your foundation. Our AdvO Intensive sharpens your hands-on skills. And our Annual Conference brings the community together for advanced education and connection.</p>
+          <span class="b sm s-btn on-light" onclick="go('seminars')">See All Training</span>
+        </div>
+        <div class="step">
+          <div class="n">CERTIFICATION</div>
+          <h3>A clear path to certification</h3>
+          <p>Our certification process is rigorous, transparent, and designed to ensure that every Certified Advanced Orthogonist meets the highest standards of proficiency and clinical excellence. We'll guide you through every step—from your first seminar to your final exam.</p>
+          <span class="b sm s-btn on-light" onclick="go('certification')">The Certification Path</span>
+        </div>
+        <div class="step">
+          <div class="n">COMMUNITY</div>
+          <h3>A community that has your back</h3>
+          <p>When you join CCI, you gain access to a network of doctors who want to see you succeed. You'll find mentorship, collaboration, and camaraderie—whether you're troubleshooting a complex case, preparing for certification, or looking for your next opportunity.</p>
+          <span class="b sm s-btn on-light" onclick="go('membership')">Meet the Community</span>
+        </div>
+        <div class="step">
+          <div class="n">RESOURCES</div>
+          <h3>Resources to help you thrive</h3>
+          <p>Members receive access to our doctor directory, continuing education opportunities, marketing support tools, and discounts on all CCI training events. We're continually developing new resources to help you grow your skills and your practice.</p>
+          <span class="b sm s-btn on-light" onclick="go('membership')">Member Resources</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>You don't have to figure this out alone.</h3>
+        <p>Explore our training. Connect with our community. And when you're ready, step into ownership of your future.</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('membership')">Become a Member</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== THE ADVO DIFFERENCE ==================== -->
+<div class="page" id="pg-difference">
+  <div class="hero-img short">
+    <div class="bg ph-c"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> ABOUT <b>/</b> THE ADVO DIFFERENCE</div>
+      <div class="kick">What Sets Us Apart</div>
+      <h1>The Advanced Orthogonal Difference</h1>
+      <p class="sub">A precision approach to correcting craniocervical junction misalignments using percussive sound wave adjusting technology.</p>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap grid2" style="align-items:center;gap:56px">
+      <div class="video" onclick="toast('Video placeholder — technique demonstration video embeds here.')">
+        <div class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#071A26"><path d="M8 5v14l11-7z"/></svg></div>
+        <span class="lbl">VIDEO — THE TECHNIQUE IN ACTION</span>
+        <span class="dur">4:32</span>
+      </div>
+      <div>
+        <h2 class="t" style="font-size:28px">A specific approach for specific results.</h2>
+        <div class="prose">
+          <p>Just as the pioneers of upper cervical chiropractic took a radical look at the ways we can correct the spine more accurately and reproducibly, Advanced Orthogonal continues the upward trajectory of the advancements that are shaping the future of upper cervical chiropractic care.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="prose" style="max-width:860px">
+        <h3>Unwavering Progress</h3>
+        <p>Advanced Orthogonal care is constantly evolving to new developments, discoveries, and technology in chiropractic and beyond. There is no boundary to how far we will look to find the next advancement to better help those we serve. If we cannot find a technology we need to grow, we will make it. It is our nature to go beyond the fringe.</p>
+        <h3>Alignment Is Key, But Different for Everyone</h3>
+        <p>The focus of Advanced Orthogonal care is to restore the function of the human body from the inside out. This is done by removing interference on the brainstem by realigning the upper cervical spine to its orthogonal nature based on each person's genetically unique anatomy.</p>
+        <h3>More Than an Adjusting Procedure</h3>
+        <p>The Advanced Orthogonal procedure is more than just an adjusting procedure. It is an entire protocol for accurately evaluating nerve interference in the body, analyzing the upper cervical spine accurately, correcting the craniocervical misalignment with a precise approach, and monitoring the progress of the individual for maximum healing.</p>
+        <p>Today, Advanced Orthogonal chiropractic stands alone as the most evolved offspring of the upper cervical procedures. It is the only procedure within the profession that includes:</p>
+        <ul>
+          <li>Measuring the misalignment according to the patient's gravitational and neurological normal, taking any genetic abnormalities into account</li>
+          <li>Refined correction lines of drive via digital and laser alignment of the patient</li>
+          <li>Motorized table shoulder-piece to refine patient positioning, and reduce strain on the doctor</li>
+          <li>Digital x-ray analysis to measure misalignments to the 1/100th of a degree</li>
+          <li>Percussion-wave instrument adjusting based 100% on the patient's misalignment variables</li>
+        </ul>
+        <p>The outcomes of these refinements have eliminated as much human-error from the misalignment puzzle as possible. Through dedicated study and strict adherence to the fundamentals, these enhancements give the Advanced Orthogonal doctor a consistent clinical procedure for accurate evaluation and reduction of the atlas subluxation complex.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark quoteband">
+    <div class="wrap">
+      <div>
+        <div class="kick">Corrections, Not Adjustments</div>
+        <blockquote>Accurate correction of the upper cervical spine normalizes postural reflex loops, which allow the body to <em>permanently stabilize spinal structures</em> — often without the need for specific exercises or physical therapy modalities.</blockquote>
+        <div class="attr">THE ADVANCED ORTHOGONAL CONCEPT OF <b>SUSTAINABLE CORRECTIONS</b></div>
+      </div>
+      <div class="prose">
+        <p style="color:#a9bdc8">It has become accepted in the chiropractic profession that the adjustment itself only produces a transient correction. Advanced Orthogonal chiropractic teaches the concept of sustainable corrections. Many Advanced Orthogonal patients have shown marked reduction in thoracolumbar scoliosis curves, and mid and low back pain conditions consistently respond favorably as a byproduct of this upper cervical correction.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="prose" style="max-width:860px">
+        <h3>Accurate X-Rays for Better Results</h3>
+        <p>Advanced Orthogonal practitioners determine misalignment of the upper cervical spine using specific three-dimensional x-rays, and using digital software, are able to measure the position of the upper cervical structures down to the 1/100th of a degree. A 1998 study published in the Journal of Manipulative and Physiological Therapeutics showed that interclass correlation coefficients (ICC) for locating pathology on x-ray was only 0.4–0.75, while line drawings for x-ray displacement had ICC's in the 0.8–0.9 range. Trained Advanced Orthogonal doctors utilize clinical procedures that promote the highest degree of intra and inter examiner reliability.</p>
+        <h3>Precision Sound Wave Adjustments</h3>
+        <p>The typical manual chiropractic adjustment requires moving joints to near end-ranges of motion to cause joint distraction and cavitation. This is not an option and would be contraindicated for many patient populations, including those with low bone mineral densities, certain types of disc injuries, surgical fusions, some pediatric patients and those with a variety of other conditions.</p>
+        <p>The Advanced Orthogonal procedure uses a percussive sound wave to correct the upper cervical misalignment complex. The low force of this technique allows wider patient populations to be candidates for this treatment, and the correction takes place within the patient's normal range of motion, which eliminates the potential risk of ligamentous trauma to the patient.</p>
+      </div>
+      <div style="max-width:860px;margin-top:34px;background:var(--mist);border-left:4px solid var(--gold);border-radius:0 6px 6px 0;padding:30px 34px">
+        <p style="font-size:15px;color:var(--body);font-style:italic;line-height:1.75">"A mechanical impulse is imparted to the metal stylus by means of a spring loaded plunger… At the patient-stylus interface, dependent on the impedance match, a portion of this wave energy is transmitted into the patient and a portion is reflected back to the plunger."</p>
+        <div class="attr" style="margin-top:14px;color:#7b909b">EUGENE T. PATRONIS, JR., PH.D. · <b style="color:var(--bronze)">SCHOOL OF PHYSICS, GEORGIA INSTITUTE OF TECHNOLOGY</b></div>
+      </div>
+      <div class="prose" style="max-width:860px;margin-top:34px">
+        <h3>Accelerated Mastery</h3>
+        <p>Many of the 'hands on' upper cervical techniques can be very challenging to learn, with experienced clinicians stating it can take 10–20 years to become a skilled adjuster. The percussion sound-wave adjusting instrument delivers a consistent force and can be accurately pre-set to deliver a patient-specific correction vector, eliminating as much doctor error as possible. This procedure dramatically reduces the learning curve, and allows doctors to deliver high quality and repeatable corrections very early in their clinical career.</p>
+        <h3>Longevity in Practice</h3>
+        <p>Physical adjusting can take an extreme toll on the clinician's body, with many chiropractors acquiring chronic injuries from their choice of adjusting procedure. The Advanced Orthogonal technique minimizes strain on the doctor's body by delivering the adjusting force through a sound wave instrument — allowing the Advanced Orthogonal doctor to continue to practice for many years without sustaining chronic injuries.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist tight">
+    <div class="wrap">
+      <div class="kick">Now Supported at CCI</div>
+      <h2 class="t" style="font-size:28px">The Atlas Orthometrics Technique</h2>
+      <div class="goldrule"></div>
+      <div class="prose">
+        <p>The CranioCervical Institute now proudly supports training and certification in the Atlas Orthometrics technique — expanding the Institute's home for precision upper cervical disciplines. Full curriculum details are coming soon.</p>
+      </div>
+      <span class="t-link" onclick="go('certification')">See Certification Tracks<span class="a">→</span></span>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Experience the difference for yourself.</h3>
+        <p>Start with the free two-hour Intro to AdvO course — no prerequisites.</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('sem','intro')">Claim Your Free Course</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== BOARD OF DIRECTORS ==================== -->
+<div class="page" id="pg-board">
+  <div class="hero-img short">
+    <div class="bg ph-a"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> ABOUT <b>/</b> BOARD OF DIRECTORS</div>
+      <div class="kick">Leadership</div>
+      <h1>Board of Directors</h1>
+      <p class="sub">Nine seats. Three open every year. Guided by the members, for the members.</p>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <p class="lede" style="margin-bottom:40px">The Institute is governed by a nine-member board elected by the membership, with three seats opening every year — ensuring new voices and forward-thinking leaders always have opportunities to influence the direction of the Institute and the profession. <i>(Photos and bios to be added — this grid is the replicable template.)</i></p>
+      <div class="people" id="boardgrid"></div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Certified members can run for the board.</h3>
+        <p>Three of nine seats open every year. Your voice, your vote, your Institute.</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('membership')">Become a Member</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== SEMINARS CATALOG ==================== -->
+<div class="page" id="pg-seminars">
+  <div class="hero-img short">
+    <div class="bg ph-b"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> SEMINARS</div>
+      <div class="kick">Train With Us</div>
+      <h1>Seminars &amp; Events</h1>
+      <p class="sub">From your first free course to full mastery — every training pathway through the Institute.</p>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:34px" id="filterrow">
+        <span class="b sm p-btn fchip" data-cat="all" onclick="filterSem('all',this)">All Events</span>
+        <span class="b sm s-btn on-light fchip" data-cat="fundamentals" onclick="filterSem('fundamentals',this)">Fundamentals</span>
+        <span class="b sm s-btn on-light fchip" data-cat="intensive" onclick="filterSem('intensive',this)">Intensive</span>
+        <span class="b sm s-btn on-light fchip" data-cat="bootcamp" onclick="filterSem('bootcamp',this)">Bootcamp</span>
+        <span class="b sm s-btn on-light fchip" data-cat="conference" onclick="filterSem('conference',this)">Conference</span>
+        <span class="b sm s-btn on-light fchip" data-cat="free" onclick="filterSem('free',this)">Free</span>
+        <span class="b sm s-btn on-light fchip" data-cat="internship" onclick="filterSem('internship',this)">Internships</span>
+      </div>
+      <!-- START HERE — featured free intro (always visible, every filter) -->
+      <div class="featintro" style="display:grid;grid-template-columns:1.05fr 1fr;background:var(--midnight);border-radius:6px;overflow:hidden;margin-bottom:40px;position:relative">
+        <div style="position:relative;min-height:280px;overflow:hidden;cursor:pointer" onclick="go('sem','intro')">
+          <div class="ph-c" style="position:absolute;inset:0"><div class="duo"></div><div class="duo2"></div></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(to right, transparent 55%, #071A26 100%)"></div>
+        </div>
+        <div style="padding:46px 46px 42px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative">
+          <span style="position:absolute;top:0;left:46px;background:var(--gold);color:var(--midnight);font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;letter-spacing:.18em;padding:7px 14px;border-radius:0 0 4px 4px">START HERE · FREE</span>
+          <div style="font-family:'Outfit',sans-serif;font-weight:800;font-size:14px;letter-spacing:.16em;color:var(--gold-hi);margin-bottom:10px">ONLINE · SELF-PACED · 2 HOURS</div>
+          <h3 style="font-size:29px;font-weight:700;margin-bottom:12px">Intro to AdvO</h3>
+          <p style="font-size:14.5px;color:#a9bdc8;line-height:1.65;margin-bottom:24px;max-width:430px">New to Advanced Orthogonal? Start with our free two-hour Intro to AdvO course—a comprehensive overview of the technique, its principles, and the training pathways available through the Institute.</p>
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+            <span class="b p-btn" onclick="toast('Signup placeholder — this button will link to the free course enrollment.')">Sign Up Free</span>
+            <span class="t-link" style="color:var(--gold-hi)" onclick="go('sem','intro')">Course Details<span class="a">→</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid3" id="semgrid"></div>
+      <p id="semempty" style="display:none;font-size:15px;color:#7b909b;padding:30px 0">No events in this category right now — check back soon.</p>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Members save $200 on every seminar.</h3>
+        <p>And Bootcamp registration — a $600 savings — is free with CCI membership.</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('membership')">Join &amp; Save</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== SEMINAR DETAIL (replicable template) ==================== -->
+<div class="page" id="pg-sem">
+  <div class="hero-img short">
+    <div class="bg" id="sd-img"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> SEMINARS <b>/</b> <span id="sd-crumb"></span></div>
+      <div class="kick" id="sd-kick"></div>
+      <h1 id="sd-title"></h1>
+      <p class="sub" id="sd-sub"></p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="facts">
+      <div class="fact"><span>DATES</span><b id="sd-dates"></b></div>
+      <div class="fact"><span>LOCATION</span><b id="sd-loc"></b></div>
+      <div class="fact"><span>LEVEL</span><b id="sd-level"></b></div>
+      <div class="fact"><span>FORMAT</span><b id="sd-format"></b></div>
+      <div class="fact"><span>TUITION</span><b id="sd-price"></b></div>
+    </div>
+    <div class="memberbar" id="sd-memberbar">
+      <div>
+        <div class="mb-t" id="sd-mb-t">CCI Members save $200 on this seminar.</div>
+        <div class="mb-s">Every seminar, every time — membership often pays for itself in two events.</div>
+      </div>
+      <span class="b sm" onclick="go('membership')">Become a Member &amp; Save</span>
+    </div>
+  </div>
+
+  <section class="tight" id="sd-sessions-sec">
+    <div class="wrap">
+      <div class="kick">Dates &amp; Locations</div>
+      <h2 class="t" style="font-size:26px">Choose your session</h2>
+      <div class="goldrule"></div>
+      <div class="sessions" id="sd-sessions"></div>
+    </div>
+  </section>
+
+  <section class="tight" style="padding-top:20px">
+    <div class="wrap grid2" style="gap:56px;align-items:start">
+      <div>
+        <div class="kick">About This Event</div>
+        <h2 class="t" style="font-size:26px" id="sd-h2"></h2>
+        <div class="goldrule"></div>
+        <div class="prose" id="sd-overview"></div>
+      </div>
+      <div>
+        <div class="video" onclick="toast('Video placeholder — event preview video embeds here.')">
+          <div class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#071A26"><path d="M8 5v14l11-7z"/></svg></div>
+          <span class="lbl" id="sd-vlbl">VIDEO — EVENT PREVIEW</span>
+          <span class="dur">1:45</span>
+        </div>
+        <div style="margin-top:24px;background:var(--mist);border-radius:6px;padding:26px 28px">
+          <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;margin-bottom:8px">Member pricing</div>
+          <p style="font-size:13.5px;color:var(--body);margin-bottom:16px" id="sd-member"></p>
+          <span class="t-link" onclick="go('membership')">About Membership<span class="a">→</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tight" id="sd-speakers-sec" style="padding-top:8px">
+    <div class="wrap">
+      <div class="kick">Faculty</div>
+      <h2 class="t" style="font-size:26px">Your instructors</h2>
+      <div class="goldrule"></div>
+      <div id="sd-keynote"></div>
+      <div class="spk-grid" id="sd-speakers"></div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="kick">Curriculum</div>
+      <h2 class="t" style="font-size:26px">What you'll learn</h2>
+      <div class="goldrule"></div>
+      <div class="learn" id="sd-learn"></div>
+      <div style="margin-top:44px" id="sd-agenda-sec">
+        <div class="kick">Agenda</div>
+        <h2 class="t" style="font-size:26px">How the time is spent</h2>
+        <div class="goldrule"></div>
+        <div id="sd-agenda"></div>
+        <p style="font-size:12px;color:#8a9ba5;margin-top:16px;font-family:'IBM Plex Mono',monospace;letter-spacing:.06em">TAP ANY INSTRUCTOR PILL FOR THEIR BIO</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3 id="sd-cta-h">Reserve your seat.</h3>
+        <p id="sd-cta-p"></p>
+      </div>
+      <span class="b lg p-btn" id="sd-cta-btn" onclick="document.getElementById('sd-sessions-sec').scrollIntoView({behavior:'smooth'})">Register Now</span>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="kick">Keep Exploring</div>
+      <h2 class="t" style="font-size:24px">Related training</h2>
+      <div class="goldrule"></div>
+      <div class="grid3" id="sd-related"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== CERTIFICATION ==================== -->
+<div class="page" id="pg-certification">
+  <div class="hero-img short">
+    <div class="bg ph-c"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> CERTIFICATION</div>
+      <div class="kick">Establish Your Mastery</div>
+      <h1>Get Certified</h1>
+      <p class="sub">Anyone can practice this work — the Institute officially recognizes those who prove their proficiency.</p>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="prose">
+        <p>Certification in the Advanced Orthogonal Technique ensures that there is a minimum standard being kept by all doctors and students that practice the procedure. Anyone can practice this work, but the Institute will only officially recognize the proficiency of those individuals who have gone through the certification process.</p>
+      </div>
+      <div class="steps" style="margin-top:40px">
+        <div class="step" style="border-top:4px solid var(--teal)" id="cert-l1">
+          <div class="n" style="color:var(--teal-deep)">ADVANCED ORTHOGONAL</div>
+          <h3>Level 1 Certification</h3>
+          <p>Level 1 Certification proves your proficiency to safely and effectively correct the upper cervical spine with the Percussive Sound Wave Instrument. Completing Level 1 also earns you one free year of CCI membership.</p>
+          <span class="b sm s-btn on-light" onclick="go('contact')">Request L1 Requirements</span>
+        </div>
+        <div class="step" style="border-top:4px solid var(--gold)" id="cert-l2">
+          <div class="n">ADVANCED ORTHOGONAL</div>
+          <h3>Level 2 Certification</h3>
+          <p>Level 2 Certification is proof of mastery of the Advanced Orthogonal technique and opens you up to become an instructor within the Institute.</p>
+          <span class="b sm s-btn on-light" onclick="go('contact')">Request L2 Requirements</span>
+        </div>
+        <div class="step" style="border-top:4px solid var(--bronze)" id="cert-ao">
+          <div class="n" style="color:var(--bronze)">NEW TRACK</div>
+          <h3>Atlas Orthometrics</h3>
+          <p>The Institute now supports certification in the Atlas Orthometrics technique. Requirements and the first certification cohort are coming soon.</p>
+          <span class="b sm s-btn on-light" onclick="go('contact')">Get Notified</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="kick">The Process</div>
+      <h2 class="t">Four steps to certification.</h2>
+      <div class="goldrule"></div>
+      <div class="steps" style="grid-template-columns:repeat(4,1fr)">
+        <div class="step"><div class="n">STEP 1</div><p>Ensure that you have met the requirements (other than testing) for the level of certification that you are applying.</p></div>
+        <div class="step"><div class="n">STEP 2</div><p>Submit your application, fees, documents, and X-rays to the Certification Board.</p></div>
+        <div class="step"><div class="n">STEP 3</div><p>You will be assigned Reviewers who will administer your testing and review your documentation, X-rays, reports, and application until all requirements are met.</p></div>
+        <div class="step"><div class="n">STEP 4</div><p>Once all requirements are approved, you will be officially issued your certification.</p></div>
+      </div>
+      <div class="prose" style="margin-top:38px">
+        <h3>Fees for Certification</h3>
+        <p>Application fees for certification will be paid to the CranioCervical Institute. These fees cover the costs for the review, testing, processing of the application, and printing and shipping the Certificate.</p>
+        <h3>Grandfathering</h3>
+        <p>All doctors and students who have trained with Advanced Orthogonal Techniques and Procedures, or the Institute's predecessor organizations, and have completed their training according to the standards that were present at the time they were trained have been grandfathered into appropriate certification levels based on experience. Grandfathering is determined on a case by case basis by the Certification Board based on attendance to prior seminars and active practice experience in the Advanced Orthogonal technique.</p>
+        <p>Any doctor that has not been "grandfathered" into certification and believes that the standard for certification has been met may send a request for review by the Certification Board.</p>
+        <span class="t-link" onclick="go('contact')">Contact the Certification Board<span class="a">→</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Complete Level 1 and your first year of membership is free.</h3>
+        <p>Full conference registration, directory listing, and every member benefit — our investment back into you.</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('sem','fund1')">Start with Fundamental 1</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== MEMBERSHIP ==================== -->
+<div class="page" id="pg-membership">
+  <div class="hero-img short">
+    <div class="bg ph-a"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> MEMBERSHIP</div>
+      <div class="kick">Advance Your Practice · Strengthen Your Network · Shape the Future</div>
+      <h1>CCI Membership</h1>
+      <p class="sub">The members of the CranioCervical Institute are the keystone of our Institute's strength and progress.</p>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap" style="display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:start">
+      <div class="prose">
+        <p>As a member, you not only guide the future of the organization through your voice and your vote, but you also gain access to essential resources designed to propel your career as an Advanced Orthogonal doctor and strengthen your expertise in the upper cervical specialty.</p>
+        <p>The culture of our Institute—built on trust, collaboration, and shared purpose—is the fuel that drives innovation and growth. Together, our members pool resources, advance research, and pursue key goals that shape the future of Advanced Orthogonal care.</p>
+        <h3>Who is membership for?</h3>
+        <p>Membership in the CranioCervical Institute is intentionally broad and inclusive. Membership is open to:</p>
+        <ul>
+          <li><b>Veteran AdvO Doctors</b> — ongoing opportunities to continue training, shape the future of the organization, and, for those who are certified, pursue eligibility for board membership.</li>
+          <li><b>Students</b> — access to resources that accelerate your learning and prepare you for a successful career.</li>
+          <li><b>A.O. or EPIC Doctors</b> — a powerful way to accelerate your cross-training and certification, with a professional home and opportunities to engage in events and collaborative projects.</li>
+          <li><b>Other Upper Cervical Chiropractors</b> — for doctors trained in other upper cervical techniques who want to transition into Advanced Orthogonal, refine their approach, or cross-train to expand their expertise.</li>
+        </ul>
+        <p>This is not a closed membership requiring prior certification. Instead, it serves as the gateway to growth—an open access point designed to accelerate your learning, strengthen your expertise, and expand your professional opportunities.</p>
+      </div>
+
+      <div style="position:sticky;top:120px">
+        <div style="background:var(--midnight);border-radius:6px;padding:36px;color:#fff;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-70px;top:-70px;width:220px;height:220px;border:1.5px solid rgba(194,154,75,.35);border-radius:50%"></div>
+          <div class="kick" style="color:var(--gold)">Annual Membership</div>
+          <div style="font-family:'Outfit',sans-serif"><span style="font-size:17px;color:#7f97a3;text-decoration:line-through;vertical-align:14px;margin-right:10px">$997</span><span style="font-size:50px;font-weight:800">$797</span><span style="font-size:14px;color:#9db4c0"> / year</span></div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--gold-hi);margin:6px 0 22px">LAUNCH RATE — JOIN BEFORE THE ANNUAL CONFERENCE</div>
+          <div style="border-top:1px solid rgba(255,255,255,.12);padding-top:20px;font-size:14px;color:#c3d4dc;line-height:2">
+            ✓ Annual Conference registration included ($697 value)<br>
+            ✓ $600 off AdvO Bootcamp<br>
+            ✓ $200 off every seminar<br>
+            ✓ Voting rights &amp; board eligibility<br>
+            ✓ Doctor Directory listing<br>
+            ✓ Exclusive partner discounts
+          </div>
+          <div style="margin-top:26px"><span class="b lg p-btn" style="width:100%;justify-content:center" onclick="toast('Checkout placeholder — this button will link to the live membership signup.')">Become a Member</span></div>
+          <p style="font-size:11.5px;color:#6c8592;margin-top:14px;text-align:center">Membership renews annually and automatically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="kick">Membership Benefits</div>
+      <h2 class="t">What your membership unlocks.</h2>
+      <div class="goldrule"></div>
+      <div class="steps" style="grid-template-columns:1fr 1fr">
+        <div class="step">
+          <div class="n">01</div>
+          <h3>Annual Conference registration included</h3>
+          <p>Your membership comes with full registration for the CCI Annual Conference, a value of $697. This event is more than a meeting; it is the ultimate homecoming for AdvO doctors, students, and colleagues from across the upper cervical field. Members may also add continuing education credits for just $50.</p>
+          <span class="b sm s-btn on-light" onclick="go('sem','conference')">About the Conference</span>
+        </div>
+        <div class="step">
+          <div class="n">02</div>
+          <h3>Voting rights &amp; board eligibility</h3>
+          <p>Membership gives you the right to vote in board elections, and certified members are eligible to run for board positions themselves. With three of the nine seats opening every year, new voices and forward-thinking leaders always have opportunities to influence the direction of the Institute and the profession.</p>
+          <span class="b sm s-btn on-light" onclick="go('board')">Meet the Board</span>
+        </div>
+        <div class="step">
+          <div class="n">03</div>
+          <h3>Discounts on training &amp; seminars</h3>
+          <p>Members receive $600 off the AdvO Boot Camp, $200 off every seminar, and exclusive partner discounts through UC Strategic Solutions, Synapse Continuing Education, and other collaborations that will expand as the Institute grows. These savings quickly add up, often covering the cost of membership itself.</p>
+          <span class="b sm s-btn on-light" onclick="go('seminars')">Browse Seminars</span>
+        </div>
+        <div class="step">
+          <div class="n">04</div>
+          <h3>Directory listing &amp; patient exposure</h3>
+          <p>Every member is included in the Doctor Directory, an actively promoted resource that helps patients find qualified doctors they can trust. This visibility not only builds your credibility but also expands your practice reach.</p>
+          <span class="b sm s-btn on-light" onclick="toast('The Doctor Directory launches with the live site.')">Doctor Directory</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark quoteband tight">
+    <div class="wrap">
+      <div>
+        <div class="kick">Free Membership After Level 1</div>
+        <blockquote>Complete your Level 1 Certification and receive <em>one free year of membership</em> — full conference registration and every standard benefit included.</blockquote>
+        <div class="attr">OUR INVESTMENT BACK INTO <b>NEWLY CERTIFIED DOCTORS</b></div>
+      </div>
+      <div class="prose">
+        <p style="color:#a9bdc8">Certification marks the beginning of your professional journey, and your complimentary membership ensures that you stay plugged into the Institute at the very moment you are ready to grow the most.</p>
+        <span class="t-link" onclick="go('certification')" style="color:var(--gold-hi)">The Certification Path<span class="a">→</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Invest in your practice, your profession, and the future.</h3>
+        <p>With conference registration included and deep seminar discounts, membership often pays for itself in the first year.</p>
+      </div>
+      <span class="b lg p-btn" onclick="toast('Checkout placeholder — this button will link to the live membership signup.')">Secure Your Membership</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== ARTICLES & RESEARCH ==================== -->
+<div class="page" id="pg-articles">
+  <div class="hero-img short">
+    <div class="bg ph-c"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> ARTICLES &amp; RESEARCH</div>
+      <div class="kick">The CCI Journal</div>
+      <h1>Articles &amp; Research</h1>
+      <p class="sub">Clinical insights, research updates, and news from the CranioCervical Institute community.</p>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="arts" id="artgrid"></div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Have research to share?</h3>
+        <p>The Institute is dedicated to participating in and initiating research that validates upper cervical care.</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('contact')">Submit to the Journal</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== ARTICLE DETAIL ==================== -->
+<div class="page" id="pg-article">
+  <div class="hero-img short">
+    <div class="bg" id="ad-img"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> ARTICLES &amp; RESEARCH <b>/</b> <span id="ad-crumb"></span></div>
+      <div class="kick" id="ad-cat"></div>
+      <h1 id="ad-title" style="font-size:38px"></h1>
+      <p class="sub" id="ad-date" style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em"></p>
+    </div>
+  </div>
+  <section class="tight">
+    <div class="wrap">
+      <div class="prose" id="ad-body" style="max-width:760px"></div>
+      <div style="margin-top:36px"><span class="t-link" onclick="go('articles')">← Back to Articles &amp; Research</span></div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== CONTACT ==================== -->
+<div class="page" id="pg-contact">
+  <div class="hero-img short">
+    <div class="bg ph-b"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> CONTACT</div>
+      <div class="kick">How Can We Help You?</div>
+      <h1>Contact Us</h1>
+      <p class="sub">For general enquiries, use the form — or call us directly. We respond within one business day.</p>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap grid2" style="gap:56px;align-items:start">
+      <div>
+        <div style="display:grid;gap:16px">
+          <div style="background:var(--mist);border-radius:6px;padding:22px 26px;display:flex;gap:18px;align-items:center">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#14607A" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px">Call the Institute</div><div style="font-size:14px;color:var(--body)">+1 (727) 677-0001</div></div>
+          </div>
+          <div style="background:var(--mist);border-radius:6px;padding:22px 26px;display:flex;gap:18px;align-items:center">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#14607A" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px">Email</div><div style="font-size:14px;color:var(--body)">Info@CranioCervicalInstitute.com</div></div>
+          </div>
+          <div style="background:var(--mist);border-radius:6px;padding:22px 26px;display:flex;gap:18px;align-items:center">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#A87F35" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px">Certification Board</div><div style="font-size:14px;color:var(--body)">Questions about certification, grandfathering, or reviews — mention "Certification Board" in your message.</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--line);border-radius:6px;padding:36px 38px;box-shadow:0 14px 40px rgba(7,26,38,.07)">
+        <h3 style="font-size:20px;margin-bottom:20px">Send us a message</h3>
+        <div style="display:grid;gap:14px">
+          <input placeholder="Full name" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)">
+          <input placeholder="Email address" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)">
+          <input placeholder="Subject" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)">
+          <textarea placeholder="How can we help?" rows="5" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal);resize:vertical"></textarea>
+          <span class="b p-btn" style="justify-content:center" onclick="toast('Form placeholder — submissions will route to Info@CranioCervicalInstitute.com on the live site.')">Send Message</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <div class="logo" onclick="go('home')" style="align-items:flex-start">
+          <svg width="36" height="36" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="#1F7F9C" stroke-width="8"/><line x1="60" y1="4" x2="60" y2="24" stroke="#C29A4B" stroke-width="8" stroke-linecap="round"/><line x1="60" y1="96" x2="60" y2="116" stroke="#C29A4B" stroke-width="8" stroke-linecap="round"/><line x1="4" y1="60" x2="24" y2="60" stroke="#C29A4B" stroke-width="8" stroke-linecap="round"/><line x1="96" y1="60" x2="116" y2="60" stroke="#C29A4B" stroke-width="8" stroke-linecap="round"/><circle cx="60" cy="60" r="9" fill="#C29A4B"/></svg>
+          <div><div class="t1" style="color:#fff">CRANIOCERVICAL</div><div class="t2">INSTITUTE</div></div>
+        </div>
+        <p class="tag">Advancing precision upper cervical care through training, collaboration, and clinical excellence.</p>
+      </div>
+      <div>
+        <h5>Institute</h5>
+        <a onclick="go('about')">About the Institute</a>
+        <a onclick="go('difference')">The AdvO Difference</a>
+        <a onclick="go('board')">Board of Directors</a>
+        <a onclick="go('articles')">Articles &amp; Research</a>
+        <a onclick="go('contact')">Contact</a>
+      </div>
+      <div>
+        <h5>Training</h5>
+        <a onclick="go('sem','intro')">Intro to AdvO (Free)</a>
+        <a onclick="go('seminars')">Seminars &amp; Events</a>
+        <a onclick="go('sem','internship')">Internships</a>
+        <a onclick="go('certification')">Certification</a>
+      </div>
+      <div>
+        <h5>Connect</h5>
+        <a onclick="go('membership')">Membership</a>
+        <a onclick="toast('The Doctor Directory launches with the live site.')">Doctor Directory</a>
+        <a href="tel:+17276770001">(727) 677-0001</a>
+        <a href="mailto:Info@CranioCervicalInstitute.com">Info@CranioCervicalInstitute.com</a>
+      </div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 The CranioCervical Institute. All rights reserved.</span>
+      <span>Home of the Advanced Orthogonal &amp; Atlas Orthometrics techniques.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- speaker bio modal -->
+<div class="bio-bg" id="bioBg" onclick="if(event.target===this)bioClose()">
+  <div class="bio-m">
+    <button class="x" onclick="bioClose()">✕</button>
+    <div class="top">
+      <span class="avx" id="bio-av"><span class="ini" id="bio-ini"></span></span>
+      <div>
+        <h3 id="bio-name"></h3>
+        <div class="cred" id="bio-cred"></div>
+        <span class="rl" id="bio-role"></span>
+      </div>
+    </div>
+    <div class="body"><p id="bio-text"></p></div>
+  </div>
+</div>
+
+<!-- toast -->
+<div id="toast" style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#071A26;color:#fff;font-family:'Outfit',sans-serif;font-size:13.5px;padding:14px 26px;border-radius:6px;border-left:3px solid #C29A4B;box-shadow:0 14px 40px rgba(7,26,38,.4);opacity:0;pointer-events:none;transition:all .3s ease;z-index:200;max-width:90vw;text-align:center"></div>
+
+<script>
+// ============ SPEAKER REGISTRY (bios live once, referenced everywhere) ============
+var SPKR = {
+  cs:{name:'Dr. Chris Slininger', ini:'CS', img:'ph-b', cred:'D.C. · CERTIFIED ADVO LEVEL 2', role:'LEAD INSTRUCTOR',
+      bio:'Owner of Cerebral Chiropractic Center of Tampa Bay and lead instructor at the CranioCervical Institute. Teaches instrument protocol and correction delivery across the Fundamentals Series, the Intensive, and Bootcamp. (Draft bio — replace with final copy.)'},
+  jk:{name:'Dr. Jeff Kahrs', ini:'JK', img:'ph-a', cred:'D.C. · CERTIFIED ADVO LEVEL 2', role:'INSTRUCTOR',
+      bio:'Two decades of precision upper cervical practice. Leads the x-ray analysis intensives and certification case reviews at the Institute. (Draft bio — replace with final copy.)'},
+  mr:{name:'Dr. Maria Reyes', ini:'MR', img:'ph-c', cred:'D.C., PH.D. · NEUROLOGY RESEARCH', role:'GUEST EXPERT',
+      bio:'Research faculty presenting the latest findings on functional and neurological change following specific upper cervical correction. (Draft bio — replace with final copy.)'},
+  tw:{name:'Dr. Tom Wells', ini:'TW', img:'ph-a', cred:'D.C. · ATLAS ORTHOMETRICS', role:'INSTRUCTOR',
+      bio:'Introducing the Institute\'s newest supported technique — the Atlas Orthometrics protocol — and its certification pathway. (Draft bio — replace with final copy.)'}
+};
+function avHtml(id,cls){var p=SPKR[id];return '<span class="avx '+(cls||'')+'"><span class="'+p.img+'" style="position:absolute;inset:0"></span><span class="duo" style="position:absolute;inset:0"></span><span class="ini">'+p.ini+'</span></span>';}
+function pillHtml(id){var p=SPKR[id];return '<span class="spk-pill" onclick="bio(\''+id+'\');event.stopPropagation()">'+avHtml(id)+'<span class="nm">'+p.name+'</span><span class="plus">BIO +</span></span>';}
+function bio(id){var p=SPKR[id];
+  document.getElementById('bio-av').innerHTML='<span class="'+p.img+'" style="position:absolute;inset:0"></span><span class="duo" style="position:absolute;inset:0"></span><span class="ini">'+p.ini+'</span>';
+  document.getElementById('bio-name').textContent=p.name;
+  document.getElementById('bio-cred').textContent=p.cred;
+  document.getElementById('bio-role').textContent=p.role;
+  document.getElementById('bio-text').textContent=p.bio;
+  document.getElementById('bioBg').classList.add('on');
+}
+function bioClose(){document.getElementById('bioBg').classList.remove('on')}
+
+// ============ SEMINAR DATA (the replicable model — one entry = one page) ============
+var SEM = {
+  intro:{
+    cat:'free', title:'Intro to AdvO', kicker:'Free Introductory Online Course', img:'ph-c',
+    sub:'Discover the principles and power behind Advanced Orthogonal care.',
+    dates:'Online · Anytime', loc:'Self-Paced', level:'No Prerequisites', format:'2-Hour Online Course', price:'FREE',
+    fullPrice:0, memPrice:0, mbText:'This course is free for everyone — no membership required.',
+    sessions:[{mo:'OPEN', dy:'NOW', yr:'', city:'Online · Self-Paced', venue:'Instant access · 2 hours', seats:'Unlimited enrollment', free:true, flag:'FREE'}],
+    member:'Free for everyone — no membership required. It is the recommended starting point for every training pathway at the Institute.',
+    h2:'The starting point for everything.',
+    overview:'<p>New to Advanced Orthogonal? Start with our free two-hour Intro to AdvO course—a comprehensive overview of the technique, its principles, and the training pathways available through the Institute.</p><p>You\'ll be introduced to the upper cervical philosophy behind the work, the percussive sound-wave instrument, the analysis protocol, and what the road from first seminar to full certification looks like.</p>',
+    learn:['The upper cervical philosophy from B.J. Palmer to today','How the percussive sound-wave instrument works','The Advanced Orthogonal analysis protocol at a glance','X-ray measurement to 1/100th of a degree','The training pathway: Fundamentals → Intensive → Certification','How the Institute supports you at every stage'],
+    sched:[['MODULE 1','Origins and principles of orthogonal-based upper cervical care.'],['MODULE 2','The Advanced Orthogonal protocol — analysis, correction, and monitoring.'],['MODULE 3','Training pathways, certification, and your next step.']],
+    ctaH:'Start free, today.', ctaP:'Instant access — watch on your schedule.', ctaBtn:'Sign Up Free',
+    spk:['cs'], keynote:null,
+    agenda:[{day:null,items:[
+      {t:'MOD 1',ap:'LECTURE',title:'Origins & Principles',desc:'Orthogonal-based upper cervical care from B.J. Palmer to today.',who:['cs']},
+      {t:'MOD 2',ap:'LECTURE',title:'The AdvO Protocol',desc:'Analysis, correction, and monitoring at a glance.',who:['cs']},
+      {t:'MOD 3',ap:'PATHWAYS',title:'Your Next Step',desc:'Training pathways, certification, and how the Institute supports you.',who:['cs']}]}]
+  },
+  fund1:{
+    cat:'fundamentals', title:'Fundamental 1', kicker:'Fundamentals Series · Part 1 of 3', img:'ph-a',
+    sub:'Your foundation in Advanced Orthogonal analysis begins here.',
+    dates:'3 Sessions · 2026–27', loc:'Multiple Locations', level:'Foundation', format:'Weekend Seminar', price:'$895',
+    member:'CCI members save $200 on every seminar — Fundamental 1 is $695 for members.',
+    fullPrice:895, memPrice:695,
+    sessions:[
+      {mo:'SEP', dy:'12–13', yr:'2026', city:'Des Moines, IA', venue:'Heartland Training Center', seats:'14 seats left', flag:'NEXT UP'},
+      {mo:'OCT', dy:'24–25', yr:'2026', city:'Tampa Bay, FL', venue:'CCI Headquarters', seats:'22 seats left'},
+      {mo:'JAN', dy:'16–17', yr:'2027', city:'Orem, UT', venue:'Mountain West Campus', seats:'Registration opening soon', soon:true}
+    ],
+    h2:'Where the foundation is poured.',
+    overview:'<p>Fundamental 1 is the entry point to hands-on Advanced Orthogonal training. Working in small groups with experienced instructors, you\'ll build the observational and analytical foundation that everything else in the technique rests on.</p><p>The Fundamentals Series is sequential — each part builds directly on the last, and completing all three is a requirement on the Level 1 Certification track.</p>',
+    learn:['Patient evaluation and nerve interference assessment','Upper cervical biomechanics and the atlas subluxation complex','Introduction to the specific three-dimensional x-ray series','Postural analysis and supine leg check protocol','Case history and patient management fundamentals','Instrument overview and safety'],
+    sched:[['SATURDAY','Lecture and demonstration: evaluation protocol, biomechanics, and x-ray positioning. Afternoon hands-on labs in small groups.'],['SUNDAY','Supervised practice: analysis reps, evaluation workflow, and case review. Q&A and next steps on the certification track.']],
+    ctaH:'Begin the Fundamentals Series.', ctaP:'Members save $200 · completing the series is a Level 1 requirement.', ctaBtn:'Register for Fundamental 1',
+    spk:['cs','jk'], keynote:null,
+    agenda:[{day:null,items:[
+      {t:'SAT 9:00',ap:'AM · LECTURE',title:'Evaluation Protocol — Foundations',desc:'Nerve interference assessment and UC biomechanics.',who:['cs']},
+      {t:'SAT 1:30',ap:'PM · LAB',title:'Postural Analysis Lab',desc:'Supervised reps: leg check, posture, and case history workflow.',who:['cs']},
+      {t:'SUN 9:00',ap:'AM · LECTURE',title:'The 3-D X-Ray Series',desc:'Positioning and introduction to the specific x-ray series.',who:['jk']},
+      {t:'SUN 1:00',ap:'PM · LAB',title:'Supervised Analysis Reps',desc:'Case review and next steps on the certification track.',who:['cs','jk']}]}]
+  },
+  fund2:{
+    cat:'fundamentals', title:'Fundamental 2', kicker:'Fundamentals Series · Part 2 of 3', img:'ph-a',
+    sub:'X-ray analysis and line drawing — measured to 1/100th of a degree.',
+    dates:'Nov 14–15, 2026', loc:'Des Moines, IA', level:'Foundation · Requires F1', format:'Weekend Seminar', price:'$895',
+    fullPrice:895, memPrice:695,
+    sessions:[{mo:'NOV', dy:'14–15', yr:'2026', city:'Des Moines, IA', venue:'Heartland Training Center', seats:'18 seats left'}],
+    member:'CCI members save $200 on every seminar — Fundamental 2 is $695 for members.',
+    h2:'The analysis becomes precise.',
+    overview:'<p>Fundamental 2 goes deep on the signature skill of the Advanced Orthogonal doctor: measuring the upper cervical misalignment on specific three-dimensional x-rays using digital software, down to 1/100th of a degree.</p><p>You\'ll learn to determine each patient\'s gravitational and neurological normal — taking genetic abnormalities into account — and translate that analysis into a patient-specific correction vector.</p>',
+    learn:['Digital x-ray line drawing and analysis software','Measuring displacement against the patient\'s own normal','Accounting for genetic anomalies in the analysis','Deriving the correction vector from the misalignment variables','Inter- and intra-examiner reliability protocols','Analysis case labs with real film sets'],
+    sched:[['SATURDAY','Digital analysis instruction and guided line-drawing labs.'],['SUNDAY','Correction vector derivation, reliability testing, and supervised case analysis.']],
+    ctaH:'Continue the series.', ctaP:'Fundamental 1 is the prerequisite · members save $200.', ctaBtn:'Register for Fundamental 2',
+    spk:['jk','cs'], keynote:null,
+    agenda:[{day:null,items:[
+      {t:'SAT 9:00',ap:'AM · LECTURE',title:'Digital Analysis Instruction',desc:'Line-drawing methodology and the analysis software.',who:['jk']},
+      {t:'SAT 1:30',ap:'PM · LAB',title:'Guided Line-Drawing Labs',desc:'Real film sets, measured to 1/100th of a degree.',who:['jk']},
+      {t:'SUN 9:00',ap:'AM · LAB',title:'Correction Vector Derivation',desc:'From misalignment variables to a patient-specific vector.',who:['cs']},
+      {t:'SUN 1:00',ap:'PM · LAB',title:'Reliability Testing',desc:'Inter- and intra-examiner reliability protocols and case analysis.',who:['jk','cs']}]}]
+  },
+  fund3:{
+    cat:'fundamentals', title:'Fundamental 3', kicker:'Fundamentals Series · Part 3 of 3', img:'ph-a',
+    sub:'The instrument, the correction, and the complete patient protocol.',
+    dates:'Dec 12–13, 2026', loc:'Des Moines, IA', level:'Foundation · Requires F1 & F2', format:'Weekend Seminar', price:'$895',
+    fullPrice:895, memPrice:695,
+    sessions:[{mo:'DEC', dy:'12–13', yr:'2026', city:'Des Moines, IA', venue:'Heartland Training Center', seats:'20 seats left'}],
+    member:'CCI members save $200 on every seminar — Fundamental 3 is $695 for members.',
+    h2:'Everything comes together.',
+    overview:'<p>Fundamental 3 completes the foundation: delivering the correction with the table-mounted percussive sound-wave instrument, positioning the patient with digital and laser alignment, and running the full protocol from evaluation through post-correction monitoring.</p><p>Graduates of the full Fundamentals Series are equipped to begin supervised practice of the technique and to enter the Level 1 Certification process.</p>',
+    learn:['Percussive sound-wave instrument operation and settings','Patient positioning with digital and laser alignment','Delivering the patient-specific correction vector','Post-correction assessment and monitoring protocol','Care planning and the sustainable-corrections model','Preparing for Level 1 Certification'],
+    sched:[['SATURDAY','Instrument instruction and supervised correction labs.'],['SUNDAY','Full-protocol run-throughs, monitoring workflow, and certification prep.']],
+    ctaH:'Complete your foundation.', ctaP:'Finishing the series opens the Level 1 Certification track.', ctaBtn:'Register for Fundamental 3',
+    spk:['cs','jk'], keynote:null,
+    agenda:[{day:null,items:[
+      {t:'SAT 9:00',ap:'AM · LECTURE',title:'Instrument Instruction',desc:'Percussive sound-wave instrument operation and settings.',who:['cs']},
+      {t:'SAT 1:30',ap:'PM · LAB',title:'Supervised Correction Labs',desc:'Positioning with digital and laser alignment.',who:['cs']},
+      {t:'SUN 9:00',ap:'AM · LAB',title:'Full-Protocol Run-Throughs',desc:'Evaluation through post-correction monitoring.',who:['cs','jk']},
+      {t:'SUN 1:00',ap:'PM · PREP',title:'Certification Prep',desc:'The Level 1 process, requirements, and your application.',who:['jk']}]}]
+  },
+  intensive:{
+    cat:'intensive', title:'AdvO Intensive (West)', kicker:'Advanced Training · Bridging the Gap from A.O. to AdvO', img:'ph-b',
+    sub:'Refine precision and consistency — with an accelerated transition day for Atlas Orthogonal doctors.',
+    dates:'March 27–28, 2026', loc:'Orem, UT', level:'Advanced', format:'2-Day Hands-On', price:'$1,295',
+    fullPrice:1295, memPrice:1095,
+    sessions:[{mo:'MAR', dy:'27–28', yr:'2026', city:'Orem, UT', venue:'Mountain West Campus', seats:'9 seats left', flag:'ALMOST FULL'}],
+    member:'CCI members save $200 — $1,095 for members.',
+    h2:'For doctors ready to sharpen the edge.',
+    overview:'<p>A focused, hands-on training event designed for experienced doctors ready to refine their precision and consistency with the Advanced Orthogonal technique.</p><p>The optional first day offers an accelerated transition course for Atlas Orthogonal certified doctors — bridging the gap between A.O. and AdvO in a single concentrated day of instruction and supervised reps.</p>',
+    learn:['Advanced correction vector refinement','Troubleshooting difficult and atypical cases','Consistency drills with instructor feedback','A.O.-to-AdvO transition protocol (optional Day 1)','Post-correction monitoring at a mastery level','Case review with senior instructors'],
+    sched:[['DAY 1 (OPTIONAL)','Bridging the Gap: accelerated transition course for Atlas Orthogonal certified doctors.'],['DAY 2','The Intensive: advanced hands-on refinement, consistency work, and complex case labs.']],
+    ctaH:'Two days. Measurably sharper.', ctaP:'March 27–28, 2026 · Orem, UT · members save $200.', ctaBtn:'Register for the Intensive',
+    spk:['cs','jk'], keynote:null,
+    agenda:[{day:null,items:[
+      {t:'FRI 9:00',ap:'AM · OPTIONAL',title:'Bridging the Gap: A.O. to AdvO',desc:'Accelerated transition course for Atlas Orthogonal certified doctors.',who:['cs']},
+      {t:'SAT 9:00',ap:'AM · LAB',title:'Advanced Vector Refinement',desc:'Consistency drills with instructor feedback.',who:['cs']},
+      {t:'SAT 1:30',ap:'PM · LAB',title:'Complex Case Labs',desc:'Troubleshooting difficult and atypical presentations.',who:['jk']},
+      {t:'SAT 5:00',ap:'PM · REVIEW',title:'Case Review with Senior Instructors',desc:'Bring your hardest cases.',who:['cs','jk']}]}]
+  },
+  bootcamp:{
+    cat:'bootcamp', title:'AdvO Bootcamp 2026', kicker:'The Immersive Week · Zero to Fully Equipped', img:'ph-a',
+    sub:'Five days of hands-on training, guest experts, research updates — and the Friday night awards dinner.',
+    dates:'June 22–26, 2026', loc:'Tampa Bay, FL', level:'All Levels', format:'5-Day Immersive', price:'$2,495',
+    fullPrice:2495, memPrice:0, mbText:'AdvO Bootcamp is FREE with CCI membership — a $2,495 value.',
+    sessions:[{mo:'JUN', dy:'22–26', yr:'2026', city:'Tampa Bay, FL', venue:'CCI Headquarters', seats:'31 seats left', flag:'FLAGSHIP'}],
+    member:'FREE with CCI membership — non-members save $600 by joining first.',
+    h2:'The fastest route from zero to equipped.',
+    overview:'<p>Featuring hands-on training, expert guest speakers, clinical research updates, and a celebratory Friday night awards dinner, this event will bring together the entire Advanced Orthogonal community to honor our legacy and look to the future.</p><p>Bootcamp is our immersive, fast-paced program designed to take doctors from zero to fully equipped in a highly effective format — and it is free with CCI membership.</p>',
+    learn:['The complete protocol, compressed into one immersive week','Daily supervised instrument labs','Analysis intensives with real case sets','Guest expert sessions and research updates','Practice-building and patient communication','Community — the entire AdvO family in one room'],
+    sched:[['MON–TUE','Foundation compression: evaluation, biomechanics, and x-ray analysis intensives.'],['WED–THU','Instrument labs: positioning, correction delivery, and consistency drills.'],['FRIDAY','Capstone case day — and the awards dinner celebrating the community.']],
+    ctaH:'Free with membership.', ctaP:'June 22–26, 2026 · Tampa Bay, FL · membership saves you $600 here alone.', ctaBtn:'Register for Bootcamp',
+    spk:['cs','jk','mr','tw'], keynote:null,
+    agenda:[
+      {day:'Day 1–2',date:'MON–TUE JUN 22–23',items:[
+        {t:'9:00',ap:'AM · LECTURE',title:'Evaluation & Biomechanics Intensive',desc:'The complete evaluation workflow, compressed.',who:['cs']},
+        {t:'1:30',ap:'PM · LAB',title:'X-Ray Analysis Intensive',desc:'Digital line-drawing on real film sets.',who:['jk']}]},
+      {day:'Day 3–4',date:'WED–THU JUN 24–25',items:[
+        {t:'9:00',ap:'AM · LAB',title:'Instrument Labs',desc:'Positioning, correction delivery, and consistency drills.',who:['cs']},
+        {t:'11:00',ap:'AM · GUEST',title:'Research Updates in UC Neurology',desc:'The newest findings on neurological change after correction.',who:['mr']},
+        {t:'3:00',ap:'PM · INTRO',title:'Atlas Orthometrics Overview',desc:'The Institute\'s newest supported technique.',who:['tw']}]},
+      {day:'Day 5',date:'FRI JUN 26',items:[
+        {t:'9:00',ap:'AM · CAPSTONE',title:'Capstone Case Day',desc:'Full-protocol run-throughs judged by the faculty.',who:['cs','jk']},
+        {t:'7:00',ap:'PM · SOCIAL',title:'Awards Dinner',desc:'Celebrating the community — legacy awards and the year ahead.',who:[]}]}]
+  },
+  conference:{
+    cat:'conference', title:'CCI Annual Conference', kicker:'The Premier Gathering of the CCI Community', img:'ph-c',
+    sub:'Advanced training, special topics, and the annual board meeting — the homecoming of the year.',
+    dates:'November 6–7, 2026', loc:'St. Petersburg, FL', level:'All Levels', format:'2-Day Conference', price:'$697',
+    fullPrice:697, memPrice:0, mbText:'Conference registration is INCLUDED with CCI membership — a $697 value.',
+    sessions:[{mo:'NOV', dy:'6–7', yr:'2026', city:'St. Petersburg, FL', venue:'Venue announced soon', seats:'Registration open'}],
+    member:'INCLUDED with CCI membership — plus optional CE credits for $50.',
+    h2:'The homecoming of the upper cervical year.',
+    overview:'<p>The premier gathering of the CranioCervical Institute community, featuring advanced training, special topics, and opportunities to connect with fellow practitioners.</p><p>Held each fall, the conference also serves as the site of the Annual Board Meeting and strategic planning for the year ahead — where the membership\'s voice directly shapes the Institute.</p>',
+    learn:['Advanced technique sessions and special topics','Clinical research updates from the field','Continuing education credits (optional, $50)','The Annual Board Meeting and elections','Strategic planning for the year ahead','Connection with the entire CCI community'],
+    sched:[['FRIDAY','Advanced training tracks, special topic sessions, and research presentations.'],['SATURDAY','Community day: board meeting, elections, strategic planning, and closing sessions.']],
+    ctaH:'Included with your membership.', ctaP:'November 6–7, 2026 · St. Petersburg, FL · $697 value, free for members.', ctaBtn:'Reserve Your Seat',
+    spk:['mr','cs','jk','tw'], keynote:'mr', keynoteBlurb:'Presenting this year\'s clinical research updates — the newest findings on functional and neurological change following specific upper cervical correction.',
+    agenda:[
+      {day:'Day 1',date:'FRI NOV 6',items:[
+        {t:'9:00',ap:'AM · TRACKS',title:'Advanced Training Tracks',desc:'Technique sessions and special topics.',who:['cs','jk']},
+        {t:'2:00',ap:'PM · KEYNOTE',title:'Research Updates in UC Neurology',desc:'This year\'s keynote presentation.',who:['mr']}]},
+      {day:'Day 2',date:'SAT NOV 7',items:[
+        {t:'9:00',ap:'AM · COMMUNITY',title:'Annual Board Meeting & Elections',desc:'Three of nine seats open — your voice, your vote.',who:[]},
+        {t:'1:00',ap:'PM · PLANNING',title:'Strategic Planning & Closing',desc:'The year ahead for the Institute.',who:['cs']}]}]
+  },
+  internship:{
+    cat:'internship', title:'Internships', kicker:'Clinical Immersion · By Application', img:'ph-b',
+    sub:'Train inside an active Advanced Orthogonal practice — real cases, real reps, real mentorship.',
+    dates:'Ongoing', loc:'Host Clinics Nationwide', level:'Students & New Doctors', format:'In-Clinic Immersion', price:'By Application',
+    fullPrice:-1, memPrice:-1, mbText:'CCI membership connects you with host doctors and accelerates placement.',
+    sessions:[{mo:'ALL', dy:'YEAR', yr:'', city:'Host Clinics Nationwide', venue:'Matched by the Institute', seats:'By application', apply:true}],
+    member:'CCI membership connects you with host doctors and accelerates placement.',
+    h2:'Learn where the work actually happens.',
+    overview:'<p>CCI internships place students and new doctors inside active Advanced Orthogonal practices, where the protocol is lived daily — not simulated.</p><p>Under the mentorship of certified doctors, interns participate in real analysis, observe real corrections, and build the clinical instincts that seminars alone can\'t teach.</p>',
+    learn:['Daily clinic workflow in a precision practice','Live x-ray analysis alongside certified doctors','Patient communication and case management','Correction observation and supervised participation','Practice operations and growth','A direct path toward certification'],
+    sched:[['STRUCTURE','Internship length and structure are set with the host clinic — from focused week-long immersions to semester placements.'],['APPLICATION','Submit your interest through the contact form; the Institute matches interns with host doctors.']],
+    ctaH:'Apply for placement.', ctaP:'Tell us your stage of training and preferred region — we\'ll match you with a host clinic.', ctaBtn:'Apply Now',
+    spk:[], keynote:null, agenda:null
+  }
+};
+
+// ============ ARTICLES DATA ============
+var ART = [
+  {id:'a1', cat:'RESEARCH', img:'ph-c', date:'JULY 2026', title:'X-Ray Reliability: What the Research Actually Says',
+   ex:'A 1998 JMPT study found line drawings for x-ray displacement reach ICCs of 0.8–0.9 — higher than locating pathology itself.',
+   body:'<p>There is a common misconception in the chiropractic community that measuring osseous displacement on x-ray is unreliable, and radiographs should only be taken to assess pathology.</p><p>However, a 1998 study published in the Journal of Manipulative and Physiological Therapeutics showed that interclass correlation coefficients (ICC) for locating pathology on x-ray was only 0.4–0.75, while line drawings for x-ray displacement had ICC\'s in the 0.8–0.9 range.</p><p>Many chiropractic schools also suggest digital palpation is all you need to determine where a patient needs to be adjusted. Despite these teachings, static and motion palpation repeatedly shows below average to poor intra-examiner reliability in the published research. Trained Advanced Orthogonal doctors utilize clinical procedures that promote the highest degree of intra and inter examiner reliability.</p><p><i>(Full article draft — expand with citations and figures before publishing.)</i></p>'},
+  {id:'a2', cat:'TECHNIQUE', img:'ph-b', date:'JULY 2026', title:'Corrections, Not Adjustments: The Sustainable Corrections Model',
+   ex:'Why accurate upper cervical correction can normalize postural reflex loops and stabilize spinal structures.',
+   body:'<p>It has become accepted in the chiropractic profession that the adjustment itself only produces a transient correction. It is expected that patients will need frequent adjusting in their initial care, and continued adjusting throughout their lifetime.</p><p>Advanced Orthogonal chiropractic teaches the concept of sustainable corrections. Accurate correction of the upper cervical spine normalizes postural reflex loops, which allow the body to permanently stabilize spinal structures, often without the need for specific exercises or physical therapy modalities.</p><p>Many Advanced Orthogonal patients have shown marked reduction in thoracolumbar scoliosis curves, and mid and low back pain conditions consistently respond favorably as a byproduct of this upper cervical correction.</p><p><i>(Full article draft — expand with case data before publishing.)</i></p>'},
+  {id:'a3', cat:'PHYSICS', img:'ph-a', date:'JUNE 2026', title:'How a Percussive Sound Wave Corrects the Atlas',
+   ex:'From the plunger spring to the patient-stylus interface — the physics of the Orthogonal Adjusting Instrument.',
+   body:'<p>The Advanced Orthogonal procedure uses a percussive sound wave to correct the upper cervical misalignment complex. The low force of this technique allows wider patient populations to be candidates for this treatment, and the correction takes place within the patient\'s normal range of motion.</p><p>Eugene T. Patronis, Jr., Ph.D., professor at the School of Physics, Georgia Institute of Technology, describes the operation of the Orthogonal Adjusting Instrument: "A mechanical impulse is imparted to the metal stylus by means of a spring loaded plunger. The strength of this impulse is determined by the initial degree of compression given to the plunger spring… At the patient-stylus interface, dependent on the impedance match, a portion of this wave energy is transmitted into the patient and a portion is reflected back to the plunger."</p><p><i>(Full article draft — expand with diagrams before publishing.)</i></p>'},
+  {id:'a4', cat:'INSTITUTE NEWS', img:'ph-c', date:'JUNE 2026', title:'Welcome to the CranioCervical Institute',
+   ex:'The Advanced Orthogonal Institute has a new name and a bigger home — now supporting two precision techniques.',
+   body:'<p>The Institute has a new name: the CranioCervical Institute. The technique you know has not changed — the Advanced Orthogonal technique keeps its name, its protocol, and its standards.</p><p>What\'s new is the scope. As the CranioCervical Institute, we are now the home of multiple precision upper cervical disciplines, beginning with the addition of the Atlas Orthometrics technique alongside Advanced Orthogonal.</p><p>Same mission, same community, same commitment to reproducible, neurologically focused care — with room to grow.</p><p><i>(Full announcement draft — finalize with launch details.)</i></p>'}
+];
+
+// ============ NAVIGATION ============
+function go(p, id){
+  document.getElementById('mpanel').classList.remove('open');
+  if(p==='sem' && id){renderSem(id);}
+  if(p==='article' && id){renderArt(id);}
+  document.querySelectorAll('.page').forEach(function(el){el.classList.remove('on')});
+  var pg=document.getElementById('pg-'+p);
+  if(pg){pg.classList.add('on')}
+  var hl=(p==='sem')?'seminars':(p==='article'?'articles':p);
+  document.querySelectorAll('.menu .mi > a').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-p')===hl)});
+  window.scrollTo(0,0);
+}
+function toggleMenu(){document.getElementById('mpanel').classList.toggle('open')}
+function agTab(i,el){
+  document.querySelectorAll('#sd-agenda .agtab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  document.querySelectorAll('#sd-agenda .agday').forEach(function(d,j){d.classList.toggle('on',j===i)});
+}
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t._h);
+  t._h=setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(20px)'},3200);
+}
+
+// ============ SEMINAR CATALOG ============
+var CATLBL={free:'FREE',fundamentals:'FOUNDATION',intensive:'ADVANCED',bootcamp:'ALL LEVELS',conference:'ALL LEVELS',internship:'BY APPLICATION'};
+function semCard(id){
+  var s=SEM[id];
+  return '<div class="card semcard" data-cat="'+s.cat+'" onclick="go(\'sem\',\''+id+'\')" style="cursor:pointer">'+
+    '<div class="imgwrap"><div class="img '+s.img+'"><div class="duo"></div><div class="duo2"></div></div><div class="scrim"></div>'+
+    '<span class="datechip">'+s.dates.toUpperCase()+'</span><span class="loc">'+s.loc.toUpperCase()+'</span></div>'+
+    '<div class="bd"><h3>'+s.title+'</h3><div class="meta">'+s.format.toUpperCase()+' · <b>'+CATLBL[s.cat]+'</b></div>'+
+    '<p class="desc">'+s.sub+'</p>'+
+    '<div class="foot"><span class="t-link">Details &amp; Registration<span class="a">→</span></span></div></div></div>';
+}
+function buildCatalog(){
+  var order=['fund1','fund2','fund3','intensive','bootcamp','conference','internship']; // intro is the featured START HERE banner
+  document.getElementById('semgrid').innerHTML=order.map(semCard).join('');
+}
+function filterSem(cat, el){
+  document.querySelectorAll('.fchip').forEach(function(c){
+    c.className='b sm '+(c===el?'p-btn':'s-btn on-light')+' fchip';
+  });
+  var any=false;
+  document.querySelectorAll('#semgrid .semcard').forEach(function(c){
+    var show=(cat==='all'||c.getAttribute('data-cat')===cat);
+    c.style.display=show?'':'none';
+    if(show)any=true;
+  });
+  document.getElementById('semempty').style.display=(any||cat==='free')?'none':'block';
+}
+
+// ============ SEMINAR DETAIL RENDER ============
+function renderSem(id){
+  var s=SEM[id];
+  document.getElementById('sd-img').className='bg '+s.img;
+  document.getElementById('sd-crumb').textContent=s.title.toUpperCase();
+  document.getElementById('sd-kick').textContent=s.kicker;
+  document.getElementById('sd-title').textContent=s.title;
+  document.getElementById('sd-sub').textContent=s.sub;
+  document.getElementById('sd-dates').textContent=s.dates;
+  document.getElementById('sd-loc').textContent=s.loc;
+  document.getElementById('sd-level').textContent=s.level;
+  document.getElementById('sd-format').textContent=s.format;
+  var pnote = s.cat==='bootcamp'||s.cat==='conference' ? 'FREE FOR MEMBERS' : (s.cat==='free' ? 'NO COST' : (s.cat==='internship' ? 'MEMBER PRIORITY' : 'MEMBERS: $'+s.memPrice));
+  document.getElementById('sd-price').innerHTML=s.price+'<em>'+pnote+'</em>';
+  // member savings banner
+  document.getElementById('sd-mb-t').textContent = s.mbText || ('CCI Members save $200 on this seminar — $'+s.memPrice+' instead of $'+s.fullPrice+'.');
+  // sessions
+  var sec=document.getElementById('sd-sessions-sec');
+  if(s.sessions && s.sessions.length){
+    sec.style.display='';
+    document.getElementById('sd-sessions').innerHTML=s.sessions.map(function(x){
+      var prices;
+      if(x.free){prices='<div class="prices"><span class="mem">FREE</span><span class="lbl">FOR EVERYONE</span></div>';}
+      else if(x.apply){prices='<div class="prices"><span class="mem" style="font-size:15px">By Application</span><span class="lbl">MATCHED PLACEMENT</span></div>';}
+      else if(s.memPrice===0){prices='<div class="prices"><span class="full">$'+s.fullPrice.toLocaleString()+'</span> <span class="mem">FREE</span><span class="lbl">WITH CCI MEMBERSHIP</span></div>';}
+      else{prices='<div class="prices"><span class="full">$'+s.fullPrice.toLocaleString()+'</span> <span class="mem">$'+s.memPrice.toLocaleString()+'</span><span class="lbl">CCI MEMBER PRICE · SAVE $200</span></div>';}
+      var btn = x.soon ? '<span class="b sm s-btn on-light" onclick="toast(\'We\\\'ll open registration for this session soon — contact us to be notified.\')">Notify Me</span>'
+        : x.apply ? '<span class="b sm p-btn" onclick="go(\'contact\')">Apply Now</span>'
+        : '<span class="b sm p-btn" onclick="toast(\'Registration placeholder — this button will link to live checkout for this session.\')">Register — '+x.city.split(',')[0]+'</span>';
+      return '<div class="sess'+(x.soon?' soon':'')+'">'+
+        (x.flag?'<span class="flag">'+x.flag+'</span>':'')+
+        '<div class="top"><div class="cal"><div class="mo">'+x.mo+'</div><div class="dy">'+x.dy+'</div>'+(x.yr?'<div class="mo" style="color:#9db4c0">'+x.yr+'</div>':'')+'</div>'+
+        '<div class="where"><h4>'+x.city+'</h4><span>'+x.venue.toUpperCase()+'</span></div></div>'+
+        '<div class="mid">'+prices+'<div class="seats"><b>'+x.seats+'</b><span>'+(x.soon?'OPENING SOON':'UPDATED WEEKLY')+'</span></div></div>'+
+        '<div class="bot">'+btn+'</div></div>';
+    }).join('');
+  } else {sec.style.display='none';}
+  document.getElementById('sd-h2').textContent=s.h2;
+  document.getElementById('sd-overview').innerHTML=s.overview;
+  document.getElementById('sd-member').textContent=s.member;
+  document.getElementById('sd-vlbl').textContent='VIDEO — '+s.title.toUpperCase()+' PREVIEW';
+  document.getElementById('sd-learn').innerHTML=s.learn.map(function(l){
+    return '<div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>'+l+'</div>';
+  }).join('');
+  // ---- faculty (S1 cards; S3 keynote layout when keynote is set) ----
+  var spkSec=document.getElementById('sd-speakers-sec');
+  if(s.spk && s.spk.length){
+    spkSec.style.display='';
+    var kn=s.keynote;
+    document.getElementById('sd-keynote').innerHTML = kn ? (function(){
+      var p=SPKR[kn];
+      return '<div class="keynote" onclick="bio(\''+kn+'\')">'+
+        '<div class="pho"><span class="'+p.img+'" style="position:absolute;inset:0"></span><span class="duo" style="position:absolute;inset:0"></span><span class="ini">'+p.ini+'</span></div>'+
+        '<div class="bd"><span class="flag">KEYNOTE SPEAKER</span><h4>'+p.name+'</h4><div class="cred">'+p.cred+'</div>'+
+        '<p>'+(s.keynoteBlurb||p.bio)+'</p><span class="t-link" style="color:var(--gold-hi)">Full Bio →</span></div></div>';
+    })() : '';
+    var rest=s.spk.filter(function(id){return id!==kn});
+    document.getElementById('sd-speakers').innerHTML=rest.map(function(id){
+      var p=SPKR[id];
+      return '<div class="spk-card" onclick="bio(\''+id+'\')">'+
+        '<div class="pho"><span class="'+p.img+'" style="position:absolute;inset:0"></span><span class="duo" style="position:absolute;inset:0"></span><span class="ini">'+p.ini+'</span></div>'+
+        '<span class="rtag">'+p.role+'</span>'+
+        '<div class="bd"><h4>'+p.name+'</h4><div class="cred">'+p.cred+'</div><p>Tap for bio</p></div></div>';
+    }).join('');
+  } else {spkSec.style.display='none';}
+
+  // ---- agenda (time-rail rows; day tabs when multi-day) ----
+  var agSec=document.getElementById('sd-agenda-sec');
+  if(s.agenda && s.agenda.length){
+    agSec.style.display='';
+    function rows(items){
+      return items.map(function(x){
+        var pills=(x.who||[]).map(pillHtml).join('');
+        return '<div class="agrow"><div class="rail"><div class="tm">'+x.t+'</div><div class="ap">'+x.ap+'</div></div>'+
+          '<div class="acard"><h4>'+x.title+'</h4><p>'+x.desc+'</p>'+(pills?'<div>'+pills+'</div>':'')+'</div></div>';
+      }).join('');
+    }
+    if(s.agenda.length>1){
+      var tabs='<div class="agtabs">'+s.agenda.map(function(d,i){
+        return '<span class="agtab'+(i===0?' on':'')+'" onclick="agTab('+i+',this)">'+d.day+'<small>'+(d.date||'')+'</small></span>';
+      }).join('')+'</div>';
+      var days=s.agenda.map(function(d,i){
+        return '<div class="agday'+(i===0?' on':'')+'">'+rows(d.items)+'</div>';
+      }).join('');
+      document.getElementById('sd-agenda').innerHTML=tabs+days;
+    } else {
+      document.getElementById('sd-agenda').innerHTML=rows(s.agenda[0].items);
+    }
+  } else {agSec.style.display='none';}
+  document.getElementById('sd-cta-h').textContent=s.ctaH;
+  document.getElementById('sd-cta-p').textContent=s.ctaP;
+  document.getElementById('sd-cta-btn').textContent=s.ctaBtn;
+  var others=Object.keys(SEM).filter(function(k){return k!==id}).slice(0,3);
+  document.getElementById('sd-related').innerHTML=others.map(semCard).join('');
+}
+
+// ============ ARTICLES ============
+function buildArticles(){
+  document.getElementById('artgrid').innerHTML=ART.map(function(a){
+    return '<div class="art" onclick="go(\'article\',\''+a.id+'\')">'+
+      '<div class="imgwrap"><div class="img '+a.img+'"><div class="duo"></div><div class="duo2"></div></div><span class="cat">'+a.cat+'</span></div>'+
+      '<div class="bd"><div class="date">'+a.date+'</div><h3>'+a.title+'</h3><p>'+a.ex+'</p>'+
+      '<div style="margin-top:14px"><span class="t-link">Read Article<span class="a">→</span></span></div></div></div>';
+  }).join('');
+}
+function renderArt(id){
+  var a=null;
+  for(var i=0;i<ART.length;i++){if(ART[i].id===id){a=ART[i];break}}
+  if(!a)return;
+  document.getElementById('ad-img').className='bg '+a.img;
+  document.getElementById('ad-crumb').textContent=a.title.toUpperCase().slice(0,24)+'…';
+  document.getElementById('ad-cat').textContent=a.cat;
+  document.getElementById('ad-title').textContent=a.title;
+  document.getElementById('ad-date').textContent=a.date+' · THE CCI JOURNAL';
+  document.getElementById('ad-body').innerHTML=a.body;
+}
+
+// ============ BOARD TEMPLATE GRID ============
+function buildBoard(){
+  var seats=[['Board President','ph-b'],['Vice President','ph-a'],['Secretary','ph-c'],['Treasurer','ph-a'],['Director','ph-b'],['Director','ph-c'],['Director','ph-a'],['Director','ph-b'],['Director','ph-c']];
+  var html='';
+  for(var i=0;i<seats.length;i++){
+    html+='<div class="person"><div class="photo '+seats[i][1]+'"><div class="duo"></div><div class="duo2"></div>'+
+      '<svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.4" style="position:relative;z-index:2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>'+
+      '<div class="bd"><h3>Doctor Name '+(i+1)+', D.C.</h3><div class="role">'+seats[i][0].toUpperCase()+'</div></div></div>';
+  }
+  document.getElementById('boardgrid').innerHTML=html;
+}
+
+buildCatalog();
+buildArticles();
+buildBoard();
+</script>
+
+</body>
+</html>
+
