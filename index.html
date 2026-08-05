@@ -108,6 +108,43 @@
   .hero-img .goldrule{margin-top:26px}
   .hero-img .crumbs{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;color:rgba(255,255,255,.65);margin-bottom:18px}
   .hero-img .crumbs b{color:var(--gold-hi);font-weight:500}
+  .rtiers{display:grid;gap:8px;margin-bottom:18px}
+  .rt-opt{display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--line);border-radius:4px;padding:13px 15px;cursor:pointer;transition:border-color .16s ease,background .16s ease}
+  .rt-opt:hover{border-color:var(--teal)}
+  .rt-opt.on{border-color:var(--teal);background:var(--mist)}
+  .rt-opt .rt-dot{flex:0 0 auto;width:16px;height:16px;margin-top:2px;border-radius:50%;border:2px solid #b7c6ce;position:relative}
+  .rt-opt.on .rt-dot{border-color:var(--teal)}
+  .rt-opt.on .rt-dot:after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--teal)}
+  .rt-opt .rt-l{flex:1 1 auto;min-width:0}
+  .rt-opt .rt-l b{display:block;font-family:'Outfit',sans-serif;font-weight:600;font-size:14px;color:var(--midnight)}
+  .rt-opt .rt-l i{display:block;font-style:normal;font-size:12px;color:#7b909b;line-height:1.5;margin-top:2px}
+  .rt-opt .rt-pr{flex:0 0 auto;font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--teal-deep)}
+  .regband{background:var(--midnight);border-radius:6px;padding:52px 48px;box-shadow:0 30px 70px rgba(7,26,38,.28);position:relative;overflow:hidden}
+  .regband:before{content:"";position:absolute;inset:0;background:linear-gradient(150deg, rgba(31,127,156,.30), transparent 62%);pointer-events:none}
+  .regband > *{position:relative;z-index:1}
+  .regband .rb-kick{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.18em;color:var(--gold-hi);text-transform:uppercase}
+  .regband h2{font-family:'Outfit',sans-serif;font-weight:700;font-size:31px;line-height:1.15;letter-spacing:-.015em;color:#fff;margin-top:12px}
+  .regband .rb-rule{width:54px;height:3px;background:var(--gold);margin:18px 0 16px}
+  .regband .rb-sub{font-size:14.5px;color:rgba(255,255,255,.78);max-width:640px}
+  .regband .rb-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+  .regband .rt{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.14);border-radius:4px;padding:22px 20px 20px;position:relative}
+  .regband .rt.hi{background:rgba(194,154,75,.13);border-color:rgba(194,154,75,.55)}
+  .regband .rt-flag{position:absolute;top:-9px;left:18px;background:var(--gold);color:#071A26;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;padding:3px 9px;border-radius:2px;font-weight:600}
+  .regband .rt-k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;color:rgba(255,255,255,.62);text-transform:uppercase}
+  .regband .rt-p{font-family:'Outfit',sans-serif;font-weight:700;font-size:30px;color:#fff;margin:8px 0 8px;letter-spacing:-.02em}
+  .regband .rt.hi .rt-p{color:var(--gold-hi)}
+  .regband .rt-n{font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.7)}
+  .regband .rb-go{margin-top:34px;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+  .regband .rb-note{font-size:12.5px;color:rgba(255,255,255,.62);max-width:460px;line-height:1.6}
+  @media(max-width:1000px){.regband .rb-tiers{grid-template-columns:1fr 1fr}}
+  @media(max-width:640px){.regband{padding:34px 22px}.regband h2{font-size:25px}.regband .rb-tiers{grid-template-columns:1fr}.regband .rb-go .b{width:100%;justify-content:center}}
+  .nosess{display:flex;align-items:center;gap:22px;flex-wrap:wrap;border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:4px;background:var(--mist);padding:26px 28px}
+  .nosess .ns-ic{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+  .nosess .ns-bd{flex:1 1 320px;min-width:0}
+  .nosess .ns-bd h4{font-family:'Outfit',sans-serif;font-weight:700;font-size:16.5px;color:var(--ink);margin:0 0 6px}
+  .nosess .ns-bd p{font-size:13.5px;color:var(--body);margin:0;line-height:1.6}
+  .nosess .ns-cta{flex:0 0 auto}
+  @media(max-width:640px){.nosess{padding:22px 20px;gap:16px}.nosess .ns-cta{width:100%}.nosess .ns-cta .b{width:100%;justify-content:center}}
   .hmeta{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px}
   .hmeta .hm{font-family:'Outfit',sans-serif}
   .hmeta .hm b{display:block;font-size:16px;font-weight:700;color:#fff}
@@ -409,7 +446,11 @@
   /* ============ HOME v2 — problem cards, benefits, qualification, FAQ ============ */
   /* The hero now carries one CTA and a single sub-line instead of a stat strip,
      so it gets noticeably more air top and bottom. */
-  #pg-home .hero-img .inner{padding:150px 28px 130px}
+  /* The home hero fills the first screen: it never sits shorter than the
+     viewport minus the sticky header, but it still grows past that when the
+     copy needs more room (small screens, long headlines). */
+  #pg-home .hero-img{min-height:calc(100svh - var(--hdrh, 138px));display:flex;align-items:center}
+  #pg-home .hero-img .inner{padding:150px 28px 130px;width:100%}
   #pg-home .herolead{max-width:760px}
   #pg-home .herolead h1{max-width:740px}
   #pg-home .herolead p.sub{margin-top:22px;font-size:17.5px;line-height:1.62;max-width:660px}
@@ -493,6 +534,7 @@
     .learn{grid-template-columns:1fr}
     .fgrid{grid-template-columns:1fr 1fr}
     .srow{grid-template-columns:1fr;gap:6px}
+    #pg-home .hero-img{min-height:calc(100svh - var(--hdrh, 74px))}
     #pg-home .hero-img .inner{padding:88px 28px 76px}
     #pg-home .herolead p.sub{font-size:16px}
     .probgrid{grid-template-columns:1fr}
@@ -554,7 +596,7 @@
             <a onclick="go('sem','fund3')">Fundamental 3</a>
             <div class="grp">ADVANCED TRAINING</div>
             <a onclick="go('sem','intensive')">AdvO Intensive (West)</a>
-            <a onclick="go('sem','bootcamp')">AdvO Bootcamp 2026</a>
+            <a onclick="go('sem','bootcamp')">AdvO Bootcamp 2027</a>
             <a onclick="go('sem','conference')">2026 Annual Conference</a>
             <div class="grp">IN PRACTICE</div>
             <a onclick="go('sem','internship')">Internships</a>
@@ -565,8 +607,8 @@
           <a data-p="certification" onclick="go('certification')">Certification <span class="car">&#9660;</span></a>
           <div class="drop">
             <a onclick="go('certification')">Certification Overview</a>
-            <a onclick="go('certification')">AdvO Level 1</a>
-            <a onclick="go('certification')">AdvO Level 2</a>
+            <a onclick="go('cert-l1')">AdvO Level 1</a>
+            <a onclick="go('cert-l2')">AdvO Level 2</a>
           </div>
         </div>
         <div class="mi"><a data-p="membership" onclick="go('membership')">Membership</a></div>
@@ -589,12 +631,14 @@
     <a class="sub" onclick="go('sem','fund2')">Fundamental 2</a>
     <a class="sub" onclick="go('sem','fund3')">Fundamental 3</a>
     <a class="sub" onclick="go('sem','intensive')">AdvO Intensive (West)</a>
-    <a class="sub" onclick="go('sem','bootcamp')">AdvO Bootcamp 2026</a>
+    <a class="sub" onclick="go('sem','bootcamp')">AdvO Bootcamp 2027</a>
     <a class="sub" onclick="go('sem','conference')">Annual Conference</a>
     <a class="sub" onclick="go('sem','internship')">Internships</a>
     <a class="sub" onclick="go('seminars')">View All Events</a>
     <div class="grp">CERTIFICATION</div>
-    <a class="sub" onclick="go('certification')">Overview · AdvO Level 1 · AdvO Level 2</a>
+    <a class="sub" onclick="go('certification')">Certification Overview</a>
+    <a class="sub" onclick="go('cert-l1')">AdvO Level 1</a>
+    <a class="sub" onclick="go('cert-l2')">AdvO Level 2</a>
     <div class="grp">MORE</div>
     <a onclick="go('membership')">Membership</a>
     <a onclick="go('account')">Member Login</a>
@@ -697,7 +741,6 @@
           <span class="b sm s-btn on-light" onclick="go('certification')">The Certification Path</span>
         </div>
       </div>
-      <div style="margin-top:34px"><span class="b lg p-btn" onclick="go('sem','intro')">Start the Free Intro Course</span></div>
     </div>
   </section>
 
@@ -899,7 +942,7 @@
           <p>Whether you're a student just discovering precision-based chiropractic, a practicing doctor looking to refine your skills, or an experienced clinician ready to master the most advanced applications of the technique—this is your home.</p>
         </div>
       </div>
-      <div class="video" onclick="toast('Video placeholder — the institute story video embeds here.')">
+      <div class="video" onclick="toast('The Institute story film is coming soon.')">
         <div class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#071A26"><path d="M8 5v14l11-7z"/></svg></div>
         <span class="lbl">VIDEO — INSIDE THE INSTITUTE</span>
         <span class="dur">3:05</span>
@@ -1007,7 +1050,7 @@
 
   <section class="tight">
     <div class="wrap grid2" style="align-items:center;gap:56px">
-      <div class="video" onclick="toast('Video placeholder — technique demonstration video embeds here.')">
+      <div class="video" onclick="toast('The technique demonstration film is coming soon.')">
         <div class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#071A26"><path d="M8 5v14l11-7z"/></svg></div>
         <span class="lbl">VIDEO — THE TECHNIQUE IN ACTION</span>
         <span class="dur">4:32</span>
@@ -1249,7 +1292,7 @@
           <h3 style="font-size:29px;font-weight:700;margin-bottom:12px">Intro to AdvO</h3>
           <p style="font-size:14.5px;color:#a9bdc8;line-height:1.65;margin-bottom:24px;max-width:430px">New to Advanced Orthogonal? Start with our free two-hour Intro to AdvO course—a comprehensive overview of the technique, its principles, and the training pathways available through the Institute.</p>
           <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-            <span class="b p-btn" onclick="toast('Signup placeholder — this button will link to the free course enrollment.')">Sign Up Free</span>
+            <span class="b p-btn" onclick="regOpen('intro')">Sign Up Free</span>
             <span class="t-link" style="color:var(--gold-hi)" onclick="go('sem','intro')">Course Details<span class="a">→</span></span>
           </div>
         </div>
@@ -1302,8 +1345,8 @@
 
   <section class="tight" id="sd-sessions-sec">
     <div class="wrap">
-      <div class="kick">Dates &amp; Locations</div>
-      <h2 class="t" style="font-size:26px">Choose your session</h2>
+      <div class="kick" id="sd-sess-kick">Dates &amp; Locations</div>
+      <h2 class="t" style="font-size:26px" id="sd-sess-h2">Dates &amp; locations</h2>
       <div class="goldrule"></div>
       <div class="sessions" id="sd-sessions"></div>
     </div>
@@ -1364,13 +1407,17 @@
     </div>
   </section>
 
+  <section class="tight" id="sd-reg-sec" style="display:none;padding-top:8px">
+    <div class="wrap"><div id="sd-reg"></div></div>
+  </section>
+
   <section class="ctaband tight">
     <div class="wrap">
       <div>
         <h3 id="sd-cta-h">Reserve your seat.</h3>
         <p id="sd-cta-p"></p>
       </div>
-      <span class="b lg p-btn" id="sd-cta-btn" onclick="document.getElementById('sd-sessions-sec').scrollIntoView({behavior:'smooth'})">Register Now</span>
+      <span class="b lg p-btn" id="sd-cta-btn" onclick="semCta()">Register Now</span>
     </div>
   </section>
 
@@ -1406,13 +1453,13 @@
           <div class="n" style="color:var(--teal-deep)">ADVANCED ORTHOGONAL</div>
           <h3>Level 1 Certification</h3>
           <p>Level 1 Certification proves your proficiency to safely and effectively correct the upper cervical spine with the Percussive Sound Wave Instrument. Completing Level 1 also earns you one free year of AOI membership.</p>
-          <span class="b sm s-btn on-light" onclick="go('contact')">Request L1 Requirements</span>
+          <span class="b sm p-btn" onclick="go('cert-l1')">Level 1 Requirements</span>
         </div>
         <div class="step" style="border-top:4px solid var(--gold)" id="cert-l2">
           <div class="n">ADVANCED ORTHOGONAL</div>
           <h3>Level 2 Certification</h3>
           <p>Level 2 Certification is proof of mastery of the Advanced Orthogonal technique and opens you up to become an instructor within the Institute.</p>
-          <span class="b sm s-btn on-light" onclick="go('contact')">Request L2 Requirements</span>
+          <span class="b sm p-btn" onclick="go('cert-l2')">Level 2 Requirements</span>
         </div>
       </div>
     </div>
@@ -1447,6 +1494,204 @@
         <p>Full conference registration, directory listing, and every member benefit — our investment back into you.</p>
       </div>
       <span class="b lg p-btn" onclick="go('sem','fund1')">Start with Fundamental 1</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== CERTIFICATION · LEVEL 1 ==================== -->
+<div class="page" id="pg-cert-l1">
+  <div class="hero-img short">
+    <div class="bg ph-c" id="certl1-bg"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> CERTIFICATION <b>/</b> LEVEL 1</div>
+      <div class="kick">The First Step to Mastery</div>
+      <h1>Level 1 Certification</h1>
+      <p class="sub">Certified Advanced Orthogonist &mdash; the Institute&rsquo;s recognition that you can deliver Advanced Orthogonal care to standard.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="facts" style="grid-template-columns:repeat(4,1fr)">
+      <div class="fact"><span>CREDENTIAL</span><b>Certified Advanced Orthogonist</b></div>
+      <div class="fact"><span>APPLICATION FEE</span><b>$1,000</b></div>
+      <div class="fact"><span>REVIEWERS</span><b>2 &middot; separate clinics</b></div>
+      <div class="fact"><span>MAINTENANCE</span><b>1 Advanced Seminar / year</b></div>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="kick">What It Certifies</div>
+      <h2 class="t" style="font-size:26px">The minimum standard, proven.</h2>
+      <div class="goldrule"></div>
+      <div class="prose">
+        <p>Level 1 Certification confirms that a doctor meets the minimum standards required to deliver Advanced Orthogonal care. To earn it you demonstrate a solid understanding of the fundamentals, show that you can manage moderately difficult cases, and show that you can guide a patient through basic care.</p>
+        <p>Two reviewers from separate clinics evaluate your application, your examination, and your x-ray analysis reports. Once every requirement is met, the Certification Board issues your certification.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="kick">Training Requirement</div>
+      <h2 class="t">Complete any one of these pathways.</h2>
+      <div class="goldrule"></div>
+      <p class="lede" style="margin-bottom:30px">There is more than one route into Level 1. Pick the one that fits how you learn and how your schedule works &mdash; the standard at the end is the same.</p>
+      <div class="steps"><div class="step"><div class="n">PATHWAY 01</div><h3>Fundamentals 1&ndash;3</h3><p>Complete the full Fundamentals Series, then attend one Advanced Seminar.</p></div><div class="step"><div class="n">PATHWAY 02</div><h3>AdvO Bootcamp</h3><p>Complete the Advanced Orthogonal Bootcamp, then attend one Advanced Seminar.</p></div><div class="step"><div class="n">PATHWAY 03</div><h3>Fundamentals + Bootcamp</h3><p>Complete the full Fundamentals Series and the Bootcamp.</p></div><div class="step"><div class="n">PATHWAY 04</div><h3>Internship</h3><p>Complete an Advanced Orthogonal Internship, then attend one Advanced Seminar.</p></div><div class="step"><div class="n">PATHWAY 05</div><h3>Technique Transition</h3><p>Complete the Technique Transition Seminar, then attend one Advanced Seminar.</p></div><div class="step"><div class="n">PATHWAY 06</div><h3>College Elective</h3><p>Complete the Advanced Orthogonal elective at a chiropractic college, then attend one Advanced Seminar.</p></div></div>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="kick">Then</div>
+      <h2 class="t" style="font-size:26px">Examination and reports.</h2>
+      <div class="goldrule"></div>
+      <div class="learn" style="margin-top:24px">
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Pass the Advanced Orthogonal Basic Examination.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Submit two post x-ray analysis reports, each with a completed HIPAA form.</div>
+      </div>
+      <div class="prose" style="margin-top:40px">
+        <h3>Application fee</h3>
+        <p>The Level 1 application fee is <b>$1,000</b>. It covers review, testing, processing, and the printing and shipping of your certificate &mdash; and it includes one year of free AOI membership, which carries full registration for the Annual Conference.</p>
+        <h3>Maintaining active status</h3>
+        <p>Attend one Advanced Seminar each year to keep your certification active.</p>
+        <h3>If you do not pass an exam</h3>
+        <p>You may retake the examination no sooner than one month and no later than twelve months from the date of the failure. A second failure means restarting the application process.</p>
+        <h3>Chiropractic students</h3>
+        <p>Students may apply, sit the examination, and submit their reports before graduating. Certification is held in pending status until a Doctor of Chiropractic diploma is submitted to the Institute.</p>
+      </div>
+      <div style="margin-top:30px;display:flex;gap:14px;flex-wrap:wrap">
+        <span class="b p-btn" onclick="go('contact')">Apply for Level 1</span>
+        <span class="b s-btn on-light" onclick="go('cert-l2')">See Level 2 &rarr;</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Complete Level 1 and your first year of membership is free.</h3>
+        <p>Full conference registration, directory listing, and every member benefit &mdash; our investment back into you.</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('sem','fund1')">Start with Fundamental 1</span>
+    </div>
+  </section>
+</div>
+
+<!-- ==================== CERTIFICATION · LEVEL 2 ==================== -->
+<div class="page" id="pg-cert-l2">
+  <div class="hero-img short">
+    <div class="bg ph-a" id="certl2-bg"></div><div class="duo"></div><div class="duo2"></div><div class="scrim"></div>
+    <div class="wrap inner">
+      <div class="crumbs">HOME <b>/</b> CERTIFICATION <b>/</b> LEVEL 2</div>
+      <div class="kick">The Next Generation of Precision Masters</div>
+      <h1>Level 2 Certification</h1>
+      <p class="sub">Proof of mastery &mdash; and the doorway to teaching this work inside the Institute.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="facts" style="grid-template-columns:repeat(5,1fr)">
+      <div class="fact"><span>CREDENTIAL</span><b>Level 2 Certified Advanced Orthogonist</b></div>
+      <div class="fact"><span>APPLICATION FEE</span><b>$1,300</b></div>
+      <div class="fact"><span>REVIEWERS</span><b>3 assigned</b></div>
+      <div class="fact"><span>TIME LIMIT</span><b>1 year from application</b></div>
+      <div class="fact"><span>MAINTENANCE</span><b>1 Seminar / year + membership</b></div>
+    </div>
+  </div>
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="kick">What It Certifies</div>
+      <h2 class="t" style="font-size:26px">Proficiency that is reproducible.</h2>
+      <div class="goldrule"></div>
+      <div class="prose">
+        <p>Level 2 Certification means the doctor has demonstrated a level of proficiency that is reproducible and consistent with the standards of Advanced Orthogonal care. It affirms strong application of the technique, competence in complex clinical scenarios, and high proficiency both orally and practically.</p>
+        <p>Three assigned reviewers evaluate your examination, your training requirements, your clinical application, and your case reports. The same reviewers conduct the Oral Interview and the Practical Exam. On completion you are recognized as a Level 2 Certified Advanced Orthogonist and receive a certificate from the Certification Board.</p>
+        <p><b>The application process, including every requirement, must be fulfilled within one year of the date the application is submitted.</b></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="kick">Requirements</div>
+      <h2 class="t">What Level 2 asks of you.</h2>
+      <div class="goldrule"></div>
+      <div class="learn" style="margin-top:26px">
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>A minimum of three years in active practice.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>A minimum of 250 cases managed under Advanced Orthogonal care.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Pass the Advanced Orthogonal Advanced Examination.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Pass the Oral Interview.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Pass the Practical Exam.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Submit two case reports &mdash; at least one a complex case &mdash; each with a HIPAA form.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Candidacy review by the Certification Board, with two reviewers from separate clinics.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Maintain your annual AOI membership.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="wrap grid2" style="gap:48px;align-items:start">
+      <div>
+        <div class="kick">The Oral Interview</div>
+        <h2 class="t" style="font-size:24px">A conversation about why.</h2>
+        <div class="goldrule"></div>
+        <div class="prose">
+          <p>The Oral Interview is a discussion of your understanding of the upper cervical subluxation complex and the Advanced Orthogonal procedures used to correct the misalignment. All three reviewers take part. You answer questions and work through scenarios, demonstrating proficient understanding of the technique out loud.</p>
+        </div>
+      </div>
+      <div>
+        <div class="kick">The Practical Exam</div>
+        <h2 class="t" style="font-size:24px">Hands on the table.</h2>
+        <div class="goldrule"></div>
+        <div class="prose">
+          <p>The Practical Exam is a hands-on test of your proficiency in table placement and instrument alignment. The three reviewers conduct it, with one of them acting as the patient. You demonstrate your understanding of the five Advanced Orthogonal subluxation complex patterns and show adequate logic and reasoning throughout.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="kick">Case Reports</div>
+      <h2 class="t" style="font-size:26px">What each report has to contain.</h2>
+      <div class="goldrule"></div>
+      <p class="lede" style="margin-bottom:26px">Each report covers at least the first three months of the patient&rsquo;s care and the outcomes over that period. The patient must be under your direct treatment.</p>
+      <div class="learn">
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Pre and post x-rays.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>The initial patient presentation and complaints.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>The initial diagnosis and x-ray findings.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>A description of the unique misalignment.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>The treatment plan.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Your post x-ray analysis, explained, including any modifications to the adjustment.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>The patient&rsquo;s response to care.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Any secondary therapies or adjustments used.</div>
+        <div class="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C29A4B" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>Any advanced imaging taken.</div>
+      </div>
+      <div class="prose" style="margin-top:34px">
+        <p>At least one of the submitted cases must demonstrate a minimum of one analysis factor that did not reduce, or that increased.</p>
+        <h3>What counts as a complex case</h3>
+        <p>A complex case is a patient presentation of a disorder other than musculoskeletal pain, radiculopathy, or basic headache &mdash; or one involving complicating anatomical or aberrant structures. Your reviewers determine whether a case qualifies.</p>
+        <h3>Application fee</h3>
+        <p>The application fee for Level 2 Certification is <b>$1,300</b>.</p>
+        <h3>If you do not pass an exam</h3>
+        <p>You may retake the examination no sooner than one month and no later than twelve months from the date of the failure. If a reviewer becomes unavailable, an alternate reviewer may substitute for that exam only. Retakes are permitted once; a second failure means restarting the entire application process.</p>
+      </div>
+      <div style="margin-top:30px;display:flex;gap:14px;flex-wrap:wrap">
+        <span class="b p-btn" onclick="go('contact')">Apply for Level 2</span>
+        <span class="b s-btn on-light" onclick="go('cert-l1')">&larr; Back to Level 1</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ctaband tight">
+    <div class="wrap">
+      <div>
+        <h3>Level 2 opens the instructor pathway.</h3>
+        <p>Mastery of the technique is where teaching it begins &mdash; the Institute&rsquo;s faculty comes from its Level 2 doctors.</p>
+      </div>
+      <span class="b lg p-btn" onclick="go('contact')">Talk to the Certification Board</span>
     </div>
   </section>
 </div>
@@ -1486,14 +1731,14 @@
           <div style="font-family:'Outfit',sans-serif"><span style="font-size:50px;font-weight:800">$997</span><span style="font-size:14px;color:#9db4c0"> / year</span></div>
           <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--gold-hi);margin:6px 0 22px">ANNUAL MEMBERSHIP — ONE RATE, NO PROMOTIONAL PRICING</div>
           <div style="border-top:1px solid rgba(255,255,255,.12);padding-top:20px;font-size:14px;color:#c3d4dc;line-height:2">
-            ✓ Annual Conference registration included ($697 value)<br>
+            ✓ Annual Conference registration included ($797 value)<br>
             ✓ $600 off AdvO Bootcamp<br>
             ✓ $200 off every seminar<br>
             ✓ Voting rights &amp; board eligibility<br>
             ✓ Doctor Directory listing<br>
             ✓ Exclusive partner discounts
           </div>
-          <div style="margin-top:26px"><span class="b lg p-btn" style="width:100%;justify-content:center" onclick="toast('Checkout placeholder — this button will link to the live membership signup.')">Become a Member</span></div>
+          <div style="margin-top:26px"><span class="b lg p-btn" style="width:100%;justify-content:center" onclick="joinMember()">Become a Member</span></div>
           <p style="font-size:11.5px;color:#6c8592;margin-top:14px;text-align:center">Membership renews annually and automatically.</p>
         </div>
       </div>
@@ -1509,7 +1754,7 @@
         <div class="step">
           <div class="n">01</div>
           <h3>Annual Conference registration included</h3>
-          <p>Your membership comes with full registration for the AOI Annual Conference, a value of $697. This event is more than a meeting; it is the ultimate homecoming for AdvO doctors, students, and colleagues from across the upper cervical field. Members may also add continuing education credits for just $50.</p>
+          <p>Your membership comes with full registration for the AOI Annual Conference, a value of $797. This event is more than a meeting; it is the ultimate homecoming for AdvO doctors, students, and colleagues from across the upper cervical field. Members may also add continuing education credits for just $50.</p>
           <span class="b sm s-btn on-light" onclick="go('sem','conference')">About the Conference</span>
         </div>
         <div class="step">
@@ -1528,7 +1773,7 @@
           <div class="n">04</div>
           <h3>Directory listing &amp; patient exposure</h3>
           <p>Every member is included in the Doctor Directory, an actively promoted resource that helps patients find qualified doctors they can trust. This visibility not only builds your credibility but also expands your practice reach.</p>
-          <span class="b sm s-btn on-light" onclick="toast('The Doctor Directory launches with the live site.')">Doctor Directory</span>
+          <span class="b sm s-btn on-light" onclick="docDirectory()">Doctor Directory</span>
         </div>
       </div>
     </div>
@@ -1554,7 +1799,7 @@
         <h3>Invest in your practice, your profession, and the future.</h3>
         <p>With conference registration included and deep seminar discounts, membership often pays for itself in the first year.</p>
       </div>
-      <span class="b lg p-btn" onclick="toast('Checkout placeholder — this button will link to the live membership signup.')">Secure Your Membership</span>
+      <span class="b lg p-btn" onclick="joinMember()">Secure Your Membership</span>
     </div>
   </section>
 </div>
@@ -1639,12 +1884,22 @@
       </div>
       <div style="background:#fff;border:1px solid var(--line);border-radius:6px;padding:36px 38px;box-shadow:0 14px 40px rgba(7,26,38,.07)">
         <h3 style="font-size:20px;margin-bottom:20px">Send us a message</h3>
-        <div style="display:grid;gap:14px">
-          <input placeholder="Full name" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)">
-          <input placeholder="Email address" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)">
-          <input placeholder="Subject" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)">
-          <textarea placeholder="How can we help?" rows="5" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal);resize:vertical"></textarea>
-          <span class="b p-btn" style="justify-content:center" onclick="toast('Form placeholder — submissions will route to Info@AdvancedOrthogonal.com on the live site.')">Send Message</span>
+        <div style="display:grid;gap:14px" id="cm-form">
+          <input id="cm-name" placeholder="Full name" autocomplete="name" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)" oninput="cmClear()">
+          <input id="cm-email" type="email" placeholder="Email address" autocomplete="email" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)" oninput="cmClear()">
+          <input id="cm-subject" placeholder="Subject" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal)" oninput="cmClear()">
+          <textarea id="cm-message" placeholder="How can we help?" rows="5" style="font-family:'Figtree',sans-serif;font-size:14px;padding:14px 16px;border:1.5px solid var(--line);border-radius:3px;outline-color:var(--teal);resize:vertical" oninput="cmClear()"></textarea>
+          <input id="cm-company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <div id="cm-err" style="display:none;font-size:13px;color:#b3402f;background:#fdf1ef;border-left:3px solid #b3402f;padding:11px 14px;border-radius:3px"></div>
+          <span class="b p-btn" style="justify-content:center" id="cm-go" onclick="cmSend()">Send Message</span>
+          <p style="font-size:11.5px;color:#8a9ba5;text-align:center;margin:0">We answer every message. Urgent? Call (727) 677-0001.</p>
+        </div>
+        <div id="cm-done" style="display:none;text-align:center;padding:14px 0">
+          <div style="width:56px;height:56px;border-radius:50%;background:var(--mist);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1F7F9C" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h3 style="font-size:19px;margin-bottom:8px">Message sent</h3>
+          <p style="font-size:14px;color:var(--body);max-width:340px;margin:0 auto">Thank you — the Institute has your message and will be in touch shortly. For anything urgent, call (727) 677-0001.</p>
         </div>
       </div>
     </div>
@@ -1704,7 +1959,7 @@
           <span class="b p-btn" style="justify-content:center" onclick="acctSignIn()">Sign In</span>
           <span class="b s-btn on-light" style="justify-content:center" onclick="acctMagic()">Email Me a Sign-In Link</span>
         </div>
-        <div style="margin-top:16px;text-align:center"><span class="t-link" onclick="acctDemo()">Preview the account area with sample data →</span></div>
+        <div id="demo-link" style="margin-top:16px;text-align:center;display:none"><span class="t-link" onclick="acctDemo()">Preview the account area with sample data →</span></div>
         <p style="font-size:12.5px;color:#8a9ba5;margin-top:16px">Accounts are created automatically when you register for an event or course. Trouble signing in? <a class="t-link" style="font-size:11px" onclick="go('contact')">Contact us</a></p>
       </div>
     </div>
@@ -1809,7 +2064,7 @@
       <div>
         <h5>Connect</h5>
         <a onclick="go('membership')">Membership</a>
-        <a onclick="toast('The Doctor Directory launches with the live site.')">Doctor Directory</a>
+        <a onclick="docDirectory()">Doctor Directory</a>
         <a href="tel:+17276770001">(727) 677-0001</a>
         <a href="mailto:Info@AdvancedOrthogonal.com">Info@AdvancedOrthogonal.com</a>
       </div>
@@ -1839,6 +2094,10 @@
         <div class="reg-strip" id="reg-strip" style="display:none">
           <span>Members save $200 on seminars</span>
           <span class="b sm s-btn on-light" style="padding:8px 14px;font-size:10.5px" onclick="regClose();go('account')">Sign In</span>
+        </div>
+        <div id="reg-tier-sec" style="display:none">
+          <label class="flabel">I AM REGISTERING AS</label>
+          <div class="rtiers" id="reg-tier"></div>
         </div>
         <label class="flabel" id="lb-name">FULL NAME</label>
         <input class="fi" id="reg-name" placeholder="Dr. Jane Smith, D.C." oninput="regClearErr(this,'lb-name')">
@@ -1960,7 +2219,7 @@ var SEM = {
     sub:'Discover the principles and power behind Advanced Orthogonal care.',
     dates:'Online · Anytime', loc:'Self-Paced', level:'No Prerequisites', format:'2-Hour Online Course', price:'FREE',
     fullPrice:0, memPrice:0, mbText:'This course is free for everyone — no membership required.',
-    sessions:[{mo:'OPEN', dy:'NOW', yr:'', city:'Online · Self-Paced', venue:'Instant access · 2 hours', seats:'Unlimited enrollment', free:true, flag:'FREE'}],
+    sessions:[], noSess:{kick:'Enrollment',h2:'Start any time',title:'This course is online and self-paced.',msg:'There is nothing to schedule \u2014 enroll and you have instant access to all two hours. Free for everyone, no membership required.',btn:'Start the Free Course',act:"regOpen('intro')",primary:true},
     member:'Free for everyone — no membership required. It is the recommended starting point for every training pathway at the Institute.',
     h2:'The starting point for everything.',
     overview:'<p>New to Advanced Orthogonal? Start with our free two-hour Intro to AdvO course—a comprehensive overview of the technique, its principles, and the training pathways available through the Institute.</p><p>You\'ll be introduced to the upper cervical philosophy behind the work, the percussive sound-wave instrument, the analysis protocol, and what the road from first seminar to full certification looks like.</p>',
@@ -1977,20 +2236,16 @@ var SEM = {
     photo:'xray',
     cat:'fundamentals', title:'Fundamental 1', kicker:'Fundamentals Series · Part 1 of 3', img:'ph-a',
     sub:'Your foundation in Advanced Orthogonal analysis begins here.',
-    dates:'3 Sessions · 2026–27', loc:'Multiple Locations', level:'Foundation', format:'Weekend Seminar', price:'$895',
+    dates:'Dates Announced Soon', loc:'Location Announced Soon', level:'Foundation', format:'Weekend Seminar', price:'$895',
     member:'AOI members save $200 on every seminar — Fundamental 1 is $695 for members.',
     fullPrice:895, memPrice:695,
     video:'https://player.vimeo.com/video/519671965',
-    sessions:[
-      {mo:'SEP', dy:'12–13', yr:'2026', city:'Des Moines, IA', venue:'Heartland Training Center', seats:'Registration opening soon', flag:'NEXT UP', soon:true},
-      {mo:'OCT', dy:'24–25', yr:'2026', city:'Tampa Bay, FL', venue:'AOI Headquarters', seats:'Registration opening soon', soon:true},
-      {mo:'JAN', dy:'16–17', yr:'2027', city:'Orem, UT', venue:'Mountain West Campus', seats:'Registration opening soon', soon:true}
-    ],
+    sessions:[], noSess:{title:'Dates for the next Fundamental 1 are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
     h2:'Where the foundation is poured.',
     overview:'<p>Fundamental 1 is the entry point to hands-on Advanced Orthogonal training. Working in small groups with experienced instructors, you\'ll build the observational and analytical foundation that everything else in the technique rests on.</p><p>The Fundamentals Series is sequential — each part builds directly on the last, and completing all three is a requirement on the Level 1 Certification track.</p>',
     learn:['Patient evaluation and nerve interference assessment','Upper cervical biomechanics and the atlas subluxation complex','Introduction to the specific three-dimensional x-ray series','Postural analysis and supine leg check protocol','Case history and patient management fundamentals','Instrument overview and safety'],
     sched:[['SATURDAY','Lecture and demonstration: evaluation protocol, biomechanics, and x-ray positioning. Afternoon hands-on labs in small groups.'],['SUNDAY','Supervised practice: analysis reps, evaluation workflow, and case review. Q&A and next steps on the certification track.']],
-    ctaH:'Begin the Fundamentals Series.', ctaP:'Members save $200 · completing the series is a Level 1 requirement.', ctaBtn:'Register for Fundamental 1',
+    ctaH:'Begin the Fundamentals Series.', ctaP:'Members save $200 · completing the series is a Level 1 requirement.', ctaBtn:'Ask About the Next Fundamental 1',
     spk:['cs','jk'], keynote:null,
     agenda:[{day:null,items:[
       {t:'SAT 9:00',ap:'AM · LECTURE',title:'Evaluation Protocol — Foundations',desc:'Nerve interference assessment and UC biomechanics.',who:['cs']},
@@ -2003,15 +2258,15 @@ var SEM = {
     mux:'Cv8vCuTsBB02Mm9NRVBId5I45rNwogllO9af7GwSY5oA', muxName:'Dr. Zach Perry',
     cat:'fundamentals', title:'Fundamental 2', kicker:'Fundamentals Series · Part 2 of 3', img:'ph-a',
     sub:'X-ray analysis and line drawing — the measurement skill at the center of the technique.',
-    dates:'Nov 14–15, 2026', loc:'Des Moines, IA', level:'Foundation · Requires F1', format:'Weekend Seminar', price:'$895',
+    dates:'Dates Announced Soon', loc:'Location Announced Soon', level:'Foundation · Requires F1', format:'Weekend Seminar', price:'$895',
     fullPrice:895, memPrice:695,
-    sessions:[{mo:'NOV', dy:'14–15', yr:'2026', city:'Des Moines, IA', venue:'Heartland Training Center', seats:'Registration open'}],
+    sessions:[], noSess:{title:'Dates for the next Fundamental 2 are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
     member:'AOI members save $200 on every seminar — Fundamental 2 is $695 for members.',
     h2:'The analysis becomes precise.',
     overview:'<p>Fundamental 2 goes deep on the signature skill of the Advanced Orthogonal doctor: measuring the upper cervical misalignment on specific three-dimensional x-rays using digital software.</p><p>You\'ll learn to determine each patient\'s gravitational and neurological normal — taking genetic abnormalities into account — and translate that analysis into a patient-specific correction vector.</p>',
     learn:['Digital x-ray line drawing and analysis software','Measuring displacement against the patient\'s own normal','Accounting for genetic anomalies in the analysis','Deriving the correction vector from the misalignment variables','Inter- and intra-examiner reliability protocols','Analysis case labs with real film sets'],
     sched:[['SATURDAY','Digital analysis instruction and guided line-drawing labs.'],['SUNDAY','Correction vector derivation, reliability testing, and supervised case analysis.']],
-    ctaH:'Continue the series.', ctaP:'Fundamental 1 is the prerequisite · members save $200.', ctaBtn:'Register for Fundamental 2',
+    ctaH:'Continue the series.', ctaP:'Fundamental 1 is the prerequisite · members save $200.', ctaBtn:'Ask About the Next Fundamental 2',
     spk:['jk','cs'], keynote:null,
     agenda:[{day:null,items:[
       {t:'SAT 9:00',ap:'AM · LECTURE',title:'Digital Analysis Instruction',desc:'Line-drawing methodology and the analysis software.',who:['jk']},
@@ -2024,15 +2279,15 @@ var SEM = {
     mux:'j4sZdYYoA3c2i7x1w8TocHVIFPYjI00xKL5XL602MD1Tk', muxName:'Dr. Josh Silver',
     cat:'fundamentals', title:'Fundamental 3', kicker:'Fundamentals Series · Part 3 of 3', img:'ph-a',
     sub:'The instrument, the correction, and the complete patient protocol.',
-    dates:'Dec 12–13, 2026', loc:'Des Moines, IA', level:'Foundation · Requires F1 & F2', format:'Weekend Seminar', price:'$895',
+    dates:'Dates Announced Soon', loc:'Location Announced Soon', level:'Foundation · Requires F1 & F2', format:'Weekend Seminar', price:'$895',
     fullPrice:895, memPrice:695,
-    sessions:[{mo:'DEC', dy:'12–13', yr:'2026', city:'Des Moines, IA', venue:'Heartland Training Center', seats:'Registration open'}],
+    sessions:[], noSess:{title:'Dates for the next Fundamental 3 are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
     member:'AOI members save $200 on every seminar — Fundamental 3 is $695 for members.',
     h2:'Everything comes together.',
     overview:'<p>Fundamental 3 completes the foundation: delivering the correction with the table-mounted percussive sound-wave instrument, positioning the patient with digital and laser alignment, and running the full protocol from evaluation through post-correction monitoring.</p><p>Graduates of the full Fundamentals Series are equipped to begin supervised practice of the technique and to enter the Level 1 Certification process.</p>',
     learn:['Percussive sound-wave instrument operation and settings','Patient positioning with digital and laser alignment','Delivering the patient-specific correction vector','Post-correction assessment and monitoring protocol','Care planning and the sustainable-corrections model','Preparing for Level 1 Certification'],
     sched:[['SATURDAY','Instrument instruction and supervised correction labs.'],['SUNDAY','Full-protocol run-throughs, monitoring workflow, and certification prep.']],
-    ctaH:'Complete your foundation.', ctaP:'Finishing the series opens the Level 1 Certification track.', ctaBtn:'Register for Fundamental 3',
+    ctaH:'Complete your foundation.', ctaP:'Finishing the series opens the Level 1 Certification track.', ctaBtn:'Ask About the Next Fundamental 3',
     spk:['cs','jk'], keynote:null,
     agenda:[{day:null,items:[
       {t:'SAT 9:00',ap:'AM · LECTURE',title:'Instrument Instruction',desc:'Percussive sound-wave instrument operation and settings.',who:['cs']},
@@ -2047,7 +2302,7 @@ var SEM = {
     sub:'Refine precision and consistency — with an accelerated transition day for Atlas Orthogonal doctors.',
     dates:'Dates Announced Soon', loc:'Orem, UT', level:'Advanced', format:'2-Day Hands-On', price:'$1,295',
     fullPrice:1295, memPrice:1095,
-    sessions:[{mo:'DATE', dy:'TBA', yr:'', city:'Orem, UT', venue:'Mountain West Campus', seats:'Dates being finalized', flag:'COMING SOON', soon:true}],
+    sessions:[], noSess:{title:'Dates for the next AdvO Intensive are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
     member:'AOI members save $200 — $1,095 for members.',
     h2:'For doctors ready to sharpen the edge.',
     overview:'<p>A focused, hands-on training event designed for experienced doctors ready to refine their precision and consistency with the Advanced Orthogonal technique.</p><p>The optional first day offers an accelerated transition course for Atlas Orthogonal certified doctors — bridging the gap between A.O. and AdvO in a single concentrated day of instruction and supervised reps.</p>',
@@ -2064,11 +2319,11 @@ var SEM = {
   bootcamp:{
     photo:'setup',
     mux:'A9cxLKvjJcX5u02Qzh8agXEOPLMkmNzXTKHPrx02wnG2s', muxName:'Dr. Drew',
-    cat:'bootcamp', title:'AdvO Bootcamp 2026', kicker:'The Immersive Week · Zero to Fully Equipped', img:'ph-a',
+    cat:'bootcamp', title:'AdvO Bootcamp 2027', kicker:'The Immersive Week · Zero to Fully Equipped', img:'ph-a',
     sub:'Five days of hands-on training, guest experts, research updates — and the Friday night awards dinner.',
     dates:'Dates Announced Soon', loc:'Tampa Bay, FL', level:'All Levels', format:'5-Day Immersive', price:'$2,495',
     fullPrice:2495, memPrice:0, mbText:'AdvO Bootcamp is FREE with AOI membership — a $2,495 value.',
-    sessions:[{mo:'DATE', dy:'TBA', yr:'', city:'Tampa Bay, FL', venue:'AOI Headquarters', seats:'Dates being finalized', flag:'FLAGSHIP', soon:true}],
+    sessions:[], noSess:{title:'Dates for the next AdvO Bootcamp are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
     member:'FREE with AOI membership — non-members save $600 by joining first.',
     h2:'The fastest route from zero to equipped.',
     overview:'<p>Featuring hands-on training, expert guest speakers, clinical research updates, and a celebratory Friday night awards dinner, this event will bring together the entire Advanced Orthogonal community to honor our legacy and look to the future.</p><p>Bootcamp is our immersive, fast-paced program designed to take doctors from zero to fully equipped in a highly effective format — and it is free with AOI membership.</p>',
@@ -2077,14 +2332,14 @@ var SEM = {
     ctaH:'Free with membership.', ctaP:'Tampa Bay, FL · next dates announced soon · included with AOI membership.', ctaBtn:'Ask About the Next Bootcamp',
     spk:['cs','jk','mr'], keynote:null,
     agenda:[
-      {day:'Day 1–2',date:'MON–TUE JUN 22–23',items:[
+      {day:'Day 1–2',date:'MON–TUE',items:[
         {t:'9:00',ap:'AM · LECTURE',title:'Evaluation & Biomechanics Intensive',desc:'The complete evaluation workflow, compressed.',who:['cs']},
         {t:'1:30',ap:'PM · LAB',title:'X-Ray Analysis Intensive',desc:'Digital line-drawing on real film sets.',who:['jk']}]},
-      {day:'Day 3–4',date:'WED–THU JUN 24–25',items:[
+      {day:'Day 3–4',date:'WED–THU',items:[
         {t:'9:00',ap:'AM · LAB',title:'Instrument Labs',desc:'Positioning, correction delivery, and consistency drills.',who:['cs']},
         {t:'11:00',ap:'AM · GUEST',title:'Research Updates in UC Neurology',desc:'The newest findings on neurological change after correction.',who:['mr']},
         {t:'3:00',ap:'PM · LECTURE',title:'The Certification Pathway: Level 1 to Level 2',desc:'What each level requires and how to prepare for your case reviews.',who:['jk']}]},
-      {day:'Day 5',date:'FRI JUN 26',items:[
+      {day:'Day 5',date:'FRIDAY',items:[
         {t:'9:00',ap:'AM · CAPSTONE',title:'Capstone Case Day',desc:'Full-protocol run-throughs judged by the faculty.',who:['cs','jk']},
         {t:'7:00',ap:'PM · SOCIAL',title:'Awards Dinner',desc:'Celebrating the community — legacy awards and the year ahead.',who:[]}]}]
   },
@@ -2092,17 +2347,30 @@ var SEM = {
     photo:'conference',
     cat:'conference', title:'2026 Annual Conference', kicker:'The Homecoming of the AOI Community', img:'ph-c',
     sub:'Two days of advanced training, imaging, research, and case studies \u2014 with the doctors who are moving this work forward.',
-    dates:'November 6\u20137, 2026', loc:'Tampa Bay, FL', level:'All Levels', format:'2-Day Conference', price:'$697',
-    fullPrice:697, memPrice:0, mbText:'Conference registration is INCLUDED with AOI membership \u2014 a $697 value.',
-    sessions:[{mo:'NOV', dy:'6\u20137', yr:'2026', city:'Tampa Bay, FL', venue:'Venue announced soon', seats:'Registration open', flag:'FLAGSHIP'}],
+    dates:'November 6\u20137, 2026', loc:'Tampa Bay, FL', level:'All Levels', format:'2-Day Conference', price:'$797',
+    fullPrice:797, memPrice:0, studentPrice:347, facultyFree:true,
+    mbText:'Conference registration is INCLUDED with AOI membership \u2014 a $797 value. Sign in when you register and the fee is waived.',
+    sessions:[], hideSess:true,
+    regBand:{
+      h:'Register for the 2026 Annual Conference',
+      sub:'November 6\u20137, 2026 \u00b7 Tampa Bay, FL \u00b7 Venue announced soon \u00b7 Two full days of clinical training, imaging, research and case studies.',
+      btn:'Register for the Conference',
+      tiers:[
+        {k:'Doctor',p:'$797',n:'Practicing chiropractors and everyone outside the tiers below.'},
+        {k:'Student',p:'$347',n:'Currently enrolled chiropractic students.'},
+        {k:'AOI Member',p:'FREE',n:'Included with your membership \u2014 sign in when you register and the fee is waived.',hi:true,flag:'INCLUDED'},
+        {k:'College Faculty',p:'FREE',n:'Faculty of chiropractic colleges. Register as faculty and the Institute confirms your seat.',hi:true}
+      ],
+      note:'Members and chiropractic college faculty still register \u2014 the fee comes off at checkout. Members: sign in first so we can see your membership.'
+    },
     member:'INCLUDED with AOI membership \u2014 plus optional CE credits.',
     h2:'The homecoming of the upper cervical year.',
     overview:'<p>The 2026 Annual Conference brings the whole Advanced Orthogonal community to Tampa Bay for two days of advanced clinical training \u2014 CBCT and CT imaging, vertigo assessment, upper cervical muscle analysis, neurology, scar tissue management, and the case studies that only this community can share.</p><p>It\u2019s also the Institute\u2019s working weekend: the research initiative, updated protocol terminology, the instructor pathway, and committee updates on certification and marketing \u2014 where the membership\u2019s voice directly shapes the year ahead.</p>',
     learn:['Recognizing Operator Syndrome in combat veterans','CBCT and 3D imaging \u2014 from the Akridge Equation to the Miranda Equation','A practical vertigo assessment framework','Upper cervical muscle analysis','Updated terminology, corrective positioning, and Sonus worksheets','Scar tissue management in patient outcomes','The Institute research initiative \u2014 and how to participate','The pathway to becoming an AdvO instructor'],
     sched:[['FRIDAY','Research initiative kickoff, Operator Syndrome, CBCT 3D imaging, and vertigo assessment \u2014 evening social to close the day.'],['SATURDAY','Protocol updates, muscle analysis, neurology, CT, scar tissue management, the instructor pathway, case studies, and committee updates.']],
-    ctaH:'Be in the room in Tampa Bay.', ctaP:'November 6\u20137, 2026 \u00b7 Tampa Bay, FL \u00b7 $697 \u00b7 included with AOI membership.', ctaBtn:'Reserve Your Seat',
+    ctaH:'Be in the room in Tampa Bay.', ctaP:'November 6\u20137, 2026 \u00b7 Tampa Bay, FL \u00b7 $797 for doctors, $347 for students \u00b7 free with AOI membership.', ctaBtn:'Reserve Your Seat',
     spk:['cs','miranda','beadle','billiris','hulsey','wooden','colavita','silver','bollen','fowler','damico','jorbora','corsello'], keynote:null,
-    exhibitors:['UpperCervicalCare.com','3D Practice','Televere Systems','NeckCare','Cervipedic'],
+    exhibitors:['UpperCervicalCare.com','Televere Systems','NeckCare','Cervipedic'],
     agenda:[
       {day:'Day 1',date:'FRI NOV 6',items:[
         {t:'8:00',ap:'AM \u00b7 WELCOME',title:'Registration & Welcome',desc:'Check-in, coffee, and the exhibitor floor opens.',who:[]},
@@ -2129,7 +2397,7 @@ var SEM = {
     sub:'Train inside an active Advanced Orthogonal practice — real cases, real reps, real mentorship.',
     dates:'Ongoing', loc:'Host Clinics Nationwide', level:'Students & New Doctors', format:'In-Clinic Immersion', price:'By Application',
     fullPrice:-1, memPrice:-1, mbText:'AOI membership connects you with host doctors and accelerates placement.',
-    sessions:[{mo:'ALL', dy:'YEAR', yr:'', city:'Host Clinics Nationwide', venue:'Matched by the Institute', seats:'By application', apply:true}],
+    sessions:[], noSess:{kick:'Applications',h2:'Open year-round',title:'Internships run continuously at host clinics nationwide.',msg:'There are no fixed start dates \u2014 placements are matched by the Institute based on your stage of training and preferred region.',btn:'Apply Now',primary:true},
     member:'AOI membership connects you with host doctors and accelerates placement.',
     h2:'Learn where the work actually happens.',
     overview:'<p>AOI internships place students and new doctors inside active Advanced Orthogonal practices, where the protocol is lived daily — not simulated.</p><p>Under the mentorship of certified doctors, interns participate in real analysis, observe real corrections, and build the clinical instincts that seminars alone can\'t teach.</p>',
@@ -2300,12 +2568,21 @@ function go(p, id){
   document.querySelectorAll('.page').forEach(function(el){el.classList.remove('on')});
   var pg=document.getElementById('pg-'+p);
   if(pg){pg.classList.add('on')}
-  var hl=(p==='sem')?'seminars':(p==='problem')?'home':((p==='article'||p==='articles'||p==='research'||p==='difference'||p==='board')?'about':p);
+  var hl=(p==='sem')?'seminars':(p==='problem')?'home':((p==='cert-l1'||p==='cert-l2')?'certification':((p==='article'||p==='articles'||p==='research'||p==='difference'||p==='board')?'about':p));
   document.querySelectorAll('.menu .mi > a').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-p')===hl)});
   var cbtn=document.querySelector('.menu .menu-btn');if(cbtn)cbtn.classList.toggle('active-pg',hl==='contact');
   window.scrollTo(0,0);
 }
 function toggleMenu(){document.getElementById('mpanel').classList.toggle('open')}
+// The home hero sizes itself against the real header height rather than a guess.
+function syncHdrH(){
+  var h=document.querySelector('header.site');
+  if(h)document.documentElement.style.setProperty('--hdrh',Math.round(h.getBoundingClientRect().height)+'px');
+}
+window.addEventListener('resize',syncHdrH);
+window.addEventListener('load',syncHdrH);
+document.addEventListener('DOMContentLoaded',syncHdrH);
+try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(syncHdrH)}catch(e){}
 function agTab(i,el){
   document.querySelectorAll('#sd-agenda .agtab').forEach(function(t){t.classList.remove('on')});
   el.classList.add('on');
@@ -2347,6 +2624,38 @@ function filterSem(cat, el){
   document.getElementById('semempty').style.display=(any||cat==='free')?'none':'block';
 }
 
+// ============ REGISTRATION BAND (direct-sell events) ============
+function regBandHtml(id,s){
+  var r=s.regBand||{};
+  var tiers=(r.tiers||[]).map(function(t){
+    return '<div class="rt'+(t.hi?' hi':'')+'">'+
+      (t.flag?'<span class="rt-flag">'+esc(t.flag)+'</span>':'')+
+      '<div class="rt-k">'+esc(t.k)+'</div>'+
+      '<div class="rt-p">'+esc(t.p)+'</div>'+
+      '<div class="rt-n">'+esc(t.n)+'</div></div>';
+  }).join('');
+  return '<div class="regband" id="regband">'+
+    '<div class="rb-top">'+
+      '<div class="rb-kick">Registration</div>'+
+      '<h2>'+esc(r.h||('Register for '+s.title))+'</h2>'+
+      '<div class="rb-rule"></div>'+
+      '<p class="rb-sub">'+esc(r.sub||(s.dates+' \u00b7 '+s.loc))+'</p>'+
+    '</div>'+
+    '<div class="rb-tiers">'+tiers+'</div>'+
+    '<div class="rb-go">'+
+      '<span class="b lg p-btn" onclick="regOpen(\''+id+'\')">'+esc(r.btn||'Register Now')+'</span>'+
+      (r.note?'<p class="rb-note">'+esc(r.note)+'</p>':'')+
+    '</div>'+
+  '</div>';
+}
+function semCta(){
+  var rb=document.getElementById('sd-reg-sec');
+  if(rb&&rb.style.display!=='none'){rb.scrollIntoView({behavior:'smooth'});return;}
+  var ss=document.getElementById('sd-sessions-sec');
+  if(ss&&ss.style.display!=='none'){ss.scrollIntoView({behavior:'smooth'});return;}
+  go('contact');
+}
+
 // ============ SEMINAR DETAIL RENDER ============
 function renderSem(id){
   try{window.__semKey=arguments[0]}catch(e){}
@@ -2378,8 +2687,25 @@ function renderSem(id){
         : 'AOI membership connects you with the full Institute community.');
   // sessions
   var sec=document.getElementById('sd-sessions-sec');
-  if(s.sessions && s.sessions.length){
+  if(s.hideSess){
+    sec.style.display='none';
+  } else if(!(s.sessions && s.sessions.length)){
+    // No dated sessions on the calendar yet — say so plainly instead of hiding it.
     sec.style.display='';
+    var ns=s.noSess||{};
+    document.getElementById('sd-sess-kick').textContent=ns.kick||'Dates & Locations';
+    document.getElementById('sd-sess-h2').textContent=ns.h2||'No sessions currently scheduled';
+    document.getElementById('sd-sessions').innerHTML=
+      '<div class="nosess">'+
+      '<div class="ns-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1F7F9C" stroke-width="1.9"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></div>'+
+      '<div class="ns-bd"><h4>'+(ns.title||'Dates for the next offering are being finalized.')+'</h4>'+
+      '<p>'+(ns.msg||'There are no sessions on the calendar for this seminar right now. New dates are posted here as soon as they are confirmed \u2014 tell us you are interested and we will let you know first.')+'</p></div>'+
+      '<div class="ns-cta"><span class="b sm '+(ns.primary?'p-btn':'s-btn on-light')+'" onclick="'+(ns.act||"go('contact')")+'">'+(ns.btn||'Notify Me When Dates Are Set')+'</span></div>'+
+      '</div>';
+  } else {
+    sec.style.display='';
+    document.getElementById('sd-sess-kick').textContent='Dates & Locations';
+    document.getElementById('sd-sess-h2').textContent='Choose your session';
     document.getElementById('sd-sessions').innerHTML=s.sessions.map(function(x){
       var prices;
       if(x.free){prices='<div class="prices"><span class="mem">FREE</span><span class="lbl">FOR EVERYONE</span></div>';}
@@ -2396,7 +2722,11 @@ function renderSem(id){
         '<div class="mid">'+prices+'<div class="seats"><b>'+x.seats+'</b><span>'+(x.soon?'OPENING SOON':'UPDATED WEEKLY')+'</span></div></div>'+
         '<div class="bot">'+btn+'</div></div>';
     }).join('');
-  } else {sec.style.display='none';}
+  }
+  // registration band (events that sell direct, e.g. the Annual Conference)
+  var rsec=document.getElementById('sd-reg-sec');
+  if(s.regBand){rsec.style.display='';document.getElementById('sd-reg').innerHTML=regBandHtml(id,s);}
+  else{rsec.style.display='none';}
   document.getElementById('sd-h2').textContent=s.h2;
   document.getElementById('sd-overview').innerHTML=s.overview;
   document.getElementById('sd-member').textContent=s.member;
@@ -2410,7 +2740,7 @@ function renderSem(id){
     vwrap.innerHTML='<div style="position:relative;border-radius:6px;overflow:hidden;aspect-ratio:16/9;background:#071A26;box-shadow:0 24px 60px rgba(7,26,38,.25)">'+
       '<iframe src="'+s.video+'" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="'+esc(s.title)+' — preview video"></iframe></div>';
   }else{
-    vwrap.innerHTML='<div class="video" onclick="toast(\'Video placeholder — event preview video embeds here.\')">'+
+    vwrap.innerHTML='<div class="video" onclick="toast(\'A preview film for this event is coming soon.\')">'+
       '<div class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="#071A26"><path d="M8 5v14l11-7z"/></svg></div>'+
       '<span class="lbl">VIDEO — '+esc(s.title.toUpperCase())+' PREVIEW</span><span class="dur">1:45</span></div>';
   }
@@ -2518,7 +2848,7 @@ var SB_KEY='sb_publishable_2FqwETbdoEJqlDuhP00E-w_aNlt1Ny5';
 // DBID/DBEV are filled at load from v_public_events, so dates, prices and
 // open/closed state come from the database, never from this file.
 var DBSLUG={intro:'intro-to-advo',fund1:'fundamental-1',fund2:'fundamental-2',fund3:'fundamental-3',
-  intensive:'advo-intensive-west',bootcamp:'advo-bootcamp-2026',conference:'annual-conference-2026',
+  intensive:'advo-intensive-west',bootcamp:'advo-bootcamp-2027',conference:'annual-conference-2026',
   internship:null};
 // Fallback ids used only if the sync request fails. ONLY events that are
 // published in cci-os appear here: a draft event must never be offered for
@@ -2690,10 +3020,47 @@ async function sbRpc(name){
 
 // ---------- registration / checkout ----------
 var regKey=null;
+var regTier='doctor';
 var __me=null;
+
+// Which registrant tiers this event actually offers. The database is the
+// source of truth; the SEM entry is only a fallback for the seconds before
+// dbSync() lands (or if it fails). Either way the SERVER re-checks the tier
+// and refuses one the event does not offer, so a stale page can never buy a
+// discount the Institute has not authorized.
+function regTiers(key){
+  var ev=DBEV[key]||{}, e=SEM[key]||{};
+  var full=(ev.price!==undefined&&ev.price!==null)?ev.price:e.fullPrice;
+  var out=[{v:'doctor',k:'Doctor',p:dbFmtPrice(full)||'',n:'Practicing chiropractors and general registration.'}];
+  var sp=(ev.student_price!==undefined&&ev.student_price!==null&&ev.student_price!=='')?ev.student_price:(DBSYNCED?null:e.studentPrice);
+  if(sp!==undefined&&sp!==null)out.push({v:'student',k:'Student',p:dbFmtPrice(sp)||'',n:'Currently enrolled chiropractic students.'});
+  var ff=DBSYNCED?(ev.faculty_free===true):(ev.faculty_free===true||e.facultyFree===true);
+  if(ff)out.push({v:'faculty',k:'College Faculty',p:'FREE',n:'Faculty of a chiropractic college.'});
+  return out;
+}
+function regTierRender(key){
+  var sec=document.getElementById('reg-tier-sec');
+  var opts=regTiers(key);
+  regTier='doctor';
+  if(opts.length<2){sec.style.display='none';document.getElementById('reg-tier').innerHTML='';return;}
+  document.getElementById('reg-tier').innerHTML=opts.map(function(o,i){
+    return '<div class="rt-opt'+(i===0?' on':'')+'" data-v="'+o.v+'" onclick="regPick(this)">'+
+      '<span class="rt-dot"></span>'+
+      '<span class="rt-l"><b>'+esc(o.k)+'</b><i>'+esc(o.n)+'</i></span>'+
+      '<span class="rt-pr">'+esc(o.p)+'</span></div>';
+  }).join('');
+  sec.style.display='';
+}
+function regPick(el){
+  regTier=el.getAttribute('data-v')||'doctor';
+  var sib=el.parentNode.children;
+  for(var i=0;i<sib.length;i++)sib[i].classList.toggle('on',sib[i]===el);
+  document.getElementById('reg-err').style.display='none';
+}
 async function regOpen(key){
   regKey=key;
   var s=SEM[key];
+  regTierRender(key);
   document.getElementById('reg-title').textContent=s.title;
   document.getElementById('reg-when').textContent=(s.dates+' · '+s.loc).toUpperCase();
   document.getElementById('reg-form').style.display='';
@@ -2723,6 +3090,15 @@ async function regOpen(key){
   document.getElementById('reg-strip').style.display=signedIn?'none':'';
 }
 function regClose(){document.getElementById('regBg').classList.remove('on')}
+// Membership is sold personally until the membership checkout is connected.
+// Give the visitor a real way to act instead of a dead button.
+function joinMember(){
+  toast('Membership enrollment is handled personally right now — send us a note or call (727) 677-0001 and we will get you enrolled today.');
+  go('contact');
+}
+function docDirectory(){
+  toast('The Doctor Directory is coming soon. Call (727) 677-0001 and we will connect you with a certified doctor near you.');
+}
 function regClearErr(el,lb){el.classList.remove('err');document.getElementById(lb).classList.remove('err');document.getElementById('reg-err').style.display='none';}
 function regErr(msg,fields){
   var e=document.getElementById('reg-err');e.textContent=msg;e.style.display='block';
@@ -2757,7 +3133,8 @@ async function regSubmit(forceGuest){
     var base=location.origin+location.pathname;
     var res=await fetch(SB_URL+'/functions/v1/create-checkout',{method:'POST',headers:headers,
       body:JSON.stringify({event_id:dbid,full_name:name,email:email,phone:phone||null,force_guest:forceGuest===true,
-        success_url:base+'?registered=1',cancel_url:base})});
+        reg_type:regTier,
+        success_url:base+'?registered=1'+(regTier!=='doctor'?'&verify='+regTier:''),cancel_url:base})});
     var data=await res.json();
     if(data.requires_login_for_discount){
       document.getElementById('reg-form').style.display='none';
@@ -2766,7 +3143,12 @@ async function regSubmit(forceGuest){
         ? 'This event is FREE with your membership. Sign in to claim it — or continue as a guest at full price.'
         : 'Sign in to apply your $200 member discount — or continue as a guest at full price.';
     }
-    else if(data.free){regClose();document.getElementById('cf-sub').textContent='Your free registration for '+(data.event_title||'this event')+' is confirmed — see you there!';go('confirm');}
+    else if(data.free){
+      regClose();
+      document.getElementById('cf-sub').textContent='Your free registration for '+(data.event_title||'this event')+' is confirmed'+
+        (data.needs_verification?' — we will confirm your '+(data.reg_type==='student'?'student':'college faculty')+' status by email before the event.':' — see you there!');
+      go('confirm');
+    }
     else if(data.url){location.href=data.url;}
     else if(data.error==='payments_not_configured'){regErr('Payments are almost ready \u2014 Stripe is being connected. Please try again soon.',[]);}
     else if(data.error==='already_registered'){regErr('That email is already registered for this event. Check your inbox for the confirmation, or contact the Institute.',['email']);}
@@ -2779,9 +3161,48 @@ async function regSubmit(forceGuest){
     else if(data.error==='event_over'){regErr('This session has already taken place. Contact the Institute for the next available date.',[]);}
     else if(data.error==='bad_return_url'){regErr('This copy of the site is not authorized for checkout. Please register from advancedorthogonal.com.',[]);}
     else if(data.error==='invalid_email'){regErr('Please enter a valid email address.',['email']);}
+    else if(data.error==='tier_not_available'){regErr(data.detail||'That registration type is not offered for this event — please choose another.',[]);}
+    else if(data.error==='invalid_reg_type'){regErr('Please choose how you are registering.',[]);}
     else{regErr(data.detail||data.error||'Something went wrong \u2014 please try again.',[]);}
   }catch(e){regErr('Connection problem — please check your internet and try again.',[]);}
   btn.textContent='Continue to Secure Checkout';
+}
+
+// ---------- public contact form ----------
+// Posts to the contact-submit edge function, which is the only writer to
+// public.contact_submissions. The anon key cannot touch that table directly.
+function cmClear(){var e=document.getElementById('cm-err');if(e)e.style.display='none';}
+function cmErr(msg){var e=document.getElementById('cm-err');e.textContent=msg;e.style.display='block';}
+async function cmSend(){
+  var name=document.getElementById('cm-name').value.trim();
+  var email=document.getElementById('cm-email').value.trim();
+  var subject=document.getElementById('cm-subject').value.trim();
+  var message=document.getElementById('cm-message').value.trim();
+  var company=document.getElementById('cm-company').value.trim();
+  if(name.length<2){cmErr('Please enter your name.');return;}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)){cmErr('Please enter a valid email address so we can reply.');return;}
+  if(message.length<5){cmErr('Please tell us how we can help.');return;}
+  var btn=document.getElementById('cm-go');
+  var label=btn.textContent;
+  btn.textContent='Sending…';
+  try{
+    var res=await fetch(SB_URL+'/functions/v1/contact-submit',{method:'POST',
+      headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+(SBS.token||SB_KEY)},
+      body:JSON.stringify({full_name:name,email:email,subject:subject||null,message:message,company:company,
+        page_url:location.origin+location.pathname})});
+    var data=await res.json().catch(function(){return {}});
+    if(res.ok&&data.ok){
+      document.getElementById('cm-form').style.display='none';
+      document.getElementById('cm-done').style.display='';
+      return;
+    }
+    if(data.error==='rate_limited'){cmErr(data.detail||'Too many messages from this connection. Please try again shortly or call (727) 677-0001.');}
+    else if(data.error==='invalid_fields'){cmErr('Please check the highlighted details and try again.');}
+    else{cmErr('We could not send that just now. Please email Info@AdvancedOrthogonal.com or call (727) 677-0001.');}
+  }catch(e){
+    cmErr('Connection problem — please check your internet, or email Info@AdvancedOrthogonal.com.');
+  }
+  btn.textContent=label;
 }
 
 // ---------- member account (unified access: one login, capability-composed) ----------
@@ -3045,7 +3466,21 @@ go=function(p,id){_go(p,id); if(p==='account'){acctRefresh();}};
 // Stripe return / magic-link landing (token itself is adopted by the mini client above)
 (function(){
   var q=new URLSearchParams(location.search);
-  if(q.has('session_id')||q.has('registered')){history.replaceState({},'',location.pathname);_go('confirm');}
+  if(q.has('session_id')||q.has('registered')){
+    var vt=q.get('verify');
+    if(vt==='student'||vt==='faculty'){
+      var cfs=document.getElementById('cf-sub');
+      if(cfs)cfs.textContent='Your registration is confirmed and a receipt has been emailed to you. We will confirm your '+
+        (vt==='student'?'student':'college faculty')+' status by email before the event.';
+    }
+    history.replaceState({},'',location.pathname);_go('confirm');
+  }
+  // Sample-data walkthrough, for showing the account area without an account.
+  // Deliberately opt-in: advancedorthogonal.com/?preview=accounts
+  if(q.get('preview')==='accounts'){
+    var dl=document.getElementById('demo-link');
+    if(dl)dl.style.display='';
+  }
   if(SBS.token){setTimeout(function(){go('account');},300);}
 })();
 
