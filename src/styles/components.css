@@ -1057,17 +1057,22 @@ a.othercard {
 
 .ma {
   display: grid;
-  grid-template-columns: 208px 1fr;
+  grid-template-columns: 208px minmax(0, 1fr);
   min-height: 70vh;
   background: var(--color-surface-base);
-  max-width: var(--container-page);
-  margin: 0 auto;
+  /* Full-bleed: the rail is pinned to the left edge however wide the window
+   * is. The reading column inside .ma-main keeps its own measure. */
 }
 
 /* ------------------------------------------------------------------ rail -- */
 .ma-rail {
   background: var(--color-surface-rail);
   padding: 14px 0 34px;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
 }
 .ma-rail .grp {
   display: block;
@@ -1111,6 +1116,7 @@ a.othercard {
 .ma-main {
   padding: 26px 26px 60px;
   min-width: 0;
+  max-width: 1180px;
   background: var(--color-surface-base);
 }
 .ma-main h1 {
@@ -1315,11 +1321,24 @@ a.othercard {
 }
 
 @media (max-width: 760px) {
-  .ma { grid-template-columns: 1fr; }
-  .ma-rail { padding: 8px 0 14px; display: flex; flex-wrap: wrap; }
-  .ma-rail .grp { width: 100%; padding: 10px 16px 4px; }
-  .ma-rail a { width: auto; border-left: 0; border-bottom: 2px solid transparent; }
-  .ma-rail a.on { border-left: 0; border-bottom-color: var(--color-brand-accent); }
+  /* auto 1fr: the rail row takes only its content; min-height goes to main. */
+  .ma { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  /* On a phone the rail is a sticky strip you swipe sideways — one thumb
+   * gesture, the current tab scrolled into view, content on the first screen. */
+  .ma-rail {
+    position: sticky; top: 0; z-index: 20; height: auto; align-self: auto;
+    padding: 8px 10px; display: flex; flex-wrap: nowrap; gap: 6px;
+    overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; box-shadow: 0 6px 18px oklch(20.85% 0.0346 238.78 / 25%);
+  }
+  .ma-rail::-webkit-scrollbar { display: none; }
+  .ma-rail > div { display: contents; }
+  .ma-rail .grp { display: none; }
+  .ma-rail a {
+    width: auto; flex: 0 0 auto; padding: 8px 13px; min-height: 38px;
+    border: 1px solid var(--color-border-on-inverse); border-radius: 999px; border-left-width: 1px;
+  }
+  .ma-rail a.on { border-color: var(--color-brand-accent); background: var(--color-surface-rail-active); }
   .ma-main { padding: 20px 16px 50px; }
 }
 

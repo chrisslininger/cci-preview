@@ -34,6 +34,12 @@ export default function MemberShell() {
 
   const item = findNav(tab)
 
+  // On a phone the rail is a horizontal strip; keep the current tab in view.
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.innerWidth > 760) return
+    document.querySelector('.ma-rail a.on')?.scrollIntoView({ inline: 'center', block: 'nearest' })
+  }, [tab])
+
   return (
     <>
       <div className="ma-top">
