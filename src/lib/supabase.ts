@@ -31,8 +31,31 @@ const STORAGE_KEY = 'aoi.session'
  * unreliable. We keep the refresh token and renew before expiry. */
 const RENEW_MARGIN_MS = 60_000
 
-/** True while the page is a password-recovery landing. */
-export let recoveryMode = false
+/* Password recovery.
+ *
+ * Supabase sends the recovery link to `email_redirect_to` only when that URL is
+ * on the project's allow-list; otherwise it falls back to the Site URL, which
+ * is the homepage. So the token can arrive on any page. We adopt it wherever it
+ * lands, raise a flag, and send the visitor to the reset page. The flag lives in
+ * sessionStorage so it survives that redirect and dies with the tab. */
+const RECOVERY_KEY = 'aoi.recovery'
+const LINK_ERROR_KEY_EARLY = 'aoi.linkerror'
+const RESET_PATH = '/reset-password'
+
+export function isRecovery(): boolean {
+  try {
+    return window.sessionStorage.getItem(RECOVERY_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+export function clearRecovery(): void {
+  try {
+    window.sessionStorage.removeItem(RECOVERY_KEY)
+  } catch {
+    /* ignore */
+  }
+}
 
 function store(): Storage | null {
   try {
@@ -87,22 +110,37 @@ export function initSession(): void {
       refresh_token: params.get('refresh_token') ?? undefined,
       expires_in: params.get('expires_in') ?? undefined,
     })
-    // A recovery link lands here too. The account page reads this to show the
-    // "choose a new password" card instead of the signed-in shell.
-    recoveryMode = params.get('type') === 'recovery'
-    window.history.replaceState(
-      {},
-      '',
-      window.location.pathname + window.location.search + (recoveryMode ? '#new-password' : ''),
-    )
+    if (params.get('type') === 'recovery') {
+      try {
+        window.sessionStorage.setItem(RECOVERY_KEY, '1')
+      } catch {
+        /* ignore */
+      }
+      if (window.location.pathname !== RESET_PATH) {
+        window.location.replace(RESET_PATH)
+        return
+      }
+    }
+    window.history.replaceState({}, '', window.location.pathname + window.location.search)
     return
   }
 
   // An expired or already-used link comes back as an error in the hash rather
-  // than as a token. Surfacing it beats silently doing nothing.
+  // than as a token, and — like the token — it can land on any page. Keep the
+  // message across the redirect and take the visitor to the page that can act
+  // on it.
   if (hash.includes('error_description=')) {
     const params = new URLSearchParams(hash.slice(1))
-    linkError = (params.get('error_description') ?? 'That link is no longer valid.').replace(/\+/g, ' ')
+    const msg = (params.get('error_description') ?? 'That link is no longer valid.').replace(/\+/g, ' ')
+    try {
+      window.sessionStorage.setItem(LINK_ERROR_KEY_EARLY, msg)
+    } catch {
+      /* ignore */
+    }
+    if (window.location.pathname !== RESET_PATH) {
+      window.location.replace(RESET_PATH)
+      return
+    }
     window.history.replaceState({}, '', window.location.pathname + window.location.search)
   }
 
@@ -121,10 +159,21 @@ export function initSession(): void {
   }
 }
 
-/** Set when a magic or recovery link could not be used. */
-export let linkError: string | null = null
+/** The reason a magic or recovery link could not be used, if any. */
+const LINK_ERROR_KEY = 'aoi.linkerror'
+export function linkError(): string | null {
+  try {
+    return window.sessionStorage.getItem(LINK_ERROR_KEY)
+  } catch {
+    return null
+  }
+}
 export function clearLinkError(): void {
-  linkError = null
+  try {
+    window.sessionStorage.removeItem(LINK_ERROR_KEY)
+  } catch {
+    /* ignore */
+  }
 }
 
 let renewing: Promise<void> | null = null
@@ -227,7 +276,7 @@ export async function updatePassword(password: string): Promise<void> {
     const data = await res.json()
     throw new Error(data.error_description || data.msg || data.message || 'Could not set the password')
   }
-  recoveryMode = false
+  clearRecovery()
 }
 
 export function signOut(): void {
@@ -235,7 +284,7 @@ export function signOut(): void {
   session.refresh = null
   session.expires = 0
   session.user = null
-  recoveryMode = false
+  clearRecovery()
   try {
     store()?.removeItem(STORAGE_KEY)
   } catch {

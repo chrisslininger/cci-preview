@@ -33,6 +33,7 @@ import ArticlesPage from '@/pages/ArticlesPage'
 import ArticlePage from '@/pages/ArticlePage'
 import ProblemPage from '@/pages/ProblemPage'
 import ContactPage from '@/pages/ContactPage'
+import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import ConfirmPage from '@/pages/ConfirmPage'
 import AccountPage from '@/pages/AccountPage'
 import NotFoundPage from '@/pages/NotFoundPage'
@@ -321,6 +322,16 @@ const privateRoutes: RouteEntry[] = [
       title: 'Member Account — Advanced Orthogonal Institute',
       description:
         'Sign in to your Advanced Orthogonal Institute member account to manage registrations, certification and your directory listing.',
+      noindex: true,
+    },
+  },
+  {
+    path: '/reset-password',
+    Component: ResetPasswordPage,
+    prerender: false,
+    meta: {
+      title: 'Reset Password — Advanced Orthogonal Institute',
+      description: 'Reset the password on your Advanced Orthogonal Institute member account.',
       noindex: true,
     },
   },

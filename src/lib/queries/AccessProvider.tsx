@@ -6,7 +6,7 @@
  * -------------------------------------------------------------------------- */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { rpc, session } from '@/lib/supabase'
+import { rpc, session, isRecovery } from '@/lib/supabase'
 import { NO_ACCESS } from '@/lib/access'
 import type { Access, Capability } from '@/lib/access'
 
@@ -38,7 +38,10 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   const [signedIn, setSignedIn] = useState(Boolean(session.token))
 
   const refresh = useCallback(async () => {
-    if (!session.token) {
+    // A recovery token is a real session, but the person has not chosen a
+    // password yet. Reporting "signed out" keeps the header on Member Login
+    // and the shell closed until the reset page finishes the job.
+    if (!session.token || isRecovery()) {
       setAccess(NO_ACCESS)
       setSignedIn(false)
       setLoading(false)
