@@ -7,6 +7,7 @@
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from '@/lib/router'
+import AccountMenu from './AccountMenu'
 
 type Item = { label: string; to: string }
 type Group = { label: string; to: string; key: string; items: (Item | { group: string })[] }
@@ -136,9 +137,7 @@ export default function SiteHeader() {
             />
           </Link>
           <div className="lr-r">
-            <Link className="b p-btn hdr-btn" to="/account">
-              Member Login
-            </Link>
+            <AccountMenu />
           </div>
         </div>
       </div>

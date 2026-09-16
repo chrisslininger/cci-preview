@@ -1484,3 +1484,110 @@ a.othercard {
   .os-tr, .os-tr-3, .os-th-3 { grid-template-columns: 1fr 1fr; row-gap: 6px; }
   .os-th { display: none; }
 }
+
+/* ---------------------------------------------------------------------------
+ * Header account control — avatar + menu.
+ * ------------------------------------------------------------------------- */
+
+.acctmenu { position: relative; }
+
+.acctbtn {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+  border-radius: 999px;
+}
+.acctbtn:focus-visible { outline: 2px solid var(--color-brand-accent); outline-offset: 3px; }
+
+.acctav {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: var(--color-surface-inverse);
+  color: var(--color-brand-accent);
+  border: 1.5px solid var(--color-brand-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.acctbtn:hover .acctav { border-color: var(--color-brand-accent-bright); transform: translateY(-1px); }
+
+.acctdrop {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 60;
+  min-width: 216px;
+  padding: 6px;
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 6px;
+  box-shadow: 0 14px 38px oklch(20.85% 0.0346 238.78 / 16%);
+}
+
+.acctwho {
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  margin-bottom: 6px;
+}
+.acctwho b { display: block; font-size: 14px; color: var(--color-content-primary); }
+.acctwho span {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-brand-accent-strong);
+}
+
+.acctdrop a,
+.acctdrop .acctout {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  text-align: left;
+  font-size: 13.5px;
+  color: var(--color-content-secondary);
+  text-decoration: none;
+  cursor: pointer;
+}
+.acctdrop a:hover,
+.acctdrop .acctout:hover {
+  background: var(--color-surface-sunken);
+  color: var(--color-content-primary);
+}
+
+.acctsep { height: 1px; margin: 6px 0; background: var(--color-border-subtle); }
+.acctout { color: var(--color-content-muted); }
+
+/* The reset control sits under the sign-in buttons as a quiet third option. */
+.acct-reset {
+  margin-top: 2px;
+  padding: 6px;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+}
+.acct-reset:disabled { opacity: 0.5; cursor: default; }
+
+.li-err-x {
+  float: right;
+  border: 0;
+  background: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  padding: 0 0 0 10px;
+}
