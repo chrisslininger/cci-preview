@@ -1,0 +1,22 @@
+{
+  "name": "advanced-orthogonal-institute",
+  "private": true,
+  "version": "5.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs && node scripts/verify-prerender.mjs",
+    "typecheck": "tsc --noEmit",
+    "serve": "node scripts/serve.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@types/node": "^22.15.3",
+    "esbuild": "^0.27.7",
+    "typescript": "^5.9.2"
+  }
+}

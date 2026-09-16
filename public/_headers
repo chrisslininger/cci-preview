@@ -1,0 +1,22 @@
+# Cloudflare Pages response headers.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Fingerprinted build output never changes under the same name.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=2592000
+
+/hero.mp4
+  Cache-Control: public, max-age=2592000
+
+# HTML is revalidated so a content change goes live on the next deploy.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

@@ -1,0 +1,24 @@
+# Cloudflare Pages redirects.
+#
+# The v4.8 site was a single URL, so there are no deep links to preserve — but
+# these cover the shapes people and old bookmarks are most likely to try, plus
+# the hash routes the JS build could produce.
+
+/index.html            /                                      301
+/home                  /                                      301
+/about-the-institute   /about                                 301
+/the-advo-difference   /advo-difference                       301
+/difference            /advo-difference                       301
+/board                 /board-of-directors                    301
+/events                /seminars                              301
+/seminar/*             /seminars/:splat                       301
+/certification/level-1 /certification/advo-level-1            301
+/certification/level-2 /certification/advo-level-2            301
+/cert-l1               /certification/advo-level-1            301
+/cert-l2               /certification/advo-level-2            301
+/conference            /seminars/annual-conference-2026       301
+/annual-conference     /seminars/annual-conference-2026       301
+/intro                 /seminars/intro-to-advo                301
+/internships           /seminars/internships                  301
+/articles-research     /articles                              301
+/account/*             /account                               200

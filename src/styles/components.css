@@ -1,0 +1,1324 @@
+/* ----------------------------------------------------------------------------
+ * Component layer — the board-approved v4.8 visual design.
+ *
+ * Ported from the single-file build so the rebuild is pixel-identical to what
+ * the Board signed off on. Every colour here resolves to a token in
+ * tokens.css; no raw hex is permitted in this file.
+ * -------------------------------------------------------------------------- */
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  a{cursor:pointer}
+
+  /* ============ BUTTONS ============ */
+  .b{font-family:var(--font-display);display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:16px 32px;cursor:pointer;border:none;position:relative;overflow:hidden;border-radius:3px;transition:all .28s ease;user-select:none;text-decoration:none}
+  .p-btn{background:var(--color-brand-accent);color:var(--color-surface-inverse)}
+  .p-btn::before{content:'';position:absolute;top:0;left:-80%;width:55%;height:100%;background:linear-gradient(100deg,transparent,color-mix(in oklab, var(--color-surface-base) 50%, transparent),transparent);transform:skewX(-22deg);transition:left .5s ease}
+  .p-btn:hover::before{left:120%}
+  .p-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px color-mix(in oklab, var(--color-brand-accent) 42%, transparent)}
+  .s-btn{background:transparent;z-index:1}
+  .s-btn::before{content:'';position:absolute;inset:0;transform:scaleY(0);transform-origin:bottom;transition:transform .3s ease;z-index:-1}
+  .s-btn:hover::before{transform:scaleY(1)}
+  .s-btn.on-light{color:var(--color-brand-primary-deep);box-shadow:inset 0 0 0 1.5px var(--color-brand-primary)}
+  .s-btn.on-light::before{background:var(--color-brand-primary-deep)}
+  .s-btn.on-light:hover{color:var(--color-surface-base)}
+  .s-btn.on-dark{color:var(--color-surface-base);box-shadow:inset 0 0 0 1.5px color-mix(in oklab, var(--color-surface-base) 55%, transparent)}
+  .s-btn.on-dark::before{background:var(--color-surface-base)}
+  .s-btn.on-dark:hover{color:var(--color-surface-inverse)}
+  .b.sm{padding:11px 20px;font-size:11.5px}
+  .b.lg{padding:19px 40px;font-size:14px}
+  .t-link{font-family:var(--font-display);font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;position:relative;padding-bottom:4px;display:inline-flex;align-items:center;gap:8px;color:var(--color-brand-accent-strong);text-decoration:none}
+  .t-link::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--color-brand-accent);transform:scaleX(.3);transform-origin:left;transition:transform .3s ease}
+  .t-link:hover::after{transform:scaleX(1)}
+  .t-link .a{transition:transform .3s ease}
+  .t-link:hover .a{transform:translateX(5px)}
+
+  /* ============ STICKY MIDNIGHT HEADER ============ */
+  header.site{position:sticky;top:0;z-index:100;background:var(--color-surface-inverse);box-shadow:0 2px 20px color-mix(in oklab, var(--color-surface-inverse) 35%, transparent)}
+  /* --- row 1: centered logo + member login --- */
+  .logorow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;padding:18px 0 16px}
+  .lr-l{display:flex;align-items:center;justify-content:flex-start}
+  .lr-r{display:flex;align-items:center;justify-content:flex-end;gap:12px}
+  .logo{display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+  .logo .logoimg{height:72px;width:auto;display:block;transition:transform .3s ease}
+  .logo:hover .logoimg{transform:scale(1.03)}
+  .hdr-btn{padding:11px 22px;font-size:11px;letter-spacing:.13em;white-space:nowrap}
+  /* --- row 2: menu bar beneath the logo --- */
+  .navrow{border-top:1px solid color-mix(in oklab, var(--color-surface-base) 9%, transparent);background:color-mix(in oklab, var(--color-surface-base) 1.8%, transparent)}
+  .menu{display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap}
+  .mi{position:relative}
+  .mi > a{font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:.05em;color:color-mix(in oklab, var(--color-surface-base) 85%, transparent);text-decoration:none;padding:15px 15px;display:inline-flex;align-items:center;gap:6px;position:relative;transition:color .2s;cursor:pointer}
+  .mi > a::after{content:'';position:absolute;left:15px;right:15px;bottom:7px;height:2px;background:var(--color-brand-accent);transform:scaleX(0);transform-origin:left;transition:transform .28s ease}
+  .mi > a:hover,.mi > a.on{color:var(--color-surface-base)}
+  .mi > a:hover::after,.mi > a.on::after{transform:scaleX(1)}
+  .mi .car{font-size:8px;color:var(--color-brand-accent);transform:translateY(-1px)}
+  .drop{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(8px);min-width:250px;background:var(--color-surface-inverse-raised);border:1px solid color-mix(in oklab, var(--color-surface-base) 9%, transparent);border-top:2px solid var(--color-brand-accent);border-radius:0 0 6px 6px;padding:10px 0;opacity:0;visibility:hidden;transition:all .22s ease;box-shadow:0 18px 40px color-mix(in oklab, oklch(0% 0 0) 40%, transparent)}
+  .mi:hover .drop{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+  .drop a{display:block;font-family:var(--font-display);font-size:13px;font-weight:500;color:color-mix(in oklab, var(--color-surface-base) 78%, transparent);text-decoration:none;padding:10px 22px;transition:all .18s;cursor:pointer}
+  .drop a:hover{color:var(--color-surface-base);background:color-mix(in oklab, var(--color-brand-accent) 12%, transparent);padding-left:27px}
+  .drop .grp{font-family:var(--font-mono);font-size:9px;letter-spacing:.22em;color:var(--color-brand-accent);padding:10px 22px 4px}
+  .menu-btn{margin-left:16px;color:var(--color-brand-accent-bright) !important;box-shadow:inset 0 0 0 1.5px color-mix(in oklab, var(--color-brand-accent) 75%, transparent) !important}
+  .menu-btn::before{background:var(--color-brand-accent) !important}
+  .menu-btn:hover{color:var(--color-surface-inverse) !important}
+  .menu-btn.active-pg{background:var(--color-brand-accent);color:var(--color-surface-inverse) !important;box-shadow:none !important}
+  .burger{display:none;background:none;border:1.5px solid color-mix(in oklab, var(--color-surface-base) 30%, transparent);border-radius:3px;padding:9px 12px;cursor:pointer}
+  .burger span{display:block;width:20px;height:2px;background:var(--color-surface-base);margin:4px 0;transition:all .25s}
+  /* mobile panel */
+  .mpanel{display:none;background:var(--color-surface-inverse-raised);border-top:1px solid color-mix(in oklab, var(--color-surface-base) 8%, transparent);max-height:75vh;overflow-y:auto}
+  .mpanel.open{display:block}
+  .mpanel a{display:block;font-family:var(--font-display);font-size:14px;font-weight:600;color:color-mix(in oklab, var(--color-surface-base) 85%, transparent);text-decoration:none;padding:13px 28px;border-bottom:1px solid color-mix(in oklab, var(--color-surface-base) 5%, transparent)}
+  .mpanel a:active{background:color-mix(in oklab, var(--color-brand-accent) 15%, transparent)}
+  .mpanel .grp{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;color:var(--color-brand-accent);padding:16px 28px 6px}
+  .mpanel .sub{padding-left:44px;font-weight:500;font-size:13.5px;color:color-mix(in oklab, var(--color-surface-base) 70%, transparent)}
+  @media(max-width:1020px){.navrow{display:none}.burger{display:block}.logorow{grid-template-columns:auto 1fr auto;padding:12px 0}.logo{justify-content:flex-start}.logo .logoimg{height:52px}.lr-l{order:3;justify-content:flex-end}.hdr-btn{padding:10px 16px;font-size:10px}}
+  @media(max-width:620px){.logo .logoimg{height:42px}.hdr-btn{display:none}}
+
+  /* ============ PAGE MECHANICS ============ */
+  .page{display:none}
+  .page.on{display:block}
+
+  /* ============ HERO HEADERS (photo-led, replicable) ============ */
+  .hero-img{position:relative;overflow:hidden;color:var(--color-surface-base)}
+  .hero-img .bg{position:absolute;inset:0}
+  .hero-img .duo{position:absolute;inset:0;background:linear-gradient(140deg, color-mix(in oklab, var(--color-brand-primary-deep) 70%, transparent), color-mix(in oklab, var(--color-surface-inverse) 88%, transparent));mix-blend-mode:multiply}
+  .hero-img .duo2{position:absolute;inset:0;background:linear-gradient(160deg, color-mix(in oklab, var(--color-brand-primary) 22%, transparent), transparent 60%);mix-blend-mode:screen}
+  .hero-img .scrim{position:absolute;inset:0;background:linear-gradient(to top, color-mix(in oklab, var(--color-surface-inverse) 72%, transparent), color-mix(in oklab, var(--color-surface-inverse) 28%, transparent) 55%, color-mix(in oklab, var(--color-surface-inverse) 35%, transparent))}
+  .hero-img .inner{position:relative;z-index:2;padding:96px 28px 84px}
+  .hero-img.short .inner{padding:78px 28px 64px}
+  .hero-img .kick{color:var(--color-brand-accent-bright)}
+  .hero-img h1{font-size:46px;font-weight:700;letter-spacing:-.015em;line-height:1.08;max-width:820px;text-shadow:0 2px 24px color-mix(in oklab, var(--color-surface-inverse) 50%, transparent)}
+  .hero-img p.sub{margin-top:16px;font-size:16.5px;color:color-mix(in oklab, var(--color-surface-base) 88%, transparent);max-width:600px}
+  .hero-img .goldrule{margin-top:26px}
+  .hero-img .crumbs{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;color:color-mix(in oklab, var(--color-surface-base) 65%, transparent);margin-bottom:18px}
+  .hero-img .crumbs b{color:var(--color-brand-accent-bright);font-weight:500}
+  .rtiers{display:grid;gap:8px;margin-bottom:18px}
+  .rt-opt{display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--color-border-subtle);border-radius:4px;padding:13px 15px;cursor:pointer;transition:border-color .16s ease,background .16s ease}
+  .rt-opt:hover{border-color:var(--color-brand-primary)}
+  .rt-opt.on{border-color:var(--color-brand-primary);background:var(--color-surface-raised)}
+  .rt-opt .rt-dot{flex:0 0 auto;width:16px;height:16px;margin-top:2px;border-radius:50%;border:2px solid var(--color-border-strong);position:relative}
+  .rt-opt.on .rt-dot{border-color:var(--color-brand-primary)}
+  .rt-opt.on .rt-dot:after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--color-brand-primary)}
+  .rt-opt .rt-l{flex:1 1 auto;min-width:0}
+  .rt-opt .rt-l b{display:block;font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--color-surface-inverse)}
+  .rt-opt .rt-l i{display:block;font-style:normal;font-size:12px;color:var(--color-content-muted);line-height:1.5;margin-top:2px}
+  .rt-opt .rt-pr{flex:0 0 auto;font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--color-brand-primary-deep)}
+  .regband{background:var(--color-surface-inverse);border-radius:6px;padding:52px 48px;box-shadow:0 30px 70px color-mix(in oklab, var(--color-surface-inverse) 28%, transparent);position:relative;overflow:hidden}
+  .regband:before{content:"";position:absolute;inset:0;background:linear-gradient(150deg, color-mix(in oklab, var(--color-brand-primary) 30%, transparent), transparent 62%);pointer-events:none}
+  .regband > *{position:relative;z-index:1}
+  .regband .rb-kick{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.18em;color:var(--color-brand-accent-bright);text-transform:uppercase}
+  .regband h2{font-family:var(--font-display);font-weight:700;font-size:31px;line-height:1.15;letter-spacing:-.015em;color:var(--color-surface-base);margin-top:12px}
+  .regband .rb-rule{width:54px;height:3px;background:var(--color-brand-accent);margin:18px 0 16px}
+  .regband .rb-sub{font-size:14.5px;color:color-mix(in oklab, var(--color-surface-base) 78%, transparent);max-width:640px}
+  .regband .rb-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+  .regband .rt{background:color-mix(in oklab, var(--color-surface-base) 5.5%, transparent);border:1px solid color-mix(in oklab, var(--color-surface-base) 14%, transparent);border-radius:4px;padding:22px 20px 20px;position:relative}
+  .regband .rt.hi{background:color-mix(in oklab, var(--color-brand-accent) 13%, transparent);border-color:color-mix(in oklab, var(--color-brand-accent) 55%, transparent)}
+  .regband .rt-flag{position:absolute;top:-9px;left:18px;background:var(--color-brand-accent);color:var(--color-surface-inverse);font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;padding:3px 9px;border-radius:2px;font-weight:600}
+  .regband .rt-k{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;color:color-mix(in oklab, var(--color-surface-base) 62%, transparent);text-transform:uppercase}
+  .regband .rt-p{font-family:var(--font-display);font-weight:700;font-size:30px;color:var(--color-surface-base);margin:8px 0 8px;letter-spacing:-.02em}
+  .regband .rt.hi .rt-p{color:var(--color-brand-accent-bright)}
+  .regband .rt-n{font-size:12.5px;line-height:1.55;color:color-mix(in oklab, var(--color-surface-base) 70%, transparent)}
+  .regband .rb-go{margin-top:34px;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+  .regband .rb-note{font-size:12.5px;color:color-mix(in oklab, var(--color-surface-base) 62%, transparent);max-width:460px;line-height:1.6}
+  @media(max-width:1000px){.regband .rb-tiers{grid-template-columns:1fr 1fr}}
+  @media(max-width:640px){.regband{padding:34px 22px}.regband h2{font-size:25px}.regband .rb-tiers{grid-template-columns:1fr}.regband .rb-go .b{width:100%;justify-content:center}}
+  .nosess{display:flex;align-items:center;gap:22px;flex-wrap:wrap;border:1px solid var(--color-border-subtle);border-left:4px solid var(--color-brand-primary);border-radius:4px;background:var(--color-surface-raised);padding:26px 28px}
+  .nosess .ns-ic{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:var(--color-surface-base);border:1px solid var(--color-border-subtle);display:flex;align-items:center;justify-content:center}
+  .nosess .ns-bd{flex:1 1 320px;min-width:0}
+  .nosess .ns-bd h4{font-family:var(--font-display);font-weight:700;font-size:16.5px;color:var(--color-content-primary);margin:0 0 6px}
+  .nosess .ns-bd p{font-size:13.5px;color:var(--color-content-secondary);margin:0;line-height:1.6}
+  .nosess .ns-cta{flex:0 0 auto}
+  @media(max-width:640px){.nosess{padding:22px 20px;gap:16px}.nosess .ns-cta{width:100%}.nosess .ns-cta .b{width:100%;justify-content:center}}
+  .hmeta{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px}
+  .hmeta .hm{font-family:var(--font-display)}
+  .hmeta .hm b{display:block;font-size:16px;font-weight:700;color:var(--color-surface-base)}
+  .hmeta .hm span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-brand-accent-bright);font-weight:600}
+
+  /* simulated photos */
+  .ph-a{background:radial-gradient(ellipse 45% 55% at 62% 45%, var(--color-tile-blue-1) 0%, transparent 55%),radial-gradient(ellipse 40% 50% at 25% 60%, var(--color-tile-blue-3) 0%, transparent 60%),linear-gradient(135deg,var(--color-content-muted) 0%,var(--color-tile-blue-2) 50%,var(--color-tile-blue-4) 100%)}
+  .ph-b{background:radial-gradient(ellipse 50% 45% at 40% 50%, var(--color-content-muted) 0%, transparent 58%),radial-gradient(ellipse 45% 55% at 75% 40%, var(--color-tile-cool-2) 0%, transparent 55%),linear-gradient(150deg,var(--color-tile-cool-2) 0%,var(--color-tile-cool-3) 55%,var(--color-tile-cool-4) 100%)}
+  .ph-c{background:radial-gradient(ellipse 55% 60% at 55% 45%, var(--color-tile-warm-1) 0%, transparent 60%),linear-gradient(140deg,var(--color-tile-warm-2) 0%,var(--color-tile-warm-3) 55%,var(--color-tile-warm-4) 100%)}
+
+  /* ============ SECTIONS ============ */
+  section{padding:72px 0}
+  section.tight{padding:52px 0}
+  section.mist{background:var(--color-surface-raised)}
+  section.dark{background:var(--color-surface-inverse);color:var(--color-surface-base)}
+  .kick{font-family:var(--font-display);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--color-brand-accent-strong);font-weight:600;margin-bottom:14px}
+  section.dark .kick{color:var(--color-brand-accent)}
+  h2.t{font-size:33px;font-weight:700;line-height:1.16;margin-bottom:16px;letter-spacing:-.01em}
+  p.lede{font-size:16.5px;color:var(--color-content-secondary);max-width:760px}
+  section.dark p.lede{color:var(--color-content-on-inverse-muted)}
+  .prose{max-width:800px}
+  .prose p{font-size:15.5px;color:var(--color-content-secondary);margin-bottom:18px}
+  .prose h3{font-size:21px;margin:32px 0 12px;color:var(--color-content-primary)}
+  .prose ul{margin:0 0 18px 22px}
+  .prose li{font-size:15.5px;color:var(--color-content-secondary);margin-bottom:8px}
+  .goldrule{width:56px;height:3px;background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-strong));border-radius:2px;margin-bottom:22px}
+
+  /* testimonial video pills */
+  .vpill{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;padding:7px 12px;border:1px solid color-mix(in oklab, var(--color-surface-base) 25%, transparent);color:color-mix(in oklab, var(--color-surface-base) 75%, transparent);border-radius:3px;cursor:pointer;transition:all .25s ease;user-select:none}
+  .vpill:hover{border-color:var(--color-brand-accent);color:var(--color-surface-base)}
+  .vpill.on{background:var(--color-brand-accent);color:var(--color-surface-inverse);border-color:var(--color-brand-accent);font-weight:600}
+  /* video placeholder */
+  .video{position:relative;border-radius:6px;overflow:hidden;background:linear-gradient(135deg,var(--color-surface-inverse-raised),var(--color-brand-primary-deep));aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 24px 60px color-mix(in oklab, var(--color-surface-inverse) 25%, transparent);transition:transform .3s ease, box-shadow .3s ease}
+  .video:hover{transform:translateY(-4px);box-shadow:0 32px 70px color-mix(in oklab, var(--color-surface-inverse) 32%, transparent)}
+  .video::before{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;border:1.5px solid color-mix(in oklab, var(--color-brand-accent) 35%, transparent);border-radius:50%}
+  .video .play{width:74px;height:74px;border-radius:50%;background:var(--color-brand-accent);display:flex;align-items:center;justify-content:center;transition:transform .3s ease, box-shadow .3s ease;z-index:2}
+  .video:hover .play{transform:scale(1.1);box-shadow:0 0 0 14px color-mix(in oklab, var(--color-brand-accent) 18%, transparent)}
+  .video .play svg{margin-left:5px}
+  .video .lbl{position:absolute;left:20px;bottom:16px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;color:color-mix(in oklab, var(--color-surface-base) 75%, transparent);z-index:2}
+  .video .dur{position:absolute;right:20px;bottom:16px;font-family:var(--font-mono);font-size:10.5px;color:color-mix(in oklab, var(--color-surface-base) 60%, transparent);z-index:2}
+
+  /* cards */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .card{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;overflow:hidden;position:relative;transition:transform .32s ease, box-shadow .32s ease}
+  .card::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-strong));transform:scaleX(0);transform-origin:left;transition:transform .4s ease;z-index:2}
+  .card:hover{transform:translateY(-6px);box-shadow:0 22px 48px color-mix(in oklab, var(--color-surface-inverse) 16%, transparent)}
+  .card:hover::after{transform:scaleX(1)}
+  .card .imgwrap{height:170px;position:relative;overflow:hidden}
+  .card .img{position:absolute;inset:0;transition:transform .6s ease}
+  .card:hover .img{transform:scale(1.06)}
+  .duo{position:absolute;inset:0;background:linear-gradient(140deg, color-mix(in oklab, var(--color-brand-primary-deep) 75%, transparent), color-mix(in oklab, var(--color-surface-inverse) 85%, transparent));mix-blend-mode:multiply}
+  .duo2{position:absolute;inset:0;background:linear-gradient(160deg, color-mix(in oklab, var(--color-brand-primary) 25%, transparent), transparent 60%);mix-blend-mode:screen}
+  .scrim{position:absolute;inset:0;background:linear-gradient(to top, color-mix(in oklab, var(--color-surface-inverse) 88%, transparent) 0%, color-mix(in oklab, var(--color-surface-inverse) 25%, transparent) 45%, transparent 100%)}
+  .card .datechip{position:absolute;left:16px;top:16px;background:var(--color-brand-accent);color:var(--color-surface-inverse);font-family:var(--font-display);font-size:10.5px;font-weight:700;letter-spacing:.08em;padding:6px 12px;border-radius:3px;z-index:2}
+  .card .loc{position:absolute;left:16px;bottom:12px;color:var(--color-surface-base);font-family:var(--font-display);font-size:12px;font-weight:600;letter-spacing:.14em;z-index:2}
+  .card .loc span{color:var(--color-brand-accent-bright)}
+  .card .bd{padding:22px 24px 24px}
+  .card h3{font-size:19px;font-weight:700;margin-bottom:6px}
+  .card .meta{font-family:var(--font-mono);font-size:10.5px;color:var(--color-content-muted);letter-spacing:.08em;margin-bottom:11px}
+  .card .meta b{color:var(--color-brand-accent-strong);font-weight:500}
+  .card p.desc{font-size:13.5px;color:var(--color-content-tertiary);line-height:1.6;margin-bottom:16px}
+  .card .foot{display:flex;justify-content:space-between;align-items:center}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .step{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:32px 30px;position:relative;transition:transform .3s ease, box-shadow .3s ease}
+  .step:hover{transform:translateY(-5px);box-shadow:0 18px 42px color-mix(in oklab, var(--color-surface-inverse) 12%, transparent)}
+  .step .n{font-family:var(--font-display);font-size:13px;font-weight:800;color:var(--color-brand-accent);letter-spacing:.2em;margin-bottom:14px}
+  .step h3{font-size:20px;margin-bottom:10px}
+  .step p{font-size:14px;color:var(--color-content-secondary)}
+  .step p+.b{margin-top:18px}
+
+  .quoteband{position:relative;overflow:hidden}
+  .quoteband::after{content:'';position:absolute;right:-140px;bottom:-140px;width:420px;height:420px;border:1.5px solid color-mix(in oklab, var(--color-brand-accent) 25%, transparent);border-radius:50%}
+  .quoteband .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+  blockquote{font-family:var(--font-display);font-size:23px;font-weight:500;line-height:1.45;color:var(--color-surface-base)}
+  blockquote em{font-style:normal;color:var(--color-brand-accent-bright)}
+  .attr{margin-top:20px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.14em;color:var(--color-content-muted)}
+  .attr b{color:var(--color-brand-accent);font-weight:500}
+
+  .ctaband{background:linear-gradient(120deg,var(--color-brand-primary-deep),var(--color-brand-primary));color:var(--color-surface-base);position:relative;overflow:hidden}
+  .ctaband::after{content:'';position:absolute;right:-90px;top:-90px;width:300px;height:300px;border:1.5px solid color-mix(in oklab, var(--color-surface-base) 20%, transparent);border-radius:50%}
+  .ctaband .wrap{display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap}
+  .ctaband h3{font-size:25px;font-weight:700}
+  .ctaband p{font-size:14.5px;color:color-mix(in oklab, var(--color-surface-base) 85%, transparent);margin-top:6px}
+
+  /* home hero (photo-led like all pages) */
+
+  /* member savings banner */
+  .memberbar{background:linear-gradient(100deg,var(--color-brand-accent),var(--color-brand-accent-strong));color:var(--color-surface-inverse);border-radius:6px;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-top:22px;box-shadow:0 10px 30px color-mix(in oklab, var(--color-brand-accent) 30%, transparent)}
+  .memberbar .mb-t{font-family:var(--font-display);font-weight:800;font-size:16px;letter-spacing:.02em}
+  .memberbar .mb-s{font-size:13px;font-weight:600;opacity:.85}
+  .memberbar .b{background:var(--color-surface-inverse);color:var(--color-surface-base)}
+  .memberbar .b:hover{box-shadow:0 10px 24px color-mix(in oklab, var(--color-surface-inverse) 40%, transparent)}
+
+  /* session picker */
+  .sessions{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .sess{background:var(--color-surface-base);border:1.5px solid var(--color-border-subtle);border-radius:6px;overflow:hidden;position:relative;transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease}
+  .sess:hover{transform:translateY(-5px);box-shadow:0 18px 44px color-mix(in oklab, var(--color-surface-inverse) 14%, transparent);border-color:var(--color-brand-accent)}
+  .sess .top{display:flex;align-items:center;gap:16px;padding:20px 22px;border-bottom:1px solid var(--color-border-subtle)}
+  .sess .cal{background:var(--color-surface-inverse);color:var(--color-surface-base);border-radius:6px;text-align:center;padding:9px 13px;min-width:64px}
+  .sess .cal .mo{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.2em;color:var(--color-brand-accent-bright)}
+  .sess .cal .dy{font-family:var(--font-display);font-size:19px;font-weight:800;line-height:1.15}
+  .sess .where h4{font-family:var(--font-display);font-size:16.5px;font-weight:700}
+  .sess .where span{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--color-content-muted)}
+  .sess .mid{padding:16px 22px;display:flex;justify-content:space-between;align-items:center}
+  .sess .prices .full{font-family:var(--font-display);font-size:13px;color:var(--color-content-muted);text-decoration:line-through}
+  .sess .prices .mem{font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--color-brand-accent-strong)}
+  .sess .prices .lbl{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;color:var(--color-content-muted);display:block}
+  .sess .seats{text-align:right}
+  .sess .seats b{font-family:var(--font-display);font-size:12px;font-weight:700;color:var(--color-brand-primary-deep);display:block}
+  .sess .seats span{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--color-content-muted)}
+  .sess .bot{padding:0 22px 22px}
+  .sess .bot .b{width:100%;justify-content:center}
+  .sess.soon .cal{background:var(--color-content-muted)}
+  .sess .flag{position:absolute;top:14px;right:-1px;background:var(--color-brand-primary);color:var(--color-surface-base);font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;padding:4px 10px;border-radius:3px 0 0 3px}
+  @media(max-width:960px){.sessions{grid-template-columns:1fr}.featintro{grid-template-columns:1fr !important}.featintro > div:first-child{min-height:180px !important}}
+  .page-home .hero-img h1{font-size:54px;max-width:760px}
+  .hero-flex{display:grid;grid-template-columns:1fr;gap:60px;align-items:center;max-width:880px}
+  /* When the background video is actually playing, lighten the treatment so the
+     footage reads. The heavy teal multiply is right over a still photograph but
+     it buries moving video. Text stays legible via a left-weighted scrim
+     instead of a flat darkening of the whole frame. */
+  .page-home .hero-img.vid-on .duo{mix-blend-mode:normal;background:linear-gradient(100deg, color-mix(in oklab, var(--color-surface-inverse) 82%, transparent) 0%, color-mix(in oklab, var(--color-surface-inverse) 58%, transparent) 46%, color-mix(in oklab, var(--color-brand-primary-deep) 30%, transparent) 100%)}
+  .page-home .hero-img.vid-on .duo2{opacity:.35}
+  .page-home .hero-img.vid-on .scrim{background:linear-gradient(to top, color-mix(in oklab, var(--color-surface-inverse) 72%, transparent), color-mix(in oklab, var(--color-surface-inverse) 10%, transparent) 55%, color-mix(in oklab, var(--color-surface-inverse) 20%, transparent))}
+
+  /* seminar detail */
+  .facts{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden;margin-top:-46px;position:relative;z-index:5;box-shadow:0 18px 50px color-mix(in oklab, var(--color-surface-inverse) 12%, transparent)}
+  .fact{padding:22px 24px;border-right:1px solid var(--color-border-subtle)}
+  .fact:last-child{border-right:none}
+  .fact span{display:block;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.18em;color:var(--color-content-muted);margin-bottom:5px}
+  .fact b{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--color-content-primary)}
+  .fact b em{font-style:normal;color:var(--color-brand-accent-strong);font-size:11px;display:block;font-weight:600}
+  .learn{display:grid;grid-template-columns:1fr 1fr;gap:14px 30px;max-width:860px}
+  .learn .li{display:flex;gap:14px;align-items:flex-start;font-size:14.5px;color:var(--color-content-secondary)}
+  .learn .li svg{flex-shrink:0;margin-top:3px}
+  .sched{max-width:860px}
+  .srow{display:grid;grid-template-columns:170px 1fr;gap:24px;padding:20px 0;border-bottom:1px solid var(--color-border-subtle)}
+  .srow .d{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--color-brand-primary-deep);letter-spacing:.06em}
+  .srow p{font-size:14.5px;color:var(--color-content-secondary)}
+
+  /* board */
+  .people{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .person{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;overflow:hidden;transition:transform .3s ease, box-shadow .3s ease}
+  .person:hover{transform:translateY(-5px);box-shadow:0 18px 42px color-mix(in oklab, var(--color-surface-inverse) 12%, transparent)}
+  .person .photo{aspect-ratio:1/1;position:relative;display:flex;align-items:center;justify-content:center}
+  .person .photo svg{opacity:.5}
+  .person .bd{padding:20px 24px}
+  .person h3{font-size:17px;margin-bottom:2px}
+  .person .role{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;color:var(--color-brand-accent-strong)}
+
+  /* articles */
+  .arts{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .art{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;overflow:hidden;transition:transform .3s ease, box-shadow .3s ease;cursor:pointer;position:relative}
+  .art::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-strong));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+  .art:hover{transform:translateY(-6px);box-shadow:0 22px 48px color-mix(in oklab, var(--color-surface-inverse) 14%, transparent)}
+  .art:hover::after{transform:scaleX(1)}
+  .art .imgwrap{height:180px;position:relative;overflow:hidden}
+  .art .img{position:absolute;inset:0;transition:transform .6s ease}
+  .art:hover .img{transform:scale(1.06)}
+  .art .cat{position:absolute;left:16px;top:16px;background:color-mix(in oklab, var(--color-surface-inverse) 78%, transparent);backdrop-filter:blur(4px);color:var(--color-brand-accent-bright);font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;padding:5px 11px;border-radius:3px;z-index:2}
+  .art .bd{padding:22px 24px}
+  .art .date{font-family:var(--font-mono);font-size:10px;color:var(--color-content-muted);letter-spacing:.1em;margin-bottom:8px}
+  .art h3{font-size:17.5px;line-height:1.3;margin-bottom:8px}
+  .art p{font-size:13.5px;color:var(--color-content-tertiary);line-height:1.6}
+
+  /* speakers on seminar page */
+  .avx{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:50%}
+  .avx .ini{position:relative;z-index:2;font-family:var(--font-display);font-weight:800;color:color-mix(in oklab, var(--color-surface-base) 92%, transparent)}
+  .avx .duo{border-radius:0}
+  .spk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .spk-card{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;overflow:hidden;position:relative;transition:transform .3s ease, box-shadow .3s ease;cursor:pointer}
+  .spk-card::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-strong));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+  .spk-card:hover{transform:translateY(-6px);box-shadow:0 20px 44px color-mix(in oklab, var(--color-surface-inverse) 16%, transparent)}
+  .spk-card:hover::after{transform:scaleX(1)}
+  .spk-card .pho{aspect-ratio:1/1;position:relative;display:flex;align-items:center;justify-content:center}
+  .spk-card .pho .ini{position:relative;z-index:2;font-family:var(--font-display);font-weight:800;font-size:42px;color:color-mix(in oklab, var(--color-surface-base) 92%, transparent)}
+  .spk-card .rtag{position:absolute;top:14px;left:14px;background:var(--color-brand-accent);color:var(--color-surface-inverse);font-family:var(--font-mono);font-size:8.5px;letter-spacing:.16em;padding:4px 9px;border-radius:3px;z-index:3}
+  .spk-card .bd{padding:16px 18px}
+  .spk-card h4{font-family:var(--font-display);font-size:16px;font-weight:700}
+  .spk-card .cred{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;color:var(--color-brand-accent-strong);margin:3px 0 7px}
+  .spk-card p{font-size:12.5px;color:var(--color-content-tertiary);line-height:1.55}
+  /* keynote — K1 Spotlight Banner (locked) */
+  .keynote{display:flex;background:linear-gradient(135deg,var(--color-surface-inverse),var(--color-surface-inverse-raised));border-radius:3px;overflow:hidden;margin-bottom:22px;cursor:pointer;position:relative;max-width:680px;transition:transform .35s ease, box-shadow .35s ease}
+  .keynote:hover{transform:translateY(-5px);box-shadow:0 24px 48px color-mix(in oklab, var(--color-surface-inverse) 30%, transparent)}
+  .keynote .bd{padding:30px 34px;flex:1;position:relative;z-index:2;color:var(--color-surface-base)}
+  .keynote .flag{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;color:var(--color-surface-inverse);background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-bright));border-radius:3px;padding:5px 10px;margin-bottom:12px}
+  .keynote h4{font-family:var(--font-display);font-size:23px;font-weight:700;margin-bottom:4px}
+  .keynote .cred{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;color:var(--color-brand-accent-bright);margin-bottom:10px}
+  .keynote p{font-size:13px;color:color-mix(in oklab, var(--color-surface-base) 80%, transparent);line-height:1.65;margin-bottom:14px;max-width:300px}
+  .keynote .pho{width:210px;flex-shrink:0;position:relative;clip-path:polygon(22% 0,100% 0,100% 100%,0 100%);min-height:210px;display:flex;align-items:center;justify-content:center}
+  .keynote .pho .ini{position:relative;z-index:2;font-family:var(--font-display);font-weight:800;font-size:60px;color:color-mix(in oklab, var(--color-surface-base) 92%, transparent)}
+  .keynote::before{content:'';position:absolute;right:186px;top:-40px;bottom:-40px;width:3px;background:linear-gradient(180deg,var(--color-brand-accent),var(--color-brand-accent-strong));transform:rotate(11deg);z-index:3}
+  @media(max-width:700px){.keynote{flex-direction:column-reverse}.keynote .pho{width:100%;clip-path:none}.keynote::before{display:none}}
+  /* speaker pill */
+  .spk-pill{display:inline-flex;align-items:center;gap:8px;background:var(--color-surface-raised);border:1px solid var(--color-border-subtle);border-radius:100px;padding:4px 14px 4px 4px;cursor:pointer;transition:all .25s ease;margin:8px 8px 0 0}
+  .spk-pill:hover{border-color:var(--color-brand-accent);background:var(--color-surface-base);transform:translateY(-2px);box-shadow:0 8px 18px color-mix(in oklab, var(--color-surface-inverse) 14%, transparent)}
+  .spk-pill .avx{width:26px;height:26px}
+  .spk-pill .avx .ini{font-size:9px}
+  .spk-pill span.nm{font-family:var(--font-display);font-size:11.5px;font-weight:600;color:var(--color-brand-primary-deep)}
+  .spk-pill .plus{font-family:var(--font-mono);font-size:9px;color:var(--color-brand-accent-strong)}
+  /* agenda — time rail (A4) */
+  .agrow{display:grid;grid-template-columns:120px 1fr;position:relative}
+  .agrow .rail{position:relative;padding:20px 26px 20px 0;text-align:right;border-right:2px solid var(--color-border-subtle)}
+  .agrow .rail::after{content:'';position:absolute;right:-6px;top:26px;width:10px;height:10px;border-radius:50%;background:var(--color-brand-accent);transition:transform .25s ease}
+  .agrow:hover .rail::after{transform:scale(1.4)}
+  .agrow .rail .tm{font-family:var(--font-display);font-size:14px;font-weight:800;color:var(--color-surface-inverse)}
+  .agrow .rail .ap{font-family:var(--font-mono);font-size:9px;color:var(--color-content-muted);letter-spacing:.12em}
+  .agrow .acard{margin:12px 0 12px 26px;background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:18px 22px;transition:all .28s ease}
+  .agrow:hover .acard{border-color:var(--color-brand-accent);box-shadow:0 12px 30px color-mix(in oklab, var(--color-surface-inverse) 10%, transparent);transform:translateX(4px)}
+  .agrow .acard h4{font-family:var(--font-display);font-size:15.5px;font-weight:700}
+  .agrow .acard p{font-size:12.5px;color:var(--color-content-tertiary);margin-top:3px}
+  /* agenda — day tabs (A2 chrome) */
+  .agtabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+  .agtab{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:11px 20px;border-radius:3px;cursor:pointer;border:1.5px solid var(--color-border-subtle);color:var(--color-content-tertiary);transition:all .25s ease;background:var(--color-surface-base)}
+  .agtab:hover{border-color:var(--color-brand-primary);color:var(--color-brand-primary-deep)}
+  .agtab.on{background:var(--color-surface-inverse);border-color:var(--color-surface-inverse);color:var(--color-surface-base)}
+  .agtab small{display:block;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;font-weight:400;color:var(--color-content-muted);text-transform:none;margin-top:2px}
+  .agtab.on small{color:var(--color-brand-accent-bright)}
+  .agday{display:none}
+  .agday.on{display:block}
+  /* bio modal */
+  .bio-bg{position:fixed;inset:0;background:color-mix(in oklab, var(--color-surface-inverse) 72%, transparent);z-index:300;display:none;align-items:center;justify-content:center;padding:24px}
+  .bio-bg.on{display:flex}
+  .bio-m{background:var(--color-surface-base);border-radius:8px;max-width:540px;width:100%;overflow:hidden;box-shadow:0 40px 100px color-mix(in oklab, oklch(0% 0 0) 50%, transparent);border-top:4px solid var(--color-brand-accent);animation:bioin .3s ease}
+  @keyframes bioin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .bio-m .top{display:flex;gap:22px;align-items:center;padding:28px 32px 20px;border-bottom:1px solid var(--color-border-subtle)}
+  .bio-m .avx{width:84px;height:84px}
+  .bio-m .avx .ini{font-size:28px}
+  .bio-m h3{font-family:var(--font-display);font-size:22px;font-weight:700}
+  .bio-m .cred{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--color-brand-accent-strong);margin-top:3px}
+  .bio-m .rl{display:inline-block;margin-top:8px;background:var(--color-surface-raised);color:var(--color-brand-primary-deep);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.12em;padding:4px 12px;border-radius:100px}
+  .bio-m .body{padding:22px 32px 28px}
+  .bio-m .body p{font-size:14px;color:var(--color-content-secondary);line-height:1.7}
+  .bio-m .x{position:absolute;top:14px;right:16px;width:34px;height:34px;border-radius:50%;background:color-mix(in oklab, var(--color-surface-inverse) 8%, transparent);border:none;cursor:pointer;font-size:15px;color:var(--color-surface-inverse);transition:all .2s}
+  .bio-m .x:hover{background:var(--color-brand-accent);transform:rotate(90deg)}
+  .bio-m{position:relative}
+  /* registration modal + forms */
+  .fi.err{border-color:var(--color-status-danger);background:var(--color-status-danger-surface)}
+  .flabel.err{color:var(--color-status-danger)}
+  #reg-err{display:none;background:var(--color-status-danger-surface);border-left:3px solid var(--color-status-danger);color:var(--color-status-cancelled-content);font-size:13px;padding:10px 14px;border-radius:0 4px 4px 0;margin-top:14px}
+  .reg-auth{display:flex;align-items:center;gap:10px;background:var(--color-status-info-surface);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--color-brand-primary-deep);margin-bottom:4px}
+  .reg-auth b{font-weight:700}
+  .reg-strip{display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(100deg,color-mix(in oklab, var(--color-brand-accent) 12%, transparent),color-mix(in oklab, var(--color-brand-accent-strong) 12%, transparent));border:1px solid color-mix(in oklab, var(--color-brand-accent) 40%, transparent);border-radius:6px;padding:10px 14px;margin-bottom:4px;flex-wrap:wrap}
+  .reg-strip span{font-size:12.5px;color:var(--color-brand-accent-strong);font-weight:600}
+
+  .fi{font-family:var(--font-sans);font-size:14px;padding:13px 15px;border:1.5px solid var(--color-border-subtle);border-radius:3px;outline-color:var(--color-brand-primary);width:100%}
+  .flabel{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;color:var(--color-content-muted);margin:14px 0 6px;display:block}
+  .reg-summary{background:var(--color-surface-raised);border-radius:6px;padding:14px 18px;font-size:13px;color:var(--color-content-secondary);margin-top:16px}
+  .reg-summary b{color:var(--color-brand-accent-strong)}
+  /* account page */
+  .acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .acct-card{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:28px 30px}
+  .acct-card h3{font-size:18px;margin-bottom:14px}
+  .acct-card h3 .gr{display:inline-block;width:34px;height:3px;background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-strong));border-radius:2px;vertical-align:4px;margin-left:10px}
+  .acct-row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px dashed var(--color-border-subtle);font-size:14px}
+  .acct-row span{color:var(--color-content-muted);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;padding-top:3px}
+  .acct-row b{text-align:right;color:var(--color-content-primary);font-weight:600}
+  .pillst{display:inline-block;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 12px;border-radius:100px}
+  .st-paid{background:var(--color-status-info-surface);color:var(--color-brand-primary-deep)}
+  .st-free{background:var(--color-status-free-surface);color:var(--color-status-free-content)}
+  .st-pending{background:var(--color-status-pending-surface);color:var(--color-status-pending-content)}
+  .st-cancelled{background:var(--color-status-cancelled-surface);color:var(--color-status-cancelled-content)}
+    .rolechip{display:inline-block;font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 12px;border-radius:100px;margin:0 6px 6px 0;background:var(--color-surface-raised);color:var(--color-brand-primary-deep);border:1px solid var(--color-border-subtle)}
+  .rolechip.gold{background:linear-gradient(100deg,color-mix(in oklab, var(--color-brand-accent) 15%, transparent),color-mix(in oklab, var(--color-brand-accent-strong) 15%, transparent));color:var(--color-brand-accent-strong);border-color:color-mix(in oklab, var(--color-brand-accent) 45%, transparent)}
+  .atiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .atile{background:var(--color-surface-inverse);color:var(--color-surface-base);border-radius:6px;padding:20px 22px;cursor:pointer;position:relative;overflow:hidden;transition:transform .28s ease, box-shadow .28s ease}
+  .atile::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-strong));transform:scaleX(0);transform-origin:left;transition:transform .35s ease}
+  .atile:hover{transform:translateY(-4px);box-shadow:0 16px 36px color-mix(in oklab, var(--color-surface-inverse) 30%, transparent)}
+  .atile:hover::after{transform:scaleX(1)}
+  .atile h4{font-family:var(--font-display);font-size:15px;font-weight:700;margin-bottom:4px}
+  .atile p{font-size:11.5px;color:var(--color-content-on-inverse-muted);line-height:1.5}
+  .atile .tag{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.16em;color:var(--color-brand-accent-bright);display:block;margin-bottom:8px}
+  .atile.locked{background:var(--color-surface-raised);color:var(--color-content-primary);border:1px dashed var(--color-border-subtle);cursor:default}
+  .atile.locked .tag{color:var(--color-content-muted)}
+  .atile.locked p{color:var(--color-content-muted)}
+  .aev{border:1px solid var(--color-border-subtle);border-radius:6px;margin-bottom:12px;overflow:hidden}
+  .aev-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;background:var(--color-surface-base);transition:background .2s}
+  .aev-head:hover{background:var(--color-surface-raised)}
+  .aev-head h4{font-family:var(--font-display);font-size:15px;font-weight:700}
+  .aev-head .meta{font-family:var(--font-mono);font-size:10px;color:var(--color-content-muted);letter-spacing:.08em}
+  .aev-count{font-family:var(--font-display);font-weight:800;font-size:13px;background:var(--color-surface-inverse);color:var(--color-brand-accent-bright);border-radius:100px;padding:5px 14px;white-space:nowrap}
+  .aev-body{display:none;border-top:1px solid var(--color-border-subtle);padding:6px 18px 14px;background:var(--color-surface-raised)}
+  .aev.open .aev-body{display:block}
+  @media(max-width:960px){.acct-grid{grid-template-columns:1fr}.atiles{grid-template-columns:1fr 1fr}}
+
+  @media(max-width:960px){.spk-grid{grid-template-columns:1fr 1fr}.keynote{grid-template-columns:1fr}.agrow{grid-template-columns:86px 1fr}}
+
+  /* footer */
+  footer{background:var(--color-surface-inverse);color:var(--color-content-on-inverse-muted);padding:60px 0 32px}
+  .fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:44px;margin-bottom:44px}
+  footer h5{font-family:var(--font-display);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--color-brand-accent);margin-bottom:16px}
+  footer a:not(.logo),
+footer .flink{display:block;color:var(--color-content-on-inverse-muted);text-decoration:none;font-size:14px;padding:5px 0;transition:color .2s}
+  footer a:not(.logo):hover,
+footer .flink:hover{color:var(--color-surface-base)}
+  footer .tag{font-size:14px;line-height:1.7;max-width:280px;margin-top:14px}
+  .fbot{border-top:1px solid color-mix(in oklab, var(--color-surface-base) 10%, transparent);padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--color-content-muted)}
+
+  /* ============ HOME v2 — problem cards, benefits, qualification, FAQ ============ */
+  /* The hero now carries one CTA and a single sub-line instead of a stat strip,
+     so it gets noticeably more air top and bottom. */
+  /* The home hero fills the first screen: it never sits shorter than the
+     viewport minus the sticky header, but it still grows past that when the
+     copy needs more room (small screens, long headlines). */
+  .page-home .hero-img{min-height:calc(100svh - var(--hdrh, 138px));display:flex;align-items:center}
+  .page-home .hero-img .inner{padding:150px 28px 130px;width:100%}
+  .page-home .herolead{max-width:760px}
+  .page-home .herolead h1{max-width:740px}
+  .page-home .herolead p.sub{margin-top:22px;font-size:17.5px;line-height:1.62;max-width:660px}
+  .page-home .herocta{margin-top:42px;display:flex;gap:14px;flex-wrap:wrap}
+  .page-home .heronote{margin-top:26px;font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in oklab, var(--color-surface-base) 78%, transparent)}
+  .page-home .heronote b{color:var(--color-brand-accent-bright);font-weight:400;margin:0 4px}
+
+  /* Five problem cards. Five across is deliberate: the row reads as one list of
+     symptoms, and each tile is a door to its own page. */
+  .probgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:30px}
+  .probcard{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:24px 20px 20px;cursor:pointer;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease}
+  .probcard::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-strong));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+  .probcard:hover{transform:translateY(-6px);box-shadow:0 22px 48px color-mix(in oklab, var(--color-surface-inverse) 16%, transparent);border-color:color-mix(in oklab, var(--color-brand-accent) 50%, transparent)}
+  .probcard:hover::after{transform:scaleX(1)}
+  .probcard .n{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;color:var(--color-brand-accent-strong);margin-bottom:14px}
+  .probcard h3{font-size:16.5px;font-weight:700;line-height:1.3;margin-bottom:9px;color:var(--color-content-primary)}
+  .probcard p{font-size:13px;color:var(--color-content-tertiary);line-height:1.6;flex:1}
+  .probcard .go{margin-top:16px;font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--color-brand-primary-deep);display:flex;align-items:center;gap:7px}
+  .probcard .go i{font-style:normal;transition:transform .3s ease}
+  .probcard:hover .go i{transform:translateX(5px)}
+  .probclose{margin-top:28px;font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--color-content-primary)}
+
+  /* Benefits — five short answers, sitting opposite the five problems. */
+  .benegrid{display:grid;grid-template-columns:repeat(6,1fr);gap:26px;margin-top:30px}
+  .bene{grid-column:span 2}
+  .bene:nth-child(4){grid-column:2/4}
+  .bene:nth-child(5){grid-column:4/6}
+  .bene{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:28px 26px;position:relative;transition:transform .3s ease, box-shadow .3s ease}
+  .bene:hover{transform:translateY(-5px);box-shadow:0 18px 42px color-mix(in oklab, var(--color-surface-inverse) 12%, transparent)}
+  .bene .bar{width:34px;height:3px;background:linear-gradient(90deg,var(--color-brand-accent),var(--color-brand-accent-strong));border-radius:2px;margin-bottom:16px}
+  .bene h3{font-size:18.5px;margin-bottom:9px}
+  .bene p{font-size:14px;color:var(--color-content-secondary);line-height:1.65}
+
+  /* Qualification checklist */
+  .quallist{display:grid;grid-template-columns:1fr 1fr;gap:14px 32px;margin-top:28px;max-width:960px}
+  .qi{display:flex;gap:14px;align-items:flex-start;font-size:15.5px;color:var(--color-content-secondary);line-height:1.55}
+  .qi .ck{flex:none;width:22px;height:22px;border-radius:50%;background:color-mix(in oklab, var(--color-brand-accent) 14%, transparent);border:1px solid color-mix(in oklab, var(--color-brand-accent) 50%, transparent);color:var(--color-brand-accent-strong);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+
+  /* FAQ — native <details> so it works without script and stays accessible. */
+  .faq{max-width:900px;margin-top:28px;border-top:1px solid var(--color-border-subtle)}
+  .faqi{border-bottom:1px solid var(--color-border-subtle)}
+  .faqi summary{list-style:none;cursor:pointer;padding:20px 44px 20px 0;position:relative;font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--color-content-primary);transition:color .2s ease}
+  .faqi summary::-webkit-details-marker{display:none}
+  .faqi summary:hover{color:var(--color-brand-primary-deep)}
+  .faqi summary::after{content:'';position:absolute;right:14px;top:50%;width:9px;height:9px;border-right:2px solid var(--color-brand-accent-strong);border-bottom:2px solid var(--color-brand-accent-strong);transform:translateY(-70%) rotate(45deg);transition:transform .3s ease}
+  .faqi[open] summary::after{transform:translateY(-30%) rotate(225deg)}
+  .faqi .ans{padding:0 40px 22px 0;font-size:15px;color:var(--color-content-secondary);line-height:1.7}
+  .faqi .ans p{margin-bottom:12px}
+  .faqi .ans p:last-child{margin-bottom:0}
+
+  /* Solution split */
+  .solsplit{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+  .solimg{border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:var(--color-surface-inverse-raised);box-shadow:0 24px 60px color-mix(in oklab, var(--color-surface-inverse) 22%, transparent);background-size:cover;background-position:center}
+
+  /* Problem landing pages */
+  .probwhy{display:grid;grid-template-columns:1.1fr .9fr;gap:52px;align-items:start}
+  .answerbox{background:var(--color-surface-raised);border:1px solid var(--color-border-subtle);border-left:3px solid var(--color-brand-accent);border-radius:6px;padding:28px 30px}
+  .answerbox .kick{margin-bottom:10px}
+  .answerbox h3{font-size:21px;margin-bottom:10px}
+  .answerbox p{font-size:14.5px;color:var(--color-content-secondary);line-height:1.7}
+  .othergrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
+  .othercard{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:18px 18px 16px;cursor:pointer;transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease}
+  .othercard:hover{transform:translateY(-4px);box-shadow:0 16px 34px color-mix(in oklab, var(--color-surface-inverse) 12%, transparent);border-color:color-mix(in oklab, var(--color-brand-accent) 50%, transparent)}
+  .othercard .n{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;color:var(--color-brand-accent-strong);margin-bottom:8px}
+  .othercard h4{font-family:var(--font-display);font-size:14.5px;font-weight:700;line-height:1.35;color:var(--color-content-primary)}
+
+  @media(max-width:1100px){
+    .probgrid{grid-template-columns:repeat(3,1fr)}
+    .benegrid{grid-template-columns:repeat(2,1fr)}
+    .bene,.bene:nth-child(4),.bene:nth-child(5){grid-column:auto}
+    .othergrid{grid-template-columns:repeat(2,1fr)}
+  }
+
+  @media(max-width:960px){
+    .hero-flex,.quoteband .wrap,.grid2{grid-template-columns:1fr}
+    .grid3,.steps,.people,.arts{grid-template-columns:1fr}
+    .page-home .hero-img h1{font-size:36px}
+    .hero-img h1{font-size:32px}
+    .facts{grid-template-columns:1fr 1fr;margin-top:-30px}
+    .fact{border-bottom:1px solid var(--color-border-subtle)}
+    .learn{grid-template-columns:1fr}
+    .fgrid{grid-template-columns:1fr 1fr}
+    .srow{grid-template-columns:1fr;gap:6px}
+    .page-home .hero-img{min-height:calc(100svh - var(--hdrh, 74px))}
+    .page-home .hero-img .inner{padding:88px 28px 76px}
+    .page-home .herolead p.sub{font-size:16px}
+    .probgrid{grid-template-columns:1fr}
+    .benegrid{grid-template-columns:1fr}
+    .bene,.bene:nth-child(4),.bene:nth-child(5){grid-column:auto}
+    .quallist{grid-template-columns:1fr}
+    .solsplit,.probwhy{grid-template-columns:1fr}
+    .othergrid{grid-template-columns:1fr 1fr}
+    .probclose{font-size:17px}
+    /* inline style="grid-template-columns:..." outranks the rules above; these
+       three overrides collapse every inline grid on small screens */
+    .steps[style],.grid3[style],.grid2[style]{grid-template-columns:1fr!important}
+    .wrap[style*="grid-template-columns"]{grid-template-columns:1fr!important;gap:34px!important}
+    div[style*="grid-template-columns"]{grid-template-columns:1fr!important}
+    div[style*="position:sticky"]{position:static!important;top:auto!important}
+  }
+
+
+/* ------------------------------------------------------------------------
+ * <dialog> overrides.
+ * The bio modal moved from a div toggled with `.on` to a real <dialog>, so
+ * visibility is driven by [open] and the UA default chrome is cleared.
+ * ---------------------------------------------------------------------- */
+dialog.bio-bg {
+  display: none;
+  border: none;
+  padding: 24px;
+  max-width: 100vw;
+  max-height: 100dvh;
+  width: 100%;
+  height: 100%;
+}
+dialog.bio-bg[open] {
+  display: flex;
+}
+dialog.bio-bg::backdrop {
+  background: transparent;
+}
+
+/* Footer actions that are buttons rather than links still read as links. */
+
+
+/* Keyboard users get a way past the masthead. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 999;
+  background: var(--color-brand-accent);
+  color: var(--color-surface-inverse);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 20px;
+}
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
+}
+
+
+
+.crumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+.crumbs a:hover {
+  color: var(--color-brand-accent);
+}
+
+
+
+
+
+/* ---------------------------------------------- featured "START HERE" ---
+   Was a stack of inline styles on a div with a click handler. Same visual
+   result, now expressed once here with tokens and real links. */
+.featintro {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  background: var(--color-surface-inverse);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  margin-bottom: 40px;
+  position: relative;
+}
+.featintro-media {
+  position: relative;
+  min-height: 280px;
+  overflow: hidden;
+  display: block;
+}
+.featintro-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent 55%, var(--color-surface-inverse) 100%);
+}
+.featintro-body {
+  padding: 46px 46px 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--color-content-on-inverse);
+  position: relative;
+}
+.featintro-flag {
+  position: absolute;
+  top: 0;
+  left: 46px;
+  background: var(--color-brand-accent);
+  color: var(--color-surface-inverse);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  padding: 7px 14px;
+  border-radius: 0 0 4px 4px;
+}
+.featintro-eyebrow {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: var(--color-brand-accent-bright);
+  margin-bottom: 10px;
+}
+.featintro-body h3 {
+  font-size: 29px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.featintro-body > p {
+  font-size: 14.5px;
+  color: var(--color-content-on-inverse-muted);
+  line-height: 1.65;
+  margin-bottom: 24px;
+  max-width: 430px;
+}
+.featintro-link {
+  color: var(--color-brand-accent-bright);
+}
+@media (max-width: 860px) {
+  .featintro {
+    grid-template-columns: 1fr;
+  }
+  .featintro-body {
+    padding: 40px 28px 32px;
+  }
+}
+
+
+
+
+/* ------------------------------------------------- seminar detail page ---
+   These rules replace inline styles that the old renderer wrote into
+   innerHTML. Same output, expressed once and in tokens. */
+.embed {
+  position: relative;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--color-surface-inverse);
+  box-shadow: 0 24px 60px color-mix(in oklab, var(--color-surface-inverse) 25%, transparent);
+}
+.embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.embed-cap {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: var(--color-content-muted);
+}
+.memberprice {
+  margin-top: 24px;
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-card);
+  padding: 26px 28px;
+}
+.memberprice .mp-h {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+.memberprice p {
+  font-size: 13.5px;
+  color: var(--color-content-secondary);
+  margin-bottom: 16px;
+}
+.exhib-note {
+  font-size: 13.5px;
+  color: var(--color-content-muted);
+  margin-bottom: 18px;
+}
+.exhib-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.exhib {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-control);
+  padding: 16px 22px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--color-content-primary);
+  background: var(--color-surface-base);
+}
+.agenda-hint {
+  font-size: 12px;
+  color: var(--color-content-muted);
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+
+
+
+
+
+/* ------------------------------------------------- registration dialog ---
+   Rules that used to live as inline styles inside the registration markup. */
+.reg-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.reg-fieldset legend {
+  padding: 0;
+}
+.rt-opt input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.reg-fineprint {
+  font-size: 11px;
+  color: var(--color-content-muted);
+  margin-top: 12px;
+  text-align: center;
+}
+.reg-int {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+.reg-int-ic {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-surface-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+.reg-int h3 {
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+.reg-int > p {
+  font-size: 13.5px;
+  color: var(--color-content-secondary);
+  max-width: 340px;
+  margin: 0 auto 18px;
+}
+.b[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+
+.answerlist {
+  margin: 18px 0 0 20px;
+  padding: 0;
+}
+.answerlist li {
+  font-size: 14px;
+  color: var(--color-content-secondary);
+  margin-bottom: 9px;
+  line-height: 1.6;
+}
+
+.ctaband-invert {
+  background: var(--color-surface-base);
+  color: var(--color-brand-primary-deep);
+}
+.confirm-tick {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--color-brand-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 22px;
+}
+.confirm-sub {
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* ------------------------------------------------------------- contact ---
+   Replaces the inline styles the contact markup carried. */
+.contact-tile {
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-card);
+  padding: 22px 26px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.contact-tile .ct-h {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+}
+.contact-tile .ct-p {
+  font-size: 14px;
+  color: var(--color-content-secondary);
+}
+.contact-tile .ct-p a {
+  color: inherit;
+  text-decoration: none;
+}
+.contact-tile .ct-p a:hover {
+  color: var(--color-brand-primary-deep);
+}
+.contact-card {
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  padding: 36px 38px;
+  box-shadow: 0 14px 40px color-mix(in oklab, var(--color-surface-inverse) 7%, transparent);
+}
+.cfi {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--color-border-subtle);
+  border-radius: var(--radius-control);
+  outline-color: var(--color-brand-primary);
+  width: 100%;
+}
+.cm-err {
+  font-size: 13px;
+  color: var(--color-status-danger);
+  background: var(--color-status-danger-surface);
+  border-left: 3px solid var(--color-status-danger);
+  padding: 11px 14px;
+  border-radius: var(--radius-control);
+}
+.cm-note {
+  font-size: 11.5px;
+  color: var(--color-content-muted);
+  text-align: center;
+  margin: 0;
+}
+.cm-done {
+  text-align: center;
+  padding: 14px 0;
+}
+.cm-done-ic {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-surface-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+.cm-done h3 {
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+.cm-done p {
+  font-size: 14px;
+  color: var(--color-content-secondary);
+  max-width: 340px;
+  margin: 0 auto;
+}
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+.embed-deep {
+  box-shadow: 0 24px 60px color-mix(in oklab, oklch(0% 0 0) 40%, transparent);
+}
+.testi-pills {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.solimg {
+  background-size: cover;
+  background-position: center;
+}
+
+
+/* ------------------------------------------------------------- account --- */
+.li-err {
+  margin-top: 14px;
+  padding: 11px 14px;
+  background: var(--color-status-danger-surface);
+  border-left: 3px solid var(--color-status-danger);
+  color: var(--color-status-danger);
+  font-size: 13.5px;
+  line-height: 1.5;
+  border-radius: var(--radius-control);
+}
+.acct-help {
+  font-size: 12.5px;
+  color: var(--color-content-muted);
+  margin-top: 16px;
+}
+.acct-empty,
+.acct-note {
+  font-size: 14px;
+  color: var(--color-content-muted);
+}
+.acct-note {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.acct-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+
+
+
+/* ---------------------------------------------------------------- buttons --
+ * Elements that were divs or spans with click handlers in the v4.8 build are
+ * now real <button>s, so they are focusable and announced correctly. This reset
+ * strips the UA chrome at ELEMENT specificity, which means every design class
+ * (.b, .vpill, .person, .fchip …) still wins and the appearance is unchanged.
+ * A per-class override here would out-specify those classes and silently break
+ * their typography — which is exactly what it did before this rule replaced it.
+ */
+button {
+  font: inherit;
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+/* Card-shaped buttons fill their grid cell like the divs they replaced.
+   Only the classes that set no display of their own are switched to block —
+   .video and .keynote are flex containers and must stay that way. */
+button.person,
+button.atile,
+button.spk-card {
+  display: block;
+}
+button.person,
+button.atile,
+button.spk-card,
+button.keynote,
+button.video {
+  width: 100%;
+  text-align: left;
+}
+
+/* The Doctor Directory action is a <button> because it opens a message rather
+   than navigating. It must still read and measure as a footer link. */
+.flink {
+  width: 100%;
+  text-align: left;
+}
+
+/* ------------------------------------------------------------------ cards --
+ * Cards that were divs with click handlers are real links now. Strip the
+ * anchor defaults, but do NOT set `display` — .probcard is a flex column whose
+ * "See the fix" link is pushed down with margin-top:auto, and forcing block
+ * here would break that alignment across the row.
+ */
+a.art,
+a.card,
+a.semcard,
+a.othercard,
+a.probcard {
+  text-decoration: none;
+  color: inherit;
+}
+a.art,
+a.card,
+a.semcard,
+a.othercard {
+  display: block;
+}
+
+/* ============================================================================
+ * MEMBER AREA
+ * The role-scoped shell. Left rail on navy, white working area — the layout
+ * approved on the Gold Rail prototype, rebuilt on the site's own tokens so
+ * there is one design system rather than two.
+ * ========================================================================= */
+
+.ma {
+  display: grid;
+  grid-template-columns: 208px 1fr;
+  min-height: 70vh;
+  background: var(--color-surface-base);
+  max-width: var(--container-page);
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------ rail -- */
+.ma-rail {
+  background: var(--color-surface-rail);
+  padding: 14px 0 34px;
+}
+.ma-rail .grp {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-rail-label);
+  padding: 15px 18px 6px;
+}
+.ma-rail a {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 18px;
+  color: var(--color-rail-item);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: color var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+.ma-rail a:hover {
+  color: var(--color-content-on-inverse);
+}
+.ma-rail a.on {
+  background: var(--color-surface-rail-active);
+  color: var(--color-content-on-inverse);
+  border-left-color: var(--color-brand-accent);
+}
+.ma-rail a .ct {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--color-brand-accent);
+}
+
+/* ------------------------------------------------------------------ main -- */
+.ma-main {
+  padding: 26px 26px 60px;
+  min-width: 0;
+  background: var(--color-surface-base);
+}
+.ma-main h1 {
+  font-size: 25px;
+  color: var(--color-content-primary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 3px;
+}
+.ma-sub {
+  font-size: 14px;
+  color: var(--color-content-muted);
+  margin-bottom: 22px;
+}
+
+/* ---------------------------------------------------------------- person -- */
+.ma-top {
+  background: var(--color-surface-inverse);
+}
+.ma-top .in {
+  max-width: var(--container-page);
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.ma-who {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.ma-av {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(142deg, var(--color-brand-primary), var(--color-surface-inverse));
+  color: var(--color-content-on-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11.5px;
+  flex-shrink: 0;
+}
+.ma-who b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--color-content-on-inverse);
+  font-weight: 600;
+  line-height: 1.25;
+}
+.ma-who span {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brand-accent-bright);
+}
+
+/* --------------------------------------------------------------- chips --- */
+.ma-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.rolechip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 2px;
+  background: var(--color-surface-raised);
+  color: var(--color-content-tertiary);
+  white-space: nowrap;
+}
+.rolechip.gold {
+  background: var(--color-status-free-surface);
+  color: var(--color-status-free-content);
+}
+
+/* ---------------------------------------------------------------- cards --- */
+.ma-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(244px, 1fr));
+  gap: 14px;
+}
+.ma-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 4px;
+  padding: 18px 20px 18px 26px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--color-surface-inverse) 5%, transparent);
+  transition: transform .22s cubic-bezier(.2,.7,.3,1),
+              box-shadow .22s cubic-bezier(.2,.7,.3,1),
+              border-color .22s;
+}
+.ma-card:hover,
+.ma-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 28px -16px color-mix(in oklab, var(--color-surface-inverse) 38%, transparent);
+  border-color: var(--color-border-strong);
+}
+.ma-card .rail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  border-radius: 4px 0 0 4px;
+  background: var(--color-border-strong);
+}
+.ma-card.now .rail { background: var(--color-status-danger); }
+.ma-card.soon .rail { background: var(--color-brand-accent); }
+.ma-card.ok .rail { background: var(--color-status-success); }
+.ma-card .k {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-content-muted);
+}
+.ma-card .big {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px;
+  color: var(--color-content-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 10px 0 6px;
+  font-variant-numeric: tabular-nums;
+}
+.ma-card.now .big { color: var(--color-status-danger); }
+.ma-card .d { font-size: 13.5px; line-height: 1.5; color: var(--color-content-secondary); }
+.ma-card .go {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--color-brand-primary-deep);
+  margin-top: 15px;
+  align-self: flex-start;
+  border-bottom: 2px solid var(--color-brand-accent);
+  padding-bottom: 2px;
+}
+
+/* ---------------------------------------------------------------- panel --- */
+.ma-panel {
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 5px;
+  padding: 22px 24px;
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--color-surface-inverse) 5%, transparent);
+}
+.ma-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border-subtle);
+  flex-wrap: wrap;
+}
+.ma-row:first-of-type { border-top: 0; }
+.ma-row b {
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  color: var(--color-content-primary);
+  font-weight: 600;
+  display: block;
+}
+.ma-row span { font-size: 13.5px; color: var(--color-content-muted); }
+
+.ma-note {
+  background: var(--color-status-free-surface);
+  border-left: 3px solid var(--color-brand-accent);
+  padding: 13px 17px;
+  border-radius: 0 3px 3px 0;
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--color-content-secondary);
+}
+.ma-note b { color: var(--color-content-primary); }
+
+.ma-empty {
+  font-size: 14px;
+  color: var(--color-content-muted);
+  padding: 8px 0;
+}
+
+@media (max-width: 760px) {
+  .ma { grid-template-columns: 1fr; }
+  .ma-rail { padding: 8px 0 14px; display: flex; flex-wrap: wrap; }
+  .ma-rail .grp { width: 100%; padding: 10px 16px 4px; }
+  .ma-rail a { width: auto; border-left: 0; border-bottom: 2px solid transparent; }
+  .ma-rail a.on { border-left: 0; border-bottom-color: var(--color-brand-accent); }
+  .ma-main { padding: 20px 16px 50px; }
+}

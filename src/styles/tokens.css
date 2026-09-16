@@ -1,0 +1,200 @@
+/* ============================================================================
+   Advanced Orthogonal Institute — design tokens
+   ----------------------------------------------------------------------------
+   The single source for every design decision. No raw hex may appear anywhere
+   else in the codebase.
+
+   Colors are authored in OKLCH and converted from the palette the Board already
+   approved on the v4.8 build, so the rebuild is visually identical to the site
+   they signed off on. Lightness in OKLCH is perceptual, which means contrast is
+   provable from the numbers rather than eyeballed.
+
+   Names describe ROLE, never appearance. `content-secondary`, not `gray-400`.
+   The Institute becomes the CranioCervical Institute in November; a rebrand is
+   a change to these values, not to any component.
+   ========================================================================= */
+
+:root {
+  color-scheme: light;
+  /* ------------------------------------------------------------- surfaces */
+  --color-surface-base: oklch(100% 0 0);
+  --color-surface-raised: oklch(97.44% 0.0042 236.5);
+  --color-surface-sunken: oklch(95.41% 0.0129 221.43);
+  --color-surface-inverse: oklch(20.85% 0.0346 238.78);
+  --color-surface-inverse-raised: oklch(26.24% 0.043 232.79);
+
+  /* -------------------------------------------------------------- content */
+  --color-content-primary: oklch(25.15% 0.0356 231.26);
+  --color-content-secondary: oklch(43.16% 0.0363 232.35);
+  --color-content-tertiary: oklch(52.85% 0.0394 230.04);
+  --color-content-muted: oklch(64.05% 0.0292 230.64);
+  --color-content-on-inverse: oklch(100% 0 0);
+  --color-content-on-inverse-muted: oklch(75.63% 0.0307 230.45);
+  /* Body copy inside a dark card — lighter than the muted variant above. */
+  --color-content-on-inverse-subtle: oklch(85.95% 0.0215 227.57);
+
+  /* ---------------------------------------------------------------- brand */
+  --color-brand-accent: oklch(70.76% 0.1082 82.41);
+  --color-brand-accent-strong: oklch(62.23% 0.1038 79.42);
+  --color-brand-accent-bright: oklch(79.75% 0.1012 87.01);
+  --color-brand-primary: oklch(55.64% 0.0949 223.37);
+  --color-brand-primary-deep: oklch(45.76% 0.0809 226.6);
+
+
+  /* ------------------------------------------------- member area (shell)
+   * The signed-in area sits on the navy rail rather than the white page, so
+   * it needs one step between the masthead navy and the active row. */
+  --color-surface-rail: oklch(20.85% 0.0346 238.78);
+  --color-surface-rail-active: oklch(27.5% 0.0455 232.5);
+  --color-rail-item: oklch(75.63% 0.0307 230.45);
+  --color-rail-label: oklch(52.0% 0.0324 233.0);
+
+  /* -------------------------------------------------------------- borders */
+  --color-border-subtle: oklch(93.29% 0.0093 232.37);
+  --color-border-strong: oklch(75.63% 0.0307 230.45);
+  --color-border-on-inverse: oklch(100% 0 0 / 9%);
+
+  /* --------------------------------------------------------------- status */
+  --color-status-danger: oklch(54.33% 0.174 29.7);
+  --color-status-danger-surface: oklch(97.17% 0.0109 24.32);
+  --color-status-info-surface: oklch(95.41% 0.0129 221.43);
+  /* Positive green, distinct from the teal used for links and information. */
+  --color-status-success: oklch(49.27% 0.0922 160.25);
+  --color-status-success-surface: oklch(95.00% 0.0116 162.04);
+
+
+  /* ------------------------------------------------- status badge surfaces */
+  --color-status-free-surface: oklch(95.29% 0.0324 89.12);
+  --color-status-free-content: oklch(50.42% 0.0894 73.55);
+  --color-status-pending-surface: oklch(96.54% 0.0479 92.32);
+  --color-status-pending-content: oklch(56.19% 0.1051 87.05);
+  --color-status-cancelled-surface: oklch(93.69% 0.0231 18.64);
+  --color-status-cancelled-content: oklch(50.43% 0.1173 24.51);
+
+  /* ---------------------------------------------------- decorative tiles
+   * Gradient stops for the three placeholder image tiles (ph-a/b/c) used
+   * where a photograph has not been supplied. */
+  --color-tile-cool-1: oklch(64.05% 0.0292 230.64);
+  --color-tile-cool-2: oklch(58.9% 0.0332 235.31);
+  --color-tile-cool-3: oklch(45.48% 0.0392 240.73);
+  --color-tile-cool-4: oklch(36.67% 0.0348 243.42);
+  --color-tile-blue-1: oklch(65.43% 0.0389 243.44);
+  --color-tile-blue-2: oklch(52.55% 0.0454 245.99);
+  --color-tile-blue-3: oklch(46.38% 0.0434 246.9);
+  --color-tile-blue-4: oklch(39.97% 0.0416 248.53);
+  --color-tile-warm-1: oklch(65.77% 0.0398 76.42);
+  --color-tile-warm-2: oklch(54.11% 0.0338 74.26);
+  --color-tile-warm-3: oklch(39.09% 0.0281 76.95);
+  --color-tile-warm-4: oklch(35.21% 0.0221 72.19);
+
+  /* ---------------------------------------------------------- typography */
+  --font-display: 'Outfit', sans-serif;
+  --font-sans: 'Figtree', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --text-eyebrow: 0.72rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.16em;
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+  --text-lead: 1.1875rem;
+  --text-lead--line-height: 1.6;
+  --text-h4: 1.25rem;
+  --text-h4--line-height: 1.35;
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 1.3;
+  --text-h2: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+  --text-h2--line-height: 1.18;
+  --text-h1: clamp(2.25rem, 1.5rem + 2.9vw, 3.75rem);
+  --text-h1--line-height: 1.08;
+
+  /* --------------------------------------------------------------- layout */
+  --container-page: 1180px;
+  --spacing-gutter: 28px;
+  --spacing-section: clamp(3.5rem, 2rem + 6vw, 6.5rem);
+
+  /* --------------------------------------------------------------- shape */
+  --radius-control: 3px;
+  --radius-card: 6px;
+
+  /* ----------------------------------------------------------- elevation */
+  --shadow-card: 0 2px 14px oklch(20.85% 0.0346 238.78 / 7%);
+  --shadow-raised: 0 12px 30px oklch(20.85% 0.0346 238.78 / 12%);
+  --shadow-accent: 0 12px 26px oklch(70.76% 0.1082 82.41 / 42%);
+  --shadow-header: 0 2px 20px oklch(20.85% 0.0346 238.78 / 35%);
+
+  /* -------------------------------------------------------------- motion */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 200ms;
+  --duration-base: 280ms;
+  --duration-slow: 500ms;
+}
+
+/* ---------------------------------------------------------------- base ---
+ Global rules that must hold on every page regardless of which components
+ render. `prefers-reduced-motion` is honored here once rather than being
+ left to each animation to remember. */
+
+/* The v4.8 build reset margin and padding globally. Keeping that reset is what
+   makes list indentation, heading rhythm and section spacing identical to the
+   design the Board approved. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  color: var(--color-content-primary);
+  background: var(--color-surface-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The v4.8 build set the display face on h1-h4 only, and used no text-wrap
+   hints. Both are kept exactly, so headline and paragraph line breaks fall
+   where the Board approved them. `text-wrap: balance` is a real improvement
+   and can be turned on later as a deliberate design change, not a side effect
+   of the rebuild. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Every interactive element must show where focus is. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

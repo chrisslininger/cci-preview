@@ -1,0 +1,62 @@
+# VitalID — robots.txt
+#
+# AI answer engines are explicitly allowed. Many site templates ship blocking
+# these by default, which makes a site invisible to ChatGPT, Claude, and
+# Perplexity. See ARCHITECTURE.md §5.
+
+User-agent: *
+Allow: /
+
+# --- OpenAI ---
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# --- Anthropic ---
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+# --- Perplexity ---
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# --- Google ---
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# --- Microsoft / Apple / Meta ---
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# Authenticated areas — never indexed.
+User-agent: *
+Disallow: /app/
+Disallow: /account/
+
+Sitemap: https://vitalid.example/sitemap.xml
