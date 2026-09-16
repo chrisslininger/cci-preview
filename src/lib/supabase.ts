@@ -185,3 +185,15 @@ export async function invoke<T = unknown>(
   })
   return (await res.json()) as T
 }
+
+/** Row count without transferring rows. Uses PostgREST's Content-Range header. */
+export async function count(table: string, params = ''): Promise<number> {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?select=*&limit=1${params ? `&${params}` : ''}`, {
+    headers: { ...headers(), Prefer: 'count=exact' },
+  })
+  if (!res.ok) return 0
+  const range = res.headers.get('content-range') ?? ''
+  const total = range.split('/')[1]
+  const n = Number(total)
+  return Number.isFinite(n) ? n : 0
+}

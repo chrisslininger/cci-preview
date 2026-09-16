@@ -1322,3 +1322,165 @@ a.othercard {
   .ma-rail a.on { border-left: 0; border-bottom-color: var(--color-brand-accent); }
   .ma-main { padding: 20px 16px 50px; }
 }
+
+/* ---------------------------------------------------------------------------
+ * Full CCI OS — the executive surface.
+ * Built from the same tokens as everything else; no raw colour values.
+ * ------------------------------------------------------------------------- */
+
+.os-note {
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--color-brand-accent);
+  background: var(--color-status-free-surface);
+  color: var(--color-status-free-content);
+  font-size: 14px;
+  border-radius: 0 4px 4px 0;
+}
+
+.os-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.os-stat {
+  padding: 16px 18px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 6px;
+  border-top: 3px solid var(--color-border-strong);
+}
+.os-stat.warn { border-top-color: var(--color-brand-accent); }
+.os-stat.good { border-top-color: var(--color-status-success); }
+
+.os-stat b {
+  display: block;
+  font-size: 30px;
+  line-height: 1.1;
+  color: var(--color-content-primary);
+  letter-spacing: -0.01em;
+}
+.os-stat span {
+  display: block;
+  margin-top: 5px;
+  font-size: 13px;
+  color: var(--color-content-secondary);
+}
+.os-stat i {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  font-style: normal;
+  color: var(--color-content-muted);
+}
+
+/* The marketing pages give every <section> 72px of vertical padding.
+ * Inside the member area a section is a panel, not a page band. */
+.os-section { padding: 0; margin-bottom: 34px; }
+
+.os-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.os-head h2 {
+  margin: 0;
+  font-size: 19px;
+  color: var(--color-content-primary);
+}
+.os-head p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--color-content-muted);
+  max-width: 62ch;
+}
+
+.os-table {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--color-surface-base);
+}
+
+.os-tr {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 0.9fr 0.9fr 0.8fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-border-subtle);
+  font-size: 13.5px;
+  color: var(--color-content-secondary);
+}
+.os-tr-3, .os-th-3 { grid-template-columns: 1.4fr 1fr 2fr; }
+.os-tr:first-child { border-top: 0; }
+
+.os-th {
+  background: var(--color-surface-sunken);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-content-tertiary);
+}
+
+.os-tr b { display: block; color: var(--color-content-primary); font-weight: 600; }
+.os-tr i {
+  display: block;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--color-content-muted);
+  margin-top: 2px;
+}
+
+.os-ok { font-style: normal; color: var(--color-status-success); }
+.os-bad { font-style: normal; color: var(--color-status-danger); }
+
+.os-pill {
+  padding: 5px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-raised);
+  color: var(--color-content-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.os-pill.on {
+  background: var(--color-status-success-surface);
+  border-color: var(--color-status-success);
+  color: var(--color-status-success);
+}
+.os-pill:disabled { opacity: 0.5; cursor: wait; }
+.os-pill:hover:not(:disabled) { border-color: var(--color-brand-accent); }
+
+.os-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+.os-card {
+  padding: 14px 16px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 6px;
+  background: var(--color-surface-base);
+}
+.os-card.vacant {
+  border-style: dashed;
+  border-color: var(--color-brand-accent);
+  background: var(--color-status-free-surface);
+}
+.os-card b { display: block; font-size: 14px; color: var(--color-content-primary); }
+.os-card span { display: block; margin-top: 4px; font-size: 12.5px; color: var(--color-content-muted); }
+
+.os-two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+@media (max-width: 860px) {
+  .os-two { grid-template-columns: 1fr; }
+  .os-tr, .os-tr-3, .os-th-3 { grid-template-columns: 1fr 1fr; row-gap: 6px; }
+  .os-th { display: none; }
+}

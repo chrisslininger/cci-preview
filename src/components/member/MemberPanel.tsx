@@ -17,6 +17,7 @@ import type {
 } from '@/lib/queries/member'
 import { TIER_LABEL } from '@/lib/access'
 import RolesPanel from './RolesPanel'
+import OperatingSystem from './OperatingSystem'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -58,7 +59,6 @@ const PENDING: Record<string, string> = {
   org: 'Committees, chairs and reporting lines',
   tasks: 'Assigned work by committee',
   email: 'Institute correspondence',
-  oversight: 'Everything, across every committee',
 }
 
 export default function MemberPanel({ tab, label }: { tab: string; label: string }) {
@@ -97,6 +97,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   }, [tab, personId])
 
   if (tab === 'roles') return <RolesPanel />
+  if (tab === 'oversight') return <OperatingSystem />
 
   if (PENDING[tab]) {
     return (

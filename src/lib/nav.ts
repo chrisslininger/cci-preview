@@ -86,7 +86,7 @@ export const NAV: NavItem[] = [
 
   /* ---------------------------------------------------------------- admin -- */
   { key: 'roles', label: 'Roles & Access', group: 'admin', when: (a) => a.can_admin_roles },
-  { key: 'oversight', label: 'Oversight', group: 'admin', any: ['full_admin'] },
+  { key: 'oversight', label: 'Full CCI OS', group: 'admin', any: ['full_admin'] },
 ]
 
 export const GROUP_LABEL: Record<NavGroup, string> = {
