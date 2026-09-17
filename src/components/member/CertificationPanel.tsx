@@ -57,9 +57,11 @@ export default function CertificationPanel() {
   const load = useCallback(async () => {
     setError(null)
     const [r, p] = await Promise.all([requirements(), register()])
-    if (!r.length) setError('Could not read the requirement list — the database refused the read.')
-    setReqs(r)
-    setPeople(p)
+    // A failed read must never look like an empty register.
+    const problem = p.error ?? r.error
+    if (problem) setError(`The register could not be read — the database answered: ${problem.slice(0, 200)}`)
+    setReqs(r.rows)
+    setPeople(p.rows)
     setLoading(false)
   }, [])
   useEffect(() => { void load() }, [load])

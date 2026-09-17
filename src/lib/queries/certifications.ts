@@ -56,22 +56,25 @@ const PERSON_SELECT =
   'practice_city,practice_state,practice_website,membership_status,contact_type,techniques,cert_level,' +
   'target_cert_level,cert_interest,' +
   'person_certifications(id,technique,level,cert_date,certified_by,certificate_number,grandfathered),' +
-  'person_cert_progress(requirement_id,completed,completed_date,approved_by_name),' +
-  'contact_notes(id,text,by_name,created_at),' +
+  // Both tables now carry two foreign keys to people (the subject and the
+  // approver/author), so the embed must name which one to follow or PostgREST
+  // refuses the request as ambiguous.
+  'person_cert_progress!person_cert_progress_person_id_fkey(requirement_id,completed,completed_date,approved_by_name),' +
+  'contact_notes!contact_notes_person_id_fkey(id,text,by_name,created_at),' +
   'practice_locations(id,name,address,phone,website,is_primary)'
 
-export async function requirements(): Promise<Requirement[]> {
+export async function requirements(): Promise<{ rows: Requirement[]; error?: string }> {
   const q = await select<Requirement>('cert_requirements', 'select=id,target_level,key,label,sort,applies_to&order=target_level,sort')
-  return q.data ?? []
+  return q.data ? { rows: q.data } : { rows: [], error: q.error ?? 'unknown' }
 }
 
 /** Everyone on the register: holds a level, is working toward one, or is interested. */
-export async function register(): Promise<Person[]> {
+export async function register(): Promise<{ rows: Person[]; error?: string }> {
   const q = await select<Person>(
     'people',
     `select=${PERSON_SELECT}&or=(cert_level.neq.none,cert_interest.eq.true,target_cert_level.not.is.null)&order=first_name&limit=1000`,
   )
-  return q.data ?? []
+  return q.data ? { rows: q.data } : { rows: [], error: q.error ?? 'unknown' }
 }
 
 /** Directory search for the Add popup — anyone, not just the register. */
