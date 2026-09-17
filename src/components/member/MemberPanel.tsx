@@ -18,6 +18,7 @@ import type {
 import { TIER_LABEL } from '@/lib/access'
 import RolesPanel from './RolesPanel'
 import OperatingSystem from './OperatingSystem'
+import CertificationPanel from './CertificationPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -51,7 +52,6 @@ function Panel({ title, lede, children }: { title: string; lede: string; childre
 const PENDING: Record<string, string> = {
   stats: 'Institute statistics and trends',
   leads: 'The enquiry pipeline',
-  certification: 'Certification applications and reviewers',
   instructors: 'The instructor register and Train the Trainer',
   internships: 'Preceptors, interns and placements',
   research: 'Research projects and grants',
@@ -98,6 +98,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
 
   if (tab === 'roles') return <RolesPanel />
   if (tab === 'oversight') return <OperatingSystem />
+  if (tab === 'certification') return <CertificationPanel />
 
   if (PENDING[tab]) {
     return (

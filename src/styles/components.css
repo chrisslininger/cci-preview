@@ -1610,3 +1610,97 @@ a.othercard {
   color: inherit;
   padding: 0 0 0 10px;
 }
+
+/* ---------------------------------------------------------------------------
+ * Certifications tab.
+ * ------------------------------------------------------------------------- */
+.cert-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.cert-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cert-err { margin: 0 0 14px; padding: 10px 14px; border-radius: var(--radius-sm, 4px); background: var(--color-status-danger-surface); color: var(--color-status-danger); font-size: 13px; }
+
+.cert-tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 18px; }
+.cert-tile {
+  padding: 16px 12px; text-align: center; cursor: pointer; font: inherit;
+  border: 1px solid var(--color-border-subtle); border-top: 3px solid var(--color-border-strong); border-radius: 6px;
+  background: var(--color-surface-raised); color: var(--color-content-primary); transition: transform .15s, border-color .15s;
+}
+.cert-tile:hover { transform: translateY(-1px); border-color: var(--color-brand-accent); }
+.cert-tile.on { background: var(--color-surface-inverse); color: var(--color-content-on-inverse); border-color: var(--color-surface-inverse); border-top-color: var(--color-brand-accent); }
+.cert-tile span { display: block; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-content-tertiary); }
+.cert-tile.on span { color: var(--color-brand-accent); }
+.cert-tile b { display: block; font-family: var(--font-display); font-size: 30px; line-height: 1.15; margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+.cert-search { position: relative; margin: 0 0 16px; }
+.cert-search input[type=text] { width: 100%; padding: 11px 14px 11px 40px; border: 1px solid var(--color-border-strong); border-radius: 4px; background: var(--color-surface-base); font: inherit; font-size: 14px; color: var(--color-content-primary); }
+.cert-search input[type=text]:focus { border-color: var(--color-brand-accent); outline: 0; box-shadow: 0 0 0 3px oklch(70.76% 0.1082 82.41 / 18%); }
+.cert-search svg { position: absolute; left: 13px; top: 22px; transform: translateY(-50%); width: 16px; height: 16px; color: var(--color-content-muted); pointer-events: none; }
+.cert-search .clr { position: absolute; right: 8px; top: 22px; transform: translateY(-50%); border: 0; background: none; color: var(--color-content-muted); font-size: 18px; cursor: pointer; padding: 4px 8px; }
+.cert-search .cnt { margin-top: 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; color: var(--color-content-muted); }
+
+.cert-card { border: 1px solid var(--color-border-strong); border-radius: 6px; background: var(--color-surface-raised); padding: 18px 20px; margin-bottom: 12px; }
+.cert-ph { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.cert-nm { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cert-nm a { font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--color-brand-primary-deep); text-decoration: none; border-bottom: 1px dotted var(--color-brand-primary); }
+.cert-nm a:hover { color: var(--color-brand-primary); }
+.cert-meta { margin: 10px 0 2px; font-size: 13px; color: var(--color-brand-accent-strong); font-weight: 500; }
+.cert-st { font-size: 15px; color: var(--color-content-muted); }
+.cert-sep { height: 1px; background: var(--color-border-subtle); margin: 14px 0; }
+.cpill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--color-border-strong); color: var(--color-content-secondary); background: var(--color-surface-base); white-space: nowrap; }
+.cpill.ok { background: var(--color-status-success-surface); border-color: var(--color-status-success); color: var(--color-status-success); }
+.cpill.info { background: var(--color-status-info-surface); border-color: var(--color-brand-primary); color: var(--color-brand-primary-deep); }
+.cpill.warn { background: var(--color-status-pending-surface); border-color: var(--color-brand-accent); color: var(--color-status-pending-content); }
+.cpill.bad { background: var(--color-status-danger-surface); border-color: var(--color-status-danger); color: var(--color-status-danger); }
+.cert-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+
+.cert-prog { height: 7px; background: var(--color-surface-sunken); border-radius: 999px; overflow: hidden; margin: 12px 0 6px; }
+.cert-prog i { display: block; height: 100%; background: linear-gradient(90deg, var(--color-brand-accent), var(--color-brand-accent-bright)); transition: width .3s; }
+.cert-progtxt { font-family: var(--font-mono); font-size: 11px; color: var(--color-content-muted); letter-spacing: .04em; margin-bottom: 6px; }
+.cert-req { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--color-border-subtle); flex-wrap: wrap; }
+.cert-req:first-of-type { border-top: 0; }
+.cert-req input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--color-brand-accent); flex: 0 0 auto; }
+.cert-req label { flex: 1 1 320px; cursor: pointer; color: var(--color-content-primary); font-size: 14px; }
+.cert-req.done label { color: var(--color-content-muted); }
+.cert-req .when { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-content-muted); }
+.cert-req .when input[type=date] { padding: 5px 8px; border: 1px solid var(--color-border-strong); border-radius: 4px; background: var(--color-surface-base); font: inherit; font-size: 12.5px; }
+.cert-req .when input[type=date].need { border-color: var(--color-status-danger); background: var(--color-status-danger-surface); }
+.cert-certify { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--color-border-subtle); flex-wrap: wrap; }
+.cert-certify .hint { font-size: 13px; color: var(--color-content-muted); }
+
+/* dialogs */
+.cert-veil { position: fixed; inset: 0; z-index: 80; background: oklch(20.85% 0.0346 238.78 / 55%); display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow: auto; }
+.cert-modal { background: var(--color-surface-base); border-radius: 6px; width: 100%; max-width: 640px; border: 1px solid var(--color-border-subtle); box-shadow: 0 14px 38px oklch(20.85% 0.0346 238.78 / 16%); }
+.cert-modal.wide { max-width: 860px; }
+.cert-modal .mh { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 22px 14px; border-bottom: 1px solid var(--color-border-subtle); }
+.cert-modal .mh h3 { font-size: 18px; margin: 0; }
+.cert-modal .mh p { margin: 3px 0 0; font-size: 12.5px; color: var(--color-content-muted); }
+.cert-modal .mb { padding: 20px 22px; }
+.cert-modal .mf { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px 18px; border-top: 1px solid var(--color-border-subtle); }
+.cert-modal .x { background: none; border: 0; font-size: 22px; line-height: 1; color: var(--color-content-muted); cursor: pointer; padding: 0 0 0 8px; }
+.cert-modal .fi { margin-bottom: 12px; }
+.cert-fh { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-brand-accent-strong); padding: 12px 0 10px; border-top: 1px solid var(--color-border-subtle); margin-top: 6px; }
+.cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.cert-grid > div:last-child { grid-column: 1 / -1; }
+.cert-tog { display: flex; align-items: center; gap: 10px; font-size: 13.5px; cursor: pointer; margin-top: 4px; }
+.cert-tog input { accent-color: var(--color-brand-accent); width: 16px; height: 16px; }
+.cert-who { position: relative; }
+.cert-who .list { position: absolute; left: 0; right: 0; top: calc(100% - 12px); z-index: 5; background: var(--color-surface-base); border: 1px solid var(--color-border-strong); border-radius: 4px; box-shadow: 0 14px 38px oklch(20.85% 0.0346 238.78 / 16%); max-height: 220px; overflow: auto; }
+.cert-who .list div { padding: 8px 11px; cursor: pointer; font-size: 13.5px; }
+.cert-who .list div:hover { background: var(--color-surface-sunken); }
+.cert-who .list small { color: var(--color-content-muted); }
+
+.cc .sec { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-brand-primary); margin: 18px 0 8px; display: flex; align-items: center; gap: 12px; }
+.cc .sec:after { content: ''; flex: 1; height: 1px; background: var(--color-border-subtle); }
+.cc .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 14px; font-size: 14px; }
+.cc .kv span { color: var(--color-content-muted); }
+.cc .kv a { color: var(--color-brand-primary); }
+.cc .loc { margin-bottom: 10px; }
+.cc .loc b { display: block; font-size: 15px; margin-bottom: 4px; }
+.cc .muted { margin: 0 0 8px; color: var(--color-content-muted); font-size: 13.5px; }
+
+@media (max-width: 860px) {
+  .cert-tiles { grid-template-columns: repeat(2, 1fr); }
+  .cert-tiles .cert-tile:first-child { grid-column: 1 / -1; }
+  .cert-grid { grid-template-columns: 1fr; }
+  .cc .kv { grid-template-columns: 1fr; }
+}
+.b.xs { padding: 5px 10px; font-size: 10.5px; letter-spacing: .06em; }
