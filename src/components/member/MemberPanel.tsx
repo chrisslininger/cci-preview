@@ -19,6 +19,7 @@ import { TIER_LABEL } from '@/lib/access'
 import RolesPanel from './RolesPanel'
 import OperatingSystem from './OperatingSystem'
 import CertificationPanel from './CertificationPanel'
+import MembersPanel from './MembersPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -99,6 +100,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'roles') return <RolesPanel />
   if (tab === 'oversight') return <OperatingSystem />
   if (tab === 'certification') return <CertificationPanel />
+  if (tab === 'directory') return <MembersPanel />
 
   if (PENDING[tab]) {
     return (
