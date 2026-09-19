@@ -20,6 +20,7 @@ import RolesPanel from './RolesPanel'
 import OperatingSystem from './OperatingSystem'
 import CertificationPanel from './CertificationPanel'
 import MembersPanel from './MembersPanel'
+import EventsPanel from './EventsPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -74,7 +75,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
     setData(null)
     void (async () => {
       let result: unknown = null
-      if (tab === 'events' || tab === 'calendar') {
+      if (tab === 'calendar') {
         result = { events: await upcomingEvents(), regs: await myRegistrations() }
       } else if (tab === 'mycert') {
         result = personId ? await myCertifications(personId) : []
@@ -101,6 +102,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'oversight') return <OperatingSystem />
   if (tab === 'certification') return <CertificationPanel />
   if (tab === 'directory') return <MembersPanel />
+  if (tab === 'events') return <EventsPanel />
 
   if (PENDING[tab]) {
     return (

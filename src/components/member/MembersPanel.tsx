@@ -156,7 +156,6 @@ function EditDialog({ p, onClose, onSaved }: { p: Member | null; onClose: () => 
   const [err, setErr] = useState<string | null>(null); const [saving, setSaving] = useState(false)
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setV((s) => ({ ...s, [k]: e.target.value }))
-  const F = ({ k, l, type = 'text', full = false }: { k: string; l: string; type?: string; full?: boolean }) => <div className={full ? 'full' : ''}><label className="flabel" htmlFor={`m_${k}`}>{l}</label><input className="fi" id={`m_${k}`} type={type} value={v[k]} onChange={set(k)} /></div>
   async function save() {
     setErr(null); if (!v.first_name.trim() || !v.last_name.trim()) { setErr('First and last name are required.'); return }
     const dead = v.status === 'deceased'
@@ -172,14 +171,19 @@ function EditDialog({ p, onClose, onSaved }: { p: Member | null; onClose: () => 
         <div className="mh"><div><h3>{p ? `Edit — ${fullName(p)}` : 'Add a member'}</h3><p>The people record. Roles, board seats and certifications are managed from their own tabs.</p></div><button type="button" className="x" aria-label="Close" onClick={onClose}>×</button></div>
         <div className="mb">{err && <div className="cert-err">{err}</div>}
           <div className="cert-grid mform">
-            <div className="cert-fh full" style={{ borderTop: 0, paddingTop: 0 }}>Identity</div><F k="first_name" l="FIRST NAME" /><F k="last_name" l="LAST NAME" /><F k="credentials" l="CREDENTIALS" /><div><label className="flabel" htmlFor="m_type">TYPE</label><select className="fi" id="m_type" value={v.contact_type} onChange={set('contact_type')}><option value="doctor">Doctor</option><option value="student">Student</option></select></div>
-            <div className="cert-fh full">Contact</div><F k="email" l="EMAIL" type="email" /><F k="mobile_phone" l="MOBILE" /><F k="office_phone" l="OFFICE PHONE" /><F k="practice_website" l="WEBSITE" />
-            <div className="cert-fh full">Practice</div><F k="practice_name" l="PRACTICE NAME" /><F k="practice_address" l="ADDRESS" /><F k="techniques" l="TECHNIQUES (COMMA SEPARATED)" full />
-            <div className="cert-fh full">Membership</div><div><label className="flabel" htmlFor="m_status">STATUS</label><select className="fi" id="m_status" value={v.status} onChange={set('status')}><option value="active">Active</option><option value="expired">Expired</option><option value="never">Never a member</option><option value="deceased">Deceased</option></select></div><F k="deceased_on" l="DATE OF PASSING (IF DECEASED)" type="date" /><F k="member_since" l="MEMBER SINCE" type="date" /><F k="membership_expires" l="EXPIRES" type="date" />
+            <div className="cert-fh full" style={{ borderTop: 0, paddingTop: 0 }}>Identity</div><MF k="first_name" l="FIRST NAME" type="text" full={false} v={v} set={set} /><MF k="last_name" l="LAST NAME" type="text" full={false} v={v} set={set} /><MF k="credentials" l="CREDENTIALS" type="text" full={false} v={v} set={set} /><div><label className="flabel" htmlFor="m_type">TYPE</label><select className="fi" id="m_type" value={v.contact_type} onChange={set('contact_type')}><option value="doctor">Doctor</option><option value="student">Student</option></select></div>
+            <div className="cert-fh full">Contact</div><MF k="email" l="EMAIL" type="email" full={false} v={v} set={set} /><MF k="mobile_phone" l="MOBILE" type="text" full={false} v={v} set={set} /><MF k="office_phone" l="OFFICE PHONE" type="text" full={false} v={v} set={set} /><MF k="practice_website" l="WEBSITE" type="text" full={false} v={v} set={set} />
+            <div className="cert-fh full">Practice</div><MF k="practice_name" l="PRACTICE NAME" type="text" full={false} v={v} set={set} /><MF k="practice_address" l="ADDRESS" type="text" full={false} v={v} set={set} /><MF k="techniques" l="TECHNIQUES (COMMA SEPARATED)" type="text" full={true} v={v} set={set} />
+            <div className="cert-fh full">Membership</div><div><label className="flabel" htmlFor="m_status">STATUS</label><select className="fi" id="m_status" value={v.status} onChange={set('status')}><option value="active">Active</option><option value="expired">Expired</option><option value="never">Never a member</option><option value="deceased">Deceased</option></select></div><MF k="deceased_on" l="DATE OF PASSING (IF DECEASED)" type="date" full={false} v={v} set={set} /><MF k="member_since" l="MEMBER SINCE" type="date" full={false} v={v} set={set} /><MF k="membership_expires" l="EXPIRES" type="date" full={false} v={v} set={set} />
           </div>
         </div>
         <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : 'Save'}</button></div>
       </div>
     </div>
   )
+}
+
+/** Module-level so React keeps the input mounted (and focused) between keystrokes. */
+function MF({ k, l, type, full, v, set }: { k: string; l: string; type: string; full: boolean; v: Record<string, string>; set: (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void }) {
+  return <div className={full ? 'full' : ''}><label className="flabel" htmlFor={`m_${k}`}>{l}</label><input className="fi" id={`m_${k}`} type={type} value={v[k] ?? ''} onChange={set(k)} /></div>
 }
