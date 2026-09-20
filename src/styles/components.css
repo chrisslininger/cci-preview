@@ -2044,3 +2044,11 @@ a.othercard {
   .isite { grid-template-columns: 1fr; } .isite .cnts { text-align: left; }
   .bchk.ichk .lock { grid-column: 2; }
 }
+
+/* Instructors tab */
+.irow .meta.under { margin-top: 6px; }
+.irow .meta.dates { font-family: var(--font-mono); font-size: 11px; color: var(--color-content-muted); }
+.irow .meta.muted { color: var(--color-content-muted); font-style: italic; }
+.irow.past { opacity: .85; }
+.irow > .acts { margin-top: 10px; }
+.ctc-srow .fi { margin: 0; padding: 11px 12px; font-size: 14px; }
