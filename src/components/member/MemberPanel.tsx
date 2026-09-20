@@ -23,6 +23,8 @@ import MembersPanel from './MembersPanel'
 import EventsPanel from './EventsPanel'
 import ContactsPanel from './ContactsPanel'
 import BoardPanel from './BoardPanel'
+import InternshipsPanel from './InternshipsPanel'
+import CollegesPanel from './CollegesPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -104,6 +106,8 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'events') return <EventsPanel />
   if (tab === 'leads') return <ContactsPanel />
   if (tab === 'board') return <BoardPanel />
+  if (tab === 'internships') return <InternshipsPanel />
+  if (tab === 'colleges') return <CollegesPanel />
 
   if (PENDING[tab]) {
     return (
