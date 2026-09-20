@@ -10,7 +10,7 @@ import { Link } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import {
   myRegistrations, myCertifications, myCompletions, upcomingEvents,
-  committeeReports, boardSeats, directory,
+  committeeReports, directory,
 } from '@/lib/queries/member'
 import type {
   Registration, Certification, Completion, PublicEvent, CommitteeReport, BoardSeat, DirectoryPerson,
@@ -22,6 +22,7 @@ import CertificationPanel from './CertificationPanel'
 import MembersPanel from './MembersPanel'
 import EventsPanel from './EventsPanel'
 import ContactsPanel from './ContactsPanel'
+import BoardPanel from './BoardPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -83,8 +84,6 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
         result = personId ? await myCompletions(personId) : []
       } else if (tab === 'reports') {
         result = await committeeReports()
-      } else if (tab === 'board') {
-        result = await boardSeats()
       } else if (tab === 'directory') {
         result = await directory()
       }
@@ -104,6 +103,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'directory') return <MembersPanel />
   if (tab === 'events') return <EventsPanel />
   if (tab === 'leads') return <ContactsPanel />
+  if (tab === 'board') return <BoardPanel />
 
   if (PENDING[tab]) {
     return (
