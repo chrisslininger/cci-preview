@@ -21,6 +21,7 @@ import OperatingSystem from './OperatingSystem'
 import CertificationPanel from './CertificationPanel'
 import MembersPanel from './MembersPanel'
 import EventsPanel from './EventsPanel'
+import ContactsPanel from './ContactsPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -53,7 +54,6 @@ function Panel({ title, lede, children }: { title: string; lede: string; childre
 /** Modules still to be ported from CCI OS. Named honestly. */
 const PENDING: Record<string, string> = {
   stats: 'Institute statistics and trends',
-  leads: 'The enquiry pipeline',
   instructors: 'The instructor register and Train the Trainer',
   internships: 'Preceptors, interns and placements',
   research: 'Research projects and grants',
@@ -103,6 +103,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'certification') return <CertificationPanel />
   if (tab === 'directory') return <MembersPanel />
   if (tab === 'events') return <EventsPanel />
+  if (tab === 'leads') return <ContactsPanel />
 
   if (PENDING[tab]) {
     return (

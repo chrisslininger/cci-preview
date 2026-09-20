@@ -74,7 +74,7 @@ export const NAV: NavItem[] = [
     group: 'institute',
     any: ['board', 'full_admin', 'manage_leads', 'manage_certifications', 'manage_instructors', 'manage_internships'],
   },
-  { key: 'leads', label: 'Leads', group: 'institute', any: ['board', 'full_admin', 'manage_leads'] },
+  { key: 'leads', label: 'Contacts', group: 'institute', any: ['board', 'full_admin', 'manage_leads'] },
   { key: 'certification', label: 'Certifications', group: 'institute', any: ['manage_certifications'] },
   { key: 'instructors', label: 'Instructors', group: 'institute', any: ['manage_instructors'] },
   { key: 'internships', label: 'Internships', group: 'institute', any: ['manage_internships'] },
