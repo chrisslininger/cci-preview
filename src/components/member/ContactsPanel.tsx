@@ -12,6 +12,7 @@ import {
   TECHNIQUES, ROLE_LABEL, LEVEL_LABEL, fullName, state, tabOf, duesLapsed, activeBoard, currentInstructor, advoLevel, otherCerts, initials,
 } from '@/lib/queries/contacts'
 import type { Contact, Committee, Office, Profile, Seat, Tab } from '@/lib/queries/contacts'
+import { ResearchSection } from './ResearchPanel'
 
 const TABS: [Tab, string][] = [['all', 'All contacts'], ['lead', 'Leads'], ['member', 'Members'], ['expired', 'Expired']]
 const fmtD = (iso?: string | null) => (iso ? new Date(iso + (iso.length === 10 ? 'T12:00:00Z' : '')).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '')
@@ -161,6 +162,7 @@ function ContactCard({ p, me, meId, canEdit, onClose, onEdit, onChanged }: { p: 
           <Sec title="Board service" items={(p.board_service ?? []).map((b) => kv(`Term ${b.term_label ?? ''}`, `${b.status ?? ''}${b.term_start ? ` · ${fmtD(b.term_start)} – ${b.term_end ? fmtD(b.term_end) : 'present'}` : ''}`))} />
           <Sec title="Instructor" items={(p.instructor_records ?? []).map((i) => kv(i.level === 'senior_instructor' ? 'Senior instructor' : 'Instructor', `${i.status ?? ''}${i.technique ? ` · ${i.technique}` : ''}${i.instructor_date ? ` · since ${fmtD(i.instructor_date)}` : ''}`))} />
           <Sec title="Certifications" items={(p.person_certifications ?? []).map((c) => kv(c.technique, `${LEVEL_LABEL[c.level] ?? c.level}${c.grandfathered ? ' · Grandfathered' : ''}${c.cert_date ? ` on ${fmtD(c.cert_date)}` : ''}${c.certificate_number ? ` · Certificate #${c.certificate_number}` : ''}${c.certified_by ? ` · ${c.certified_by}` : ''}`))} />
+          <ResearchSection personId={p.id} />
           {p.bio && <><div className="sec">Bio</div><p style={{ fontSize: 14, lineHeight: 1.6, margin: 0 }}>{p.bio}</p></>}
           <div className="sec">Notes (running log)</div>
           {notes.length === 0 && !p.notes && <p className="muted">No notes yet.</p>}

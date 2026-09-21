@@ -2052,3 +2052,34 @@ a.othercard {
 .irow.past { opacity: .85; }
 .irow > .acts { margin-top: 10px; }
 .ctc-srow .fi { margin: 0; padding: 11px 12px; font-size: 14px; }
+
+/* Research tab */
+.cert-tiles.two { grid-template-columns: repeat(2, 1fr); }
+.rcard { border: 1px solid var(--color-border-strong); border-radius: 6px; background: var(--color-surface-base); padding: 18px 20px; margin-bottom: 14px; }
+.rcard.past { background: var(--color-surface-raised); }
+.rcard .rh { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; }
+.rcard h3 { font-size: 19px; margin: 0 0 6px; color: var(--color-brand-primary-deep); }
+.rkv { display: grid; grid-template-columns: 170px 1fr; gap: 6px 14px; font-size: 14px; }
+.rkv > span { color: var(--color-content-muted); }
+.rkv a { color: var(--color-brand-primary); }
+.rfund { margin: 14px 0 4px; padding: 10px 12px; border: 1px solid var(--color-border-subtle); border-radius: 4px; background: var(--color-surface-raised); }
+.rfund .rfl { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px; margin-bottom: 6px; }
+.rfund .muted, .rcard .muted { color: var(--color-content-muted); font-size: 12.5px; }
+.rsec { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-brand-primary); margin: 14px 0 4px; display: flex; align-items: center; gap: 12px; }
+.rsec::after { content: ''; flex: 1; height: 1px; background: var(--color-border-subtle); }
+.rsec .r { font-family: var(--font-sans); letter-spacing: 0; text-transform: none; font-size: 12px; color: var(--color-content-muted); }
+.rsec .link { font-family: var(--font-sans); letter-spacing: 0; text-transform: none; }
+.rtext { font-size: 14px; color: var(--color-content-secondary); line-height: 1.55; }
+.rtext a { color: var(--color-brand-primary); }
+.rled { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; display: block; overflow-x: auto; }
+.rled th { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-content-tertiary); text-align: left; padding: 6px 8px; background: var(--color-surface-sunken); }
+.rled td { padding: 7px 8px; border-top: 1px solid var(--color-border-subtle); }
+.rled .num { text-align: right; font-variant-numeric: tabular-nums; }
+.rledadd { display: grid; grid-template-columns: 150px 180px 120px 1fr auto; gap: 6px; margin-top: 8px; align-items: center; }
+.rledadd .fi { padding: 8px 10px; font-size: 13px; margin: 0; }
+.rteam { display: grid; gap: 4px; margin-bottom: 8px; }
+.rtm { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 6px 10px; border: 1px solid var(--color-border-subtle); border-radius: 4px; background: var(--color-surface-raised); font-size: 13.5px; }
+.rtm small { display: block; font-size: 11px; color: var(--color-content-muted); }
+.rtm .fi { width: auto; padding: 6px 8px; font-size: 12.5px; margin: 0; }
+.rtm .x { background: none; border: 0; font-size: 18px; padding: 0 4px; color: var(--color-content-muted); cursor: pointer; }
+@media (max-width: 860px) { .rkv { grid-template-columns: 1fr; } .rledadd { grid-template-columns: 1fr 1fr; } .rtm { grid-template-columns: 1fr auto; } .rcard { padding: 14px; } }

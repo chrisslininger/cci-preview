@@ -26,6 +26,7 @@ import BoardPanel from './BoardPanel'
 import InternshipsPanel from './InternshipsPanel'
 import CollegesPanel from './CollegesPanel'
 import InstructorsPanel from './InstructorsPanel'
+import ResearchPanel from './ResearchPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -110,6 +111,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'internships') return <InternshipsPanel />
   if (tab === 'colleges') return <CollegesPanel />
   if (tab === 'instructors') return <InstructorsPanel />
+  if (tab === 'research') return <ResearchPanel />
 
   if (PENDING[tab]) {
     return (
