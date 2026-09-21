@@ -31,6 +31,7 @@ import ReportsPanel from './ReportsPanel'
 import CalendarPanel from './CalendarPanel'
 import StatsPanel from './StatsPanel'
 import RecordsPanel from './RecordsPanel'
+import ControlPanel from './ControlPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -115,6 +116,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'calendar') return <CalendarPanel />
   if (tab === 'stats') return <StatsPanel />
   if (tab === 'records') return <RecordsPanel />
+  if (tab === 'control') return <ControlPanel />
 
   if (PENDING[tab]) {
     return (

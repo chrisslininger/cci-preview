@@ -89,6 +89,8 @@ export const NAV: NavItem[] = [
   { key: 'email', label: 'Email', group: 'institute', any: ['full_admin', 'instructor_tools', ...MANAGES] },
 
   /* ---------------------------------------------------------------- admin -- */
+  // The Executive Director's cockpit — the role, not the capability, so a Board member or administrator never sees it.
+  { key: 'control', label: 'Control center', group: 'admin', any: ['full_admin'], when: (a) => a.staff_role === 'executive_director' || a.roles.some((r) => r.role_key === 'executive_director') },
   { key: 'roles', label: 'Roles & Access', group: 'admin', when: (a) => a.can_admin_roles },
   { key: 'oversight', label: 'Full CCI OS', group: 'admin', any: ['full_admin'] },
 ]

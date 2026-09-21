@@ -1667,7 +1667,7 @@ a.othercard {
 .cert-certify .hint { font-size: 13px; color: var(--color-content-muted); }
 
 /* dialogs */
-.cert-veil { position: fixed; inset: 0; z-index: 80; background: oklch(20.85% 0.0346 238.78 / 55%); display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow: auto; }
+.cert-veil { position: fixed; inset: 0; z-index: 400; background: oklch(20.85% 0.0346 238.78 / 55%); display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow: auto; } /* above the sticky site header (z 100) and the member rail, below the skip link */
 .cert-modal { background: var(--color-surface-base); border-radius: 6px; width: 100%; max-width: 640px; border: 1px solid var(--color-border-subtle); box-shadow: 0 14px 38px oklch(20.85% 0.0346 238.78 / 16%); }
 .cert-modal.wide { max-width: 860px; }
 .cert-modal .mh { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 22px 14px; border-bottom: 1px solid var(--color-border-subtle); }
@@ -2238,3 +2238,42 @@ a.othercard {
   .evd .kv { grid-template-columns: 1fr; } .archup .r { grid-template-columns: 1fr; }
   .rform .fnum { grid-template-columns: 1fr 1fr; }
 }
+
+/* ---------------------------------------------------------------- toast -- */
+/* The confirmation that follows a save ("Report submitted", "Task added"). It had no rule at all, so it rendered as plain text at the foot of the page. */
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); z-index: 500; max-width: min(520px, calc(100vw - 32px)); padding: 11px 16px; border-radius: 6px; background: var(--color-surface-inverse); color: var(--color-content-on-inverse); font-size: 13.5px; line-height: 1.4; box-shadow: 0 14px 38px oklch(20.85% 0.0346 238.78 / 30%); border-left: 3px solid var(--color-brand-accent); opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+
+/* ------------------------------------------------------------ control center -- */
+.cyc { padding: 10px 14px; border: 1px solid var(--color-border-subtle); border-radius: 6px; background: var(--color-surface-raised); font-size: 13px; margin-bottom: 6px; }
+.stile.quiet { opacity: .72; } .stile.bad { border-top-color: var(--color-status-danger); }
+.cgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+.ccard { border: 1px solid var(--color-border-subtle); border-radius: 6px; background: var(--color-surface-base); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.ccard.flag { border-left: 3px solid var(--color-brand-accent); }
+.ccard .ch { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.ccard h3 { font-size: 15.5px; margin: 0 0 2px; }
+.ccard .ckv { display: grid; grid-template-columns: 96px 1fr; gap: 5px 10px; font-size: 13px; }
+.ccard .ckv > span { color: var(--color-content-muted); }
+.cnums { display: flex; gap: 12px; flex-wrap: wrap; }
+.cnums div { display: grid; } .cnums b { font-family: var(--font-display); font-size: 17px; } .cnums div > span { font-size: 11px; color: var(--color-content-muted); }
+.cends { font-size: 12.5px; color: var(--color-status-pending-content); display: grid; gap: 2px; padding: 8px 10px; border-radius: 4px; background: var(--color-status-pending-surface); }
+.cends.ok { color: var(--color-status-success); background: var(--color-status-success-surface); }
+.cfoot { display: flex; gap: 6px; margin-top: auto; }
+.ptbl { border: 1px solid var(--color-border-subtle); border-radius: 6px; overflow: auto; background: var(--color-surface-base); }
+.ptbl table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ptbl th { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-content-tertiary); text-align: left; padding: 8px 10px; background: var(--color-surface-sunken); }
+.ptbl td { padding: 8px 10px; border-top: 1px solid var(--color-border-subtle); vertical-align: top; }
+.ptbl tr.quiet td { background: var(--color-status-danger-surface); }
+.ptbl small { font-size: 11.5px; }
+.feed { border: 1px solid var(--color-border-subtle); border-radius: 6px; background: var(--color-surface-base); max-height: 420px; overflow: auto; }
+.fe { display: grid; grid-template-columns: 150px 150px 1fr; gap: 10px; padding: 8px 12px; border-top: 1px solid var(--color-border-subtle); font-size: 13px; align-items: baseline; }
+.fe:first-child { border-top: 0; }
+.fe .t { font-family: var(--font-mono); font-size: 10.5px; color: var(--color-content-muted); }
+.fe.write .a { font-weight: 600; } .fe.sign_in .a { color: var(--color-content-muted); }
+.fe .a small { font-weight: 400; color: var(--color-content-muted); }
+.numtbl { display: grid; gap: 4px; }
+.numtbl div { display: grid; grid-template-columns: 170px 1fr; gap: 10px; padding: 8px 12px; border: 1px solid var(--color-border-subtle); border-radius: 4px; background: var(--color-surface-base); font-size: 13px; }
+.numtbl span { color: var(--color-content-muted); } .numtbl b { font-weight: 500; }
+.muted { color: var(--color-content-muted); }
+@media (max-width: 860px) { .cgrid { grid-template-columns: 1fr; } .fe { grid-template-columns: 1fr; } .numtbl div { grid-template-columns: 1fr; } .ccard .ckv { grid-template-columns: 1fr; } .ctc-srow[style] { grid-template-columns: 1fr 1fr !important; } }

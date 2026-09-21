@@ -8,6 +8,7 @@ import ReportsPanel from '@/components/member/ReportsPanel'
 import CalendarPanel from '@/components/member/CalendarPanel'
 import StatsPanel from '@/components/member/StatsPanel'
 import RecordsPanel from '@/components/member/RecordsPanel'
+import ControlPanel from '@/components/member/ControlPanel'
 import type { Access } from '@/lib/access'
 
 type Row = Record<string, unknown>
@@ -79,7 +80,7 @@ window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
 }) as typeof window.fetch
 const state = { access: ACCESS, loading: false, signedIn: true, can: (c: string) => ACCESS.capabilities.includes(c as never), refresh: async () => {} }
 const tab = (location.hash || '#tasks').slice(1)
-const which = tab === 'reports' ? <ReportsPanel /> : tab === 'calendar' ? <CalendarPanel /> : tab === 'stats' ? <StatsPanel /> : tab === 'records' ? <RecordsPanel /> : <TasksPanel />
+const which = tab === 'reports' ? <ReportsPanel /> : tab === 'calendar' ? <CalendarPanel /> : tab === 'stats' ? <StatsPanel /> : tab === 'records' ? <RecordsPanel /> : tab === 'control' ? <ControlPanel /> : <TasksPanel />
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter><ToastProvider><AccessContext.Provider value={state as never}>
     <main className="ma-main" style={{ maxWidth: 1180, margin: '0 auto' }}>{which}</main>
