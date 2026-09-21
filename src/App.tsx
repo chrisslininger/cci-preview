@@ -13,7 +13,8 @@ import { renderHead } from '@/lib/seo'
 function DocumentMeta() {
   const { pathname } = useLocation()
   useEffect(() => {
-    const entry = routeByPath.get(pathname)
+    // Cloudflare serves client-only routes with a trailing slash (/registration-confirmed/); the table is keyed without one.
+    const entry = routeByPath.get(pathname) ?? routeByPath.get(pathname.replace(/\/+$/, '') || '/')
     const meta = entry?.meta ?? notFoundRoute.meta
     document.title = meta.title
 

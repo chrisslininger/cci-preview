@@ -35,6 +35,7 @@ export type Reg = {
   id: string; event_id: number; full_name: string; email: string; phone: string | null; practice_name: string | null
   reg_type: string; is_member_at_registration: boolean; price_paid_cents: number; payment_status: string
   registration_status: string; checked_in_at: string | null; checkin_method: string | null; created_at: string
+  verification_status?: string | null; discount_applied?: string | null
 }
 
 export type EventRow = {
@@ -53,7 +54,7 @@ export type EventRow = {
   venue?: Venue | null
   event_speakers?: Speaker[]
   event_sessions?: Session[]
-  event_registrations?: Pick<Reg, 'id' | 'registration_status' | 'checked_in_at' | 'payment_status'>[]
+  event_registrations?: Pick<Reg, 'id' | 'registration_status' | 'checked_in_at' | 'payment_status' | 'created_at' | 'verification_status'>[]
 }
 
 /** The columns the form edits. Everything else on EventRow is derived or embedded. */
@@ -72,7 +73,7 @@ const SELECT = [
   'venue:locations(id,name,loc_type,address,city,state,website)',
   'event_speakers(id,person_id,name,speaker_title,note,is_keynote,sort)',
   'event_sessions(id,title,starts_at,ends_at,ce_hours,speaker,sort)',
-  'event_registrations(id,registration_status,checked_in_at,payment_status)',
+  'event_registrations(id,registration_status,checked_in_at,payment_status,created_at,verification_status)',
 ].join(',')
 
 /* ------------------------------------------------------------------ reads */
@@ -195,6 +196,15 @@ export function isPast(e: Pick<EventRow, 'starts_at' | 'ends_at' | 'category'>, 
   return end < now
 }
 export const activeRegs = (e: EventRow) => (e.event_registrations ?? []).filter((r) => r.registration_status !== 'cancelled')
+/** Seats that are actually taken: paid or free. A pending Stripe session is not a registration yet. */
+export const confirmedRegs = (e: EventRow) => activeRegs(e).filter((r) => r.payment_status === 'paid' || r.payment_status === 'free')
+export const pendingRegs = (e: EventRow) => activeRegs(e).filter((r) => r.payment_status === 'pending')
+export const recentRegs = (e: EventRow, days = 7) => confirmedRegs(e).filter((r) => r.created_at && Date.now() - new Date(r.created_at).getTime() < days * 86400000)
+export const unverifiedRegs = (e: EventRow) => confirmedRegs(e).filter((r) => r.verification_status === 'pending')
+/** Student / faculty tickets are self-declared at checkout; the Institute confirms them here. */
+export async function setVerification(regId: string, status: 'verified' | 'pending' | 'rejected'): Promise<{ ok?: true; error?: string }> {
+  return patch('event_registrations', `id=eq.${regId}`, { verification_status: status, updated_at: new Date().toISOString() })
+}
 export const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
 export function zoned(iso: string | null | undefined, tz?: string | null) {

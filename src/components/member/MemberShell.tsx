@@ -10,7 +10,9 @@ import { Link, useLocation, useNavigate } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { navFor, findNav, GROUP_LABEL } from '@/lib/nav'
 import { displayName, initials, primaryRole, roleLabel } from '@/lib/access'
-import { signOut } from '@/lib/supabase'
+import { signOut, session } from '@/lib/supabase'
+import { attention, EMPTY, markEventsSeen, logSignInOnce, logActivity } from '@/lib/queries/attention'
+import type { Attention } from '@/lib/queries/attention'
 import MemberPanel from './MemberPanel'
 import Overview from './Overview'
 
@@ -33,6 +35,28 @@ export default function MemberShell() {
   }, [hash, access])
 
   const item = findNav(tab)
+
+  // Red dots: what needs this person right now — a report they owe, a task due, new registrations.
+  const [att, setAtt] = useState<Attention>(EMPTY)
+  const uid = session.user?.id ?? null
+  useEffect(() => {
+    let alive = true
+    logSignInOnce(uid)
+    const run = () => { void attention(access, uid).then((a) => { if (alive) setAtt(a) }) }
+    run()
+    const t = setInterval(run, 5 * 60 * 1000)
+    return () => { alive = false; clearInterval(t) }
+  }, [access, uid, tab])
+  useEffect(() => {
+    void logActivity('tab_open', tab)
+    if (tab === 'events') { markEventsSeen(uid); setAtt((a) => ({ ...a, events: { count: 0 } })) }
+  }, [tab, uid])
+  const dot = (key: string): { n: number; urgent: boolean; title: string } | null => {
+    if (key === 'reports' && att.reports.count) return { n: att.reports.count, urgent: att.reports.overdue, title: att.reports.label }
+    if (key === 'tasks' && att.tasks.count) return { n: att.tasks.count, urgent: att.tasks.overdue > 0, title: att.tasks.overdue ? `${att.tasks.overdue} overdue` : `${att.tasks.count} due soon` }
+    if (key === 'events' && att.events.count) return { n: att.events.count, urgent: false, title: `${att.events.count} new registration${att.events.count > 1 ? 's' : ''}` }
+    return null
+  }
 
   // On a phone the rail is a horizontal strip; keep the current tab in view.
   useEffect(() => {
@@ -78,6 +102,7 @@ export default function MemberShell() {
                   aria-current={nav.key === tab ? 'page' : undefined}
                 >
                   {nav.label}
+                  {dot(nav.key) && <span className={`ma-dot${dot(nav.key)!.urgent ? ' urgent' : ''}`} title={dot(nav.key)!.title} aria-label={dot(nav.key)!.title} />}
                 </Link>
               ))}
             </div>

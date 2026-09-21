@@ -31,6 +31,7 @@ export type Capability =
   | 'manage_marketing'
   | 'manage_curriculum'
   | 'manage_colleges'
+  | 'manage_finance'
   | 'committee_tools'
   /** `committee:<key>` — membership of a specific committee. */
   | `committee:${string}`

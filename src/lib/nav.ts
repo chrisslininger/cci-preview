@@ -38,6 +38,7 @@ const MANAGES: Capability[] = [
   'manage_marketing',
   'manage_curriculum',
   'manage_colleges',
+  'manage_finance',
   'committee_tools',
 ]
 
@@ -65,9 +66,12 @@ export const NAV: NavItem[] = [
   /* ------------------------------------------------------------ institute -- */
   { key: 'events', label: 'Events', group: 'institute', always: true },
   { key: 'calendar', label: 'Calendar', group: 'institute', always: true },
-  { key: 'reports', label: 'Reports', group: 'institute', any: LEADERSHIP },
-  { key: 'tasks', label: 'Tasks', group: 'institute', any: LEADERSHIP },
+  // Reports: every committee seat can read their committee's submitted reports; chairs file them.
+  { key: 'reports', label: 'Reports', group: 'institute', any: LEADERSHIP, when: (a) => a.committees.length > 0 || a.capabilities.includes('board') || a.capabilities.includes('full_admin') },
+  // Tasks: anyone with a role can be assigned, so anyone with a role sees the tab.
+  { key: 'tasks', label: 'Tasks', group: 'institute', any: [...LEADERSHIP, 'instructor_tools'], when: (a) => a.roles.length > 0 || a.capabilities.includes('full_admin') },
   { key: 'stats', label: 'Stats', group: 'institute', any: [...LEADERSHIP, 'instructor_tools'] },
+  { key: 'records', label: 'Records', group: 'institute', any: LEADERSHIP, when: (a) => a.committees.length > 0 || a.capabilities.includes('board') || a.capabilities.includes('full_admin') },
   {
     key: 'directory',
     label: 'Members',

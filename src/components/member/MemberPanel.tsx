@@ -9,11 +9,10 @@ import { useEffect, useState } from 'react'
 import { Link } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import {
-  myRegistrations, myCertifications, myCompletions, upcomingEvents,
-  committeeReports, directory,
+  myCertifications, myCompletions, directory,
 } from '@/lib/queries/member'
 import type {
-  Registration, Certification, Completion, PublicEvent, CommitteeReport, BoardSeat, DirectoryPerson,
+  Certification, Completion, BoardSeat, DirectoryPerson,
 } from '@/lib/queries/member'
 import { TIER_LABEL } from '@/lib/access'
 import RolesPanel from './RolesPanel'
@@ -27,6 +26,11 @@ import InternshipsPanel from './InternshipsPanel'
 import CollegesPanel from './CollegesPanel'
 import InstructorsPanel from './InstructorsPanel'
 import ResearchPanel from './ResearchPanel'
+import TasksPanel from './TasksPanel'
+import ReportsPanel from './ReportsPanel'
+import CalendarPanel from './CalendarPanel'
+import StatsPanel from './StatsPanel'
+import RecordsPanel from './RecordsPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -58,13 +62,11 @@ function Panel({ title, lede, children }: { title: string; lede: string; childre
 
 /** Modules still to be ported from CCI OS. Named honestly. */
 const PENDING: Record<string, string> = {
-  stats: 'Institute statistics and trends',
   instructors: 'The instructor register and Train the Trainer',
   internships: 'Preceptors, interns and placements',
   research: 'Research projects and grants',
   colleges: 'College relationships and outreach',
   org: 'Committees, chairs and reporting lines',
-  tasks: 'Assigned work by committee',
   email: 'Institute correspondence',
 }
 
@@ -80,14 +82,10 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
     setData(null)
     void (async () => {
       let result: unknown = null
-      if (tab === 'calendar') {
-        result = { events: await upcomingEvents(), regs: await myRegistrations() }
-      } else if (tab === 'mycert') {
+      if (tab === 'mycert') {
         result = personId ? await myCertifications(personId) : []
       } else if (tab === 'myce') {
         result = personId ? await myCompletions(personId) : []
-      } else if (tab === 'reports') {
-        result = await committeeReports()
       } else if (tab === 'directory') {
         result = await directory()
       }
@@ -112,6 +110,11 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'colleges') return <CollegesPanel />
   if (tab === 'instructors') return <InstructorsPanel />
   if (tab === 'research') return <ResearchPanel />
+  if (tab === 'tasks') return <TasksPanel />
+  if (tab === 'reports') return <ReportsPanel />
+  if (tab === 'calendar') return <CalendarPanel />
+  if (tab === 'stats') return <StatsPanel />
+  if (tab === 'records') return <RecordsPanel />
 
   if (PENDING[tab]) {
     return (
@@ -129,47 +132,6 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
     return (
       <Panel title={label} lede="Reading the Institute database…">
         <p className="ma-empty">One moment.</p>
-      </Panel>
-    )
-  }
-
-  /* -------------------------------------------------------------- events -- */
-  if (tab === 'events' || tab === 'calendar') {
-    const { events, regs } = (data ?? { events: [], regs: [] }) as {
-      events: PublicEvent[]
-      regs: Registration[]
-    }
-    const mine = new Set(regs.map((r) => r.events?.slug).filter(Boolean))
-    const list = tab === 'calendar' ? events : events
-    return (
-      <Panel
-        title={label}
-        lede={
-          tab === 'calendar'
-            ? 'The Institute year, as published.'
-            : 'Everything you can register for, and everything you are registered for.'
-        }
-      >
-        {list.length === 0 ? (
-          <p className="ma-empty">No published events right now.</p>
-        ) : (
-          list.map((event) => (
-            <Row
-              key={event.id}
-              title={event.title ?? 'Event'}
-              detail={`${date(event.starts_at)}${event.location ? ` · ${event.location}` : ''}`}
-              right={
-                mine.has(event.slug) ? (
-                  <span className="pillst st-free">REGISTERED</span>
-                ) : (
-                  <Link className="b sm p-btn" to={`/seminars/${event.slug}`}>
-                    Details
-                  </Link>
-                )
-              }
-            />
-          ))
-        )}
       </Panel>
     )
   }
@@ -274,37 +236,6 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   }
 
   /* -------------------------------------------------------------- reports -- */
-  if (tab === 'reports') {
-    const rows = (data ?? []) as CommitteeReport[]
-    const leading = access.committees.filter((c) => c.leads).map((c) => c.name).join(', ')
-    return (
-      <Panel
-        title="Reports"
-        lede={leading ? `Committee reports. You lead ${leading}.` : 'Committee reports.'}
-      >
-        {rows.length === 0 ? (
-          <p className="ma-empty">
-            No reports you are entitled to see. A chair sees their own committee; oversight sees
-            all of them.
-          </p>
-        ) : (
-          rows.map((r) => (
-            <Row
-              key={r.id}
-              title={r.committees?.name ?? `Committee ${r.committee_id}`}
-              detail={`${r.period_label ?? ''}${r.submitted_at ? ` · submitted ${date(r.submitted_at)}` : ' · not submitted'}`}
-              right={
-                <span className={`pillst ${r.status === 'submitted' ? 'st-free' : 'st-pending'}`}>
-                  {(r.status ?? 'draft').toUpperCase()}
-                </span>
-              }
-            />
-          ))
-        )}
-      </Panel>
-    )
-  }
-
   /* ---------------------------------------------------------------- board -- */
   if (tab === 'board') {
     const rows = (data ?? []) as BoardSeat[]

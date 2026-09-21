@@ -1,0 +1,145 @@
+// CCI Website — shared registration finalizer.
+// Used by stripe-webhook (Stripe pushes the event) and confirm-checkout (the
+// visitor lands back on the site). Both paths converge here so a registration
+// is recorded exactly once, whichever arrives first, and the Institute is
+// told about it exactly once.
+//
+// Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY. Optional: RESEND_API_KEY,
+// NOTIFY_FROM, NOTIFY_TO (comma-separated), SITE_ORIGIN.
+
+const SB_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const RESEND_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
+const NOTIFY_FROM = Deno.env.get("NOTIFY_FROM") ?? "Advanced Orthogonal Institute <registrations@advancedorthogonal.com>";
+const NOTIFY_TO = (Deno.env.get("NOTIFY_TO") ?? "drslininger@cerebralchiropractic.com").split(",").map((s: string) => s.trim()).filter(Boolean);
+const SITE_ORIGIN = Deno.env.get("SITE_ORIGIN") ?? "https://advancedorthogonal.com";
+
+export async function sbFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  return await fetch(`${SB_URL}${path}`, {
+    ...init,
+    headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json", ...(init.headers ?? {}) },
+  });
+}
+
+const likeEscape = (v: string) => v.replace(/([\\%_])/g, "\\$1");
+
+export async function linkOrCreatePerson(fullName: string, email: string, phone: string | null): Promise<string | null> {
+  try {
+    if (!email) return null;
+    const q = await sbFetch(`/rest/v1/people?email=ilike.${encodeURIComponent(likeEscape(email))}&select=id&limit=1`);
+    const rows = await q.json();
+    if (Array.isArray(rows) && rows[0]) return rows[0].id;
+    const parts = String(fullName ?? "").trim().split(/\s+/).filter(Boolean);
+    const first = parts.shift() ?? "Unknown";
+    const last = parts.join(" ") || "—"; // people.last_name is NOT NULL
+    const ins = await sbFetch(`/rest/v1/people`, {
+      method: "POST", headers: { Prefer: "return=representation" },
+      body: JSON.stringify({ first_name: first, last_name: last, email, mobile_phone: phone, contact_type: "lead", notes: "Created automatically from a website event registration." }),
+    });
+    if (!ins.ok) { console.error("person create failed", await ins.text()); return null; }
+    const [row] = await ins.json();
+    return row?.id ?? null;
+  } catch (e) { console.error("linkOrCreatePerson error", e); return null; }
+}
+
+export type Reg = Record<string, unknown> & { id: string; event_id: number; full_name: string; email: string; reg_type?: string; price_paid_cents?: number; payment_status?: string };
+
+/** Records a paid Stripe Checkout session. Returns the registration row and whether this call is what marked it paid. */
+export async function finalizePaidSession(session: Record<string, any>): Promise<{ row: Reg | null; newlyPaid: boolean }> {
+  const meta = session.metadata ?? {};
+  const sessionId = String(session.id ?? "");
+  const email = meta.email ?? session.customer_details?.email ?? "";
+  const fullName = meta.full_name ?? session.customer_details?.name ?? "Unknown";
+  const phone = meta.phone ?? null;
+
+  // What do we already have? (idempotency: a second webhook or a visitor refresh must not re-notify)
+  const cur = await sbFetch(`/rest/v1/event_registrations?stripe_checkout_session_id=eq.${encodeURIComponent(sessionId)}&select=*&limit=1`);
+  const curRows = cur.ok ? await cur.json() : [];
+  const existing: Reg | null = Array.isArray(curRows) && curRows[0] ? curRows[0] : null;
+  if (existing && existing.payment_status === "paid") return { row: existing, newlyPaid: false };
+
+  const personId = await linkOrCreatePerson(fullName, email, phone);
+  const patch: Record<string, unknown> = {
+    payment_status: "paid", registration_status: "registered",
+    stripe_payment_intent_id: session.payment_intent ?? null,
+    updated_at: new Date().toISOString(),
+  };
+  if (typeof session.amount_total === "number") patch.price_paid_cents = session.amount_total;
+  if (personId) patch.person_id = personId;
+  if (meta.reg_type) patch.reg_type = meta.reg_type;
+
+  if (existing) {
+    const up = await sbFetch(`/rest/v1/event_registrations?id=eq.${existing.id}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(patch) });
+    if (!up.ok) { console.error("registration finalize failed", await up.text()); return { row: existing, newlyPaid: false }; }
+    const [row] = await up.json();
+    return { row, newlyPaid: true };
+  }
+  // No pending row — the create-checkout insert failed. Recover from Stripe metadata so the sale is never lost.
+  if (!meta.event_id) return { row: null, newlyPaid: false };
+  const regType = String(meta.reg_type ?? "doctor");
+  const rec = await sbFetch(`/rest/v1/event_registrations`, {
+    method: "POST", headers: { Prefer: "return=representation" },
+    body: JSON.stringify({
+      event_id: Number(meta.event_id), full_name: fullName, email, phone, person_id: personId,
+      is_member_at_registration: String(meta.is_member) === "true",
+      price_paid_cents: Number(session.amount_total ?? 0), discount_applied: meta.discount_applied ?? null,
+      reg_type: regType, verification_status: regType === "student" || regType === "faculty" ? "pending" : null,
+      payment_status: "paid", registration_status: "registered",
+      stripe_checkout_session_id: sessionId, stripe_payment_intent_id: session.payment_intent ?? null,
+      source: "website", notes: "Recovered at payment time: no pending row existed.",
+    }),
+  });
+  if (!rec.ok) { console.error("registration recovery failed", await rec.text()); return { row: null, newlyPaid: false }; }
+  const [row] = await rec.json();
+  return { row, newlyPaid: true };
+}
+
+export async function eventFor(id: number): Promise<Record<string, any> | null> {
+  const r = await sbFetch(`/rest/v1/events?id=eq.${id}&select=id,title,slug,starts_at,ends_at,timezone,location&limit=1`);
+  const rows = r.ok ? await r.json() : [];
+  return Array.isArray(rows) && rows[0] ? rows[0] : null;
+}
+
+const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+const money = (cents: unknown) => `$${(Number(cents ?? 0) / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+const when = (ev: Record<string, any> | null) => {
+  if (!ev?.starts_at) return "";
+  const tz = ev.timezone || "America/New_York";
+  const f = (iso: string) => new Date(iso).toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric", year: "numeric", timeZone: tz });
+  return ev.ends_at && f(ev.ends_at) !== f(ev.starts_at) ? `${f(ev.starts_at)} – ${f(ev.ends_at)}` : f(ev.starts_at);
+};
+
+async function sendEmail(to: string[], subject: string, html: string, replyTo?: string): Promise<void> {
+  if (!RESEND_KEY || !to.length) { console.log("email skipped (RESEND_API_KEY not set)", subject); return; }
+  const r = await fetch("https://api.resend.com/emails", {
+    method: "POST", headers: { Authorization: `Bearer ${RESEND_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ from: NOTIFY_FROM, to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}) }),
+  });
+  if (!r.ok) console.error("email send failed", r.status, await r.text());
+}
+
+/** Tells the Institute (and the registrant) about a registration that just became paid or free. */
+export async function notifyRegistration(row: Reg, kind: "paid" | "free" = "paid"): Promise<void> {
+  try {
+    const ev = await eventFor(Number(row.event_id));
+    const title = ev?.title ?? "AOI event";
+    const tier = String(row.reg_type ?? "doctor");
+    const tierLabel = tier === "student" ? "Student" : tier === "faculty" ? "College faculty" : "Doctor";
+    const verify = row.verification_status === "pending" ? " — eligibility to confirm" : "";
+    const rows = [
+      ["Name", row.full_name], ["Email", row.email], ["Phone", row.phone ?? "—"],
+      ["Ticket", `${tierLabel}${row.is_member_at_registration ? " · AOI member" : ""}${verify}`],
+      ["Paid", kind === "free" ? "Free" : `${money(row.price_paid_cents)}${row.discount_applied ? ` (${row.discount_applied})` : ""}`],
+      ["Event", `${title}${when(ev) ? " · " + when(ev) : ""}`],
+      ["Registered", new Date().toLocaleString("en-US", { timeZone: "America/New_York" }) + " ET"],
+    ];
+    const table = rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#5b6b76;white-space:nowrap">${esc(k)}</td><td style="padding:4px 0"><b>${esc(v)}</b></td></tr>`).join("");
+    await sendEmail(NOTIFY_TO, `New registration — ${title}: ${row.full_name} (${tierLabel})`,
+      `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>A new registration just came through the website.</p><table style="border-collapse:collapse">${table}</table><p style="margin-top:16px"><a href="${SITE_ORIGIN}/account#events">Open the Events tab</a> to see the attendance list.</p></div>`,
+      String(row.email ?? ""));
+    if (row.email) {
+      await sendEmail([String(row.email)], `You're registered — ${title}`,
+        `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>Hi ${esc(String(row.full_name).split(/\s+/)[0])},</p><p>Your registration for <b>${esc(title)}</b>${when(ev) ? ` (${esc(when(ev))})` : ""} is confirmed.</p><table style="border-collapse:collapse">${table}</table>${row.verification_status === "pending" ? "<p>We will confirm your student / faculty status by email before the event.</p>" : ""}<p style="margin-top:16px">Event details and reminders will follow as the date approaches. If you have a member login, this event now appears under My Profile → My Registrations.</p><p>— Advanced Orthogonal Institute</p></div>`);
+    }
+  } catch (e) { console.error("notifyRegistration error", e); }
+}

@@ -342,12 +342,12 @@ export async function remove(
   return res.ok ? { ok: true } : { error: await res.text() }
 }
 
-export async function rpc<T = unknown>(name: string): Promise<T | null> {
+export async function rpc<T = unknown>(name: string, args: Record<string, unknown> = {}): Promise<T | null> {
   await ensureSession()
   const res = await fetch(`${SB_URL}/rest/v1/rpc/${name}`, {
     method: 'POST',
     headers: headers(true),
-    body: '{}',
+    body: JSON.stringify(args),
   })
   if (!res.ok) return null
   return (await res.json()) as T

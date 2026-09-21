@@ -14,7 +14,7 @@ import { useToast } from '@/components/ui/Toast'
 import {
   listEvents, venues as loadVenues, committees as loadCommittees, registrations, searchPeople,
   createEvent, updateEvent, setStatus, deleteEvent, saveSpeakers, saveSessions, duplicateEvent, checkIn,
-  CATEGORIES, TYPES, TIMEZONES, catLabel, typeLabel, isGov, isPast, activeRegs, slugify,
+  CATEGORIES, TYPES, TIMEZONES, catLabel, typeLabel, isGov, isPast, activeRegs, confirmedRegs, pendingRegs, recentRegs, unverifiedRegs, setVerification, slugify,
   dateBlock, whenText, money, zoned, MON, MONL,
 } from '@/lib/queries/eventsAdmin'
 import type { EventRow, EventInput, Venue, Committee, Speaker, Session, Reg, PersonHit } from '@/lib/queries/eventsAdmin'
@@ -30,7 +30,7 @@ function Pill({ kind = '', children }: { kind?: string; children: React.ReactNod
 
 function Chips({ e }: { e: EventRow }) {
   const gov = isGov(e)
-  const n = activeRegs(e).length
+  const n = confirmedRegs(e).length; const pend = pendingRegs(e).length; const fresh = recentRegs(e).length; const unv = unverifiedRegs(e).length
   const p = money(e.price)
   return (
     <div className="cert-chips" style={{ marginBottom: 0, marginTop: 9 }}>
@@ -41,6 +41,9 @@ function Chips({ e }: { e: EventRow }) {
       {e.is_keystone && <Pill kind="gold">Keystone</Pill>}
       {isPast(e) && <Pill kind="past">Past</Pill>}
       {n > 0 && <Pill kind="info">{n} registered</Pill>}
+      {fresh > 0 && <Pill kind="ok">{fresh} new this week</Pill>}
+      {unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}
+      {pend > 0 && <Pill>{pend} awaiting payment</Pill>}
       {p && !gov && <Pill>{p}{e.member_price != null ? ` · members ${money(e.member_price)}` : ''}{e.free_with_membership ? ' · free w/ membership' : ''}</Pill>}
     </div>
   )
@@ -234,6 +237,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs }: { 
 
 /* ---------------------------------------------------------- registrations -- */
 
+const TIER: Record<string, string> = { doctor: 'Doctor', student: 'Student', faculty: 'College faculty' }
 function RegsDialog({ e, canManage, onClose, onBack, onChanged }: { e: EventRow; canManage: boolean; onClose: () => void; onBack: () => void; onChanged: () => Promise<void> }) {
   const toast = useToast()
   const [rows, setRows] = useState<Reg[]>([])
@@ -241,7 +245,8 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged }: { e: EventRow;
   const load = useCallback(async () => { const r = await registrations(e.id); setErr(r.error ? r.error.slice(0, 160) : null); setRows(r.rows) }, [e.id])
   useEffect(() => { void load() }, [load])
   useEffect(() => { const k = (ev: KeyboardEvent) => ev.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
-  const live = rows.filter((r) => r.registration_status !== 'cancelled')
+  const live = rows.filter((r) => r.registration_status !== 'cancelled' && (r.payment_status === 'paid' || r.payment_status === 'free'))
+  const pending = rows.filter((r) => r.registration_status !== 'cancelled' && r.payment_status === 'pending').length
   const paid = live.filter((r) => r.payment_status === 'paid').length
   const inn = live.filter((r) => r.checked_in_at).length
   const rev = live.reduce((s, r) => s + (r.payment_status === 'paid' ? r.price_paid_cents : 0), 0) / 100
@@ -251,7 +256,7 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged }: { e: EventRow;
     await load(); await onChanged()
   }
   function exportRoster() {
-    const cols = ['full_name', 'email', 'phone', 'practice_name', 'reg_type', 'is_member_at_registration', 'price_paid_cents', 'payment_status', 'registration_status', 'checked_in_at', 'created_at']
+    const cols = ['full_name', 'email', 'phone', 'practice_name', 'reg_type', 'is_member_at_registration', 'discount_applied', 'price_paid_cents', 'payment_status', 'verification_status', 'registration_status', 'checked_in_at', 'created_at']
     const csv = [cols.join(','), ...rows.map((r) => cols.map((c) => `"${String((r as Record<string, unknown>)[c] ?? '').replace(/"/g, '""')}"`).join(','))].join('\n')
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = `${e.slug ?? 'event'}-roster.csv`; a.click(); URL.revokeObjectURL(a.href)
   }
@@ -261,13 +266,15 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged }: { e: EventRow;
         <div className="mh"><div><h3>Registrations &amp; check-in — {e.title}</h3><p>{whenText(e)}</p></div><button type="button" className="x" aria-label="Close" onClick={onClose}>×</button></div>
         <div className="mb">
           {err && <div className="cert-err">{err}</div>}
-          <div className="evt-regstats"><div className="s"><small>Registered</small><b>{live.length}</b></div><div className="s"><small>Paid</small><b>{paid}</b></div><div className="s"><small>Checked in</small><b>{inn}</b></div><div className="s"><small>Revenue</small><b>{money(rev) ?? '$0'}</b></div></div>
-          <div className="evt-tbl"><table><thead><tr><th>Attendee</th><th>Type</th><th>Paid</th><th>Check-in</th><th></th></tr></thead><tbody>
-            {rows.length === 0 && <tr><td colSpan={5} className="muted">No registrations yet.</td></tr>}
-            {rows.map((r) => <tr key={r.id} className={r.registration_status === 'cancelled' ? 'off' : ''}>
+          <div className="evt-regstats"><div className="s"><small>Registered</small><b>{live.length}</b></div><div className="s"><small>Paid</small><b>{paid}</b></div>{pending > 0 && <div className="s"><small>Awaiting payment</small><b>{pending}</b></div>}<div className="s"><small>Checked in</small><b>{inn}</b></div><div className="s"><small>Revenue</small><b>{money(rev) ?? '$0'}</b></div></div>
+          <div className="evt-tbl"><table><thead><tr><th>Attendee</th><th>Ticket</th><th>Paid</th><th>Registered</th><th>Check-in</th><th></th></tr></thead><tbody>
+            {rows.length === 0 && <tr><td colSpan={6} className="muted">No registrations yet.</td></tr>}
+            {[...rows].sort((a, b) => b.created_at.localeCompare(a.created_at)).map((r) => <tr key={r.id} className={r.registration_status === 'cancelled' ? 'off' : ''}>
               <td><b>{r.full_name}</b><br /><small><a href={`mailto:${r.email}`}>{r.email}</a>{r.practice_name ? ` · ${r.practice_name}` : ''}{r.phone ? ` · ${r.phone}` : ''}</small></td>
-              <td>{r.reg_type}{r.is_member_at_registration ? ' · member' : ''}{r.registration_status === 'cancelled' ? <><br /><Pill kind="bad">cancelled</Pill></> : null}</td>
-              <td>{money(r.price_paid_cents / 100) ?? '$0'}<br /><Pill kind={r.payment_status === 'paid' ? 'ok' : 'warn'}>{r.payment_status}</Pill></td>
+              <td>{TIER[r.reg_type] ?? r.reg_type}{r.is_member_at_registration ? ' · member' : ''}{r.discount_applied ? <><br /><small className="muted">{r.discount_applied.replace(/\+/g, ' + ')}</small></> : null}{r.registration_status === 'cancelled' ? <><br /><Pill kind="bad">cancelled</Pill></> : null}
+                {r.verification_status === 'pending' && r.registration_status !== 'cancelled' ? <><br /><Pill kind="warn">eligibility to confirm</Pill>{canManage && <> <button type="button" className="flink" onClick={async () => { const x = await setVerification(r.id, 'verified'); if (x.error) return toast('Could not update: ' + x.error.slice(0, 120)); await load(); await onChanged() }}>confirm</button></>}</> : r.verification_status === 'verified' ? <><br /><Pill kind="ok">verified</Pill></> : null}</td>
+              <td>{money(r.price_paid_cents / 100) ?? '$0'}<br /><Pill kind={r.payment_status === 'paid' || r.payment_status === 'free' ? 'ok' : r.payment_status === 'pending' ? 'warn' : 'bad'}>{r.payment_status === 'pending' ? 'awaiting payment' : r.payment_status}</Pill></td>
+              <td><small>{new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}<br />{new Date(r.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</small></td>
               <td>{r.checked_in_at ? <><Pill kind="ok">Checked in</Pill><br /><small className="muted">{new Date(r.checked_in_at).toLocaleString()}</small></> : (canManage && r.registration_status !== 'cancelled' ? <button type="button" className="b s-btn on-light xs" onClick={() => void toggle(r)}>Check in</button> : '—')}</td>
               <td>{r.checked_in_at && canManage && <button type="button" className="flink" onClick={() => void toggle(r)}>undo</button>}</td>
             </tr>)}
