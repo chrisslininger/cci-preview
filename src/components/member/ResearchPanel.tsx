@@ -59,7 +59,7 @@ export default function ResearchPanel() {
     const e = entry[p.id] ?? { date: today(), kind: 'grant_received' as Kind, amount: '', note: '' }
     return <div key={p.id} className={`rcard ${p.status}`}>
       <div className="rh"><div><h3>{p.name}</h3>
-        <div className="ctc-chips">{p.published && <Pill kind="ok">Published{p.published_date ? ` · ${fmtD(p.published_date)}` : ''}</Pill>}<Pill kind={p.status === 'active' ? 'info' : ''}>{p.status === 'active' ? 'Active' : 'Past'}</Pill>{p.irb && <Pill>IRB · {p.irb}</Pill>}</div></div>
+        <div className="ctc-chips">{p.published && <Pill kind="ok">Published{p.published_date ? ` · ${fmtD(p.published_date)}` : ''}</Pill>}<small className="muted">{p.status === 'active' ? 'Active' : 'Past'}{p.irb ? ` · IRB ${p.irb}` : ''}</small></div></div>
         {canManage && <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(p)}>Manage</button>}</div>
       <div className="rkv">
         <span>Principal investigator</span><div>{P ? link(P) : p.pi_name ? <span>{p.pi_name}</span> : <i>not set</i>}</div>
@@ -79,7 +79,7 @@ export default function ResearchPanel() {
       <div className="rsec"><button type="button" className="link" onClick={() => setOpenLedger((s) => { const n = new Set(s); n.has(p.id) ? n.delete(p.id) : n.add(p.id); return n })}>{open ? '▾ Hide' : '▸ Show'} grant &amp; expense ledger · {p.research_ledger.length} {p.research_ledger.length === 1 ? 'entry' : 'entries'}</button></div>
       {open && <>
         <table className="rled"><thead><tr><th>Date</th><th>Kind</th><th>Note</th><th className="num">Amount</th><th>By</th>{canManage && <th />}</tr></thead><tbody>
-          {p.research_ledger.length ? [...p.research_ledger].sort((a, b) => b.entry_date.localeCompare(a.entry_date)).map((l) => <tr key={l.id}><td>{fmtD(l.entry_date)}</td><td><Pill kind={l.kind === 'expense' ? 'warn' : l.kind === 'overhead' ? 'gold' : 'ok'}>{KIND_LABEL[l.kind]}</Pill></td><td>{l.note}</td><td className="num">{l.kind === 'expense' ? '−' : ''}{money(l.amount)}</td><td>{l.by_name}</td>{canManage && <td><button type="button" className="link" onClick={async () => { if (!confirm('Remove this ledger entry?')) return; const r = await removeEntry(l.id); if (r.error) return toast(friendly(r.error)); await load() }}>remove</button></td>}</tr>) : <tr><td colSpan={6} style={{ color: 'var(--color-content-muted)' }}>No entries yet.</td></tr>}</tbody></table>
+          {p.research_ledger.length ? [...p.research_ledger].sort((a, b) => b.entry_date.localeCompare(a.entry_date)).map((l) => <tr key={l.id}><td>{fmtD(l.entry_date)}</td><td><Pill kind={l.kind === 'expense' ? 'warn' : l.kind === 'overhead' ? '' : 'ok'}>{KIND_LABEL[l.kind]}</Pill></td><td>{l.note}</td><td className="num">{l.kind === 'expense' ? '−' : ''}{money(l.amount)}</td><td>{l.by_name}</td>{canManage && <td><button type="button" className="link" onClick={async () => { if (!confirm('Remove this ledger entry?')) return; const r = await removeEntry(l.id); if (r.error) return toast(friendly(r.error)); await load() }}>remove</button></td>}</tr>) : <tr><td colSpan={6} style={{ color: 'var(--color-content-muted)' }}>No entries yet.</td></tr>}</tbody></table>
         {canManage && <div className="rledadd">
           <input className="fi" type="date" value={e.date} onChange={(ev) => setEntry((s) => ({ ...s, [p.id]: { ...e, date: ev.target.value } }))} />
           <select className="fi" value={e.kind} onChange={(ev) => setEntry((s) => ({ ...s, [p.id]: { ...e, kind: ev.target.value as Kind } }))}>{(Object.entries(KIND_LABEL) as [Kind, string][]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
@@ -121,7 +121,7 @@ export function ResearchSection({ personId }: { personId: string }) {
   if (!rows || !rows.length) return null
   return <>
     <div className="sec">Research <span className="r">{rows.filter((r) => r.project.status === 'active').length} active</span></div>
-    {rows.map((r, i) => <div key={i} className="il"><span><b>{r.project.name}</b> <small>· {ROLE_LABEL[r.role as Role] ?? r.role}</small></span><Pill kind={r.project.status === 'active' ? 'info' : ''}>{r.project.published ? 'Published' : r.project.status}</Pill></div>)}
+    {rows.map((r, i) => <div key={i} className="il"><span><b>{r.project.name}</b> <small>· {ROLE_LABEL[r.role as Role] ?? r.role}</small></span>{r.project.published ? <Pill kind="ok">Published</Pill> : <small className="muted">{r.project.status}</small>}</div>)}
   </>
 }
 function PersonCard({ p, who, canNote, onClose }: { p: PersonLite; who: Who; canNote: boolean; onClose: () => void }) {

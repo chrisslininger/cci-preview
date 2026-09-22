@@ -116,7 +116,7 @@ export const advoLevel = (p: PersonLite | null | undefined): string => {
   return (RANK[fromCerts] ?? 0) >= (RANK[p?.cert_level ?? 'none'] ?? 0) ? fromCerts : (p?.cert_level ?? 'none')
 }
 export const hasLevel2 = (p: PersonLite | null | undefined) => advoLevel(p) === 'level_2'
-export const LEVEL_LABEL: Record<string, string> = { none: 'Not certified', student: 'Student', level_1: 'Level 1', level_2: 'Level 2' }
+export const LEVEL_LABEL: Record<string, string> = { none: 'Not certified', student: 'Student Certification', level_1: 'Certified Level 1', level_2: 'Certified Level 2' }
 /** Which certification pathway an internship feeds; null when already Level 1 / Level 2. */
 export function pathwayOf(p: PersonLite | null | undefined): 'student' | 'level_1' | null {
   const l = advoLevel(p)

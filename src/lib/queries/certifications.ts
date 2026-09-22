@@ -19,10 +19,10 @@ import { select, patch, insert, remove, headers, SB_URL, ensureSession } from '@
 
 export type Level = 'none' | 'student' | 'level_1' | 'level_2'
 export const LEVELS: [Level, string][] = [
-  ['none', 'Not certified'], ['student', 'Student Cert'], ['level_1', 'Level 1'], ['level_2', 'Level 2'],
+  ['none', 'Not certified'], ['student', 'Student Certification'], ['level_1', 'Certified Level 1'], ['level_2', 'Certified Level 2'],
 ]
 export const LEVEL_LABEL: Record<string, string> = {
-  none: 'Not certified', student: 'Student', level_1: 'Level 1', level_2: 'Level 2',
+  none: 'Not certified', student: 'Student Certification', level_1: 'Certified Level 1', level_2: 'Certified Level 2',
   board_certification: 'Board Certified', certified: 'Certified',
 }
 export const RANK: Record<string, number> = { none: 0, student: 1, level_1: 2, level_2: 3 }

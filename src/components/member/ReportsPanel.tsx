@@ -75,7 +75,7 @@ export default function ReportsPanel() {
     return <div key={r.id} className={`rcpt ${r.status}`}>
       <div className="rh" onClick={() => setOpenIds((s) => { const n = new Set(s); n.has(r.id) ? n.delete(r.id) : n.add(r.id); return n })}>
         <span className="car">{open ? '▾' : '▸'}</span>
-        <h3>{c?.name ?? 'Committee'} · {r.period_label}{r.status === 'draft' ? <Pill kind="warn">Draft</Pill> : <Pill kind="ok">Submitted</Pill>}{r.meeting_date && <Pill>for the {fmtD(r.meeting_date)} meeting</Pill>}</h3>
+        <h3>{c?.name ?? 'Committee'} · {r.period_label}{r.status === 'draft' ? <Pill kind="warn">Draft</Pill> : <Pill kind="ok">Submitted</Pill>}{r.meeting_date && <small className="muted"> for the {fmtD(r.meeting_date)} meeting</small>}</h3>
         <span className="meta">{r.status === 'draft' ? `saved by ${r.submitted_by_name ?? '—'} · only the committee, Admin and the ED see this` : `${r.submitted_by_name ?? '—'} · ${r.submitted_at ? fmtTs(r.submitted_at) : ''}${r.edited_at ? ` · edited ${fmtTs(r.edited_at)} by ${r.edited_by_name}` : ''}`}</span>
         {r.status === 'draft' && canSubmit(r.committee_id) ? <button type="button" className="b p-btn sm" onClick={(e) => { e.stopPropagation(); c && openForm(c, r.period_ym ?? cycle.reportMonth, r) }}>Continue &amp; submit</button>
           : <span style={{ display: 'flex', gap: 6 }} onClick={(e) => e.stopPropagation()}><button type="button" className="b s-btn on-light xs" onClick={() => setView(r)}>View</button>{canSubmit(r.committee_id) && <button type="button" className="b s-btn on-light xs" onClick={() => c && openForm(c, r.period_ym ?? cycle.reportMonth, r)}>Edit</button>}</span>}

@@ -78,7 +78,7 @@ export default function InstructorsPanel() {
     const dates = [r.instructor_date && `Instructor since ${fmtM(r.instructor_date)}`, r.senior_date && `Senior since ${fmtM(r.senior_date)}`, r.initiated_date && r.target_level && `${LEVEL_LABEL[r.target_level]} initiated ${fmtD(r.initiated_date)}${r.initiated_by_name ? ' by ' + r.initiated_by_name : ''}`].filter(Boolean).join(' · ')
     return <div key={r.id} className={`irow ${r.status}`}>
       <div className="hd"><button type="button" className="pname" onClick={() => r.people && setPerson(r.people)}>{name}</button><span className="sp">{canManage && <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(r)}>Override</button>}</span></div>
-      <div className="meta under"><Pill kind="gov">{r.technique}</Pill>{r.level && <Pill kind={r.level === 'senior_instructor' ? 'gold' : 'ok'}>{LEVEL_LABEL[r.level]}</Pill>}{r.target_level && <Pill kind="ce">Working toward {LEVEL_LABEL[r.target_level]}</Pill>}{r.status === 'past' ? <Pill>Past</Pill> : r.status === 'upcoming' ? <Pill kind="warn">In training</Pill> : null}</div>
+      <div className="meta under"><Pill>{r.technique}</Pill>{r.level && <Pill>{LEVEL_LABEL[r.level]}</Pill>}{r.target_level && <Pill kind="warn">Working toward {LEVEL_LABEL[r.target_level]}</Pill>}{r.status === 'past' ? <Pill>Past</Pill> : r.status === 'upcoming' ? <Pill kind="warn">In training</Pill> : null}</div>
       {dates ? <div className="meta dates">{dates}{r.certified_by ? ` · certified by ${r.certified_by}` : ''}</div> : r.status === 'current' ? <div className="meta dates muted">Award dates not recorded (pre-date this system)</div> : null}
       {gap && <div className="meta warn-txt">⚠ {gap} — reconcile on the Certifications tab</div>}
       {r.status !== 'past' && <div className="meta"><span className="lbl">Cleared to teach</span>{(r.seminars ?? []).length ? (r.seminars ?? []).map((s) => <Pill key={s} kind="lead">{s}</Pill>) : <i>not set — set under Override</i>}</div>}
@@ -144,7 +144,7 @@ function PersonCard({ p, rows, who, canManage, onClose, onChanged, onEnd, onAdd 
       <div className="cert-modal ctc-card bdir" role="dialog" aria-modal="true">
         <div className="ctc-top"><div className="av">{initials(p)}</div>
           <div style={{ flex: 1 }}><h3>{fullName(p)}</h3><div className="ti">{[p.practice_name, [p.practice_city, p.practice_state].filter(Boolean).join(', ')].filter(Boolean).join(' · ')}</div>
-            <div className="ctc-chips">{mine.filter((r) => r.status !== 'past').map((r) => <Pill key={r.id} kind={r.level === 'senior_instructor' ? 'gold' : r.level ? 'ok' : 'warn'}>{r.technique} · {r.level ? LEVEL_LABEL[r.level] : 'In training'}{r.target_level ? ` → ${LEVEL_LABEL[r.target_level]}` : ''}</Pill>)}{certs.map((c) => <Pill key={c}>{c}</Pill>)}{/(active|current|good)/.test(p.membership_status ?? '') && <Pill>Member</Pill>}</div></div>
+            <div className="ctc-chips">{mine.filter((r) => r.status !== 'past').map((r) => <Pill key={r.id} kind={r.level ? '' : 'warn'}>{r.technique} · {r.level ? LEVEL_LABEL[r.level] : 'In training'}{r.target_level ? ` → ${LEVEL_LABEL[r.target_level]}` : ''}</Pill>)}{certs.map((c) => <Pill key={c}>{c}</Pill>)}{/(active|current|good)/.test(p.membership_status ?? '') && <Pill>Member</Pill>}</div></div>
           <button type="button" className="x" onClick={onClose} aria-label="Close">×</button></div>
         <div className="ctc-body">
           <div className="sec">Contact</div>

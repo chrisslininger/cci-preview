@@ -34,17 +34,10 @@ function Chips({ e }: { e: EventRow }) {
   const p = money(e.price)
   return (
     <div className="cert-chips" style={{ marginBottom: 0, marginTop: 9 }}>
-      {gov ? <Pill kind="gov">{typeLabel(e.event_type)}</Pill> : <Pill kind="info">{e.category ? catLabel(e.category) : typeLabel(e.event_type)}</Pill>}
-      {!gov && e.category && e.event_type && !['seminar', 'Other'].includes(e.event_type) && <Pill>{typeLabel(e.event_type)}</Pill>}
       {e.status === 'published' ? <Pill kind="ok">Live on site</Pill> : <Pill kind="warn">Draft</Pill>}
-      {e.ce_credits && <Pill kind="ce">CE credits</Pill>}
       {e.is_keystone && <Pill kind="gold">Keystone</Pill>}
-      {isPast(e) && <Pill kind="past">Past</Pill>}
-      {n > 0 && <Pill kind="info">{n} registered</Pill>}
-      {fresh > 0 && <Pill kind="ok">{fresh} new this week</Pill>}
       {unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}
-      {pend > 0 && <Pill>{pend} awaiting payment</Pill>}
-      {p && !gov && <Pill>{p}{e.member_price != null ? ` · members ${money(e.member_price)}` : ''}{e.free_with_membership ? ' · free w/ membership' : ''}</Pill>}
+      <small className="muted evt-facts">{[gov ? typeLabel(e.event_type) : (e.category ? catLabel(e.category) : typeLabel(e.event_type)), !gov && e.category && e.event_type && !['seminar', 'Other'].includes(e.event_type) ? typeLabel(e.event_type) : null, e.ce_credits ? 'CE credits' : null, isPast(e) ? 'Past' : null, n > 0 ? `${n} registered` : null, fresh > 0 ? `${fresh} new this week` : null, pend > 0 ? `${pend} awaiting payment` : null, p && !gov ? `${p}${e.member_price != null ? ` · members ${money(e.member_price)}` : ''}${e.free_with_membership ? ' · free w/ membership' : ''}` : null].filter(Boolean).join(' · ')}</small>
     </div>
   )
 }

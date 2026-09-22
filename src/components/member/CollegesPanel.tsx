@@ -22,7 +22,7 @@ function friendly(err: string): string {
   return 'The database refused the change: ' + err.slice(0, 160)
 }
 function useEsc(onClose: () => void) { useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose]) }
-const partnerPill = (c: College) => c.active_partnership ? <Pill kind={c.partnership_type === 'teaching' ? 'gold' : 'info'}>{c.partnership_type === 'teaching' ? 'Teaching' : 'Visiting'}</Pill> : null
+const partnerPill = (c: College) => c.active_partnership ? <Pill kind="ok">{c.partnership_type === 'teaching' ? 'Teaching' : 'Visiting'}</Pill> : null
 
 export default function CollegesPanel() {
   const toast = useToast()
@@ -107,9 +107,9 @@ function CollegeCard({ c, precs, sites, ints, canManage, onClose, onEdit, onOpen
   return (
     <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="cert-modal ctc-card bdir" role="dialog" aria-modal="true">
-        <div className="ctc-top"><div className="av" style={{ fontSize: 11, fontFamily: 'var(--font-mono)' }}>{(c.short_name ?? c.name).split(' ')[0]?.slice(0, 6).toUpperCase() ?? ''}</div>
+        <div className="ctc-top"><div className="av" style={{ fontSize: 11, fontFamily: 'var(--font-label)', fontWeight: 600 }}>{(c.short_name ?? c.name).split(' ')[0]?.slice(0, 6).toUpperCase() ?? ''}</div>
           <div style={{ flex: 1 }}><h3>{c.name}</h3><div className="ti">{[c.city, c.state, c.country].filter(Boolean).join(', ')}{c.accreditation ? ` · ${c.accreditation}` : ''}</div>
-            <div className="ctc-chips">{c.active_partnership ? <Pill kind="gold">{c.partnership_type === 'teaching' ? 'Active partner · we teach here' : 'Active partner · we visit'}</Pill> : <Pill>No partnership</Pill>}{apps.length > 0 && <Pill>{apps.length} school approval{apps.length === 1 ? '' : 's'}</Pill>}</div></div>
+            <div className="ctc-chips">{c.active_partnership ? <Pill kind="ok">{c.partnership_type === 'teaching' ? 'Active partner · we teach here' : 'Active partner · we visit'}</Pill> : <Pill>No partnership</Pill>}{apps.length > 0 && <Pill>{apps.length} school approval{apps.length === 1 ? '' : 's'}</Pill>}</div></div>
           <button type="button" className="x" onClick={onClose} aria-label="Close">×</button></div>
         <div className="ctc-body">
           <div className="sec">Location &amp; contact</div>
@@ -121,7 +121,7 @@ function CollegeCard({ c, precs, sites, ints, canManage, onClose, onEdit, onOpen
           {adding === 'ours' && <OurContactForm collegeId={c.id} onDone={(m) => { setAdding(null); if (m) toast(m); void reload() }} />}
 
           <div className="sec">School contact points <span className="r">the school's own people</span></div>
-          {theirs.length ? theirs.map((x) => <div key={x.id} className="il"><span><b>{x.name}</b> <small>· {[x.role, x.email, x.phone].filter(Boolean).join(' · ')}</small></span><span>{x.is_keystone && <Pill kind="gold">Keystone</Pill>}{x.is_instructor && <Pill kind="info">Instructor</Pill>}{canManage && <button type="button" className="link" style={{ marginLeft: 8 }} onClick={async () => { if (!confirm('Remove this school contact?')) return; const r = await removeContact(x.id); if (r.error) return toast(friendly(r.error)); void reload() }}>remove</button>}</span></div>) : <div className="il"><i>None recorded yet</i></div>}
+          {theirs.length ? theirs.map((x) => <div key={x.id} className="il"><span><b>{x.name}</b> <small>· {[x.role, x.email, x.phone].filter(Boolean).join(' · ')}</small></span><span>{x.is_keystone && <Pill kind="gold">Keystone</Pill>}{x.is_instructor && <Pill>Instructor</Pill>}{canManage && <button type="button" className="link" style={{ marginLeft: 8 }} onClick={async () => { if (!confirm('Remove this school contact?')) return; const r = await removeContact(x.id); if (r.error) return toast(friendly(r.error)); void reload() }}>remove</button>}</span></div>) : <div className="il"><i>None recorded yet</i></div>}
           {canManage && adding !== 'theirs' && <div className="ctc-noteform" style={{ marginTop: 8 }}><div className="r" style={{ justifyContent: 'flex-start' }}><button type="button" className="b s-btn on-light sm" onClick={() => setAdding('theirs')}>+ Add school contact</button></div></div>}
           {adding === 'theirs' && <SchoolContactForm collegeId={c.id} onDone={(m) => { setAdding(null); if (m) toast(m); void reload() }} />}
 

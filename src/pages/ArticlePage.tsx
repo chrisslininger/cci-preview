@@ -29,9 +29,9 @@ export default function ArticlePage({ param }: { param?: string }) {
           <p
             className="sub"
             style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              letterSpacing: '.1em',
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 500,
+              fontSize: '13px',
             }}
           >
             {article.date} · THE AOI JOURNAL

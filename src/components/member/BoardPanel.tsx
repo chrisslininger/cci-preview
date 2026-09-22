@@ -5,6 +5,8 @@
  * record: service trail, reviews, documents, board-only notes.
  * -------------------------------------------------------------------------- */
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Chips } from './PersonChips'
+import { CERT_LABEL, roleChips } from '@/lib/chips'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
 import { displayName } from '@/lib/access'
@@ -125,7 +127,7 @@ export default function BoardPanel() {
         {nominees.length ? nominees.map(nomRow) : <div className="bnodata">No nominees yet. The call for nominations opens the process; add a nominee from Contacts.</div>}
       </div>
       <div className="bpanel">
-        <div className="ph">Past board members <span className="r">{past.length}</span></div>
+        <div className="ph">Past Directors <span className="r">{past.length}</span></div>
         {past.map((t) => <div key={t.id} className="bpast" role="button" tabIndex={0} onClick={() => setDir(t)} onKeyDown={(k) => { if (k.key === 'Enter' || k.key === ' ') { k.preventDefault(); setDir(t) } }}><div className="yrs">{t.term_label}</div><div><b>{fullName(t.people, t.person_name)}</b><small>{t.resignation_date ? `Resigned ${fmtD(t.resignation_date)}` : `Served ${t.term_label}${t.end_reason === 'resigned' ? ' · resigned' : t.end_reason === 'term_ended' ? ' · term ended' : t.end_reason ? ` · ${t.end_reason}` : ''}`}{t.people?.deceased_on ? ` · deceased ${t.people.deceased_on.slice(0, 4)}` : ''}</small></div></div>)}
         {past.length === 0 && <p className="ma-empty">No past terms on file.</p>}
       </div>
@@ -202,7 +204,7 @@ function DirectorCard({ t, all, who, canManage, onClose, onChanged }: { t: Term;
   useEffect(() => { void reload() }, [reload])
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const name = fullName(p, t.person_name)
-  const status = (x: Term) => x.status === 'active' ? <Pill kind="gold">Board member</Pill> : x.status === 'seated' ? <Pill kind="gold">Seated · incoming</Pill> : x.status === 'nominee' ? <Pill kind="info">Nominee</Pill> : x.status === 'withdrawn' ? <Pill>Withdrawn</Pill> : <Pill>Past board member</Pill>
+  const status = (x: Term) => x.status === 'active' ? <Pill>Director</Pill> : x.status === 'seated' ? <Pill>Director · incoming</Pill> : x.status === 'nominee' ? <Pill>Director Nominee</Pill> : x.status === 'withdrawn' ? <Pill>Withdrawn</Pill> : <Pill>Past Director</Pill>
   const served = mine.filter((x) => !['nominee', 'withdrawn'].includes(x.status ?? '')).map((x) => `${(x.term_start ?? '').slice(0, 4)}–${(x.resignation_date ?? x.term_end ?? '').slice(0, 4)}`).join(', ')
   const roles = p?.person_roles ?? []
   const instr = (p?.instructor_records ?? []).find((i) => i.status === 'current')
@@ -212,7 +214,7 @@ function DirectorCard({ t, all, who, canManage, onClose, onChanged }: { t: Term;
       <div className="cert-modal bdir" role="dialog" aria-modal="true">
         <div className="ctc-top"><div className="av">{p?.photo_url ? <img src={p.photo_url} alt="" onError={(e) => (e.currentTarget.style.display = 'none')} /> : initials(p, t.person_name)}</div>
           <div style={{ flex: 1, minWidth: 0 }}><h3>{name}</h3><div className="ti">{t.service_start ? `On the board since ${t.service_start}` : served ? `Served ${served}` : 'Nominee'}{p?.deceased_on ? ` · deceased ${p.deceased_on.slice(0, 4)}` : ''}</div>
-            <div className="cert-chips" style={{ marginBottom: 0 }}>{status(t)}{isCurrentMember(p) ? <Pill kind="ok">Member{p?.membership_expires ? ` · exp ${fmtD(p.membership_expires)}` : ''}</Pill> : <Pill kind="warn">Not a member</Pill>}{hasLevel1(p) && <Pill>AdvO {p?.cert_level === 'level_2' ? 'Level 2' : 'Level 1'}</Pill>}{roles.some((r) => r.role_key === 'executive_director') && <Pill kind="gold">Executive Director</Pill>}{roles.filter((r) => r.committees?.name).map((r) => <Pill key={r.id}>{r.committees!.name.replace(' Committee', '')} · {r.role_key === 'committee_chair' ? 'Chair' : r.role_key === 'committee_cochair' ? 'Co-Chair' : r.role_key === 'research_director' ? 'Research Director' : 'Member'}</Pill>)}{instr && <Pill kind="info">{instr.level === 'senior_instructor' ? 'Instructor L2' : 'Instructor'}</Pill>}</div></div>
+            <div className="cert-chips" style={{ marginBottom: 0 }}>{status(t)}{isCurrentMember(p) ? <Pill kind="ok">Member{p?.membership_expires ? ` · exp ${fmtD(p.membership_expires)}` : ''}</Pill> : <Pill kind="warn">Not a member</Pill>}{hasLevel1(p) && <Pill kind="gold">{CERT_LABEL[p?.cert_level ?? 'level_1']}</Pill>}<Chips list={roleChips(roles, { instructorLevel: instr?.level ?? null }).filter((c) => c.key !== 'dir' && c.key !== 'pdir' && c.key !== 'nom')} /></div></div>
           <button type="button" className="x" aria-label="Close" onClick={onClose}>×</button></div>
         <div className="ctc-body cc">
           <div className="sec">Service record</div>
@@ -245,7 +247,7 @@ function DirectorCard({ t, all, who, canManage, onClose, onChanged }: { t: Term;
         {ending && (
           <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setEnding(null)}>
             <div className="cert-modal" role="dialog" aria-modal="true">
-              <div className="mh"><div><h3>End board service — {name}</h3><p>Moves them to Past board members, keeps the full record, and swaps the Board Member role for Past Board Member (board access on the site ends). Logged as recorded by {who.name}.</p></div><button type="button" className="x" aria-label="Close" onClick={() => setEnding(null)}>×</button></div>
+              <div className="mh"><div><h3>End board service — {name}</h3><p>Moves them to Past Directors, keeps the full record, and swaps the Director role for Past Director (board access on the site ends). Logged as recorded by {who.name}.</p></div><button type="button" className="x" aria-label="Close" onClick={() => setEnding(null)}>×</button></div>
               <div className="mb"><div className="cert-grid mform"><div><label className="flabel">REASON</label><select className="fi" value={endR} onChange={(e) => setEndR(e.target.value)}><option value="resigned">Resigned</option><option value="term_ended">Term ended</option><option value="removed">Removed by board vote</option><option value="deceased">Deceased</option></select></div><div><label className="flabel">EFFECTIVE DATE</label><input className="fi" type="date" value={endD} onChange={(e) => setEndD(e.target.value)} /></div><div className="full"><label className="flabel">NOTE (OPTIONAL)</label><input className="fi" value={endN} onChange={(e) => setEndN(e.target.value)} placeholder="e.g. Resignation letter received" /></div></div></div>
               <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={() => setEnding(null)}>Back</button><button type="button" className="b dgr sm" disabled={busy} onClick={async () => { const x = ending; setEnding(null); if (await act(endService(x, endR, endD, who), 'Board service ended — a seat is open')) { if (endN.trim() && pid) await addBoardNote(pid, endN.trim(), who); await reload(); onClose() } }}>End service</button></div>
             </div>

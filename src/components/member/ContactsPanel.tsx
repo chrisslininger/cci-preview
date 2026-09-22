@@ -9,10 +9,12 @@ import { useToast } from '@/components/ui/Toast'
 import { displayName } from '@/lib/access'
 import {
   everyone, committees as loadCommittees, saveProfile, createContact, addNote, saveOffices, saveRoles,
-  TECHNIQUES, ROLE_LABEL, LEVEL_LABEL, fullName, state, tabOf, duesLapsed, activeBoard, currentInstructor, advoLevel, otherCerts, initials,
+  TECHNIQUES, ROLE_LABEL, LEVEL_LABEL, fullName, state, tabOf, duesLapsed, advoLevel, otherCerts, initials,
 } from '@/lib/queries/contacts'
 import type { Contact, Committee, Office, Profile, Seat, Tab } from '@/lib/queries/contacts'
 import { ResearchSection } from './ResearchPanel'
+import { Chips, chipsFor } from './PersonChips'
+import { INSTRUCTOR_TITLE } from '@/lib/chips'
 
 const TABS: [Tab, string][] = [['all', 'All contacts'], ['lead', 'Leads'], ['member', 'Members'], ['expired', 'Expired']]
 const fmtD = (iso?: string | null) => (iso ? new Date(iso + (iso.length === 10 ? 'T12:00:00Z' : '')).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '')
@@ -27,18 +29,7 @@ function StatusPill({ p }: { p: Contact }) {
   return <Pill kind="lead">Lead</Pill>
 }
 function RoleChips({ p }: { p: Contact }) {
-  const roles = p.person_roles ?? []
-  const lvl = advoLevel(p)
-  const instr = currentInstructor(p)
-  return <>
-    {roles.some((r) => r.role_key === 'executive_director') && <Pill kind="gold">Executive Director</Pill>}
-    {activeBoard(p) && <Pill kind="gold">Board</Pill>}
-    {(p.board_service ?? []).some((b) => b.status === 'nominee') && <Pill kind="gold">Board nominee</Pill>}
-    {roles.filter((r) => r.committees?.name).map((r) => <Pill key={r.id}>{r.committees!.name.replace(' Committee', '')} · {ROLE_LABEL[r.role_key] ?? r.role_key}</Pill>)}
-    {instr && <Pill kind="info">{instr.level === 'senior_instructor' ? 'Instructor L2' : 'Instructor'}</Pill>}
-    {lvl && <Pill kind="info">AdvO {LEVEL_LABEL[lvl] ?? lvl}</Pill>}
-    {otherCerts(p).map((c) => <Pill key={c.id} kind="info">{c.technique} · {LEVEL_LABEL[c.level] ?? c.level}</Pill>)}
-  </>
+  return <Chips list={chipsFor(p, advoLevel(p), otherCerts(p))} />
 }
 
 export default function ContactsPanel() {
@@ -89,7 +80,7 @@ export default function ContactsPanel() {
       <article key={p.id} className={`ctc${p.deceased_on ? ' dead' : ''}`} tabIndex={0} role="button" aria-label={`Open ${fullName(p)}`} onClick={() => setOpen(p.id)} onKeyDown={(k) => { if ((k.key === 'Enter' || k.key === ' ') && k.target === k.currentTarget) { k.preventDefault(); setOpen(p.id) } }}>
         <div className="nm"><b>{fullName(p)}</b><StatusPill p={p} /></div>
         {line.length > 0 && <div className="ln">{line.map((x, i) => <span key={i}>{x}</span>)}</div>}
-        <div className="cert-chips" style={{ marginBottom: 0, marginTop: 8 }}>{(p.techniques ?? []).map((t) => <Pill key={t} kind="tech">{t}</Pill>)}<RoleChips p={p} /></div>
+        <div className="cert-chips" style={{ marginBottom: 0, marginTop: 8 }}><RoleChips p={p} /></div>
       </article>
     )
   }
@@ -149,7 +140,7 @@ function ContactCard({ p, me, meId, canEdit, onClose, onEdit, onChanged }: { p: 
     <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="cert-modal ctc-card cc" role="dialog" aria-modal="true">
         <div className="ctc-top"><div className="av">{p.photo_url ? <img src={p.photo_url} alt="" onError={(e) => (e.currentTarget.style.display = 'none')} /> : initials(p)}</div>
-          <div style={{ flex: 1, minWidth: 0 }}><h3>{fullName(p)}</h3>{p.title && <div className="ti">{p.title}</div>}<div className="cert-chips" style={{ marginBottom: 0 }}><StatusPill p={p} /><RoleChips p={p} />{(p.techniques ?? []).map((t) => <Pill key={t} kind="tech">{t}</Pill>)}</div></div>
+          <div style={{ flex: 1, minWidth: 0 }}><h3>{fullName(p)}</h3>{p.title && <div className="ti">{p.title}</div>}<div className="cert-chips" style={{ marginBottom: 0 }}><StatusPill p={p} /><RoleChips p={p} /></div></div>
           <button type="button" className="x" aria-label="Close" onClick={onClose}>×</button></div>
         <div className="ctc-body">
           <Sec title="Contact" items={[kv('Email', p.email ? <a href={`mailto:${p.email}`}>{p.email}</a> : null), kv('Mobile', p.mobile_phone), kv('Office', p.office_phone ?? p.practice_phone), kv('Personal', p.personal_phone)]} />
@@ -157,8 +148,8 @@ function ContactCard({ p, me, meId, canEdit, onClose, onEdit, onChanged }: { p: 
           {offices.length > 0 && <><div className="sec">Other offices</div>{offices.map((o) => <div key={o.id} className="kv" style={{ marginBottom: 10 }}>{kv(o.name || 'Office', <>{[o.address, [o.city, [o.state, o.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean).join(', ')}{o.phone ? <><br />{o.phone}</> : null}{o.website ? <><br />{web(o.website)}</> : null}{(o.is_internship_site || o.is_seminar_venue) && <div className="cert-chips" style={{ marginTop: 6, marginBottom: 0 }}>{o.is_internship_site && <Pill>Internship site</Pill>}{o.is_seminar_venue && <Pill>Seminar venue</Pill>}</div>}</>)}</div>)}</>}
           <Sec title="Classification" items={[kv('Type', p.contact_type === 'doctor' ? 'Doctor' : p.contact_type === 'student' ? 'Student' : p.contact_type === 'staff' ? 'Staff' : p.contact_type), kv('Technique(s)', (p.techniques ?? []).join(', '))]} />
           <Sec title="Background" items={[kv('Chiropractic college', p.alma_mater), kv('Graduated', p.grad_year), kv('NPI', p.npi)]} />
-          <Sec title="Membership" items={s === 'lead' ? [kv('Status', 'Never a member')] : [kv('Status', s === 'member' ? (duesLapsed(p) ? 'Current — dues lapsed, stays current as a board member' : 'Current member') : s === 'expired' ? 'Expired' : 'Deceased'), kv('Member since', fmtD(p.member_since)), kv(s === 'member' && !duesLapsed(p) ? 'Renews' : 'Dues lapsed on', fmtD(p.membership_expires)), kv('Online account', p.auth_user_id ? 'Yes' : null), kv('Profile', p.profile_completed ? 'Complete' : null)]} />
-          {(p.person_roles ?? []).length > 0 && <><div className="sec">Roles &amp; committees</div>{(p.person_roles ?? []).map((r) => <div key={r.id} className="ctc-note" style={{ padding: '8px 12px' }}>{ROLE_LABEL[r.role_key] ?? r.role_key}{r.committees?.name ? ` · ${r.committees.name}` : ''}{r.instructor_level ? ` · ${LEVEL_LABEL[r.instructor_level] ?? r.instructor_level}` : ''}</div>)}</>}
+          <Sec title="Membership" items={s === 'lead' ? [kv('Status', 'Never a member')] : [kv('Status', s === 'member' ? (duesLapsed(p) ? 'Current — dues lapsed, stays current as a Director' : 'Current member') : s === 'expired' ? 'Expired' : 'Deceased'), kv('Member since', fmtD(p.member_since)), kv(s === 'member' && !duesLapsed(p) ? 'Renews' : 'Dues lapsed on', fmtD(p.membership_expires)), kv('Online account', p.auth_user_id ? 'Yes' : null), kv('Profile', p.profile_completed ? 'Complete' : null)]} />
+          {(p.person_roles ?? []).length > 0 && <><div className="sec">Roles &amp; committees</div>{(p.person_roles ?? []).map((r) => <div key={r.id} className="ctc-note" style={{ padding: '8px 12px' }}>{ROLE_LABEL[r.role_key] ?? r.role_key}{r.committees?.name ? ` · ${r.committees.name}` : ''}{r.instructor_level ? ` · ${INSTRUCTOR_TITLE[r.instructor_level] ?? r.instructor_level}` : ''}</div>)}</>}
           <Sec title="Board service" items={(p.board_service ?? []).map((b) => kv(`Term ${b.term_label ?? ''}`, `${b.status ?? ''}${b.term_start ? ` · ${fmtD(b.term_start)} – ${b.term_end ? fmtD(b.term_end) : 'present'}` : ''}`))} />
           <Sec title="Instructor" items={(p.instructor_records ?? []).map((i) => kv(i.level === 'senior_instructor' ? 'Senior instructor' : 'Instructor', `${i.status ?? ''}${i.technique ? ` · ${i.technique}` : ''}${i.instructor_date ? ` · since ${fmtD(i.instructor_date)}` : ''}`))} />
           <Sec title="Certifications" items={(p.person_certifications ?? []).map((c) => kv(c.technique, `${LEVEL_LABEL[c.level] ?? c.level}${c.grandfathered ? ' · Grandfathered' : ''}${c.cert_date ? ` on ${fmtD(c.cert_date)}` : ''}${c.certificate_number ? ` · Certificate #${c.certificate_number}` : ''}${c.certified_by ? ` · ${c.certified_by}` : ''}`))} />

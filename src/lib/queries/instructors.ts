@@ -40,7 +40,7 @@ export const END_REASONS: Record<string, string> = { retired: 'Retired', stepped
 export const LOG_KINDS: Record<LogEntry['kind'], string> = { attendee_feedback: 'Attendee feedback', peer_observation: 'Peer observation', retraining: 'Retraining plan', note: 'Note' }
 /** Board Certified / Certified count as Level 2 for the single-ladder techniques. */
 const RANK: Record<string, number> = { student: 0, level_1: 1, level_2: 2, board_certification: 2, certified: 2 }
-const CERT_LABEL: Record<string, string> = { student: 'Student', level_1: 'Level 1', level_2: 'Level 2', board_certification: 'Board Certified', certified: 'Certified' }
+const CERT_LABEL: Record<string, string> = { student: 'Student Certification', level_1: 'Certified Level 1', level_2: 'Certified Level 2', board_certification: 'Board Certified', certified: 'Certified' }
 
 export type Criterion = { key: string; label: string; auto?: 1 | 2 }
 export const CRITERIA: Record<Level, Criterion[]> = {

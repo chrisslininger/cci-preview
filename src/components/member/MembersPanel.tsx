@@ -15,10 +15,12 @@ import {
   saveProfile, createMember, addNote, addLocation, endInstructor, endBoard,
 } from '@/lib/queries/members'
 import type { Member, Profile } from '@/lib/queries/members'
+import { Chips as PersonChips, chipsFor } from './PersonChips'
+import { CERT_LABEL } from '@/lib/chips'
 
 type Tab = 'all' | 'current' | 'recent' | 'inactive'
 const TABS: [Tab, string][] = [['all', 'All members'], ['current', 'Current'], ['recent', 'Recently expired'], ['inactive', 'Inactive']]
-const LVL: Record<string, string> = { student: 'Student', level_1: 'Level 1', level_2: 'Level 2', board_certification: 'Board Certified', certified: 'Certified' }
+const LVL = CERT_LABEL
 const fmt = (d?: string | null) => (d ? new Date(d.slice(0, 10) + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '')
 const byFirst = (a: Member, b: Member) => a.first_name.localeCompare(b.first_name, undefined, { sensitivity: 'base' }) || a.last_name.localeCompare(b.last_name, undefined, { sensitivity: 'base' })
 const Pill = ({ children, kind = '' }: { children: React.ReactNode; kind?: string }) => <span className={`cpill ${kind}`}>{children}</span>
@@ -26,21 +28,12 @@ const Pill = ({ children, kind = '' }: { children: React.ReactNode; kind?: strin
 function StatusPill({ p }: { p: Member }) {
   const s = state(p)
   if (s === 'deceased') return <span className="mpill dec">Deceased{p.deceased_on ? ` · ${p.deceased_on.slice(0, 4)}` : ''}</span>
-  if (s === 'current') return <span className="mpill cur">Current{activeBoard(p) && !(p.membership_expires && p.membership_expires >= new Date().toISOString().slice(0, 10)) ? ' · board' : p.membership_expires ? ` · exp ${fmt(p.membership_expires)}` : ''}</span>
+  if (s === 'current') return <span className="mpill cur">Current{activeBoard(p) && !(p.membership_expires && p.membership_expires >= new Date().toISOString().slice(0, 10)) ? ' · director' : p.membership_expires ? ` · exp ${fmt(p.membership_expires)}` : ''}</span>
   if (s === 'recent') return <span className="mpill rec">Recently expired · {fmt(p.membership_expires)}</span>
   return <span className="mpill ina">Inactive{p.membership_expires ? ` · exp ${fmt(p.membership_expires)}` : ''}</span>
 }
 function Chips({ p }: { p: Member }) {
-  const lvl = advoLevel(p), instr = currentInstructor(p)
-  const roles = (p.person_roles ?? []).filter((r) => !(r.role_key === 'instructor' && instr))
-  const gold = new Set(['committee_chair', 'board_member', 'executive_director', 'research_director', 'committee_cochair'])
-  const label = (k: string) => ({ committee_chair: 'Committee Chair', committee_cochair: 'Co-chair', committee_member: 'Committee', research_director: 'Research Director' } as Record<string, string>)[k] ?? k.replace(/_/g, ' ')
-  return <div className="cert-chips" style={{ marginBottom: 0 }}>
-    {lvl && <Pill kind="ok">{LVL[lvl]}</Pill>}
-    {otherCerts(p).map((c) => <Pill key={c.id} kind="ok">{c.level === 'board_certification' ? 'Board Certified' : `${c.technique} · Certified`}</Pill>)}
-    {instr && <Pill kind="info">{instr.level === 'senior_instructor' ? 'Instructor L2' : 'Instructor'}</Pill>}
-    {roles.map((r) => <Pill key={r.id} kind={gold.has(r.role_key) ? 'gold' : ''}>{label(r.role_key)}{r.committees?.name ? ` · ${r.committees.name.replace(' Committee', '')}` : ''}</Pill>)}
-  </div>
+  return <div className="cert-chips" style={{ marginBottom: 0 }}><PersonChips list={chipsFor(p, advoLevel(p), otherCerts(p))} /></div>
 }
 
 export default function MembersPanel() {
@@ -131,7 +124,7 @@ function ContactCard({ p, me, meId, canEdit, onClose, onEdit, onChanged }: { p: 
           {locs.map((l) => <div className="loc" key={l.id}><b>{l.name}</b><div className="kv" style={{ marginTop: 8 }}><KV k="Address" v={l.address} /><KV k="Website" v={l.website} /></div></div>)}
           {canEdit && <button type="button" className="t-link" onClick={async () => { const n = prompt('Location name'); if (!n) return; const a = prompt('Address') ?? ''; const w = prompt('Website') ?? ''; if (!fail(await addLocation(p.id, n, a, w))) await onChanged() }}>+ Add second location</button>}
           <div className="sec">Classification</div><div className="kv"><KV k="Type" v={p.contact_type === 'student' ? 'Student' : 'Doctor'} /><KV k="Technique(s)" v={(p.techniques ?? []).join(', ') || null} />{instr && <KV k="Instructor track" v={instr.level === 'senior_instructor' ? 'Senior Instructor' : 'Instructor'} />}</div>
-          <div className="sec">Membership</div><div className="kv"><KV k="Status" v={s === 'deceased' ? `Deceased${p.deceased_on ? ' · ' + fmt(p.deceased_on) : ''}` : s === 'current' ? <>Active member {activeBoard(p) && <Pill kind="ok">Board — complimentary</Pill>}</> : s === 'recent' ? 'Recently expired — reactivatable' : 'Inactive'} /><KV k="Member since" v={p.member_since} /><KV k="Expires" v={p.membership_expires} /></div>
+          <div className="sec">Membership</div><div className="kv"><KV k="Status" v={s === 'deceased' ? `Deceased${p.deceased_on ? ' · ' + fmt(p.deceased_on) : ''}` : s === 'current' ? <>Active member {activeBoard(p) && <Pill kind="ok">Director — complimentary</Pill>}</> : s === 'recent' ? 'Recently expired — reactivatable' : 'Inactive'} /><KV k="Member since" v={p.member_since} /><KV k="Expires" v={p.membership_expires} /></div>
           <div className="sec">Certifications</div><div className="kv">{(p.person_certifications ?? []).length === 0 && <KV k="—" v="None on file" />}{(p.person_certifications ?? []).map((c) => <KV key={c.id} k={c.technique} v={`${LVL[c.level] ?? c.level}${c.grandfathered ? ' · Grandfathered on ' + fmt(c.cert_date) : c.cert_date ? ' · ' + fmt(c.cert_date) : ''}${c.certificate_number ? ' · Certificate #' + c.certificate_number : ''}${c.certified_by && !c.grandfathered ? ' · ' + c.certified_by : ''}`} />)}</div>
           {instr && <><div className="sec">Instructor</div><div className="kv"><KV k={instr.technique ?? 'Advanced Orthogonal'} v={instr.level === 'senior_instructor' ? 'Senior Instructor' : 'Instructor'} /></div>{canEdit && <div className="act"><button type="button" className="b s-btn on-light xs" onClick={async () => { const why = prompt('Reason for ending instructor service'); if (why === null) return; if (!fail(await endInstructor(p, why))) { toast('Instructor service ended.'); await onChanged() } }}>End instructor service</button></div>}</>}
           {boards.length > 0 && <><div className="sec">Board service</div><div className="kv">{boards.map((b) => <KV key={b.id} k={b.term_label ?? `${b.term_start ?? ''}–${b.term_end ?? ''}`} v={b.status === 'active' ? 'Active board member' : b.status === 'nominee' ? 'Nominee' : 'Past board member'} />)}</div>{active && canEdit && <div className="act"><button type="button" className="b s-btn on-light xs" onClick={async () => { if (!confirm('End board service? The seat is vacated and they become a past board member.')) return; if (!fail(await endBoard(p))) { toast('Board service ended.'); await onChanged() } }}>End board service</button></div>}</>}

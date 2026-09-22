@@ -127,7 +127,7 @@ export default function InternshipsPanel() {
     const showList = pf === 'in_process' || openList.has(p.id); const lapsed = lapsedApprovals(p); const mine = internsOf(p)
     return <div key={p.id} className="irow">
       <div className="hd"><button type="button" className="pname" onClick={() => p.people && setPerson(p.people)}>{name}</button>
-        {p.status === 'certified' ? <Pill kind="gold">Certified preceptor{p.certified_date ? ` · ${fmtD(p.certified_date)}` : ''}</Pill> : <Pill kind="info">In process · {done}/{PREC_CRITERIA.length}</Pill>}
+        {p.status === 'certified' ? <Pill kind="ok">Certified preceptor{p.certified_date ? ` · ${fmtD(p.certified_date)}` : ''}</Pill> : <Pill kind="info">In process · {done}/{PREC_CRITERIA.length}</Pill>}
         <Pill kind={recordClean(p) ? 'ok' : 'bad'}>{recordClean(p) ? 'Clean record' : 'Record flagged'}</Pill>
         <span className="sp">{canManage && <button type="button" className="b s-btn on-light xs" onClick={() => setEditPrec(p)}>Manage</button>}</span></div>
       {(lapsed.length > 0 || p.notes) && <div className="meta warn-txt">⚠ {[...lapsed.map((a) => `${college(a.college_id)?.short_name ?? 'School'} approval lapsed ${fmtD(a.expires_on)}`), p.notes].filter(Boolean).join(' · ')}</div>}
@@ -290,7 +290,7 @@ export function PersonCard({ p, precs, ints, sites, cols, reqs, who, canManage, 
         <div className="ctc-top"><div className="av">{initials(p)}</div>
           <div style={{ flex: 1 }}><h3>{fullName(p)}</h3>
             <div className="ti">{p.contact_type === 'student' ? `Student${p.school ? ' · ' + p.school : ''}${p.grad_year ? ' · est. graduation ' + p.grad_year : ''}` : [p.practice_name, [p.practice_city, p.practice_state].filter(Boolean).join(', ')].filter(Boolean).join(' · ')}</div>
-            <div className="ctc-chips">{pr && <Pill kind={pr.status === 'certified' ? 'gold' : ''}>{pr.status === 'certified' ? 'Certified preceptor' : 'Preceptor in process'}</Pill>}{engagements[0] && <Pill>Intern · {engagements[0].status === 'planned' ? 'interested' : engagements[0].status}</Pill>}{level !== 'none' && <Pill>AdvO {LEVEL_LABEL[level]}</Pill>}{/(active|current|good)/.test(p.membership_status ?? '') && <Pill>Member</Pill>}</div></div>
+            <div className="ctc-chips">{pr && <Pill kind={pr.status === 'certified' ? 'ok' : 'warn'}>{pr.status === 'certified' ? 'Certified preceptor' : 'Preceptor in process'}</Pill>}{engagements[0] && <Pill>Intern · {engagements[0].status === 'planned' ? 'interested' : engagements[0].status}</Pill>}{level !== 'none' && <Pill kind="gold">{LEVEL_LABEL[level]}</Pill>}{/(active|current|good)/.test(p.membership_status ?? '') && <Pill>Member</Pill>}</div></div>
           <button type="button" className="x" onClick={onClose} aria-label="Close">×</button></div>
         <div className="ctc-body">
           <div className="sec">Contact</div>
@@ -334,9 +334,9 @@ function SiteCard({ s, precs, ints, allPrecs, cols, canManage, onClose, onOpenPe
   return (
     <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="cert-modal ctc-card bdir" role="dialog" aria-modal="true">
-        <div className="ctc-top"><div className="av" style={{ fontSize: 12, fontFamily: 'var(--font-mono)' }}>SITE</div>
+        <div className="ctc-top"><div className="av" style={{ fontSize: 12, fontFamily: 'var(--font-label)', fontWeight: 600 }}>SITE</div>
           <div style={{ flex: 1 }}><h3>{s.name}</h3><div className="ti">{[s.address, [s.city, s.state].filter(Boolean).join(', ')].filter(Boolean).join(' · ')}</div>
-            <div className="ctc-chips"><Pill kind={s.internship_status === 'approved' ? 'gold' : ''}>{s.internship_status === 'approved' ? 'Approved internship site' : 'Pending approval'}</Pill>{s.site_visit_date && <Pill>Site visit {fmtD(s.site_visit_date)}</Pill>}{s.approved_date && <Pill>Approved {fmtD(s.approved_date)}</Pill>}{s.is_seminar_venue && <Pill>Also a seminar venue</Pill>}</div></div>
+            <div className="ctc-chips"><Pill kind={s.internship_status === 'approved' ? 'ok' : 'warn'}>{s.internship_status === 'approved' ? 'Approved internship site' : 'Pending approval'}</Pill>{s.site_visit_date && <Pill>Site visit {fmtD(s.site_visit_date)}</Pill>}{s.approved_date && <Pill>Approved {fmtD(s.approved_date)}</Pill>}{s.is_seminar_venue && <Pill>Also a seminar venue</Pill>}</div></div>
           <button type="button" className="x" onClick={onClose} aria-label="Close">×</button></div>
         <div className="ctc-body">
           <div className="sec">Preceptors at this site <span className="r">approved people matched to this approved place</span></div>

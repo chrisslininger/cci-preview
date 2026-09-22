@@ -207,7 +207,7 @@ export default function HomePage() {
             </div>
             <div style={{"textAlign": "right"}}>
               <Link to="/seminars/intro-to-advo" className="b lg p-btn" style={{"background": "var(--color-surface-base)", "color": "var(--color-brand-primary-deep)"}}>Start the Free Intro Course</Link>
-              <div style={{"marginTop": "12px", "fontFamily": "'IBM Plex Mono',monospace", "fontSize": "11px", "letterSpacing": ".14em", "textTransform": "uppercase", "color": "color-mix(in oklab, var(--color-surface-base) 85.0%, transparent)"}}>No prerequisites &middot; Self-paced &middot; Free</div>
+              <div style={{"marginTop": "12px", "fontFamily": "var(--font-label)", "fontWeight": "600", "fontSize": "11px", "letterSpacing": ".14em", "textTransform": "uppercase", "color": "color-mix(in oklab, var(--color-surface-base) 85.0%, transparent)"}}>No prerequisites &middot; Self-paced &middot; Free</div>
               <div style={{"marginTop": "16px"}}><Link to="/seminars" className="t-link" style={{"color": "var(--color-surface-base)"}}>Explore 2026 Seminars<span className="a">&rarr;</span></Link></div>
             </div>
           </div>

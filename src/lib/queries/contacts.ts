@@ -14,11 +14,11 @@ import { select, patch, insert, remove, headers, SB_URL, ensureSession } from '@
 
 export const TECHNIQUES = ['Advanced Orthogonal', 'Atlas Orthogonal', 'Atlas Orthometrics', 'Orthospinology', 'EPIC', 'NUCCA', 'Blair']
 export const ROLE_LABEL: Record<string, string> = {
-  executive_director: 'Executive Director', past_executive_director: 'Past Executive Director', board_member: 'Board Member',
-  past_board_member: 'Past Board Member', instructor: 'Instructor', committee_chair: 'Chair', committee_cochair: 'Co-Chair',
+  executive_director: 'Executive Director', past_executive_director: 'Past Executive Director', board_member: 'Director',
+  past_board_member: 'Past Director', treasurer: 'Treasurer', instructor: 'Instructor', committee_chair: 'Chair', committee_cochair: 'Co-chair',
   committee_member: 'Committee Member', research_director: 'Research Director',
 }
-export const LEVEL_LABEL: Record<string, string> = { none: '', student: 'Student Cert', level_1: 'Level 1', level_2: 'Level 2', board_certification: 'Board Certified', certified: 'Certified' }
+export const LEVEL_LABEL: Record<string, string> = { none: '', student: 'Student Certification', level_1: 'Certified Level 1', level_2: 'Certified Level 2', board_certification: 'Board Certified', certified: 'Certified' }
 const RANK: Record<string, number> = { none: 0, student: 1, level_1: 2, level_2: 3 }
 
 export type Cert = { id: number; technique: string; level: string; cert_date: string | null; certificate_number: string | null; grandfathered: boolean | null; certified_by: string | null }

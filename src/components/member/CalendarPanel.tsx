@@ -48,9 +48,9 @@ export default function CalendarPanel() {
     const d = startDay(e); const n = daysUntil(d, today)
     return <div key={e.id} className={`cev ${mine.has(e.id) ? 'mine' : ''}`} onClick={() => setDetail(e)} role="button" tabIndex={0} onKeyDown={(k) => k.key === 'Enter' && setDetail(e)}>
       <div className="when"><b>{dayLabel(d, { month: 'short', day: 'numeric' })}</b>{dayLabel(d, { weekday: 'short' })}{n === 0 ? ' · today' : n === 1 ? ' · tomorrow' : d.slice(0, 4) !== today.slice(0, 4) ? ` · ${d.slice(0, 4)}` : ''}</div>
-      <div><div className="ti">{e.is_keystone && <span className="star" title="Keystone event">★</span>}{e.title}<Pill kind={kind(e)}>{TYPE_LABEL[e.event_type ?? ''] ?? 'Event'}</Pill></div>
+      <div><div className="ti">{e.is_keystone && <span className="star" title="Keystone event">★</span>}{e.title}<span className={`cev-type ${kind(e)}`}>{TYPE_LABEL[e.event_type ?? ''] ?? 'Event'}</span></div>
         <div className="l2"><span>{whenLine(e)}</span>{e.location && <span>· {e.location}</span>}{e.committee_id && <span>· {coms.find((c) => c.id === e.committee_id)?.name ?? 'Committee'}</span>}</div></div>
-      <div className="rt">{e.zoom_url ? <Pill kind="link">Zoom</Pill> : e.has_zoom ? <Pill>Zoom · leadership</Pill> : null}{mine.has(e.id) && <Pill kind="ok">Registered</Pill>}{e.status === 'draft' && <Pill>not yet public</Pill>}</div>
+      <div className="rt">{e.zoom_url ? <Pill kind="link">Zoom</Pill> : e.has_zoom ? <small className="muted">Zoom · leadership</small> : null}{mine.has(e.id) && <Pill kind="ok">Registered</Pill>}{e.status === 'draft' && <Pill kind="warn">Draft</Pill>}</div>
     </div>
   }
 
