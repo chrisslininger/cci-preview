@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from '@/lib/router'
 import { SEMINARS, SLUG_TO_SEMINAR } from '@/content/seminars'
 import type { Seminar } from '@/content/seminars'
@@ -7,6 +7,9 @@ import { Avatar, SpeakerPill, useBio } from '@/components/blocks/BioDialog'
 import SeminarCard from '@/components/blocks/SeminarCard'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { useToast } from '@/components/ui/Toast'
+import { useAccess } from '@/lib/queries/AccessProvider'
+import { useCatalog } from '@/lib/queries/CatalogProvider'
+import { myRegistrations } from '@/lib/queries/member'
 import NotFoundPage from './NotFoundPage'
 
 type Session = {
@@ -33,6 +36,7 @@ type NoSess = {
 }
 
 const money = (n: number) => n.toLocaleString()
+const r_paid = (r: { payment_status?: string | null }) => r.payment_status === 'paid'
 
 function Face({ id }: { id: string }) {
   const person = PEOPLE[id]
@@ -65,7 +69,26 @@ export default function SeminarPage({ param }: { param?: string }) {
   const openBio = useBio()
   const register = useRegistration()
   const toast = useToast()
+  const { access, signedIn } = useAccess()
+  const catalog = useCatalog()
   const [agendaDay, setAgendaDay] = useState(0)
+  const [attending, setAttending] = useState<null | { paid: boolean; ce: boolean }>(null)
+
+  /* A signed-in current member RSVPs instead of registering when the event is
+   * free with membership; once they are on the list the buttons say so. */
+  const overlay = key ? catalog.byKey[key] : undefined
+  const freeWithMembership = overlay?.event?.free_with_membership === true || (!catalog.synced && seminar?.memPrice === 0 && (seminar?.fullPrice ?? 0) > 0)
+  const rsvpMode = signedIn && access.tier === 'member' && freeWithMembership
+  useEffect(() => {
+    if (!signedIn || !overlay?.event?.slug) { setAttending(null); return }
+    let cancelled = false
+    void (async () => {
+      const mine = await myRegistrations()
+      const hit = mine.find((r) => r.events?.slug === overlay.event?.slug && r.registration_status !== 'cancelled' && (r.payment_status === 'paid' || r.payment_status === 'free'))
+      if (!cancelled) setAttending(hit ? { paid: r_paid(hit), ce: hit.ce_credits === true } : null)
+    })()
+    return () => { cancelled = true }
+  }, [signedIn, overlay?.event?.slug])
 
   if (!seminar || !key) return <NotFoundPage />
 
@@ -107,6 +130,9 @@ export default function SeminarPage({ param }: { param?: string }) {
   const speakers = s.spk ?? []
   const keynote = s.keynote
   const rest = speakers.filter((id) => id !== keynote)
+
+  const regLabel = (fallback: string) => attending ? '\u2713 You\u2019re attending' : rsvpMode ? 'RSVP \u2014 Free with Membership' : fallback
+  const onRegister = () => { if (attending) { toast('You are already on the attendee list for this event.'); return } register(key) }
 
   const scrollToRegistration = () => {
     const target =
@@ -308,9 +334,9 @@ export default function SeminarPage({ param }: { param?: string }) {
                         <button
                           type="button"
                           className="b sm p-btn"
-                          onClick={() => register(key)}
+                          onClick={onRegister}
                         >
-                          Register — {x.city.split(',')[0]}
+                          {attending ? '\u2713 Attending' : rsvpMode ? 'RSVP' : `Register — ${x.city.split(',')[0]}`}
                         </button>
                       )}
                     </div>
@@ -585,7 +611,13 @@ export default function SeminarPage({ param }: { param?: string }) {
                 <div className="rb-rule" />
                 <p className="rb-sub">{s.regBand.sub ?? `${s.dates} · ${s.loc}`}</p>
               </div>
-              <div className="rb-tiers">
+              {rsvpMode && (
+                <div className="rb-member">
+                  <b>{attending ? 'You\u2019re on the attendee list.' : 'You\u2019re an AOI member \u2014 your seat is included.'}</b>
+                  <span>{attending ? 'Your RSVP is confirmed. Details and reminders will follow as the date approaches.' : 'RSVP for yourself below. The only optional charge is the CE credit certificate.'}</span>
+                </div>
+              )}
+              <div className="rb-tiers" style={rsvpMode ? { opacity: .55 } : undefined}>
                 {s.regBand.tiers.map((tier) => (
                   <div className={`rt${tier.hi ? ' hi' : ''}`} key={tier.k}>
                     {tier.flag && <span className="rt-flag">{tier.flag}</span>}
@@ -596,10 +628,10 @@ export default function SeminarPage({ param }: { param?: string }) {
                 ))}
               </div>
               <div className="rb-go">
-                <button type="button" className="b lg p-btn" onClick={() => register(key)}>
-                  {s.regBand.btn ?? 'Register Now'}
+                <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending)}>
+                  {regLabel(s.regBand.btn ?? 'Register Now')}
                 </button>
-                {s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
+                {!rsvpMode && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
               </div>
             </div>
           </div>
@@ -613,7 +645,7 @@ export default function SeminarPage({ param }: { param?: string }) {
             <p>{s.ctaP}</p>
           </div>
           <button type="button" className="b lg p-btn" onClick={scrollToRegistration}>
-            {s.ctaBtn ?? 'Register Now'}
+            {regLabel(s.ctaBtn ?? 'Register Now')}
           </button>
         </div>
       </section>

@@ -11,7 +11,7 @@
  * what may change: everyone sees published events; board, the executive
  * director and the seminar committee see drafts and can edit.
  * -------------------------------------------------------------------------- */
-import { select, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, patch, insert, remove, rpc, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export const CATEGORIES: [string, string][] = [
   ['free', 'Intro Course (free)'], ['fundamentals', 'Fundamentals'], ['intensive', 'AdvO Intensive'],
@@ -35,7 +35,7 @@ export type Reg = {
   id: string; event_id: number; full_name: string; email: string; phone: string | null; practice_name: string | null
   reg_type: string; is_member_at_registration: boolean; price_paid_cents: number; payment_status: string
   registration_status: string; checked_in_at: string | null; checkin_method: string | null; created_at: string
-  verification_status?: string | null; discount_applied?: string | null
+  verification_status?: string | null; discount_applied?: string | null; ce_credits?: boolean | null; source?: string | null; notes?: string | null
 }
 
 export type EventRow = {
@@ -97,6 +97,23 @@ export async function registrations(eventId: number): Promise<{ rows: Reg[]; err
   const r = await select<Reg>('event_registrations', `select=*&event_id=eq.${eventId}&order=created_at.asc`)
   return { rows: r.data ?? [], error: r.error }
 }
+
+/* ------------------------------------------------------------ member RSVP --
+ * Events that are free with membership: every current member has a seat until
+ * they say otherwise. The candidates list is members who have not RSVP'd yet;
+ * a Director or the Seminar chair can confirm one by hand (an RSVP that came
+ * in by text or phone). Both are gated in the database by can_manage_rsvps(). */
+export type RsvpCandidate = { person_id: string; full_name: string; credentials: string | null; email: string | null; phone: string | null; membership_expires: string | null; member_since: string | null }
+export async function rsvpCandidates(eventId: number): Promise<RsvpCandidate[]> {
+  return (await rpc<RsvpCandidate[]>('event_rsvp_candidates', { p_event_id: eventId })) ?? []
+}
+export async function manualRsvp(eventId: number, personId: string, note?: string): Promise<{ ok?: true; error?: string }> {
+  await ensureSession()
+  const res = await fetch(`${SB_URL}/rest/v1/rpc/event_manual_rsvp`, { method: 'POST', headers: headers(true), body: JSON.stringify({ p_event_id: eventId, p_person_id: personId, p_note: note ?? null }) })
+  if (res.ok) return { ok: true }
+  try { const j = await res.json(); return { error: String(j.message ?? j.hint ?? res.status) } } catch { return { error: String(res.status) } }
+}
+export async function canManageRsvps(): Promise<boolean> { try { return (await rpc<boolean>('can_manage_rsvps')) === true } catch { return false } }
 
 export type PersonHit = { id: string; first_name: string | null; last_name: string | null; credentials: string | null; photo_url: string | null }
 export async function searchPeople(q: string): Promise<PersonHit[]> {

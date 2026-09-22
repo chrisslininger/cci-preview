@@ -23,7 +23,7 @@ type Confirm = {
   error?: string
 }
 
-const TIER: Record<string, string> = { doctor: 'Doctor', student: 'Student', faculty: 'College faculty' }
+const TIER: Record<string, string> = { doctor: 'Doctor', student: 'Student', faculty: 'College faculty', member: 'Member' }
 
 export default function ConfirmPage() {
   const location = useLocation()
@@ -58,6 +58,7 @@ export default function ConfirmPage() {
   const sub = c === 'loading' ? 'One moment while we confirm your payment with Stripe.'
     : c && c.status === 'expired' ? 'The payment session timed out before it was completed. Nothing was charged — please register again.'
     : c && c.status === 'pending' ? 'Your bank has not confirmed the payment yet. Your seat will be recorded automatically the moment it clears, and a receipt will follow by email.'
+    : paid && c.reg_type === 'member' ? `Your RSVP for ${c.event_title ?? 'this event'} is confirmed and your CE credit certificate is paid. Your seat is included with your AOI membership.`
     : paid ? `Your ${TIER[c.reg_type ?? 'doctor'] ?? 'Doctor'} registration for ${c.event_title ?? 'this event'} is confirmed${c.needs_verification ? ' — we will confirm your student or faculty status by email before the event' : ''}.`
     : state?.message ?? 'Your registration is confirmed. A receipt has been emailed to you.'
 
@@ -85,7 +86,7 @@ export default function ConfirmPage() {
               <div className="step">
                 <div className="n">YOUR REGISTRATION</div>
                 <p><b>{c.event_title}</b>{when ? ` · ${when}` : ''}</p>
-                <p>{TIER[c.reg_type ?? 'doctor'] ?? 'Doctor'} ticket{amount ? ` · ${amount} paid` : ''}{c.email ? ` · receipt sent to ${c.email}` : ''}</p>
+                <p>{c.reg_type === 'member' ? 'Member RSVP + CE credit' : `${TIER[c.reg_type ?? 'doctor'] ?? 'Doctor'} ticket`}{amount ? ` · ${amount} paid` : ''}{c.email ? ` · receipt sent to ${c.email}` : ''}</p>
               </div>
             )}
             <div className="step">

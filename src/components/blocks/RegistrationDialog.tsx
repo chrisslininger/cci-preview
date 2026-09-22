@@ -24,6 +24,7 @@ import { useNavigate } from '@/lib/router'
 import { SEMINARS } from '@/content/seminars'
 import { session, select, invoke } from '@/lib/supabase'
 import { useCatalog } from '@/lib/queries/CatalogProvider'
+import { useAccess } from '@/lib/queries/AccessProvider'
 import { formatPrice } from '@/lib/queries/events'
 
 const RegistrationContext = createContext<(key: string) => void>(() => {})
@@ -44,6 +45,8 @@ type Person = {
 type CheckoutResponse = {
   url?: string
   free?: boolean
+  rsvp?: boolean
+  ce?: boolean
   event_title?: string
   reg_type?: string
   needs_verification?: boolean
@@ -112,7 +115,9 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false)
   const [interstitial, setInterstitial] = useState<string | null>(null)
   const [signedInName, setSignedInName] = useState('')
+  const [wantCE, setWantCE] = useState(false)
   const ref = useRef<HTMLDialogElement>(null)
+  const { access } = useAccess()
   const navigate = useNavigate()
   const catalog = useCatalog()
 
@@ -120,6 +125,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     (eventKey: string) => {
       setKey(eventKey)
       setTier('doctor')
+      setWantCE(false)
       setError(null)
       setInterstitial(null)
       setBusy(false)
@@ -171,6 +177,14 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const seminar = key ? SEMINARS[key] : undefined
   const overlay = key ? catalog.byKey[key] : undefined
 
+  /* Member RSVP: a signed-in current member, on an event that is free with
+   * membership, RSVPs for themself. The only thing they can buy is CE. */
+  const freeWithMembership = overlay?.event?.free_with_membership === true || (!catalog.synced && seminar?.memPrice === 0 && (seminar?.fullPrice ?? 0) > 0)
+  const rsvpMode = Boolean(session.token) && access.tier === 'member' && freeWithMembership
+  const ceOffered = overlay?.event?.ce_credits === true
+  const cePrice = Number(overlay?.event?.ce_price ?? 0)
+  const ceHours = String(overlay?.event?.ce_mode ?? '').split('·')[0]?.trim() || ''
+
   /** Tiers offered for this event, preferring live database configuration. */
   const tiers: Tier[] = useMemo(() => {
     if (!seminar) return []
@@ -212,8 +226,8 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     const trimmedName = name.trim()
     const trimmedEmail = email.trim()
     const bad: string[] = []
-    if (!trimmedName) bad.push('name')
-    if (!trimmedEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmedEmail)) bad.push('email')
+    if (!rsvpMode && !trimmedName) bad.push('name')
+    if (!rsvpMode && (!trimmedEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmedEmail))) bad.push('email')
     if (bad.length) {
       setInterstitial(null)
       setError({
@@ -249,8 +263,9 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         email: trimmedEmail,
         phone: phone.trim() || null,
         force_guest: forceGuest,
-        reg_type: tier,
-        success_url: `${origin}/registration-confirmed?registered=1${tier !== 'doctor' ? `&verify=${tier}` : ''}`,
+        reg_type: rsvpMode ? 'member' : tier,
+        ce: rsvpMode ? wantCE : undefined,
+        success_url: `${origin}/registration-confirmed?registered=1${rsvpMode ? '&rsvp=1' : tier !== 'doctor' ? `&verify=${tier}` : ''}`,
         cancel_url: `${origin}/seminars`,
       })
 
@@ -260,6 +275,11 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
             ? 'This event is FREE with your membership. Sign in to claim it — or continue as a guest at full price.'
             : 'Sign in to apply your $200 member discount — or continue as a guest at full price.',
         )
+      } else if (data.free && data.rsvp) {
+        close()
+        navigate('/registration-confirmed', {
+          state: { message: `You're on the list — your RSVP for ${data.event_title ?? 'this event'} is confirmed. Your seat is included with your AOI membership. See you there!` },
+        })
       } else if (data.free) {
         close()
         const detail = data.needs_verification
@@ -272,6 +292,10 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         window.location.href = data.url
       } else if (data.error && ERRORS[data.error]) {
         setError(ERRORS[data.error]!)
+      } else if (data.error === 'already_registered') {
+        setError({ message: data.detail ?? 'You are already registered for this event.', fields: [] })
+      } else if (data.error === 'not_a_member') {
+        setError({ message: data.detail ?? 'Your membership is not current.', fields: [] })
       } else if (data.error === 'tier_not_available') {
         setError({
           message: data.detail ?? 'That registration type is not offered for this event — please choose another.',
@@ -308,7 +332,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
             </button>
             <div className="top" style={{ display: 'block' }}>
               <div className="kick" style={{ marginBottom: '4px' }}>
-                Register
+                {rsvpMode ? 'Member RSVP' : 'Register'}
               </div>
               <h3 id="reg-title">{seminar.title}</h3>
               <div className="cred">
@@ -362,7 +386,29 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                     void submit(false)
                   }}
                 >
-                  {signedIn ? (
+                  {rsvpMode ? (
+                    <>
+                      <div className="reg-auth">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M20 6 9 17l-5-5" /></svg>
+                        <span>RSVPing as <b>{signedInName}</b> — your seat is included with your AOI membership.</span>
+                      </div>
+                      <div className="rsvp-who">
+                        <div><span>Name</span><b>{name || signedInName}</b></div>
+                        <div><span>Email</span><b>{email || '—'}</b></div>
+                        {phone && <div><span>Phone</span><b>{phone}</b></div>}
+                        <p>This RSVP is for you only. To bring a colleague who is not a member, they register separately at the doctor or student rate.</p>
+                      </div>
+                      {ceOffered && cePrice > 0 && (
+                        <label className={`rsvp-ce${wantCE ? ' on' : ''}`}>
+                          <input type="checkbox" checked={wantCE} onChange={(e) => setWantCE(e.target.checked)} />
+                          <span className="rt-l">
+                            <b>Add CE credit certificate — {formatPrice(cePrice)}</b>
+                            <i>{ceHours ? `${ceHours} through ${overlay?.event?.ce_school ?? 'the CE sponsor'}. ` : ''}Sign in and out of every session at the event to receive credit.</i>
+                          </span>
+                        </label>
+                      )}
+                    </>
+                  ) : signedIn ? (
                     <div className="reg-auth">
                       <svg
                         width="18"
@@ -395,7 +441,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                     </div>
                   )}
 
-                  {tiers.length > 1 && (
+                  {!rsvpMode && tiers.length > 1 && (
                     <fieldset className="reg-fieldset">
                       <legend className="flabel">I AM REGISTERING AS</legend>
                       <div className="rtiers">
@@ -426,6 +472,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                     </fieldset>
                   )}
 
+                  {!rsvpMode && <>
                   <label className={`flabel${badField('name')}`} htmlFor="reg-name">
                     FULL NAME
                   </label>
@@ -471,6 +518,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
+                  </>}
 
                   {error && (
                     <div id="reg-err" role="alert" style={{ display: 'block' }}>
@@ -479,8 +527,9 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                   )}
 
                   <div className="reg-summary">
-                    Pricing is confirmed securely at checkout — <b>members are automatically
-                    discounted</b> when signed in.
+                    {rsvpMode
+                      ? (wantCE ? <>Your seat is free. <b>{formatPrice(cePrice)}</b> for the CE certificate is paid securely at checkout.</> : <>Nothing to pay — <b>your seat is included</b> with membership.</>)
+                      : <>Pricing is confirmed securely at checkout — <b>members are automatically discounted</b> when signed in.</>}
                   </div>
                   <div style={{ marginTop: '20px', display: 'grid', gap: '10px' }}>
                     <button
@@ -489,12 +538,14 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                       style={{ justifyContent: 'center' }}
                       disabled={busy}
                     >
-                      {busy ? 'One moment…' : 'Continue to Secure Checkout'}
+                      {busy ? 'One moment…' : rsvpMode ? (wantCE ? `RSVP & Pay ${formatPrice(cePrice)} for CE` : 'RSVP — I\u2019m Attending') : 'Continue to Secure Checkout'}
                     </button>
                   </div>
-                  <p className="reg-fineprint">
-                    Payments are processed by Stripe. Card details never touch this site.
-                  </p>
+                  {(!rsvpMode || wantCE) && (
+                    <p className="reg-fineprint">
+                      Payments are processed by Stripe. Card details never touch this site.
+                    </p>
+                  )}
                 </form>
               )}
             </div>

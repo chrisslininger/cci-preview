@@ -68,6 +68,7 @@ export async function finalizePaidSession(session: Record<string, any>): Promise
   if (typeof session.amount_total === "number") patch.price_paid_cents = session.amount_total;
   if (personId) patch.person_id = personId;
   if (meta.reg_type) patch.reg_type = meta.reg_type;
+  if (meta.ce === "true") patch.ce_credits = true;
 
   if (existing) {
     const up = await sbFetch(`/rest/v1/event_registrations?id=eq.${existing.id}`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify(patch) });
@@ -87,7 +88,8 @@ export async function finalizePaidSession(session: Record<string, any>): Promise
       reg_type: regType, verification_status: regType === "student" || regType === "faculty" ? "pending" : null,
       payment_status: "paid", registration_status: "registered",
       stripe_checkout_session_id: sessionId, stripe_payment_intent_id: session.payment_intent ?? null,
-      source: "website", notes: "Recovered at payment time: no pending row existed.",
+      ce_credits: meta.ce === "true" || (regType !== "member"),
+      source: meta.source ?? "website", notes: "Recovered at payment time: no pending row existed.",
     }),
   });
   if (!rec.ok) { console.error("registration recovery failed", await rec.text()); return { row: null, newlyPaid: false }; }
@@ -125,12 +127,13 @@ export async function notifyRegistration(row: Reg, kind: "paid" | "free" = "paid
     const ev = await eventFor(Number(row.event_id));
     const title = ev?.title ?? "AOI event";
     const tier = String(row.reg_type ?? "doctor");
-    const tierLabel = tier === "student" ? "Student" : tier === "faculty" ? "College faculty" : "Doctor";
+    const tierLabel = tier === "student" ? "Student" : tier === "faculty" ? "College faculty" : tier === "member" ? "Member RSVP" : "Doctor";
     const verify = row.verification_status === "pending" ? " — eligibility to confirm" : "";
     const rows = [
       ["Name", row.full_name], ["Email", row.email], ["Phone", row.phone ?? "—"],
       ["Ticket", `${tierLabel}${row.is_member_at_registration ? " · AOI member" : ""}${verify}`],
-      ["Paid", kind === "free" ? "Free" : `${money(row.price_paid_cents)}${row.discount_applied ? ` (${row.discount_applied})` : ""}`],
+      ["Paid", kind === "free" ? (tier === "member" ? "Free with membership" : "Free") : tier === "member" ? `${money(row.price_paid_cents)} — CE credit certificate` : `${money(row.price_paid_cents)}${row.discount_applied ? ` (${row.discount_applied})` : ""}`],
+      ...(tier === "member" ? [["CE credit", row.ce_credits ? "Yes" : "No"]] : []),
       ["Event", `${title}${when(ev) ? " · " + when(ev) : ""}`],
       ["Registered", new Date().toLocaleString("en-US", { timeZone: "America/New_York" }) + " ET"],
     ];
@@ -183,19 +186,30 @@ async function personByEmail(email: string): Promise<{ id: string; first_name: s
 
 export type DuesResult = { recorded: boolean; person: Record<string, any> | null; email: string | null; amountCents: number; periodEnd: string | null; newExpiry: string | null };
 
-/** Records a paid subscription invoice as membership dues and extends the membership. Idempotent on the invoice id. */
-export async function recordMembershipInvoice(inv: Record<string, any>): Promise<DuesResult> {
-  const invoiceId = String(inv.id ?? "");
+/** A charge is membership dues when the old store platform made it as a recurring "subscription payment"
+ *  (those charges carry an application id and that description); event tickets are Checkout payments. */
+export function isMembershipCharge(ch: Record<string, any>): boolean {
+  const d = String(ch.description ?? ch.statement_descriptor ?? "");
+  return /subscription payment/i.test(d) || /membership/i.test(d);
+}
+
+/** Records membership dues from a Stripe invoice (Stripe Billing) or a charge (the old store's recurring payments)
+ *  and extends the membership. Idempotent on the invoice / charge id. */
+export async function recordMembershipInvoice(inv: Record<string, any>, kind: "invoice" | "charge" = "invoice"): Promise<DuesResult> {
+  const isCharge = kind === "charge";
+  const invoiceId = isCharge ? null : String(inv.id ?? "");
   const customerId = typeof inv.customer === "string" ? inv.customer : inv.customer?.id ?? null;
-  let email: string | null = inv.customer_email ?? null;
-  let name: string | null = inv.customer_name ?? null;
+  let email: string | null = isCharge ? (inv.billing_details?.email ?? inv.receipt_email ?? null) : (inv.customer_email ?? null);
+  let name: string | null = isCharge ? (inv.billing_details?.name ?? null) : (inv.customer_name ?? null);
   if (!email && customerId) { const c = await stripeCustomerEmail(customerId); email = c.email; name = name ?? c.name; }
   const line = inv.lines?.data?.[0] ?? {};
-  const periodStart = ymd(line.period?.start ?? inv.period_start);
-  const periodEnd = ymd(line.period?.end ?? inv.period_end);
-  const amountCents = Number(inv.amount_paid ?? inv.total ?? 0);
-  const subscriptionId = typeof inv.subscription === "string" ? inv.subscription : inv.subscription?.id ?? line.subscription ?? null;
-  const chargeId = typeof inv.charge === "string" ? inv.charge : inv.charge?.id ?? null;
+  const paidUnix: number | null = isCharge ? (inv.created ?? null) : (inv.status_transitions?.paid_at ?? inv.created ?? null);
+  const paidAtIso = paidUnix ? new Date(paidUnix * 1000).toISOString() : new Date().toISOString();
+  const periodStart = isCharge ? ymd(paidUnix) : ymd(line.period?.start ?? inv.period_start);
+  const periodEnd = isCharge ? null : ymd(line.period?.end ?? inv.period_end);
+  const amountCents = Number(isCharge ? (inv.amount_captured ?? inv.amount ?? 0) : (inv.amount_paid ?? inv.total ?? 0));
+  const subscriptionId = isCharge ? null : (typeof inv.subscription === "string" ? inv.subscription : inv.subscription?.id ?? line.subscription ?? null);
+  const chargeId = isCharge ? String(inv.id ?? "") : (typeof inv.charge === "string" ? inv.charge : inv.charge?.id ?? null);
 
   const person = email ? await personByEmail(email) : null;
 
@@ -204,10 +218,10 @@ export async function recordMembershipInvoice(inv: Record<string, any>): Promise
     method: "POST", headers: { Prefer: "return=representation" },
     body: JSON.stringify({
       person_id: person?.id ?? null, email, stripe_customer_id: customerId, stripe_invoice_id: invoiceId, stripe_subscription_id: subscriptionId, stripe_charge_id: chargeId,
-      amount_cents: amountCents, currency: inv.currency ?? "usd", paid_at: inv.status_transitions?.paid_at ? new Date(inv.status_transitions.paid_at * 1000).toISOString() : new Date().toISOString(),
-      period_start: periodStart, period_end: periodEnd, source: "stripe_invoice",
+      amount_cents: amountCents, currency: inv.currency ?? "usd", paid_at: paidAtIso,
+      period_start: periodStart, period_end: periodEnd, source: isCharge ? "stripe_charge" : "stripe_invoice",
       note: person ? null : `No member record matched ${email ?? customerId ?? "this customer"}${name ? ` (${name})` : ""} — link by hand.`,
-      raw: { id: invoiceId, number: inv.number ?? null, hosted_invoice_url: inv.hosted_invoice_url ?? null, description: line.description ?? null },
+      raw: { id: inv.id ?? null, number: inv.number ?? null, hosted_invoice_url: inv.hosted_invoice_url ?? inv.receipt_url ?? null, description: inv.description ?? line.description ?? null, application: inv.application ?? null },
     }),
   });
   if (!ins.ok) {
@@ -220,8 +234,13 @@ export async function recordMembershipInvoice(inv: Record<string, any>): Promise
   let newExpiry: string | null = null;
   // A term already recorded for this member (a backfill, or a resent event with a new id) must not extend them twice.
   let alreadyCovered = false;
-  if (person && periodEnd) {
-    const q = await sbFetch(`/rest/v1/membership_payments?person_id=eq.${person.id}&period_end=gte.${periodEnd}&or=(stripe_invoice_id.is.null,stripe_invoice_id.neq.${encodeURIComponent(invoiceId)})&select=id&limit=1`);
+  if (person) {
+    // Same term already on file: a row whose period reaches this one's end, or a payment within a week of this one.
+    const selfKey = isCharge ? `stripe_charge_id.neq.${encodeURIComponent(chargeId ?? "")}` : `stripe_invoice_id.neq.${encodeURIComponent(invoiceId ?? "")}`;
+    const selfNull = isCharge ? "stripe_charge_id.is.null" : "stripe_invoice_id.is.null";
+    const lo = new Date(new Date(paidAtIso).getTime() - 7 * 86400000).toISOString(), hi = new Date(new Date(paidAtIso).getTime() + 7 * 86400000).toISOString();
+    const cond = periodEnd ? `or=(period_end.gte.${periodEnd},and(paid_at.gte.${lo},paid_at.lte.${hi}))` : `paid_at=gte.${lo}&paid_at=lte.${hi}`;
+    const q = await sbFetch(`/rest/v1/membership_payments?person_id=eq.${person.id}&${cond}&or=(${selfNull},${selfKey})&select=id&limit=1`);
     const rows = q.ok ? await q.json() : [];
     alreadyCovered = Array.isArray(rows) && rows.length > 0;
   }

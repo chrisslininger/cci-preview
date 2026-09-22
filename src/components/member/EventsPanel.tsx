@@ -14,10 +14,10 @@ import { useToast } from '@/components/ui/Toast'
 import {
   listEvents, venues as loadVenues, committees as loadCommittees, registrations, searchPeople,
   createEvent, updateEvent, setStatus, deleteEvent, saveSpeakers, saveSessions, duplicateEvent, checkIn,
-  CATEGORIES, TYPES, TIMEZONES, catLabel, typeLabel, isGov, isPast, activeRegs, confirmedRegs, pendingRegs, recentRegs, unverifiedRegs, setVerification, slugify,
+  CATEGORIES, TYPES, TIMEZONES, catLabel, typeLabel, isGov, isPast, activeRegs, confirmedRegs, pendingRegs, recentRegs, unverifiedRegs, setVerification, slugify, rsvpCandidates, manualRsvp, canManageRsvps,
   dateBlock, whenText, money, zoned, MON, MONL,
 } from '@/lib/queries/eventsAdmin'
-import type { EventRow, EventInput, Venue, Committee, Speaker, Session, Reg, PersonHit } from '@/lib/queries/eventsAdmin'
+import type { RsvpCandidate, EventRow, EventInput, Venue, Committee, Speaker, Session, Reg, PersonHit } from '@/lib/queries/eventsAdmin'
 
 type Tab = 'all' | 'upcoming' | 'seminars' | 'gov' | 'drafts'
 const TABS: [Tab, string][] = [['all', 'All events'], ['upcoming', 'Upcoming'], ['seminars', 'Seminars & courses'], ['gov', 'Board & committee'], ['drafts', 'Drafts']]
@@ -230,12 +230,31 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs }: { 
 
 /* ---------------------------------------------------------- registrations -- */
 
-const TIER: Record<string, string> = { doctor: 'Doctor', student: 'Student', faculty: 'College faculty' }
+const TIER: Record<string, string> = { doctor: 'Doctor', student: 'Student', faculty: 'College faculty', member: 'Member RSVP' }
 function RegsDialog({ e, canManage, onClose, onBack, onChanged }: { e: EventRow; canManage: boolean; onClose: () => void; onBack: () => void; onChanged: () => Promise<void> }) {
   const toast = useToast()
   const [rows, setRows] = useState<Reg[]>([])
   const [err, setErr] = useState<string | null>(null)
-  const load = useCallback(async () => { const r = await registrations(e.id); setErr(r.error ? r.error.slice(0, 160) : null); setRows(r.rows) }, [e.id])
+  const [cands, setCands] = useState<RsvpCandidate[]>([])
+  const [canRsvp, setCanRsvp] = useState(false)
+  const [view, setView] = useState<'attending' | 'awaiting'>('attending')
+  const [q, setQ] = useState('')
+  const [busyId, setBusyId] = useState<string | null>(null)
+  const memberFree = e.free_with_membership === true
+  const load = useCallback(async () => {
+    const r = await registrations(e.id); setErr(r.error ? r.error.slice(0, 160) : null); setRows(r.rows)
+    if (memberFree) { const [ok, c] = await Promise.all([canManageRsvps(), rsvpCandidates(e.id)]); setCanRsvp(ok); setCands(c) }
+  }, [e.id, memberFree])
+  async function confirmRsvp(c: RsvpCandidate) {
+    if (!confirm(`Confirm ${c.full_name}'s RSVP for ${e.title}? They will move to the attendee list as a member (no charge).`)) return
+    setBusyId(c.person_id)
+    const x = await manualRsvp(e.id, c.person_id)
+    setBusyId(null)
+    if (x.error) { toast('Could not confirm: ' + x.error.slice(0, 140)); return }
+    toast(`${c.full_name} is now attending`)
+    await load(); await onChanged()
+  }
+  const shown = cands.filter((c) => !q.trim() || `${c.full_name} ${c.email ?? ''}`.toLowerCase().includes(q.trim().toLowerCase()))
   useEffect(() => { void load() }, [load])
   useEffect(() => { const k = (ev: KeyboardEvent) => ev.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const live = rows.filter((r) => r.registration_status !== 'cancelled' && (r.payment_status === 'paid' || r.payment_status === 'free'))
@@ -259,19 +278,40 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged }: { e: EventRow;
         <div className="mh"><div><h3>Registrations &amp; check-in — {e.title}</h3><p>{whenText(e)}</p></div><button type="button" className="x" aria-label="Close" onClick={onClose}>×</button></div>
         <div className="mb">
           {err && <div className="cert-err">{err}</div>}
-          <div className="evt-regstats"><div className="s"><small>Registered</small><b>{live.length}</b></div><div className="s"><small>Paid</small><b>{paid}</b></div>{pending > 0 && <div className="s"><small>Awaiting payment</small><b>{pending}</b></div>}<div className="s"><small>Checked in</small><b>{inn}</b></div><div className="s"><small>Revenue</small><b>{money(rev) ?? '$0'}</b></div></div>
+          <div className="evt-regstats"><div className="s"><small>Attending</small><b>{live.length}</b></div><div className="s"><small>Paid</small><b>{paid}</b></div>{memberFree && <div className="s"><small>Members RSVP'd</small><b>{live.filter((r) => r.reg_type === 'member').length}</b></div>}{memberFree && <div className="s"><small>CE certificates</small><b>{live.filter((r) => r.ce_credits).length}</b></div>}{pending > 0 && <div className="s"><small>Awaiting payment</small><b>{pending}</b></div>}<div className="s"><small>Checked in</small><b>{inn}</b></div><div className="s"><small>Revenue</small><b>{money(rev) ?? '$0'}</b></div></div>
+          {memberFree && (
+            <div className="viewsw" style={{ margin: '4px 0 10px' }}>
+              <button type="button" className={view === 'attending' ? 'on' : ''} onClick={() => setView('attending')}>Attending ({live.length})</button>
+              <button type="button" className={view === 'awaiting' ? 'on' : ''} onClick={() => setView('awaiting')}>Members awaiting RSVP ({cands.length})</button>
+            </div>
+          )}
+          {memberFree && view === 'awaiting' ? (
+            <div className="evt-tbl">
+              <p className="muted" style={{ margin: '0 0 8px', fontSize: 13 }}>Every current member has a seat included with membership. These members have not RSVP'd yet. {canRsvp ? 'If one confirms by phone, text or email, confirm it here and they move to Attending.' : 'Directors and the Seminar chair can confirm an RSVP received by phone, text or email.'}</p>
+              <input className="fi" placeholder="Search members…" value={q} onChange={(ev) => setQ(ev.target.value)} style={{ marginBottom: 8 }} />
+              <table><thead><tr><th>Member</th><th>Membership</th><th></th></tr></thead><tbody>
+                {shown.length === 0 && <tr><td colSpan={3} className="muted">{cands.length === 0 ? 'Every current member has RSVP\u2019d.' : 'No members match.'}</td></tr>}
+                {shown.map((c) => <tr key={c.person_id}>
+                  <td><b>{c.full_name}{c.credentials ? `, ${c.credentials}` : ''}</b><br /><small>{c.email ? <a href={`mailto:${c.email}`}>{c.email}</a> : <i className="muted">no email</i>}{c.phone ? ` · ${c.phone}` : ''}</small></td>
+                  <td><small>{c.membership_expires ? `through ${new Date(c.membership_expires + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` : 'current'}{c.member_since ? ` · since ${c.member_since.slice(0, 4)}` : ''}</small></td>
+                  <td>{canRsvp ? <button type="button" className="b s-btn on-light xs" disabled={busyId === c.person_id} onClick={() => void confirmRsvp(c)}>{busyId === c.person_id ? 'Saving…' : 'Confirm RSVP'}</button> : '—'}</td>
+                </tr>)}
+              </tbody></table>
+            </div>
+          ) : (
           <div className="evt-tbl"><table><thead><tr><th>Attendee</th><th>Ticket</th><th>Paid</th><th>Registered</th><th>Check-in</th><th></th></tr></thead><tbody>
             {rows.length === 0 && <tr><td colSpan={6} className="muted">No registrations yet.</td></tr>}
             {[...rows].sort((a, b) => b.created_at.localeCompare(a.created_at)).map((r) => <tr key={r.id} className={r.registration_status === 'cancelled' ? 'off' : ''}>
               <td><b>{r.full_name}</b><br /><small><a href={`mailto:${r.email}`}>{r.email}</a>{r.practice_name ? ` · ${r.practice_name}` : ''}{r.phone ? ` · ${r.phone}` : ''}</small></td>
-              <td>{TIER[r.reg_type] ?? r.reg_type}{r.is_member_at_registration ? ' · member' : ''}{r.discount_applied ? <><br /><small className="muted">{r.discount_applied.replace(/\+/g, ' + ')}</small></> : null}{r.registration_status === 'cancelled' ? <><br /><Pill kind="bad">cancelled</Pill></> : null}
+              <td>{TIER[r.reg_type] ?? r.reg_type}{r.is_member_at_registration && r.reg_type !== 'member' ? ' · member' : ''}{r.source === 'manual_rsvp' ? <><br /><small className="muted">{r.notes ?? 'confirmed by hand'}</small></> : null}{r.discount_applied ? <><br /><small className="muted">{r.discount_applied.replace(/\+/g, ' + ')}</small></> : null}{r.registration_status === 'cancelled' ? <><br /><Pill kind="bad">cancelled</Pill></> : null}
                 {r.verification_status === 'pending' && r.registration_status !== 'cancelled' ? <><br /><Pill kind="warn">eligibility to confirm</Pill>{canManage && <> <button type="button" className="flink" onClick={async () => { const x = await setVerification(r.id, 'verified'); if (x.error) return toast('Could not update: ' + x.error.slice(0, 120)); await load(); await onChanged() }}>confirm</button></>}</> : r.verification_status === 'verified' ? <><br /><Pill kind="ok">verified</Pill></> : null}</td>
-              <td>{money(r.price_paid_cents / 100) ?? '$0'}<br /><Pill kind={r.payment_status === 'paid' || r.payment_status === 'free' ? 'ok' : r.payment_status === 'pending' ? 'warn' : 'bad'}>{r.payment_status === 'pending' ? 'awaiting payment' : r.payment_status}</Pill></td>
+              <td>{money(r.price_paid_cents / 100) ?? '$0'}{r.reg_type === 'member' && r.ce_credits ? <><br /><small className="muted">CE certificate</small></> : null}<br /><Pill kind={r.payment_status === 'paid' || r.payment_status === 'free' ? 'ok' : r.payment_status === 'pending' ? 'warn' : 'bad'}>{r.payment_status === 'pending' ? 'awaiting payment' : r.payment_status === 'free' && r.reg_type === 'member' ? 'member' : r.payment_status}</Pill></td>
               <td><small>{new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}<br />{new Date(r.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</small></td>
               <td>{r.checked_in_at ? <><Pill kind="ok">Checked in</Pill><br /><small className="muted">{new Date(r.checked_in_at).toLocaleString()}</small></> : (canManage && r.registration_status !== 'cancelled' ? <button type="button" className="b s-btn on-light xs" onClick={() => void toggle(r)}>Check in</button> : '—')}</td>
               <td>{r.checked_in_at && canManage && <button type="button" className="flink" onClick={() => void toggle(r)}>undo</button>}</td>
             </tr>)}
           </tbody></table></div>
+          )}
         </div>
         <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={exportRoster}>↓ Export roster</button><button type="button" className="b s-btn on-light sm" onClick={onBack}>Back</button><button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
       </div>

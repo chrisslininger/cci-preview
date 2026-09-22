@@ -16,6 +16,7 @@ export type Registration = {
   created_at?: string
   discount_applied?: string
   reg_type?: string
+  ce_credits?: boolean
   events?: { title?: string; starts_at?: string; location?: string; slug?: string } | null
 }
 
@@ -78,7 +79,7 @@ const uid = () => session.user?.id ?? ''
 export async function myRegistrations(): Promise<Registration[]> {
   const q = await select<Registration>(
     'event_registrations',
-    'select=payment_status,registration_status,price_paid_cents,created_at,discount_applied,reg_type,' +
+    'select=payment_status,registration_status,price_paid_cents,created_at,discount_applied,reg_type,ce_credits,' +
       `events(title,starts_at,location,slug)&auth_user_id=eq.${uid()}&order=created_at.desc`,
   )
   return q.data ?? []

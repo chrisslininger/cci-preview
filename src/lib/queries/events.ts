@@ -25,6 +25,10 @@ export type PublicEvent = {
   student_price?: number | string | null
   free_with_membership?: boolean
   faculty_free?: boolean
+  ce_credits?: boolean
+  ce_price?: number | string | null
+  ce_mode?: string | null
+  ce_school?: string | null
   seats_remaining?: number | string | null
   reg_closes?: string | null
 }
