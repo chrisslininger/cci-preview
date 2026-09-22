@@ -13,7 +13,7 @@
 // Stripe's confirmation comes back through stripe-webhook / confirm-checkout,
 // which read metadata.kind and registration_id.
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY. Optional:
-// RESEND_API_KEY, NOTIFY_FROM, SITE_ORIGIN.
+// RESEND_API_KEY, NOTIFY_FROM, REPLY_TO (default info@advancedorthogonal.com), SITE_ORIGIN.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
@@ -22,6 +22,7 @@ const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const STRIPE_KEY = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
 const RESEND_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const NOTIFY_FROM = Deno.env.get("NOTIFY_FROM") ?? "Advanced Orthogonal Institute <registrations@advancedorthogonal.com>";
+const REPLY_TO = Deno.env.get("REPLY_TO") ?? "info@advancedorthogonal.com";
 const SITE_ORIGIN = (Deno.env.get("SITE_ORIGIN") ?? "https://www.advancedorthogonal.com").replace(/\/+$/, "");
 const ALLOWED = new Set(["https://advancedorthogonal.com", "https://www.advancedorthogonal.com", SITE_ORIGIN]);
 
@@ -102,7 +103,7 @@ Deno.serve(async (req) => {
         <p style="font-size:13px;color:#7a8c97;margin-top:22px">Payments are processed by Stripe. If the button does not open, paste this link into your browser:<br>${esc(url)}</p>
         <p>— Advanced Orthogonal Institute</p></div>`;
       const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${RESEND_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ from: NOTIFY_FROM, to: [sentTo], subject: kind === "ce" ? `Your CE certificate — ${ev.title} (${money(amount)})` : `Complete your registration — ${ev.title}`, html }) });
+        body: JSON.stringify({ from: NOTIFY_FROM, to: [sentTo], reply_to: REPLY_TO, subject: kind === "ce" ? `Your CE certificate — ${ev.title} (${money(amount)})` : `Complete your registration — ${ev.title}`, html }) });
       emailed = r.ok;
       if (!r.ok) console.error("pay-link email failed", r.status, await r.text());
     }

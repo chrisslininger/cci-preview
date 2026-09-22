@@ -11,6 +11,8 @@ const SB_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const NOTIFY_FROM = Deno.env.get("NOTIFY_FROM") ?? "Advanced Orthogonal Institute <registrations@advancedorthogonal.com>";
+// Every email an attendee or member receives replies to the Institute's real inbox.
+const REPLY_TO = Deno.env.get("REPLY_TO") ?? "info@advancedorthogonal.com";
 const NOTIFY_TO = (Deno.env.get("NOTIFY_TO") ?? "drslininger@cerebralchiropractic.com").split(",").map((s: string) => s.trim()).filter(Boolean);
 const SITE_ORIGIN = Deno.env.get("SITE_ORIGIN") ?? "https://advancedorthogonal.com";
 const STRIPE_KEY = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
@@ -151,7 +153,7 @@ export async function notifyRegistration(row: Reg, kind: "paid" | "free" | "ce" 
       const t = [["Name", row.full_name], ["Email", row.email], ["CE certificate", money(row.ce_paid_cents)], ["Event", title], ["Paid", new Date().toLocaleString("en-US", { timeZone: "America/New_York" }) + " ET"]]
         .map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#5b6b76">${esc(k)}</td><td style="padding:4px 0"><b>${esc(v)}</b></td></tr>`).join("");
       await sendEmail(NOTIFY_TO, `CE paid — ${title}: ${row.full_name}`, `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>A CE certificate payment came through.</p><table style="border-collapse:collapse">${t}</table></div>`, String(row.email ?? ""));
-      if (row.email) await sendEmail([String(row.email)], `CE certificate confirmed — ${title}`, `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>Hi ${esc(String(row.full_name).replace(/^dr\.?\s+/i, "").split(/[\s,]+/)[0])},</p><p>Your CE credit certificate for <b>${esc(title)}</b> is paid (${money(row.ce_paid_cents)}). Remember to sign in and out of every session to receive credit.</p><p>— Advanced Orthogonal Institute</p></div>`);
+      if (row.email) await sendEmail([String(row.email)], `CE certificate confirmed — ${title}`, `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>Hi ${esc(String(row.full_name).replace(/^dr\.?\s+/i, "").split(/[\s,]+/)[0])},</p><p>Your CE credit certificate for <b>${esc(title)}</b> is paid (${money(row.ce_paid_cents)}). Remember to sign in and out of every session to receive credit.</p><p>— Advanced Orthogonal Institute</p></div>`, REPLY_TO);
       return;
     }
     const ev = await eventFor(Number(row.event_id));
@@ -173,7 +175,7 @@ export async function notifyRegistration(row: Reg, kind: "paid" | "free" | "ce" 
       String(row.email ?? ""));
     if (row.email) {
       await sendEmail([String(row.email)], `You're registered — ${title}`,
-        `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>Hi ${esc(String(row.full_name).split(/\s+/)[0])},</p><p>Your registration for <b>${esc(title)}</b>${when(ev) ? ` (${esc(when(ev))})` : ""} is confirmed.</p><table style="border-collapse:collapse">${table}</table>${row.verification_status === "pending" ? "<p>We will confirm your student / faculty status by email before the event.</p>" : ""}<p style="margin-top:16px">Event details and reminders will follow as the date approaches. If you have a member login, this event now appears under My Profile → My Registrations.</p><p>— Advanced Orthogonal Institute</p></div>`);
+        `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>Hi ${esc(String(row.full_name).split(/\s+/)[0])},</p><p>Your registration for <b>${esc(title)}</b>${when(ev) ? ` (${esc(when(ev))})` : ""} is confirmed.</p><table style="border-collapse:collapse">${table}</table>${row.verification_status === "pending" ? "<p>We will confirm your student / faculty status by email before the event.</p>" : ""}<p style="margin-top:16px">Event details and reminders will follow as the date approaches. If you have a member login, this event now appears under My Profile → My Registrations.</p><p>— Advanced Orthogonal Institute</p></div>`, REPLY_TO);
     }
   } catch (e) { console.error("notifyRegistration error", e); }
 }
