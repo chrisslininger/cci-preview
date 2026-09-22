@@ -35,6 +35,7 @@ import ProblemPage from '@/pages/ProblemPage'
 import ContactPage from '@/pages/ContactPage'
 import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import ConfirmPage from '@/pages/ConfirmPage'
+import PayPage from '@/pages/PayPage'
 import AccountPage from '@/pages/AccountPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
@@ -346,6 +347,17 @@ const privateRoutes: RouteEntry[] = [
       noindex: true,
     },
   },
+  /* Payment links sent from the check-in desk (CE certificate or a door registration). */
+  ...Object.entries(SEMINARS).filter(([key]) => SEMINAR_SLUG[key] !== 'internships').map(([key, seminar]): RouteEntry => ({
+    path: `/seminars/${SEMINAR_SLUG[key]}/pay`,
+    Component: PayPage,
+    prerender: false,
+    meta: {
+      title: `Payment — ${seminar.title} — Advanced Orthogonal Institute`,
+      description: `Secure payment for ${seminar.title} at the Advanced Orthogonal Institute.`,
+      noindex: true,
+    },
+  })),
 ]
 
 export const routes: RouteEntry[] = [

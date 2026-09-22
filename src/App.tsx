@@ -8,6 +8,7 @@ import { CatalogProvider } from '@/lib/queries/CatalogProvider'
 import { AccessProvider } from '@/lib/queries/AccessProvider'
 import { routes, notFoundRoute, routeByPath } from '@/routes'
 import { renderHead } from '@/lib/seo'
+import PayPage from '@/pages/PayPage'
 
 /** Keeps the document head correct on client-side navigation. */
 function DocumentMeta() {
@@ -67,6 +68,7 @@ export default function App() {
                   />
                 ))}
                 {/* Pattern routes so a link typed by hand still resolves. */}
+                <Route path="/seminars/:slug/pay" element={<PayPage />} />
                 <Route path="/seminars/:slug" element={<SeminarByParam />} />
                 <Route path="/articles/:slug" element={<ArticleByParam />} />
                 <Route path="/clinical-challenges/:slug" element={<ProblemByParam />} />

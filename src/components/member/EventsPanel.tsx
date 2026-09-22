@@ -10,6 +10,7 @@
  * -------------------------------------------------------------------------- */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
+import CheckinRoom from './CheckinRoom'
 import { useToast } from '@/components/ui/Toast'
 import {
   listEvents, venues as loadVenues, committees as loadCommittees, registrations, searchPeople,
@@ -59,6 +60,9 @@ export default function EventsPanel() {
   const [edit, setEdit] = useState<EventRow | 'new' | null>(null)
   const [confirm, setConfirm] = useState<EventRow | null>(null)
   const [regsFor, setRegsFor] = useState<EventRow | null>(null)
+  const [room, setRoom] = useState<number | null>(null)
+  const [canCheckin, setCanCheckin] = useState(false)
+  useEffect(() => { void canManageRsvps().then(setCanCheckin) }, [])
 
   const load = useCallback(async () => {
     const r = await listEvents()
@@ -157,7 +161,7 @@ export default function EventsPanel() {
         ? <>{upcoming.length > 0 && <div className="evt-grp">Upcoming</div>}{upcoming.map(card)}{past.length > 0 && <div className="evt-grp">Past</div>}{past.map(card)}</>
         : Object.keys(months).sort().map((k) => <div key={k}><div className="evt-grp">{MONL[months[k]!.m]} {months[k]!.y}</div>{months[k]!.items.map(card)}</div>)}
 
-      {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} />}
+      {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} onCheckin={canCheckin ? () => { setOpen(null); setRoom(current.id) } : undefined} />}
       {edit && <FormDialog e={edit === 'new' ? null : edit} venues={venues} committees={committees} meId={meId} onClose={() => setEdit(null)} onSaved={async (m) => { setEdit(null); await load(); toast(m) }} onRemove={(e) => { setEdit(null); setConfirm(e) }} />}
       {confirm && (
         <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setConfirm(null)}>
@@ -167,14 +171,15 @@ export default function EventsPanel() {
           </div>
         </div>
       )}
-      {regsFor && <RegsDialog e={regsFor} canManage={canManage} onClose={() => setRegsFor(null)} onBack={() => { setRegsFor(null); setOpen(regsFor.id) }} onChanged={load} />}
+      {regsFor && <RegsDialog e={regsFor} canManage={canManage} onClose={() => setRegsFor(null)} onBack={() => { setRegsFor(null); setOpen(regsFor.id) }} onChanged={load} onCheckin={canCheckin ? () => { setRegsFor(null); setRoom(regsFor.id) } : undefined} />}
+      {room != null && <CheckinRoom eventId={room} onClose={() => { setRoom(null); void load() }} />}
     </>
   )
 }
 
 /* --------------------------------------------------------------- detail -- */
 
-function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs }: { e: EventRow; canManage: boolean; onClose: () => void; onEdit: () => void; onDuplicate: () => void; onRegs: () => void }) {
+function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCheckin }: { e: EventRow; canManage: boolean; onClose: () => void; onEdit: () => void; onDuplicate: () => void; onRegs: () => void; onCheckin?: () => void }) {
   useEffect(() => { const k = (ev: KeyboardEvent) => ev.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const gov = isGov(e)
   const regs = activeRegs(e)
@@ -220,7 +225,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs }: { 
           <div className="kv">{kv('URL', e.status === 'published' ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div>
         </div>
         <div className="mf evt-foot">
-          <div className="r">{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations &amp; check-in ({regs.length})</button>}</div>
+          <div className="r">{!gov && onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations ({regs.length})</button>}</div>
           <div className="r">{canManage && <><button type="button" className="b s-btn on-light sm" onClick={onEdit}>Edit</button><button type="button" className="b s-btn on-light sm" onClick={onDuplicate}>Duplicate</button></>}<button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
         </div>
       </div>
@@ -231,7 +236,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs }: { 
 /* ---------------------------------------------------------- registrations -- */
 
 const TIER: Record<string, string> = { doctor: 'Doctor', student: 'Student', faculty: 'College faculty', member: 'Member RSVP' }
-function RegsDialog({ e, canManage, onClose, onBack, onChanged }: { e: EventRow; canManage: boolean; onClose: () => void; onBack: () => void; onChanged: () => Promise<void> }) {
+function RegsDialog({ e, canManage, onClose, onBack, onChanged, onCheckin }: { e: EventRow; canManage: boolean; onClose: () => void; onBack: () => void; onChanged: () => Promise<void>; onCheckin?: () => void }) {
   const toast = useToast()
   const [rows, setRows] = useState<Reg[]>([])
   const [err, setErr] = useState<string | null>(null)
@@ -313,7 +318,7 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged }: { e: EventRow;
           </tbody></table></div>
           )}
         </div>
-        <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={exportRoster}>↓ Export roster</button><button type="button" className="b s-btn on-light sm" onClick={onBack}>Back</button><button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
+        <div className="mf">{onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}<button type="button" className="b s-btn on-light sm" onClick={exportRoster}>↓ Export roster</button><button type="button" className="b s-btn on-light sm" onClick={onBack}>Back</button><button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
       </div>
     </div>
   )

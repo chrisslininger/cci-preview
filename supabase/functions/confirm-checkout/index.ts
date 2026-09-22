@@ -37,8 +37,8 @@ Deno.serve(async (req: Request) => {
   if (!paid) {
     return json(200, { status: session.status === "expired" ? "expired" : "pending", event_id: Number(session.metadata?.event_id ?? 0) || null });
   }
-  const { row, newlyPaid } = await finalizePaidSession(session);
-  if (row && newlyPaid) await notifyRegistration(row, "paid");
+  const { row, newlyPaid, ceOnly } = await finalizePaidSession(session);
+  if (row && newlyPaid) await notifyRegistration(row, ceOnly ? "ce" : "paid");
   const ev = row ? await eventFor(Number(row.event_id)) : null;
   return json(200, {
     status: "paid",
@@ -49,5 +49,6 @@ Deno.serve(async (req: Request) => {
     amount_cents: session.amount_total ?? null,
     email: session.customer_details?.email ?? session.metadata?.email ?? null,
     needs_verification: row?.verification_status === "pending",
+    kind: session.metadata?.kind ?? null,
   });
 });

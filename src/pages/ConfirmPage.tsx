@@ -20,6 +20,7 @@ type Confirm = {
   amount_cents?: number | null
   email?: string | null
   needs_verification?: boolean
+  kind?: string | null
   error?: string
 }
 
@@ -51,13 +52,15 @@ export default function ConfirmPage() {
   const when = paid && c.starts_at ? new Date(c.starts_at).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : null
   const amount = paid && typeof c.amount_cents === 'number' ? `$${(c.amount_cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : null
 
-  const headline = c === 'loading' ? 'Recording your registration…'
+  const headline = c === 'loading' ? 'Recording your payment…'
+    : c && c.status === 'paid' && c.kind === 'ce_payment' ? 'CE certificate paid'
     : c && c.status === 'expired' ? 'That checkout has expired'
     : c && c.status === 'pending' ? 'Payment still processing'
     : "You're registered!"
   const sub = c === 'loading' ? 'One moment while we confirm your payment with Stripe.'
     : c && c.status === 'expired' ? 'The payment session timed out before it was completed. Nothing was charged — please register again.'
     : c && c.status === 'pending' ? 'Your bank has not confirmed the payment yet. Your seat will be recorded automatically the moment it clears, and a receipt will follow by email.'
+    : paid && c.kind === 'ce_payment' ? `Your CE credit certificate for ${c.event_title ?? 'this event'} is paid. It will be issued after the event, and the registration desk can see it now.`
     : paid && c.reg_type === 'member' ? `Your RSVP for ${c.event_title ?? 'this event'} is confirmed and your CE credit certificate is paid. Your seat is included with your AOI membership.`
     : paid ? `Your ${TIER[c.reg_type ?? 'doctor'] ?? 'Doctor'} registration for ${c.event_title ?? 'this event'} is confirmed${c.needs_verification ? ' — we will confirm your student or faculty status by email before the event' : ''}.`
     : state?.message ?? 'Your registration is confirmed. A receipt has been emailed to you.'
@@ -84,9 +87,9 @@ export default function ConfirmPage() {
           <div className="steps" style={{ gridTemplateColumns: '1fr' }}>
             {paid && (
               <div className="step">
-                <div className="n">YOUR REGISTRATION</div>
+                <div className="n">{c.kind === 'ce_payment' ? 'YOUR CE CERTIFICATE' : 'YOUR REGISTRATION'}</div>
                 <p><b>{c.event_title}</b>{when ? ` · ${when}` : ''}</p>
-                <p>{c.reg_type === 'member' ? 'Member RSVP + CE credit' : `${TIER[c.reg_type ?? 'doctor'] ?? 'Doctor'} ticket`}{amount ? ` · ${amount} paid` : ''}{c.email ? ` · receipt sent to ${c.email}` : ''}</p>
+                <p>{c.kind === 'ce_payment' ? 'CE credit certificate' : c.reg_type === 'member' ? 'Member RSVP + CE credit' : `${TIER[c.reg_type ?? 'doctor'] ?? 'Doctor'} ticket`}{amount ? ` · ${amount} paid` : ''}{c.email ? ` · receipt sent to ${c.email}` : ''}</p>
               </div>
             )}
             <div className="step">
