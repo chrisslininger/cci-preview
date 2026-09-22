@@ -2290,3 +2290,19 @@ a.othercard {
 .cev-type.gold { color: var(--color-brand-accent-strong); }
 .cev-type.bad { color: var(--color-status-danger); }
 .evt-facts { display: block; width: 100%; margin-top: 4px; font-size: 12.5px; }
+
+/* ------------------------------------------------- continuing education ---
+ * State-by-state approvals for a CE-sponsored event, from the sponsor's
+ * approvals sheet. Three quiet cards; the disclaimer sits under them. */
+.cegrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 1040px; }
+.cecard { border: 1px solid var(--color-border-subtle); border-radius: var(--radius-card); background: var(--color-surface-raised); padding: 18px 20px; font-size: 13.5px; color: var(--color-content-secondary); }
+.cecard p { margin: 0; line-height: 1.6; }
+.cecard ul { list-style: none; margin: 0; padding: 0; }
+.cecard ul li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid var(--color-border-subtle); }
+.cecard ul li:first-child { border-top: 0; padding-top: 0; }
+.cecard ul li b { color: var(--color-content-primary); font-weight: 600; }
+.cecard ul li span { font-variant-numeric: tabular-nums; color: var(--color-content-muted); }
+.cecard ul.plain li { display: block; }
+.cek { font-family: var(--font-label); font-weight: 600; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-brand-accent-strong); margin-bottom: 8px; }
+.cenote { margin-top: 16px; font-size: 12.5px; color: var(--color-content-muted); max-width: 1040px; line-height: 1.6; }
+@media (max-width: 820px) { .cegrid { grid-template-columns: 1fr; } }

@@ -541,6 +541,40 @@ export default function SeminarPage({ param }: { param?: string }) {
         </div>
       </section>
 
+      {s.ce && (
+        <section className="tight" id="sd-ce">
+          <div className="wrap">
+            <div className="kick">Continuing Education</div>
+            <h2 className="t" style={{ fontSize: '26px' }}>
+              {s.ce.hours} CE hours through {s.ce.sponsor.split(',')[0]}
+            </h2>
+            <div className="goldrule" />
+            <p className="lede" style={{ marginBottom: '22px' }}>{s.ce.note}</p>
+            <div className="cegrid">
+              <div className="cecard">
+                <div className="cek">Approved</div>
+                <ul>{s.ce.approved.map(([st, n]) => <li key={st}><b>{st}</b><span>{n}</span></li>)}</ul>
+              </div>
+              <div className="cecard">
+                <div className="cek">Auto-approved</div>
+                <p>{s.ce.auto.join(' · ')}</p>
+                <div className="cek" style={{ marginTop: '14px' }}>DC self-reporting</div>
+                <p>{s.ce.self.join(' · ')}</p>
+                <div className="cek" style={{ marginTop: '14px' }}>Pending</div>
+                <p>{s.ce.pending.join(' · ')}</p>
+              </div>
+              <div className="cecard">
+                <div className="cek">Not applied for</div>
+                <p>{s.ce.notApplied.join(' · ')}</p>
+                <div className="cek" style={{ marginTop: '14px' }}>Special cases</div>
+                <ul className="plain">{s.ce.special.map(([st, n]) => <li key={st}><b>{st}</b> {n}</li>)}</ul>
+              </div>
+            </div>
+            <p className="cenote">{s.ce.disclaimer}</p>
+          </div>
+        </section>
+      )}
+
       {s.regBand && (
         <section className="tight" id="sd-reg-sec" style={{ paddingTop: '8px' }}>
           <div className="wrap">

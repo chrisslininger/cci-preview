@@ -21,6 +21,19 @@ export type RegBand = {
   note?: string
 }
 
+export type SeminarCE = {
+  hours: string
+  sponsor: string
+  note: string
+  approved: string[][]
+  auto: string[]
+  self: string[]
+  pending: string[]
+  notApplied: string[]
+  special: string[][]
+  disclaimer: string
+}
+
 export type Seminar = {
   photo?: string
   mux?: string
@@ -52,6 +65,7 @@ export type Seminar = {
   spk?: string[]
   exhibitors?: string[]
   agenda?: unknown
+  ce?: SeminarCE
 }
 
 export const SEMINARS = {
@@ -188,52 +202,68 @@ export const SEMINARS = {
   },
   conference:{
     photo:'conference',
-    cat:'conference', title:'2026 Annual Conference', kicker:'The Homecoming of the AOI Community', img:'ph-c',
-    sub:'Two days of advanced training, imaging, research, and case studies \u2014 with the doctors who are moving this work forward.',
-    dates:'November 6\u20137, 2026', loc:'Tampa Bay, FL', level:'All Levels', format:'2-Day Conference', price:'$797',
+    cat:'conference', title:'2026 Annual Conference', kicker:'Inflection Point · The Homecoming of the AOI Community', img:'ph-c',
+    sub:'Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward — November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.',
+    dates:'November 6–7, 2026', loc:'St. Petersburg, FL', level:'All Levels', format:'2 Days · 8 AM–6 PM', price:'$797',
     fullPrice:797, memPrice:0, studentPrice:347, facultyFree:true,
-    mbText:'Conference registration is INCLUDED with AOI membership \u2014 a $797 value. Sign in when you register and the fee is waived.',
+    mbText:'Conference registration is INCLUDED with AOI membership — a $797 value. Sign in when you register and the fee is waived.',
     sessions:[], hideSess:true,
     regBand:{
       h:'Register for the 2026 Annual Conference',
-      sub:'November 6\u20137, 2026 \u00b7 Pierce Clinic of Chiropractic, St. Petersburg, FL \u00b7 Two full days of clinical training, imaging, research and case studies.',
+      sub:'November 6–7, 2026 · 8:00 AM–6:00 PM both days · Pierce Clinic of Chiropractic, St. Petersburg, FL · 14 CE hours through Sherman College of Chiropractic.',
       btn:'Register for the Conference',
       tiers:[
         {k:'Doctor',p:'$797',n:'Practicing chiropractors and everyone outside the tiers below.'},
         {k:'Student',p:'$347',n:'Currently enrolled chiropractic students.'},
-        {k:'AOI Member',p:'FREE',n:'Included with your membership \u2014 sign in when you register and the fee is waived.',hi:true,flag:'INCLUDED'},
+        {k:'AOI Member',p:'FREE',n:'Included with your membership — sign in when you register and the fee is waived.',hi:true,flag:'INCLUDED'},
         {k:'College Faculty',p:'FREE',n:'Faculty of chiropractic colleges. Register as faculty and the Institute confirms your seat.',hi:true}
       ],
-      note:'Members and chiropractic college faculty still register \u2014 the fee comes off at checkout. Members: sign in first so we can see your membership.'
+      note:'Members and chiropractic college faculty still register — the fee comes off at checkout. Members: sign in first so we can see your membership.'
     },
-    member:'INCLUDED with AOI membership \u2014 plus optional CE credits.',
-    h2:'The homecoming of the upper cervical year.',
-    overview:'<p>The 2026 Annual Conference brings the whole Advanced Orthogonal community to Tampa Bay for two days of advanced clinical training \u2014 CBCT and CT imaging, vertigo assessment, upper cervical muscle analysis, neurology, scar tissue management, and the case studies that only this community can share.</p><p>It\u2019s also the Institute\u2019s working weekend: the research initiative, updated protocol terminology, the instructor pathway, and committee updates on certification and marketing \u2014 where the membership\u2019s voice directly shapes the year ahead.</p>',
-    learn:['Recognizing Operator Syndrome in combat veterans','CBCT and 3D imaging \u2014 from the Akridge Equation to the Miranda Equation','A practical vertigo assessment framework','Upper cervical muscle analysis','Updated terminology, corrective positioning, and Sonus worksheets','Scar tissue management in patient outcomes','The Institute research initiative \u2014 and how to participate','The pathway to becoming an AdvO instructor'],
-    sched:[['FRIDAY','Research initiative kickoff, Operator Syndrome, CBCT 3D imaging, and vertigo assessment \u2014 evening social to close the day.'],['SATURDAY','Protocol updates, muscle analysis, neurology, CT, scar tissue management, the instructor pathway, case studies, and committee updates.']],
-    ctaH:'Be in the room in Tampa Bay.', ctaP:'November 6\u20137, 2026 \u00b7 Tampa Bay, FL \u00b7 $797 for doctors, $347 for students \u00b7 free with AOI membership.', ctaBtn:'Reserve Your Seat',
-    spk:['cs','miranda','beadle','billiris','hulsey','wooden','colavita','silver','bollen','fowler','damico','jorbora','corsello'], keynote:null,
+    member:'INCLUDED with AOI membership — plus 14 hours of CE.',
+    h2:'This year’s theme: Inflection Point.',
+    overview:'<p>An inflection point is the place on a curve where its direction changes. The Institute and the technique are at one: modernizing the work while building on the foundation that brought us here. Across two days at the Pierce Clinic of Chiropractic — the home of Advanced Orthogonal — the program takes that on directly: cone-beam CT and three-dimensional reference frames, updated terminology and corrective positioning, Sonus: Blueprint, the practice-based research project, and the clinical questions that decide whether a correction holds.</p><p>Thirteen presenters, fourteen instructional hours, and the case studies that only this community can share. It is also the Institute’s working weekend — the research initiative, the instructor pathway, and the announcements for 2027 — where the membership’s voice shapes the year ahead.</p>',
+    learn:['Cervical-vestibular-ocular rehabilitation after the correction','Sorting the dizzy patient at the bedside — lecture and hands-on lab','Operator Syndrome in combat veterans, with a full case study','Why the correction doesn’t hold: suboccipital analysis and soft-tissue reactivation','Updated AdvO terminology, corrective positioning, and Sonus worksheets','Cone-beam CT: three-dimensional analysis, case selection, and reference frames','Finding and clearing fibrous adhesion in the cervical spine','Upper cervical case studies from three practices','Teaching as a clinical skill — protecting procedural fidelity','The Institute’s practice-based research project and how to take part'],
+    sched:[['FRIDAY','Vestibular-ocular rehab, the dizzy patient, Operator Syndrome, suboccipital muscle analysis, and the updated AdvO protocol with a supervised lab.'],['SATURDAY','CBCT and 3D reference frames, scar tissue and the atlas, case studies, teaching as a clinical skill, and the practice-based research project.']],
+    ce:{
+      hours:'14.0', sponsor:'Sherman College of Chiropractic, Office of Continuing Education',
+      note:'Live, in-person instruction only. Sixty minutes of instruction counts as one CE hour; sign in and out of every session, with photo ID, to receive credit. No partial credit within a block.',
+      approved:[['New York','AOI112026'],['Kansas','AOI112026'],['Missouri','AOI112026'],['Georgia','20-1408759'],['North Carolina','20-1408759'],['Minnesota','MBCE ID #91129'],['Puerto Rico','Approved territory']],
+      auto:['Colorado','Connecticut','Delaware','District of Columbia','Idaho','Indiana','Maryland','Massachusetts','Michigan','New Jersey','Ohio','Rhode Island','South Carolina','Utah','Vermont','Virginia','Washington','Wyoming','Newfoundland','Ontario'],
+      self:['Illinois','Iowa','Montana','Nebraska','Oregon','British Columbia','Quebec'],
+      pending:['Florida','New Hampshire'],
+      notApplied:['Alabama','Alaska','Arizona','Arkansas','California','Hawaii','Kentucky','Louisiana','Maine','Nevada','New Mexico','North Dakota','Oklahoma','Pennsylvania','South Dakota','Texas','West Virginia','Wisconsin','Nova Scotia','Saskatchewan'],
+      special:[['Mississippi','Sherman does not apply to Mississippi; attendees may apply to the Mississippi Board directly as a licensed DC.'],['Tennessee','Sherman does not apply to Tennessee; the hosting organization applies to the TN board directly.'],['Alberta','Attendees are responsible for confirming the activity meets provincial requirements.'],['New Brunswick','The NBCA no longer pre-approves courses; eligibility rests with the member.']],
+      disclaimer:'Sherman College is a CCE-accredited college, so applications are not made to states listed as Auto Approval or DC Self; check with your board that the content falls within its scope requirements. Missouri: approval of this course is not a ruling by the Board that the methods taught are the appropriate practice of chiropractic as defined in Section 331.010, RSMo. The opinions and statements of the speakers do not necessarily reflect those of Sherman College.'
+    },
+    ctaH:'Be in the room in St. Petersburg.', ctaP:'November 6–7, 2026 · Pierce Clinic of Chiropractic · $797 for doctors, $347 for students · free with AOI membership · 14 CE hours.', ctaBtn:'Reserve Your Seat',
+    spk:['silver','billiris','hulsey','wooden','beadle','colavita','miranda','bollen','jobarah','pavlovic','corsello','fowler','cs'], keynote:null,
     exhibitors:['UpperCervicalCare.com','Televere Systems','NeckCare','Cervipedic'],
     agenda:[
       {day:'Day 1',date:'FRI NOV 6',items:[
-        {t:'8:00',ap:'AM \u00b7 WELCOME',title:'Registration & Welcome',desc:'Check-in, coffee, and the exhibitor floor opens.',who:[]},
-        {t:'9:00',ap:'AM \u00b7 RESEARCH',title:'Conference Opening \u2014 The Research Project',desc:'Opening the 2026 conference with the Institute\u2019s research initiative: where it stands and how to participate.',who:['cs']},
-        {t:'11:15',ap:'AM \u00b7 CLINICAL',title:'Operator Syndrome in Combat Veterans',desc:'Clinical recognition of Operator Syndrome \u2014 and what precision upper cervical care offers.',who:['hulsey']},
-        {t:'12:00',ap:'PM \u00b7 LUNCH',title:'Lunch & Exhibitors',desc:'Visit the companies serving the upper cervical space.',who:[]},
-        {t:'1:15',ap:'PM \u00b7 IMAGING',title:'CBCT \u2014 Wrapping Your Mind Around 3D Space',desc:'From the Akridge Equation to the Miranda Equation.',who:['miranda']},
-        {t:'3:30',ap:'PM \u00b7 CLINICAL',title:'Vertigo Assessment',desc:'A practical framework for assessing vertigo in upper cervical practice.',who:['billiris']},
-        {t:'5:30',ap:'PM \u00b7 SOCIAL',title:'Evening Social',desc:'Reconnect with the AOI community.',who:[]}]},
+        {t:'7:00',ap:'AM · DOORS',title:'Registration, Breakfast & Vendor Hall',desc:'Check-in with photo ID, coffee, and the vendor floor opens. Breakfast from 8:00.',who:[]},
+        {t:'8:50',ap:'AM · WELCOME',title:'Welcome and CE Housekeeping',desc:'Opening remarks, the weekend overview, and sign-in and sign-out instructions.',who:['cs']},
+        {t:'9:00',ap:'AM · NEURO · CE 1.0',title:'Cervical-Vestibular-Ocular Rehabilitation',desc:'How the upper cervical spine, vestibular system, and oculomotor control interact — and how rehabilitating that triad supports and extends the correction in post-concussion, dizziness, and chronic cases.',who:['silver']},
+        {t:'10:20',ap:'AM · CLINICAL · CE 1.0',title:'Clarifying the Dizzy Factor — Part 1',desc:'A hands-on approach to getting to the right diagnosis, fast: the short chain of questions that narrows the field, then the bedside tests that separate BPPV, vestibular, cardiovascular, central, and cervicogenic causes.',who:['billiris']},
+        {t:'11:20',ap:'AM · CLINICAL · CE 1.0',title:'Upper Cervical Misalignments in Operator Syndrome',desc:'Clinical insights and case-based approaches for treating combat veterans, including a detailed case of Multiple System Atrophy with dysautonomia and a nonprofit care pathway for veterans.',who:['hulsey']},
+        {t:'12:20',ap:'PM · LUNCH',title:'Vendor-Sponsored Lunch',desc:'Lunch in the vendor hall.',who:[]},
+        {t:'1:30',ap:'PM · CLINICAL · CE 1.0',title:'Why the Correction Doesn’t Hold',desc:'Upper cervical muscle analysis and soft-tissue reactivation: a structured analysis of suboccipital muscle, ligament, and capsule, and a reactivation technique aimed at restoring normal tone and mechanoreceptor input.',who:['wooden']},
+        {t:'2:30',ap:'PM · HANDS-ON · CE 1.0',title:'Clarifying the Dizzy Factor — Part 2',desc:'Supervised hands-on laboratory. Participants work in pairs to practice each bedside test from Part 1 until the sequence is reliable.',who:['billiris']},
+        {t:'3:30',ap:'PM · BREAK',title:'Vendor Break',desc:'Thirty minutes on the vendor floor.',who:[]},
+        {t:'4:00',ap:'PM · PROTOCOL · CE 1.0',title:'Updated Terminology, Corrective Positioning & Sonus Worksheets — Part 1',desc:'The updated Advanced Orthogonal terminology and each step of the corrective setup, with worksheets completed and reviewed in session.',who:['beadle']},
+        {t:'5:00',ap:'PM · HANDS-ON · CE 1.0',title:'Updated Terminology, Corrective Positioning & Sonus Worksheets — Part 2',desc:'Supervised laboratory: the corrective setup sequence performed on partners under instructor observation, with correction on each step.',who:['beadle']}]},
       {day:'Day 2',date:'SAT NOV 7',items:[
-        {t:'9:00',ap:'AM \u00b7 PROTOCOL',title:'Updated Terminology, Corrective Positioning & Sonus Worksheets',desc:'Keeping the protocol\u2019s language, positioning, and documentation sharp across the community.',who:['beadle']},
-        {t:'11:15',ap:'AM \u00b7 CLINICAL',title:'UC Muscle Analysis',desc:'What the musculature reveals about the correction.',who:['wooden']},
-        {t:'12:15',ap:'PM \u00b7 LUNCH',title:'Lunch & Exhibitors',desc:'Last pass through the exhibitor floor.',who:[]},
-        {t:'1:15',ap:'PM \u00b7 NEURO',title:'The Neuro Session',desc:'A deep dive for the neurology junkies of the upper cervical world.',who:['silver']},
-        {t:'2:15',ap:'PM \u00b7 IMAGING',title:'CT in Upper Cervical Practice',desc:'Where CT fits in the imaging toolbox.',who:['colavita']},
-        {t:'3:30',ap:'PM \u00b7 CLINICAL',title:'Scar Tissue Management',desc:'Managing scar tissue and its role in patient outcomes.',who:['bollen']},
-        {t:'4:30',ap:'PM \u00b7 INSTITUTE',title:'Stepping Up to Be Instructors of AdvO',desc:'The pathway from certified doctor to Institute faculty.',who:['fowler']},
-        {t:'5:10',ap:'PM \u00b7 CASES',title:'Case Studies',desc:'\u201cHoning Back to UC\u201d and a second case study from the field.',who:['corsello','jorbora']},
-        {t:'5:50',ap:'PM \u00b7 INSTITUTE',title:'Committee Update \u2014 Certification & Marketing',desc:'Where the committees are taking the Institute next.',who:['damico']},
-        {t:'6:10',ap:'PM \u00b7 CLOSE',title:'Closing Remarks',desc:'The year ahead. Additional sessions with Dr. Debra Pavlovic, Joe & Carol Ball, and more are being confirmed.',who:['cs']}]}]
+        {t:'8:00',ap:'AM · DOORS',title:'Breakfast & Vendor Hall',desc:'Coffee, breakfast, and a second pass through the vendor floor.',who:[]},
+        {t:'8:50',ap:'AM · WELCOME',title:'Day Two Welcome and CE Housekeeping',desc:'Sign-in reminders and the day’s overview.',who:['cs']},
+        {t:'9:00',ap:'AM · IMAGING · CE 1.0',title:'Cone-Beam CT in Upper Cervical Practice',desc:'Three-dimensional analysis and case selection: what CBCT shows that plain film cannot, patient safety and dose, and what adopting CBCT involves in a working clinic.',who:['colavita']},
+        {t:'10:00',ap:'AM · IMAGING · CE 1.0',title:'CBCT and Three-Dimensional Reference Frames',desc:'The evolution of vector analysis: reference frames, coordinate systems, and the relationships between patient positioning, instrument orientation, and vector application in true three-dimensional space.',who:['miranda']},
+        {t:'11:15',ap:'AM · CLINICAL · CE 1.0',title:'Scar Tissue and the Atlas',desc:'Finding and clearing fibrous adhesion in the cervical spine by hand — where it accumulates, how it feels, which patterns point to a tether on the atlas — and the Joint Clearing Technique for releasing it.',who:['bollen']},
+        {t:'12:15',ap:'PM · LUNCH',title:'Lunch & Vendor Hall',desc:'Last pass through the vendor floor.',who:[]},
+        {t:'1:30',ap:'PM · CASES · CE 1.0',title:'Upper Cervical Case Studies',desc:'Three twenty-minute case presentations: complex neurological presentations resolved through upper cervical care; From BJ to Blueprint, the evolution of orthogonal work; and managing the complex patient.',who:['jobarah','pavlovic','corsello']},
+        {t:'2:30',ap:'PM · TEACHING · CE 1.0',title:'Teaching Is a Clinical Skill',desc:'Maintaining procedural fidelity through mentoring: how psychomotor skill is transferred, how to spot the specific procedural error, and the competencies a doctor must show to teach the procedure.',who:['fowler']},
+        {t:'3:45',ap:'PM · RESEARCH · CE 1.0',title:'Practice-Based Research — Part 1',desc:'Study design and outcome measurement: the clinical question, the design, how outcomes are defined and measured, and what data collection looks like inside a working practice.',who:['cs']},
+        {t:'4:45',ap:'PM · RESEARCH · CE 1.0',title:'Practice-Based Research — Part 2',desc:'Case selection and data collection: screening sample presentations against the criteria, completing the instruments correctly, and the record-keeping and consent obligations of participation.',who:['cs']},
+        {t:'5:45',ap:'PM · CLOSE',title:'Closing Announcements',desc:'Closing remarks, the 2027 seminar announcement, and the presale opening.',who:['cs']}]}]
   },
   internship:{
     cat:'internship', title:'Internships', kicker:'Clinical Immersion · By Application', img:'ph-b',
