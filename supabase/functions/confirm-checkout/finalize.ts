@@ -218,7 +218,14 @@ export async function recordMembershipInvoice(inv: Record<string, any>): Promise
   }
 
   let newExpiry: string | null = null;
-  if (person) {
+  // A term already recorded for this member (a backfill, or a resent event with a new id) must not extend them twice.
+  let alreadyCovered = false;
+  if (person && periodEnd) {
+    const q = await sbFetch(`/rest/v1/membership_payments?person_id=eq.${person.id}&period_end=gte.${periodEnd}&or=(stripe_invoice_id.is.null,stripe_invoice_id.neq.${encodeURIComponent(invoiceId)})&select=id&limit=1`);
+    const rows = q.ok ? await q.json() : [];
+    alreadyCovered = Array.isArray(rows) && rows.length > 0;
+  }
+  if (person && !alreadyCovered) {
     // Extend to the invoice period end, never backwards; a year from the old expiry if Stripe gave no period.
     const current = person.membership_expires ?? null;
     const base = current && current > (periodStart ?? "") ? current : (periodStart ?? new Date().toISOString().slice(0, 10));
@@ -231,7 +238,7 @@ export async function recordMembershipInvoice(inv: Record<string, any>): Promise
     const up = await sbFetch(`/rest/v1/people?id=eq.${person.id}`, { method: "PATCH", body: JSON.stringify(patch) });
     if (!up.ok) console.error("people renewal patch failed", await up.text());
   }
-  return { recorded: true, person, email, amountCents, periodEnd, newExpiry };
+  return { recorded: true, person, email, amountCents, periodEnd, newExpiry: newExpiry ?? (alreadyCovered ? (person?.membership_expires ?? null) : null) };
 }
 
 /** Tells the Institute a membership was renewed (or that a payment arrived we could not match). */
