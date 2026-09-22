@@ -13,6 +13,7 @@ const RESEND_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const NOTIFY_FROM = Deno.env.get("NOTIFY_FROM") ?? "Advanced Orthogonal Institute <registrations@advancedorthogonal.com>";
 const NOTIFY_TO = (Deno.env.get("NOTIFY_TO") ?? "drslininger@cerebralchiropractic.com").split(",").map((s: string) => s.trim()).filter(Boolean);
 const SITE_ORIGIN = Deno.env.get("SITE_ORIGIN") ?? "https://advancedorthogonal.com";
+const STRIPE_KEY = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
 
 export async function sbFetch(path: string, init: RequestInit = {}): Promise<Response> {
   return await fetch(`${SB_URL}${path}`, {
@@ -142,4 +143,113 @@ export async function notifyRegistration(row: Reg, kind: "paid" | "free" = "paid
         `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>Hi ${esc(String(row.full_name).split(/\s+/)[0])},</p><p>Your registration for <b>${esc(title)}</b>${when(ev) ? ` (${esc(when(ev))})` : ""} is confirmed.</p><table style="border-collapse:collapse">${table}</table>${row.verification_status === "pending" ? "<p>We will confirm your student / faculty status by email before the event.</p>" : ""}<p style="margin-top:16px">Event details and reminders will follow as the date approaches. If you have a member login, this event now appears under My Profile → My Registrations.</p><p>— Advanced Orthogonal Institute</p></div>`);
     }
   } catch (e) { console.error("notifyRegistration error", e); }
+}
+
+
+/* ----------------------------------------------------------------------------
+ * Membership dues. Members on the recurring yearly plan are billed by Stripe
+ * as subscription invoices — no Checkout session, so the registration path
+ * never sees them. invoice.paid lands here: we record the payment once (unique
+ * on the invoice id), extend the member's expiry to the period end, remember
+ * the Stripe customer id, and tell the Institute.
+ * -------------------------------------------------------------------------- */
+const ymd = (unix: number | null | undefined) => (unix ? new Date(unix * 1000).toISOString().slice(0, 10) : null);
+
+async function stripeCustomerEmail(customerId: string): Promise<{ email: string | null; name: string | null }> {
+  if (!STRIPE_KEY || !customerId) return { email: null, name: null };
+  try {
+    const r = await fetch(`https://api.stripe.com/v1/customers/${encodeURIComponent(customerId)}`, { headers: { Authorization: `Bearer ${STRIPE_KEY}` } });
+    if (!r.ok) return { email: null, name: null };
+    const c = await r.json();
+    return { email: c?.email ?? null, name: c?.name ?? null };
+  } catch { return { email: null, name: null }; }
+}
+
+/** Finds the member by email — the contact email first, then the login email on their profile. */
+async function personByEmail(email: string): Promise<{ id: string; first_name: string; last_name: string; membership_expires: string | null; member_since: string | null } | null> {
+  if (!email) return null;
+  const sel = "id,first_name,last_name,membership_expires,member_since";
+  let q = await sbFetch(`/rest/v1/people?email=ilike.${encodeURIComponent(likeEscape(email))}&select=${sel}&limit=1`);
+  let rows = await q.json();
+  if (Array.isArray(rows) && rows[0]) return rows[0];
+  q = await sbFetch(`/rest/v1/profiles?email=ilike.${encodeURIComponent(likeEscape(email))}&select=person_id&limit=1`);
+  rows = await q.json();
+  const pid = Array.isArray(rows) ? rows[0]?.person_id : null;
+  if (!pid) return null;
+  q = await sbFetch(`/rest/v1/people?id=eq.${pid}&select=${sel}&limit=1`);
+  rows = await q.json();
+  return Array.isArray(rows) && rows[0] ? rows[0] : null;
+}
+
+export type DuesResult = { recorded: boolean; person: Record<string, any> | null; email: string | null; amountCents: number; periodEnd: string | null; newExpiry: string | null };
+
+/** Records a paid subscription invoice as membership dues and extends the membership. Idempotent on the invoice id. */
+export async function recordMembershipInvoice(inv: Record<string, any>): Promise<DuesResult> {
+  const invoiceId = String(inv.id ?? "");
+  const customerId = typeof inv.customer === "string" ? inv.customer : inv.customer?.id ?? null;
+  let email: string | null = inv.customer_email ?? null;
+  let name: string | null = inv.customer_name ?? null;
+  if (!email && customerId) { const c = await stripeCustomerEmail(customerId); email = c.email; name = name ?? c.name; }
+  const line = inv.lines?.data?.[0] ?? {};
+  const periodStart = ymd(line.period?.start ?? inv.period_start);
+  const periodEnd = ymd(line.period?.end ?? inv.period_end);
+  const amountCents = Number(inv.amount_paid ?? inv.total ?? 0);
+  const subscriptionId = typeof inv.subscription === "string" ? inv.subscription : inv.subscription?.id ?? line.subscription ?? null;
+  const chargeId = typeof inv.charge === "string" ? inv.charge : inv.charge?.id ?? null;
+
+  const person = email ? await personByEmail(email) : null;
+
+  // Insert once. A duplicate delivery hits the unique index and we stop here.
+  const ins = await sbFetch(`/rest/v1/membership_payments`, {
+    method: "POST", headers: { Prefer: "return=representation" },
+    body: JSON.stringify({
+      person_id: person?.id ?? null, email, stripe_customer_id: customerId, stripe_invoice_id: invoiceId, stripe_subscription_id: subscriptionId, stripe_charge_id: chargeId,
+      amount_cents: amountCents, currency: inv.currency ?? "usd", paid_at: inv.status_transitions?.paid_at ? new Date(inv.status_transitions.paid_at * 1000).toISOString() : new Date().toISOString(),
+      period_start: periodStart, period_end: periodEnd, source: "stripe_invoice",
+      note: person ? null : `No member record matched ${email ?? customerId ?? "this customer"}${name ? ` (${name})` : ""} — link by hand.`,
+      raw: { id: invoiceId, number: inv.number ?? null, hosted_invoice_url: inv.hosted_invoice_url ?? null, description: line.description ?? null },
+    }),
+  });
+  if (!ins.ok) {
+    const t = await ins.text();
+    if (ins.status === 409 || /duplicate|unique/i.test(t)) return { recorded: false, person, email, amountCents, periodEnd, newExpiry: null };
+    console.error("membership_payments insert failed", ins.status, t);
+    return { recorded: false, person, email, amountCents, periodEnd, newExpiry: null };
+  }
+
+  let newExpiry: string | null = null;
+  if (person) {
+    // Extend to the invoice period end, never backwards; a year from the old expiry if Stripe gave no period.
+    const current = person.membership_expires ?? null;
+    const base = current && current > (periodStart ?? "") ? current : (periodStart ?? new Date().toISOString().slice(0, 10));
+    const plusYear = (d: string) => { const x = new Date(d + "T12:00:00Z"); x.setUTCFullYear(x.getUTCFullYear() + 1); return x.toISOString().slice(0, 10); };
+    newExpiry = periodEnd && periodEnd > (current ?? "") ? periodEnd : plusYear(base);
+    if (current && newExpiry <= current) newExpiry = plusYear(current);
+    const patch: Record<string, unknown> = { membership_status: "active", membership_expires: newExpiry, updated_at: new Date().toISOString() };
+    if (customerId) patch.stripe_customer_id = customerId;
+    if (!person.member_since) patch.member_since = periodStart ?? new Date().toISOString().slice(0, 10);
+    const up = await sbFetch(`/rest/v1/people?id=eq.${person.id}`, { method: "PATCH", body: JSON.stringify(patch) });
+    if (!up.ok) console.error("people renewal patch failed", await up.text());
+  }
+  return { recorded: true, person, email, amountCents, periodEnd, newExpiry };
+}
+
+/** Tells the Institute a membership was renewed (or that a payment arrived we could not match). */
+export async function notifyMembership(r: DuesResult, kind: "renewed" | "failed" | "cancelled" = "renewed"): Promise<void> {
+  try {
+    const who = r.person ? `${r.person.first_name} ${r.person.last_name}` : (r.email ?? "Unknown customer");
+    const rows = [
+      ["Member", who], ["Email", r.email ?? "—"], ["Amount", money(r.amountCents)],
+      ...(kind === "renewed" ? [["Membership now runs to", r.newExpiry ?? r.periodEnd ?? "—"]] : []),
+      ["Recorded", new Date().toLocaleString("en-US", { timeZone: "America/New_York" }) + " ET"],
+    ];
+    const table = rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#5b6b76;white-space:nowrap">${esc(k)}</td><td style="padding:4px 0"><b>${esc(String(v))}</b></td></tr>`).join("");
+    const subject = kind === "renewed"
+      ? (r.person ? `Membership renewed — ${who}` : `Membership payment received — no member matched (${r.email ?? "no email"})`)
+      : kind === "failed" ? `Membership payment failed — ${who}` : `Membership subscription cancelled — ${who}`;
+    const lead = kind === "renewed"
+      ? (r.person ? "A yearly membership payment came through Stripe and the member's expiry was extended." : "A membership payment came through Stripe but no contact record has this email. It is saved in the membership payments log for you to link by hand.")
+      : kind === "failed" ? "Stripe could not collect this member's yearly dues. Stripe will retry on its own schedule; the membership expiry was not changed." : "This member's recurring membership was cancelled in Stripe. Their current term still runs to its expiry; nothing else was changed.";
+    await sendEmail(NOTIFY_TO, subject, `<div style="font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;color:#0b1e2b"><p>${lead}</p><table style="border-collapse:collapse">${table}</table><p style="margin-top:16px"><a href="${SITE_ORIGIN}/account#directory">Open Members</a></p></div>`);
+  } catch (e) { console.error("notifyMembership error", e); }
 }

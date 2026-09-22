@@ -1,4 +1,4 @@
-// CCI Website — stripe-webhook (v3)
+// CCI Website — stripe-webhook (v4)
 // Receives Stripe events, verifies the signature, finalizes registrations,
 // links/creates the person in the directory, and tells the Institute.
 // Requires env: STRIPE_WEBHOOK_SECRET. Optional: RESEND_API_KEY, NOTIFY_FROM, NOTIFY_TO.
@@ -7,8 +7,12 @@
 //     webhook is misconfigured); price_paid_cents now records Stripe's actual
 //     amount_total; reg_type carried through on recovery; one notification
 //     email per registration, never repeated on duplicate deliveries.
+// v4: membership dues. Recurring yearly memberships bill as subscription
+//     invoices (no Checkout session); invoice.paid now records the payment in
+//     membership_payments, extends the member's expiry, and notifies the ED.
+//     invoice.payment_failed and customer.subscription.deleted notify only.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { sbFetch, finalizePaidSession, notifyRegistration } from "./finalize.ts";
+import { sbFetch, finalizePaidSession, notifyRegistration, recordMembershipInvoice, notifyMembership } from "./finalize.ts";
 
 const WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "";
 
@@ -61,6 +65,14 @@ Deno.serve(async (req: Request) => {
     }
     const { row, newlyPaid } = await finalizePaidSession(session);
     if (row && newlyPaid) await notifyRegistration(row, "paid");
+  } else if (type === "invoice.paid" || type === "invoice.payment_succeeded") {
+    // Every invoice is membership dues: event tickets are one-time payments and never produce an invoice.
+    const r = await recordMembershipInvoice(session);
+    if (r.recorded) await notifyMembership(r, "renewed");
+  } else if (type === "invoice.payment_failed") {
+    await notifyMembership({ recorded: false, person: null, email: session.customer_email ?? null, amountCents: Number(session.amount_due ?? 0), periodEnd: null, newExpiry: null }, "failed");
+  } else if (type === "customer.subscription.deleted") {
+    await notifyMembership({ recorded: false, person: null, email: session.customer_email ?? null, amountCents: Number(session.items?.data?.[0]?.price?.unit_amount ?? 0), periodEnd: null, newExpiry: null }, "cancelled");
   } else if (type === "checkout.session.expired") {
     await sbFetch(
       `/rest/v1/event_registrations?stripe_checkout_session_id=eq.${encodeURIComponent(sessionId)}&payment_status=eq.pending`,
