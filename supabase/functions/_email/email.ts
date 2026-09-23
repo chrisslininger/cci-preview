@@ -27,7 +27,9 @@ export type EmailInput = {
   internal?: boolean;
   /** Absolute site origin for the logo and links. */
   origin: string;
-  /** Override the logo src (previews only). */
+  /** Override the logo src: a preview's data: URI, or `cid:aoilogo` when the
+   *  logo travels with the message as an inline attachment (which is what the
+   *  live senders do, so the logo shows even when remote images are blocked). */
   logoSrc?: string;
 };
 
@@ -93,7 +95,7 @@ export function renderEmail(o: EmailInput): string {
   <tr><td align="center" style="padding:0;">
     <table role="presentation" class="shell" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#000000;">
       <tr><td align="center" class="px" style="padding:40px 48px 30px;">
-        <a href="${origin}" target="_blank"><img class="logo" src="${esc(logo)}" width="300" alt="Advanced Orthogonal Institute" style="display:block;width:300px;max-width:100%;height:auto;border:0;"></a>
+        <a href="${origin}" target="_blank" style="text-decoration:none;"><img class="logo" src="${esc(logo)}" width="300" alt="Advanced Orthogonal Institute" style="display:block;width:300px;max-width:100%;height:auto;border:0;outline:none;color:${C.text};font:600 18px/1.3 ${DISPLAY};letter-spacing:1px;text-decoration:none;"></a>
       </td></tr>
       <tr><td class="px" style="padding:0 48px;"><div class="rule" style="height:1px;line-height:1px;font-size:1px;background:${C.gold};">&nbsp;</div></td></tr>
       <tr><td class="px" style="padding:38px 48px 0;">
