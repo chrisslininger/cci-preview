@@ -38,6 +38,21 @@ Current settings, for reference:
 - Email design: "Obsidian" — `supabase/functions/_email/email.ts` is the source of
   truth; copies live in each function folder that sends mail.
 
+## Working with a second editor
+
+James joined the repository as a collaborator in September 2026. The website's
+files go through branches and pull requests (`CLAUDE.md` holds the rules both of
+our Claude sessions follow). Supabase — the database, the edge functions and the
+secrets — stays with the Executive Director, because changes there are live the
+moment they are made and no pull request can catch them.
+
+Still open:
+
+- Add James's GitHub username to `.github/CODEOWNERS` if he should also be a
+  required reviewer on payments, email or members-area code.
+- Confirm Cloudflare Pages builds a preview deployment for every pull request, so
+  a change can be seen before it is merged.
+
 ## Members area
 
 - Registrations are matched to a member only by their login id, so a registration
