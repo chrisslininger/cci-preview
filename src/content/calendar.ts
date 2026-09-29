@@ -9,6 +9,9 @@
  *
  * Dates are worked out when the page is built and again in the browser, so the
  * calendar rolls forward on its own.
+ *
+ * supabase/functions/roll-calendar creates the matching events from the same
+ * rules; keep the two in step.
  * -------------------------------------------------------------------------- */
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
