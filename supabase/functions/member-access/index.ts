@@ -1,4 +1,4 @@
-// CCI Website — member-access (v1)
+// CCI Website — member-access (v2)
 // Gives a member their way in. The site can check a password but could never
 // create an account, which left most current members with nothing to sign in to.
 //
@@ -68,6 +68,13 @@ async function linkFor(email: string, createIfMissing = false): Promise<{ link: 
   const userId = g.body?.user?.id ?? g.body?.id;
   if (!link || !userId) return { error: "no link returned" };
   return { link, userId };
+}
+
+/** Whose contact record does this login already belong to? */
+async function profileOwner(userId: string): Promise<string | null> {
+  const r = await sb(`/rest/v1/profiles?id=eq.${userId}&select=person_id&limit=1`);
+  const rows = r.ok ? await r.json() : [];
+  return Array.isArray(rows) && rows[0] ? rows[0].person_id ?? null : null;
 }
 
 /** Makes sure the login, the profile row and the contact record all point at each other. */
@@ -147,8 +154,18 @@ async function personBy(filter: string): Promise<Person | null> {
 async function invitePerson(p: Person, overrideEmail?: string): Promise<{ ok: boolean; email?: string; detail?: string }> {
   const email = String(overrideEmail ?? p.email ?? "").trim();
   if (!EMAIL_RE.test(email)) return { ok: false, detail: "no usable email address on this contact record" };
+  // Two people cannot share one login. If this address already belongs to
+  // someone else's account, stop — repointing it would hand them each other's
+  // membership, certification and CE.
+  const taken = await sb(`/rest/v1/profiles?email=ilike.${encodeURIComponent(likeEscape(email))}&select=person_id&limit=1`);
+  const takenRows = taken.ok ? await taken.json() : [];
+  const takenBy = Array.isArray(takenRows) && takenRows[0] ? takenRows[0].person_id : null;
+  if (takenBy && takenBy !== p.id) return { ok: false, email, detail: "another member already logs in with this address — they each need their own" };
+
   const l = await linkFor(email, true);
   if ("error" in l) return { ok: false, email, detail: l.error };
+  const owner = await profileOwner(l.userId);
+  if (owner && owner !== p.id) return { ok: false, email, detail: "that login already belongs to a different contact record" };
   await linkProfile(p, l.userId, email);
   const m = inviteEmail(p, l.link, email);
   const sent = await send(email, m.subject, m.html);
@@ -182,8 +199,20 @@ Deno.serve(async (req: Request) => {
     const q = await sb(`/rest/v1/people?select=id,first_name,last_name,credentials,email,auth_user_id,membership_status,membership_expires&or=(membership_expires.gte.${today},membership_status.eq.active)&auth_user_id=is.null&order=last_name&limit=60`);
     const people: Person[] = q.ok ? await q.json() : [];
     const results: unknown[] = [];
+    // Two contact records sharing one address cannot both have a login, so the
+    // second one is listed and skipped rather than quietly taking the first
+    // one's account.
+    const seen = new Set<string>();
     for (const p of people) {
-      if (body?.dry_run) { results.push({ name: `${p.first_name} ${p.last_name}`, email: p.email, would_invite: EMAIL_RE.test(String(p.email ?? "")) }); continue; }
+      const addr = String(p.email ?? "").trim().toLowerCase();
+      const usable = EMAIL_RE.test(addr);
+      const shared = usable && seen.has(addr);
+      if (usable) seen.add(addr);
+      if (body?.dry_run) {
+        results.push({ name: `${p.first_name} ${p.last_name}`, email: p.email, would_invite: usable && !shared, ...(shared ? { detail: "another member on this list uses the same address" } : {}) });
+        continue;
+      }
+      if (shared) { results.push({ name: `${p.first_name} ${p.last_name}`, ok: false, email: p.email, detail: "another member on this list uses the same address" }); continue; }
       const r = await invitePerson(p);
       results.push({ name: `${p.first_name} ${p.last_name}`, ...r });
       await new Promise((res) => setTimeout(res, 700)); // Resend rate limit
