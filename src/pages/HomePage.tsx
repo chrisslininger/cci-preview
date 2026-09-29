@@ -2,10 +2,12 @@ import { Link } from '@/lib/router'
 import ProblemGrid from '@/components/blocks/ProblemGrid'
 import TestimonialReel from '@/components/blocks/TestimonialReel'
 import HeroVideo from '@/components/blocks/HeroVideo'
+import ConferenceRibbon from '@/components/blocks/ConferenceRibbon'
 
 export default function HomePage() {
   return (
     <div className="page-home">
+      <ConferenceRibbon />
       <div className="hero-img">
           <div className="bg ph-b"></div>
           <HeroVideo />
