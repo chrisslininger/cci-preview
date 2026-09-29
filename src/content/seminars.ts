@@ -189,7 +189,7 @@ export const SEMINARS = {
     overview:'<p>A focused, hands-on training event designed for experienced doctors ready to refine their precision and consistency with the Advanced Orthogonal technique.</p><p>The optional first day offers an accelerated transition course for Atlas Orthogonal certified doctors — bridging the gap between A.O. and AdvO in a single concentrated day of instruction and supervised reps.</p>',
     learn:['Advanced correction vector refinement','Troubleshooting difficult and atypical cases','Consistency drills with instructor feedback','A.O.-to-AdvO transition protocol (optional Day 1)','Post-correction monitoring at a mastery level','Case review with senior instructors'],
     sched:[['DAY 1 (OPTIONAL)','Bridging the Gap: accelerated transition course for Atlas Orthogonal certified doctors.'],['DAY 2','The Intensive: advanced hands-on refinement, consistency work, and complex case labs.']],
-    ctaH:'Two days. Measurably sharper.', ctaP:'Three weekends a year · St. Petersburg, FL and Orem, UT · members save $200.', ctaBtn:'Ask About the Next Intensive',
+    ctaH:'Two days. Measurably sharper.', ctaP:'Three weekends a year · St. Petersburg, FL and Orem, UT · members save $200.', ctaBtn:'Choose Your Intensive Weekend',
     spk:['cs','jk'], keynote:null,
     agenda:[{day:null,items:[
       {t:'FRI 9:00',ap:'AM · OPTIONAL',title:'Bridging the Gap: A.O. to AdvO',desc:'Accelerated transition course for Atlas Orthogonal certified doctors.',who:['cs']},
@@ -210,7 +210,7 @@ export const SEMINARS = {
     overview:'<p>Featuring hands-on training, expert guest speakers, clinical research updates, and a celebratory Friday night awards dinner, this event will bring together the entire Advanced Orthogonal community to honor our legacy and look to the future.</p><p>Bootcamp is our immersive, fast-paced program designed to take doctors from zero to fully equipped in a highly effective format — and it is free with AOI membership.</p>',
     learn:['The complete protocol, compressed into one immersive week','Daily supervised instrument labs','Analysis intensives with real case sets','Guest expert sessions and research updates','Practice-building and patient communication','Community — the entire AdvO family in one room'],
     sched:[['MON–TUE','Foundation compression: evaluation, biomechanics, and x-ray analysis intensives.'],['WED–THU','Instrument labs: positioning, correction delivery, and consistency drills.'],['FRIDAY','Capstone case day — and the awards dinner celebrating the community.']],
-    ctaH:'Free with membership.', ctaP:`Tampa Bay, FL · ${longRange(BOOTCAMP)} · included with AOI membership.`, ctaBtn:'Ask About the Next Bootcamp',
+    ctaH:'Free with membership.', ctaP:`Tampa Bay, FL · ${longRange(BOOTCAMP)} · included with AOI membership.`, ctaBtn:'Register for Bootcamp',
     spk:['cs','jk','mr'], keynote:null,
     agenda:[
       {day:'Day 1–2',date:'MON–TUE',items:[

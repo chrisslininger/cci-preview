@@ -144,6 +144,22 @@ export default function SeminarPage({ param }: { param?: string }) {
     if (target) target.scrollIntoView({ behavior: 'smooth' })
   }
 
+  /* The bottom button does what the session's own button does when there is
+   * only one session to choose; with several (or none open) it scrolls up. */
+  const onBottom = () => {
+    const only = sessions.length === 1 ? sessions[0]! : null
+    if (only) {
+      const open = only.reg ? catalog.byKey[only.reg]?.open === true : !only.soon && !only.apply
+      const membersOnly = only.members === true && !(signedIn && access.tier === 'member')
+      if (open && !membersOnly) {
+        if (only.reg && only.reg !== key) register(only.reg)
+        else onRegister()
+        return
+      }
+    }
+    scrollToRegistration()
+  }
+
   const related = Object.keys(SEMINARS)
     .filter((k) => k !== key)
     .slice(0, 3)
@@ -658,7 +674,7 @@ export default function SeminarPage({ param }: { param?: string }) {
             <h3>{s.ctaH}</h3>
             <p>{s.ctaP}</p>
           </div>
-          <button type="button" className="b lg p-btn" onClick={scrollToRegistration}>
+          <button type="button" className="b lg p-btn" onClick={onBottom}>
             {regLabel(s.ctaBtn ?? 'Register Now')}
           </button>
         </div>
