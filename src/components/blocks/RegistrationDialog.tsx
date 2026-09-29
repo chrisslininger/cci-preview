@@ -174,7 +174,8 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     }
   }, [key])
 
-  const seminar = key ? SEMINARS[key] : undefined
+  // A session key (`intensive:feb`) registers for its own event but reads the page's copy.
+  const seminar = key ? SEMINARS[key.split(':')[0]!] : undefined
   const overlay = key ? catalog.byKey[key] : undefined
 
   /* Member RSVP: a signed-in current member, on an event that is free with

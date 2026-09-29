@@ -23,6 +23,10 @@ type Session = {
   soon?: boolean
   free?: boolean
   apply?: boolean
+  /** Catalog key this session registers for; it opens when that event is published. */
+  reg?: string
+  /** Only signed-in members can RSVP; everyone else is pointed to membership. */
+  members?: boolean
 }
 type AgendaItem = { t: string; ap: string; title: string; desc: string; who?: string[] }
 type AgendaDay = { day: string; date?: string; items: AgendaItem[] }
@@ -258,9 +262,14 @@ export default function SeminarPage({ param }: { param?: string }) {
                   </div>
                 </div>
               ) : (
-                sessions.map((x, i) => (
-                  <div className={`sess${x.soon ? ' soon' : ''}`} key={`${x.city}-${i}`}>
-                    {x.flag && <span className="flag">{x.flag}</span>}
+                sessions.map((x, i) => {
+                  const live = x.reg ? catalog.byKey[x.reg] : undefined
+                  const soon = x.reg ? live?.open !== true : x.soon
+                  const membersOnly = x.members === true && !(signedIn && access.tier === 'member')
+                  const flag = live?.seatFlag ?? x.flag
+                  return (
+                  <div className={`sess${soon ? ' soon' : ''}`} key={`${x.city}-${i}`}>
+                    {flag && <span className="flag">{flag}</span>}
                     <div className="top">
                       <div className="cal">
                         <div className="mo">{x.mo}</div>
@@ -292,7 +301,7 @@ export default function SeminarPage({ param }: { param?: string }) {
                           </>
                         ) : s.memPrice === 0 ? (
                           <>
-                            <span className="full">${money(s.fullPrice)}</span>{' '}
+                            {s.fullPrice > 0 && <><span className="full">${money(s.fullPrice)}</span>{' '}</>}
                             <span className="mem">FREE</span>
                             <span className="lbl">WITH AOI MEMBERSHIP</span>
                           </>
@@ -309,12 +318,12 @@ export default function SeminarPage({ param }: { param?: string }) {
                         )}
                       </div>
                       <div className="seats">
-                        <b>{x.seats}</b>
-                        <span>{x.soon ? 'OPENING SOON' : 'UPDATED WEEKLY'}</span>
+                        <b>{soon ? x.seats : (live?.seats ?? x.seats)}</b>
+                        <span>{soon ? 'OPENING SOON' : 'UPDATED WEEKLY'}</span>
                       </div>
                     </div>
                     <div className="bot">
-                      {x.soon ? (
+                      {soon ? (
                         <button
                           type="button"
                           className="b sm s-btn on-light"
@@ -330,18 +339,23 @@ export default function SeminarPage({ param }: { param?: string }) {
                         <Link className="b sm p-btn" to="/contact">
                           Apply Now
                         </Link>
+                      ) : membersOnly ? (
+                        <Link className="b sm s-btn on-light" to="/membership">
+                          Members Only — Join
+                        </Link>
                       ) : (
                         <button
                           type="button"
                           className="b sm p-btn"
-                          onClick={onRegister}
+                          onClick={x.reg && x.reg !== key ? () => register(x.reg!) : onRegister}
                         >
                           {attending ? '\u2713 Attending' : rsvpMode ? 'RSVP' : `Register — ${x.city.split(',')[0]}`}
                         </button>
                       )}
                     </div>
                   </div>
-                ))
+                  )
+                })
               )}
             </div>
           </div>

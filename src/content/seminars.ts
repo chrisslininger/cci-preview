@@ -5,6 +5,30 @@
  * structured data — what a human reads and what a machine reads cannot drift.
  * -------------------------------------------------------------------------- */
 
+import {
+  INTENSIVE_RULES, BOOTCAMP_RULE, nextOccurrence, longRange, eventSlug, zoomSeason, zoomDates, zoomSlug, listDates,
+} from './calendar'
+
+/* Dates that follow the Board's calendar rules are computed, not typed: the
+ * next three Intensive weekends, the next Bootcamp, and this year's member
+ * Zoom calls. See `./calendar.ts`. */
+const TODAY = new Date()
+const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+const INTENSIVES = INTENSIVE_RULES.map((r) => ({ r, o: nextOccurrence(r, TODAY) }))
+  .sort((a, b) => a.o.start.getTime() - b.o.start.getTime())
+const BOOTCAMP = nextOccurrence(BOOTCAMP_RULE, TODAY)
+const ZOOM_SEASON = zoomSeason(TODAY)
+const regKey = (id: string) => id.replace('-', ':')
+
+/** "Feb, Apr & Aug 2027", or "Apr & Aug 2027 · Feb 2028" across a new year. */
+function monthsLine(list: typeof INTENSIVES): string {
+  const byYear = new Map<number, string[]>()
+  for (const { o } of list) byYear.set(o.year, [...(byYear.get(o.year) ?? []), MON[o.start.getMonth()]!.charAt(0) + MON[o.start.getMonth()]!.slice(1).toLowerCase()])
+  return [...byYear.entries()]
+    .map(([y, ms]) => `${ms.length > 1 ? `${ms.slice(0, -1).join(', ')} & ${ms[ms.length - 1]}` : ms[0]} ${y}`)
+    .join(' · ')
+}
+
 export type SeminarTier = {
   k: string
   p: string
@@ -93,79 +117,79 @@ export const SEMINARS = {
     photo:'xray',
     cat:'fundamentals', title:'Fundamental 1', kicker:'Fundamentals Series · Part 1 of 3', img:'ph-a',
     sub:'Your foundation in Advanced Orthogonal analysis begins here.',
-    dates:'Dates Announced Soon', loc:'Location Announced Soon', level:'Foundation', format:'Weekend Seminar', price:'$895',
-    member:'AOI members save $200 on every seminar — Fundamental 1 is $695 for members.',
-    fullPrice:895, memPrice:695,
+    dates:'Oct–Jan · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', level:'Foundation · Members Only', format:'Monthly Live Session', price:'Members Only',
+    member:'Fundamentals is for AOI members — the monthly Zoom sessions are part of membership.', mbText:'Members only — the monthly Fundamentals Zoom sessions are part of AOI membership.',
+    fullPrice:0, memPrice:0,
     video:'https://player.vimeo.com/video/519671965',
-    sessions:[], noSess:{title:'Dates for the next Fundamental 1 are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
+    sessions:[{mo:'OCT–JAN',dy:'2nd Tue',yr:'9 PM ET',city:'Live on Zoom',venue:'Monthly · members only',seats:'RSVP',reg:'fund1',members:true}], noSess:{kick:'Schedule',h2:'October through January, live on Zoom',title:`Fundamental 1 meets ${listDates(zoomDates('fund1', ZOOM_SEASON))}, for AOI members.`,msg:'This year the Fundamentals Series is taught live on Zoom rather than as an in-person lecture weekend. Fundamental 1 meets on the second Tuesday of each month from October through January at 9:00 pm Eastern (8:00 pm Central, 7:00 pm Mountain, 6:00 pm Pacific). It is open to AOI members. Tell us you are interested and we will send you the details.',btn:'Tell Me About the Zoom Sessions'},
     h2:'Where the foundation is poured.',
-    overview:'<p>Fundamental 1 is the entry point to hands-on Advanced Orthogonal training. Working in small groups with experienced instructors, you\'ll build the observational and analytical foundation that everything else in the technique rests on.</p><p>The Fundamentals Series is sequential — each part builds directly on the last, and completing all three is a requirement on the Level 1 Certification track.</p>',
+    overview:'<p>Fundamental 1 is the entry point to Advanced Orthogonal training. This year it is taught live on Zoom instead of as an in-person lecture weekend: AOI members meet with experienced instructors on the second Tuesday of each month from October through January, at 9:00 pm Eastern, to build the observational and analytical foundation that everything else in the technique rests on, with time in every session for your own cases and questions.</p><p>This year\'s sessions: ' + listDates(zoomDates('fund1', ZOOM_SEASON)) + ', each at 9:00 pm Eastern.</p><p>The hands-on practice that goes with it happens in person, at the AdvO Intensive weekends.</p><p>The Fundamentals Series is sequential — each part builds directly on the last, and completing all three is a requirement on the Level 1 Certification track.</p>',
     learn:['Patient evaluation and nerve interference assessment','Upper cervical biomechanics and the atlas subluxation complex','Introduction to the specific three-dimensional x-ray series','Postural analysis and supine leg check protocol','Case history and patient management fundamentals','Instrument overview and safety'],
-    sched:[['SATURDAY','Lecture and demonstration: evaluation protocol, biomechanics, and x-ray positioning. Afternoon hands-on labs in small groups.'],['SUNDAY','Supervised practice: analysis reps, evaluation workflow, and case review. Q&A and next steps on the certification track.']],
-    ctaH:'Begin the Fundamentals Series.', ctaP:'Members save $200 · completing the series is a Level 1 requirement.', ctaBtn:'Ask About the Next Fundamental 1',
+    sched:[['OCT–JAN',`${listDates(zoomDates('fund1', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: instruction on the evaluation protocol, biomechanics, and x-ray positioning, then open time for your cases and questions.`],['HANDS-ON','Supervised practice of the evaluation workflow happens in person at the AdvO Intensive weekends.']],
+    ctaH:'Begin the Fundamentals Series.', ctaP:'Members only · live on Zoom, October through January · completing the series is a Level 1 requirement.', ctaBtn:'RSVP for the Monthly Zoom',
     spk:['cs','jk'], keynote:null,
     agenda:[{day:null,items:[
-      {t:'SAT 9:00',ap:'AM · LECTURE',title:'Evaluation Protocol — Foundations',desc:'Nerve interference assessment and UC biomechanics.',who:['cs']},
-      {t:'SAT 1:30',ap:'PM · LAB',title:'Postural Analysis Lab',desc:'Supervised reps: leg check, posture, and case history workflow.',who:['cs']},
-      {t:'SUN 9:00',ap:'AM · LECTURE',title:'The 3-D X-Ray Series',desc:'Positioning and introduction to the specific x-ray series.',who:['jk']},
-      {t:'SUN 1:00',ap:'PM · LAB',title:'Supervised Analysis Reps',desc:'Case review and next steps on the certification track.',who:['cs','jk']}]}]
+      {t:'PART 1',ap:'LIVE ON ZOOM',title:'Evaluation Protocol — Foundations',desc:'Nerve interference assessment and UC biomechanics.',who:['cs']},
+      {t:'PART 2',ap:'LIVE ON ZOOM',title:'Postural Analysis',desc:'Leg check, posture, and case history workflow, demonstrated and discussed.',who:['cs']},
+      {t:'PART 3',ap:'LIVE ON ZOOM',title:'The 3-D X-Ray Series',desc:'Positioning and introduction to the specific x-ray series.',who:['jk']},
+      {t:'PART 4',ap:'LIVE ON ZOOM',title:'Case Review',desc:'Your cases and questions, and next steps on the certification track.',who:['cs','jk']}]}]
   },
   fund2:{
     photo:'analyze',
     mux:'Cv8vCuTsBB02Mm9NRVBId5I45rNwogllO9af7GwSY5oA', muxName:'Dr. Zach Perry',
     cat:'fundamentals', title:'Fundamental 2', kicker:'Fundamentals Series · Part 2 of 3', img:'ph-a',
     sub:'X-ray analysis and line drawing — the measurement skill at the center of the technique.',
-    dates:'Dates Announced Soon', loc:'Location Announced Soon', level:'Foundation · Requires F1', format:'Weekend Seminar', price:'$895',
-    fullPrice:895, memPrice:695,
-    sessions:[], noSess:{title:'Dates for the next Fundamental 2 are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
-    member:'AOI members save $200 on every seminar — Fundamental 2 is $695 for members.',
+    dates:'Feb–May · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', level:'Foundation · Requires F1', format:'Monthly Live Session', price:'Members Only',
+    fullPrice:0, memPrice:0,
+    sessions:[{mo:'FEB–MAY',dy:'2nd Tue',yr:'9 PM ET',city:'Live on Zoom',venue:'Monthly · members only',seats:'RSVP',reg:'fund2',members:true}], noSess:{kick:'Schedule',h2:'February through May, live on Zoom',title:`Fundamental 2 meets ${listDates(zoomDates('fund2', ZOOM_SEASON))}, for AOI members.`,msg:'This year the Fundamentals Series is taught live on Zoom rather than as an in-person lecture weekend. Fundamental 2 meets on the second Tuesday of each month from February through May at 9:00 pm Eastern (8:00 pm Central, 7:00 pm Mountain, 6:00 pm Pacific). It is open to AOI members. Tell us you are interested and we will send you the details.',btn:'Tell Me About the Zoom Sessions'},
+    member:'Fundamentals is for AOI members — the monthly Zoom sessions are part of membership.', mbText:'Members only — the monthly Fundamentals Zoom sessions are part of AOI membership.',
     h2:'The analysis becomes precise.',
-    overview:'<p>Fundamental 2 goes deep on the signature skill of the Advanced Orthogonal doctor: measuring the upper cervical misalignment on specific three-dimensional x-rays using digital software.</p><p>You\'ll learn to determine each patient\'s gravitational and neurological normal — taking genetic abnormalities into account — and translate that analysis into a patient-specific correction vector.</p>',
-    learn:['Digital x-ray line drawing and analysis software','Measuring displacement against the patient\'s own normal','Accounting for genetic anomalies in the analysis','Deriving the correction vector from the misalignment variables','Inter- and intra-examiner reliability protocols','Analysis case labs with real film sets'],
-    sched:[['SATURDAY','Digital analysis instruction and guided line-drawing labs.'],['SUNDAY','Correction vector derivation, reliability testing, and supervised case analysis.']],
-    ctaH:'Continue the series.', ctaP:'Fundamental 1 is the prerequisite · members save $200.', ctaBtn:'Ask About the Next Fundamental 2',
+    overview:'<p>Fundamental 2 goes deep on the signature skill of the Advanced Orthogonal doctor: measuring the upper cervical misalignment on specific three-dimensional x-rays using digital software.</p><p>You\'ll learn to determine each patient\'s gravitational and neurological normal — taking genetic abnormalities into account — and translate that analysis into a patient-specific correction vector.</p><p>This year Fundamental 2 is taught live on Zoom instead of as an in-person lecture weekend, for AOI members, on the second Tuesday of each month from February through May, at 9:00 pm Eastern.</p><p>This year\'s sessions: ' + listDates(zoomDates('fund2', ZOOM_SEASON)) + ', each at 9:00 pm Eastern.</p><p>The hands-on practice that goes with it happens in person, at the AdvO Intensive weekends.</p>',
+    learn:['Digital x-ray line drawing and analysis software','Measuring displacement against the patient\'s own normal','Accounting for genetic anomalies in the analysis','Deriving the correction vector from the misalignment variables','Inter- and intra-examiner reliability protocols','Analysis case reviews with real film sets'],
+    sched:[['FEB–MAY',`${listDates(zoomDates('fund2', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: digital analysis and line drawing, correction vector derivation, and reliability testing, worked through on real film sets.`],['HANDS-ON','Supervised practice happens in person at the AdvO Intensive weekends.']],
+    ctaH:'Continue the series.', ctaP:'Fundamental 1 is the prerequisite · members only · live on Zoom, February through May.', ctaBtn:'RSVP for the Monthly Zoom',
     spk:['jk','cs'], keynote:null,
     agenda:[{day:null,items:[
-      {t:'SAT 9:00',ap:'AM · LECTURE',title:'Digital Analysis Instruction',desc:'Line-drawing methodology and the analysis software.',who:['jk']},
-      {t:'SAT 1:30',ap:'PM · LAB',title:'Guided Line-Drawing Labs',desc:'Real film sets, measured and drawn under instruction.',who:['jk']},
-      {t:'SUN 9:00',ap:'AM · LAB',title:'Correction Vector Derivation',desc:'From misalignment variables to a patient-specific vector.',who:['cs']},
-      {t:'SUN 1:00',ap:'PM · LAB',title:'Reliability Testing',desc:'Inter- and intra-examiner reliability protocols and case analysis.',who:['jk','cs']}]}]
+      {t:'PART 1',ap:'LIVE ON ZOOM',title:'Digital Analysis Instruction',desc:'Line-drawing methodology and the analysis software.',who:['jk']},
+      {t:'PART 2',ap:'LIVE ON ZOOM',title:'Guided Line Drawing',desc:'Real film sets, measured and drawn on screen under instruction.',who:['jk']},
+      {t:'PART 3',ap:'LIVE ON ZOOM',title:'Correction Vector Derivation',desc:'From misalignment variables to a patient-specific vector.',who:['cs']},
+      {t:'PART 4',ap:'LIVE ON ZOOM',title:'Reliability Testing',desc:'Inter- and intra-examiner reliability protocols and case analysis.',who:['jk','cs']}]}]
   },
   fund3:{
     photo:'adjust',
     mux:'j4sZdYYoA3c2i7x1w8TocHVIFPYjI00xKL5XL602MD1Tk', muxName:'Dr. Josh Silver',
     cat:'fundamentals', title:'Fundamental 3', kicker:'Fundamentals Series · Part 3 of 3', img:'ph-a',
     sub:'The instrument, the correction, and the complete patient protocol.',
-    dates:'Dates Announced Soon', loc:'Location Announced Soon', level:'Foundation · Requires F1 & F2', format:'Weekend Seminar', price:'$895',
-    fullPrice:895, memPrice:695,
-    sessions:[], noSess:{title:'Dates for the next Fundamental 3 are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
-    member:'AOI members save $200 on every seminar — Fundamental 3 is $695 for members.',
+    dates:'Jun–Sep · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', level:'Foundation · Requires F1 & F2', format:'Monthly Live Session', price:'Members Only',
+    fullPrice:0, memPrice:0,
+    sessions:[{mo:'JUN–SEP',dy:'2nd Tue',yr:'9 PM ET',city:'Live on Zoom',venue:'Monthly · members only',seats:'RSVP',reg:'fund3',members:true}], noSess:{kick:'Schedule',h2:'June through September, live on Zoom',title:`Fundamental 3 meets ${listDates(zoomDates('fund3', ZOOM_SEASON))}, for AOI members.`,msg:'This year the Fundamentals Series is taught live on Zoom rather than as an in-person lecture weekend. Fundamental 3 meets on the second Tuesday of each month from June through September at 9:00 pm Eastern (8:00 pm Central, 7:00 pm Mountain, 6:00 pm Pacific). It is open to AOI members. Tell us you are interested and we will send you the details.',btn:'Tell Me About the Zoom Sessions'},
+    member:'Fundamentals is for AOI members — the monthly Zoom sessions are part of membership.', mbText:'Members only — the monthly Fundamentals Zoom sessions are part of AOI membership.',
     h2:'Everything comes together.',
-    overview:'<p>Fundamental 3 completes the foundation: delivering the correction with the table-mounted percussive sound-wave instrument, positioning the patient with digital and laser alignment, and running the full protocol from evaluation through post-correction monitoring.</p><p>Graduates of the full Fundamentals Series are equipped to begin supervised practice of the technique and to enter the Level 1 Certification process.</p>',
+    overview:'<p>Fundamental 3 completes the foundation: delivering the correction with the table-mounted percussive sound-wave instrument, positioning the patient with digital and laser alignment, and running the full protocol from evaluation through post-correction monitoring.</p><p>This year Fundamental 3 is taught live on Zoom instead of as an in-person lecture weekend, for AOI members, on the second Tuesday of each month from June through September, at 9:00 pm Eastern. The hands-on instrument and positioning practice happens in person, at the AdvO Intensive weekends.</p><p>This year\'s sessions: ' + listDates(zoomDates('fund3', ZOOM_SEASON)) + ', each at 9:00 pm Eastern.</p><p>Graduates of the full Fundamentals Series are equipped to begin supervised practice of the technique and to enter the Level 1 Certification process.</p>',
     learn:['Percussive sound-wave instrument operation and settings','Patient positioning with digital and laser alignment','Delivering the patient-specific correction vector','Post-correction assessment and monitoring protocol','Care planning and the sustainable-corrections model','Preparing for Level 1 Certification'],
-    sched:[['SATURDAY','Instrument instruction and supervised correction labs.'],['SUNDAY','Full-protocol run-throughs, monitoring workflow, and certification prep.']],
-    ctaH:'Complete your foundation.', ctaP:'Finishing the series opens the Level 1 Certification track.', ctaBtn:'Ask About the Next Fundamental 3',
+    sched:[['JUN–SEP',`${listDates(zoomDates('fund3', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: the instrument, patient positioning, the full protocol, and certification prep.`],['HANDS-ON','Supervised correction practice happens in person at the AdvO Intensive weekends.']],
+    ctaH:'Complete your foundation.', ctaP:'Members only · live on Zoom, June through September · finishing the series opens the Level 1 Certification track.', ctaBtn:'RSVP for the Monthly Zoom',
     spk:['cs','jk'], keynote:null,
     agenda:[{day:null,items:[
-      {t:'SAT 9:00',ap:'AM · LECTURE',title:'Instrument Instruction',desc:'Percussive sound-wave instrument operation and settings.',who:['cs']},
-      {t:'SAT 1:30',ap:'PM · LAB',title:'Supervised Correction Labs',desc:'Positioning with digital and laser alignment.',who:['cs']},
-      {t:'SUN 9:00',ap:'AM · LAB',title:'Full-Protocol Run-Throughs',desc:'Evaluation through post-correction monitoring.',who:['cs','jk']},
-      {t:'SUN 1:00',ap:'PM · PREP',title:'Certification Prep',desc:'The Level 1 process, requirements, and your application.',who:['jk']}]}]
+      {t:'PART 1',ap:'LIVE ON ZOOM',title:'Instrument Instruction',desc:'Percussive sound-wave instrument operation and settings.',who:['cs']},
+      {t:'PART 2',ap:'LIVE ON ZOOM',title:'Patient Positioning',desc:'Positioning with digital and laser alignment, demonstrated and discussed.',who:['cs']},
+      {t:'PART 3',ap:'LIVE ON ZOOM',title:'The Full Protocol',desc:'Evaluation through post-correction monitoring.',who:['cs','jk']},
+      {t:'PART 4',ap:'LIVE ON ZOOM',title:'Certification Prep',desc:'The Level 1 process, requirements, and your application.',who:['jk']}]}]
   },
   intensive:{
     photo:'instrument',
     mux:'A21LSsljbccxw2O9500U9IuqeLq00g34T02hdZHFlFgUlw', muxName:'Dr. Jeff Kahrs',
-    cat:'intensive', title:'AdvO Intensive (West)', kicker:'Advanced Training · Bridging the Gap from A.O. to AdvO', img:'ph-b',
+    cat:'intensive', title:'AdvO Intensive', kicker:'Advanced Training · Bridging the Gap from A.O. to AdvO', img:'ph-b',
     sub:'Refine precision and consistency — with an accelerated transition day for Atlas Orthogonal doctors.',
-    dates:'Dates Announced Soon', loc:'Orem, UT', level:'Advanced', format:'2-Day Hands-On', price:'$1,295',
+    dates:monthsLine(INTENSIVES), loc:'St. Petersburg, FL & Orem, UT', level:'Advanced', format:'2-Day Hands-On', price:'$1,295',
     fullPrice:1295, memPrice:1095,
-    sessions:[], noSess:{title:'Dates for the next AdvO Intensive are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
+    sessions:INTENSIVES.map(({ r, o }) => ({ mo:MON[o.start.getMonth()], dy:`${o.start.getDate()}–${o.end.getDate()}`, yr:String(o.year), city:r.where, venue:r.venue, seats:'Registration', reg:regKey(r.id) })),
     member:'AOI members save $200 — $1,095 for members.',
     h2:'For doctors ready to sharpen the edge.',
     overview:'<p>A focused, hands-on training event designed for experienced doctors ready to refine their precision and consistency with the Advanced Orthogonal technique.</p><p>The optional first day offers an accelerated transition course for Atlas Orthogonal certified doctors — bridging the gap between A.O. and AdvO in a single concentrated day of instruction and supervised reps.</p>',
     learn:['Advanced correction vector refinement','Troubleshooting difficult and atypical cases','Consistency drills with instructor feedback','A.O.-to-AdvO transition protocol (optional Day 1)','Post-correction monitoring at a mastery level','Case review with senior instructors'],
     sched:[['DAY 1 (OPTIONAL)','Bridging the Gap: accelerated transition course for Atlas Orthogonal certified doctors.'],['DAY 2','The Intensive: advanced hands-on refinement, consistency work, and complex case labs.']],
-    ctaH:'Two days. Measurably sharper.', ctaP:'Orem, UT · next dates announced soon · members save $200.', ctaBtn:'Ask About the Next Intensive',
+    ctaH:'Two days. Measurably sharper.', ctaP:'Three weekends a year · St. Petersburg, FL and Orem, UT · members save $200.', ctaBtn:'Ask About the Next Intensive',
     spk:['cs','jk'], keynote:null,
     agenda:[{day:null,items:[
       {t:'FRI 9:00',ap:'AM · OPTIONAL',title:'Bridging the Gap: A.O. to AdvO',desc:'Accelerated transition course for Atlas Orthogonal certified doctors.',who:['cs']},
@@ -176,17 +200,17 @@ export const SEMINARS = {
   bootcamp:{
     photo:'setup',
     mux:'A9cxLKvjJcX5u02Qzh8agXEOPLMkmNzXTKHPrx02wnG2s', muxName:'Dr. Drew',
-    cat:'bootcamp', title:'AdvO Bootcamp 2027', kicker:'The Immersive Week · Zero to Fully Equipped', img:'ph-a',
+    cat:'bootcamp', title:`AdvO Bootcamp ${BOOTCAMP.year}`, kicker:'The Immersive Week · Zero to Fully Equipped', img:'ph-a',
     sub:'Five days of hands-on training, guest experts, research updates — and the Friday night awards dinner.',
-    dates:'Dates Announced Soon', loc:'Tampa Bay, FL', level:'All Levels', format:'5-Day Immersive', price:'$2,495',
+    dates:longRange(BOOTCAMP), loc:'Tampa Bay, FL', level:'All Levels', format:'5-Day Immersive', price:'$2,495',
     fullPrice:2495, memPrice:1895, mbText:'AOI members save $600 on AdvO Bootcamp — $1,895 for members.',
-    sessions:[], noSess:{title:'Dates for the next AdvO Bootcamp are being finalized.',msg:'There are no sessions on the calendar for this seminar right now. New dates are posted here the moment they are confirmed \u2014 tell us you are interested and we will let you know first.',btn:'Notify Me When Dates Are Set'},
+    sessions:[{ mo:MON[BOOTCAMP.start.getMonth()], dy:`${BOOTCAMP.start.getDate()}–${BOOTCAMP.end.getDate()}`, yr:String(BOOTCAMP.year), city:'Tampa Bay, FL', venue:'Five-day immersive', seats:'Registration', reg:'bootcamp:week' }],
     member:'AOI members save $600 on AdvO Bootcamp — join before you register.',
     h2:'The fastest route from zero to equipped.',
     overview:'<p>Featuring hands-on training, expert guest speakers, clinical research updates, and a celebratory Friday night awards dinner, this event will bring together the entire Advanced Orthogonal community to honor our legacy and look to the future.</p><p>Bootcamp is our immersive, fast-paced program designed to take doctors from zero to fully equipped in a highly effective format — and it is free with AOI membership.</p>',
     learn:['The complete protocol, compressed into one immersive week','Daily supervised instrument labs','Analysis intensives with real case sets','Guest expert sessions and research updates','Practice-building and patient communication','Community — the entire AdvO family in one room'],
     sched:[['MON–TUE','Foundation compression: evaluation, biomechanics, and x-ray analysis intensives.'],['WED–THU','Instrument labs: positioning, correction delivery, and consistency drills.'],['FRIDAY','Capstone case day — and the awards dinner celebrating the community.']],
-    ctaH:'Free with membership.', ctaP:'Tampa Bay, FL · next dates announced soon · included with AOI membership.', ctaBtn:'Ask About the Next Bootcamp',
+    ctaH:'Free with membership.', ctaP:`Tampa Bay, FL · ${longRange(BOOTCAMP)} · included with AOI membership.`, ctaBtn:'Ask About the Next Bootcamp',
     spk:['cs','jk','mr'], keynote:null,
     agenda:[
       {day:'Day 1–2',date:'MON–TUE',items:[
@@ -286,8 +310,19 @@ export const CATEGORY_LABEL: Record<string, string> = {free:'FREE',fundamentals:
 
 /** Site key -> `public.events.slug` in the backend. Also the public URL slug. */
 export const DB_SLUG: Record<string, string | null> = {intro:'intro-to-advo',fund1:'fundamental-1',fund2:'fundamental-2',fund3:'fundamental-3',
-  intensive:'advo-intensive-west',bootcamp:'advo-bootcamp-2027',conference:'annual-conference-2026',
+  intensive:'advo-intensive',bootcamp:'advo-bootcamp-2027',conference:'annual-conference-2026',
   internship:null}
+
+/** Catalog key -> the event it registers for, where that is not the page's own
+ *  slug. The three Fundamentals pages share one year-long member Zoom event,
+ *  and each Intensive weekend is its own event, keyed `page:session` and named
+ *  by a session's `reg`. A key goes live the moment its event is published.
+ *  The slugs follow the calendar rules, so they roll forward on their own. */
+export const REG_SLUG: Record<string, string> = {
+  fund1: zoomSlug(ZOOM_SEASON), fund2: zoomSlug(ZOOM_SEASON), fund3: zoomSlug(ZOOM_SEASON),
+  ...Object.fromEntries(INTENSIVES.map(({ r, o }) => [regKey(r.id), eventSlug(r, o, true)])),
+  'bootcamp:week': eventSlug(BOOTCAMP_RULE, BOOTCAMP, false),
+}
 
 /** Fallback event ids used only when the live sync request fails. */
 export const DB_ID: Record<string, number | null> = {intro:7,fund1:null,fund2:9,fund3:10,intensive:null,bootcamp:null,conference:13,internship:null}

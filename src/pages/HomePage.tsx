@@ -2,6 +2,7 @@ import { Link } from '@/lib/router'
 import ProblemGrid from '@/components/blocks/ProblemGrid'
 import TestimonialReel from '@/components/blocks/TestimonialReel'
 import HeroVideo from '@/components/blocks/HeroVideo'
+import { SEMINARS } from '@/content/seminars'
 
 export default function HomePage() {
   return (
@@ -144,8 +145,8 @@ export default function HomePage() {
             <h2 className="t">Upcoming Training Opportunities</h2>
             <div className="goldrule"></div>
             <div className="grid3">
-              <Link to="/seminars/advo-intensive-west" className="card">
-                <div className="imgwrap"><div className="img ph-b"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">DATES SOON</span><span className="loc">OREM <span>&middot; UT</span></span></div>
+              <Link to="/seminars/advo-intensive" className="card">
+                <div className="imgwrap"><div className="img ph-b"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">{SEMINARS.intensive!.dates.toUpperCase()}</span><span className="loc">ST. PETERSBURG <span>&middot; FL</span> &amp; OREM <span>&middot; UT</span></span></div>
                 <div className="bd">
                   <h3>AdvO Intensive &amp; Bridging the Gap</h3>
                   <div className="meta">2 DAYS &middot; <b>HANDS-ON</b></div>
@@ -154,7 +155,7 @@ export default function HomePage() {
                 </div>
               </Link>
               <Link to="/seminars/advo-bootcamp-2027" className="card">
-                <div className="imgwrap"><div className="img ph-a"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">DATES SOON</span><span className="loc">TAMPA BAY <span>&middot; FL</span></span></div>
+                <div className="imgwrap"><div className="img ph-a"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">{SEMINARS.bootcamp!.dates.toUpperCase()}</span><span className="loc">TAMPA BAY <span>&middot; FL</span></span></div>
                 <div className="bd">
                   <h3>AdvO Bootcamp</h3>
                   <div className="meta">5 DAYS &middot; <b>ALL LEVELS</b></div>

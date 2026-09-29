@@ -37,7 +37,7 @@ const SEMINARS: Group = {
     { label: 'Fundamental 2', to: '/seminars/fundamental-2' },
     { label: 'Fundamental 3', to: '/seminars/fundamental-3' },
     { group: 'ADVANCED TRAINING' },
-    { label: 'AdvO Intensive (West)', to: '/seminars/advo-intensive-west' },
+    { label: 'AdvO Intensive', to: '/seminars/advo-intensive' },
     { label: 'AdvO Bootcamp 2027', to: '/seminars/advo-bootcamp-2027' },
     { label: '2026 Annual Conference', to: '/seminars/annual-conference-2026' },
     { group: 'IN PRACTICE' },

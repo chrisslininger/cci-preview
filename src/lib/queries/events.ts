@@ -10,7 +10,7 @@
  * Ported from `dbSync()` in the v4.8 build with the same precedence rules.
  * -------------------------------------------------------------------------- */
 import { SB_URL, SB_KEY } from '@/lib/supabase'
-import { DB_SLUG, DB_ID, SEMINARS } from '@/content/seminars'
+import { DB_SLUG, DB_ID, REG_SLUG, SEMINARS } from '@/content/seminars'
 
 export type PublicEvent = {
   id: number
@@ -139,10 +139,10 @@ export async function fetchCatalog(): Promise<EventCatalog> {
     const bySlug: Record<string, PublicEvent> = {}
     for (const row of rows) if (row?.slug) bySlug[row.slug] = row
 
-    for (const key of Object.keys(DB_SLUG)) {
-      const slug = DB_SLUG[key]
+    for (const key of new Set([...Object.keys(DB_SLUG), ...Object.keys(REG_SLUG)])) {
+      const slug = REG_SLUG[key] ?? DB_SLUG[key]
       const row = slug ? bySlug[slug] : undefined
-      const base = SEMINARS[key]
+      const base = SEMINARS[key.split(':')[0]!]
 
       // Not published in CCI OS means not sellable from the public site.
       if (!row) {
