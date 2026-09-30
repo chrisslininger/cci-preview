@@ -1,11 +1,24 @@
+import { useEffect, useState } from 'react'
 import { Link } from '@/lib/router'
 import ProblemGrid from '@/components/blocks/ProblemGrid'
 import TestimonialReel from '@/components/blocks/TestimonialReel'
 import HeroVideo from '@/components/blocks/HeroVideo'
+import ConferenceHero from '@/components/blocks/ConferenceHero'
+
+/* The morning after the conference's last day, Eastern. Until then the hero
+ * announces the conference; from then on the standing hero comes back on its
+ * own, with nothing to remember and nothing to deploy. */
+const CONFERENCE_ENDS = new Date('2026-11-08T00:00:00-05:00')
 
 export default function HomePage() {
+  /* Prerendered HTML carries the conference hero (true at build time). A
+   * browser opening the page after the conference swaps it back on mount. */
+  const [over, setOver] = useState(Date.now() >= CONFERENCE_ENDS.getTime())
+  useEffect(() => setOver(Date.now() >= CONFERENCE_ENDS.getTime()), [])
+
   return (
     <div className="page-home">
+      {!over ? <ConferenceHero /> : (
       <div className="hero-img">
           <div className="bg ph-b"></div>
           <HeroVideo />
@@ -22,6 +35,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+      )}
 
 
         <section>

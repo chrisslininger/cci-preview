@@ -2434,3 +2434,75 @@ a.othercard {
 .paynote { font-size: 14px; color: var(--color-content-secondary) !important; }
 .paygo { width: 100%; justify-content: center; min-height: 52px; font-size: 16px; }
 .paysmall { text-align: center; font-size: 12.5px; color: var(--color-content-tertiary) !important; margin: 12px 0 0 !important; }
+
+  /* ---------------------------------------------------------- conference hero
+   * The Annual Conference hero on the homepage: the announcement on the left,
+   * a credential card on the right carrying the dates and every price tier.
+   * Sits on the standing hero's background, so only the content is new. */
+  .page-home .cfhero .inner{padding:118px 28px 96px}
+  .cfh-grid{display:grid;grid-template-columns:minmax(0,1fr) 404px;grid-template-areas:'lead card' 'more card';column-gap:56px;row-gap:30px;align-items:start}
+  .cfh-lead{grid-area:lead;min-width:0}
+  .cfh-card{grid-area:card;align-self:center}
+  .cfh-more{grid-area:more}
+  .page-home .cfhero h1{font-size:68px;font-weight:300;line-height:1.02;letter-spacing:-.035em;max-width:600px}
+  .page-home .cfhero .goldrule{margin-top:26px}
+  .page-home .cfhero p.sub{margin-top:20px;font-size:17px;line-height:1.65;max-width:580px}
+  .page-home .cfhero .herocta{margin-top:30px}
+
+  .cfh-flags{display:flex;align-items:center;gap:13px;flex-wrap:wrap;font-family:var(--font-display);font-size:11.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase}
+  .cfh-open{background:var(--color-brand-accent);color:var(--color-surface-inverse);padding:6px 12px;border-radius:2px}
+  .cfh-meta{color:var(--color-content-on-inverse-muted)}
+
+  .cfh-theme{margin-top:22px;font-family:var(--font-display);font-size:27px;font-weight:400;line-height:1.25;letter-spacing:-.01em;color:var(--color-surface-base)}
+  .cfh-theme b{color:var(--color-brand-accent-bright);font-weight:500}
+
+  /* The separator rides on the item, so a line that wraps carries its slash
+   * down with it instead of leaving one stranded at the end of the row. */
+  .cfh-line{margin-top:26px;display:flex;align-items:center;column-gap:12px;row-gap:6px;flex-wrap:wrap;font-family:var(--font-display);font-size:11.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--color-content-on-inverse-muted)}
+  .cfh-line b{color:var(--color-surface-base);font-weight:600}
+  .cfh-line > *+*::before{content:'/';color:var(--color-brand-accent);margin-right:12px}
+
+  .cfh-card{background:var(--color-surface-inverse-raised);border:1px solid var(--color-border-on-inverse);border-radius:var(--radius-card);box-shadow:0 24px 60px color-mix(in oklab, var(--color-surface-inverse) 55%, transparent);overflow:hidden}
+  .cfh-card::before{content:'';display:block;height:4px;background:var(--color-brand-accent)}
+  .cfh-top{padding:26px 28px 22px;border-bottom:1px dashed color-mix(in oklab, var(--color-surface-base) 18%, transparent)}
+  .cfh-status{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-family:var(--font-display);font-size:10.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--color-content-on-inverse-muted)}
+  .cfh-days{color:var(--color-brand-accent-bright);letter-spacing:.14em}
+  .cfh-when{margin-top:14px;display:flex;align-items:baseline;gap:12px}
+  .cfh-when b{font-family:var(--font-display);font-size:46px;font-weight:300;line-height:1;letter-spacing:-.02em;color:var(--color-surface-base)}
+  .cfh-when i{font-family:var(--font-display);font-size:17px;font-weight:400;font-style:normal;color:var(--color-brand-accent)}
+  .cfh-where{margin-top:12px;font-size:14.5px;line-height:1.5;color:var(--color-content-on-inverse-subtle)}
+
+  .cfh-tiers{list-style:none;margin:0;padding:6px 28px 4px}
+  .cfh-tiers li{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--color-border-on-inverse)}
+  .cfh-tiers li:last-child{border-bottom:none}
+  .cfh-tiers span{font-size:14.5px;color:var(--color-content-on-inverse-subtle)}
+  .cfh-tiers b{font-family:var(--font-display);font-size:16px;font-weight:500;color:var(--color-surface-base);font-variant-numeric:tabular-nums}
+  .cfh-tiers li.hi{padding:13px 12px;margin:6px -12px;background:color-mix(in oklab, var(--color-brand-accent) 16%, transparent);border-bottom:none;border-left:3px solid var(--color-brand-accent);border-radius:2px}
+  .cfh-tiers li.hi span{color:var(--color-surface-base);font-weight:600}
+  .cfh-tiers li.hi b{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--color-brand-accent-bright)}
+
+  .cfh-act{padding:6px 28px 26px}
+  .cfh-reg{display:flex;justify-content:center;width:100%;font-size:13.5px;padding:18px 20px}
+  .cfh-note{margin-top:14px;font-size:12.5px;line-height:1.55;color:var(--color-content-on-inverse-muted)}
+
+  @media (max-width:1040px){
+    .cfh-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:'lead' 'card' 'more';column-gap:0;row-gap:30px}
+    .page-home .cfhero h1{max-width:none}
+    .cfh-card{max-width:460px}
+  }
+  @media (max-width:760px){
+    .page-home .cfhero .inner{padding:84px 28px 72px}
+    .page-home .cfhero h1{font-size:42px}
+    .cfh-theme{font-size:19px;margin-top:16px}
+    .page-home .cfhero p.sub{font-size:15.5px;margin-top:14px}
+    .cfh-flags{row-gap:10px;font-size:10.5px;letter-spacing:.2em}
+    .cfh-line{margin-top:18px;column-gap:10px;font-size:10.5px;letter-spacing:.12em}
+    .cfh-line > *+*::before{margin-right:10px}
+    .cfh-grid{row-gap:22px}
+    .cfh-more .b{width:100%;justify-content:center}
+    .cfh-card{max-width:none}
+    .cfh-top{padding:18px 20px 16px}
+    .cfh-when b{font-size:36px}
+    .cfh-tiers{padding:4px 20px 2px}
+    .cfh-act{padding:4px 20px 20px}
+  }
