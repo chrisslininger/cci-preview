@@ -591,7 +591,9 @@ export default function SeminarPage({ param }: { param?: string }) {
                   </div>
                 ))}
               </div>
-              <p className="agenda-hint">TAP ANY INSTRUCTOR PILL FOR THEIR BIO</p>
+              {agenda.some((day) => day.items.some((item) => item.who && item.who.length > 0)) && (
+                <p className="agenda-hint">TAP ANY INSTRUCTOR PILL FOR THEIR BIO</p>
+              )}
             </div>
           )}
         </div>

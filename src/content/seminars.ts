@@ -191,11 +191,27 @@ export const SEMINARS = {
     sched:[['DAY 1 (OPTIONAL)','Bridging the Gap: accelerated transition course for Atlas Orthogonal certified doctors.'],['DAY 2','The Intensive: advanced hands-on refinement, consistency work, and complex case labs.']],
     ctaH:'Two days. Measurably sharper.', ctaP:'Three weekends a year · St. Petersburg, FL and Orem, UT · members save $200.', ctaBtn:'Choose Your Intensive Weekend',
     spk:['cs','jk'], keynote:null,
-    agenda:[{day:null,items:[
-      {t:'FRI 9:00',ap:'AM · OPTIONAL',title:'Bridging the Gap: A.O. to AdvO',desc:'Accelerated transition course for Atlas Orthogonal certified doctors.',who:['cs']},
-      {t:'SAT 9:00',ap:'AM · LAB',title:'Advanced Vector Refinement',desc:'Consistency drills with instructor feedback.',who:['cs']},
-      {t:'SAT 1:30',ap:'PM · LAB',title:'Complex Case Labs',desc:'Troubleshooting difficult and atypical presentations.',who:['jk']},
-      {t:'SAT 5:00',ap:'PM · REVIEW',title:'Case Review with Senior Instructors',desc:'Bring your hardest cases.',who:['cs','jk']}]}]
+    agenda:[
+      {day:'Day 1',date:'FRIDAY',items:[
+        {t:'9:00',ap:'AM',title:'Introduction & History/Exam',desc:'',who:[]},
+        {t:'10:00',ap:'AM',title:'X-Ray & CBCT Setup',desc:'',who:[]},
+        {t:'11:00',ap:'AM',title:'X-Ray & CBCT Analysis',desc:'',who:[]},
+        {t:'12:00',ap:'PM',title:'Lunch',desc:'',who:[]},
+        {t:'1:00',ap:'PM',title:'Show Exam/X-Ray Setup',desc:'',who:[]},
+        {t:'2:00',ap:'PM',title:'Show X-Ray Setup/Analysis',desc:'',who:[]},
+        {t:'3:00',ap:'PM',title:'Pattern Understanding & Corrective Setup',desc:'',who:[]},
+        {t:'4:00',ap:'PM',title:'Corrective Setup & Show Corrective Setup',desc:'',who:[]},
+        {t:'5:00',ap:'PM',title:'The Adjustment, Show The Adjustment, & Close',desc:'',who:[]}]},
+      {day:'Day 2',date:'SATURDAY',items:[
+        {t:'9:00',ap:'AM',title:'Review',desc:'',who:[]},
+        {t:'10:00',ap:'AM',title:'Exam Practice',desc:'',who:[]},
+        {t:'11:00',ap:'AM',title:'X-Ray Setup Practice',desc:'',who:[]},
+        {t:'12:00',ap:'PM',title:'X-Ray Analysis Practice',desc:'',who:[]},
+        {t:'1:00',ap:'PM',title:'Lunch',desc:'',who:[]},
+        {t:'2:00',ap:'PM',title:'Simple Corrective Setup Practice',desc:'',who:[]},
+        {t:'3:00',ap:'PM',title:'Advanced Corrective Setup Practice',desc:'',who:[]},
+        {t:'4:00',ap:'PM',title:'Review & Case Studies',desc:'',who:[]},
+        {t:'5:00',ap:'PM',title:'Q&A, Close',desc:'',who:[]}]}]
   },
   bootcamp:{
     photo:'setup',
