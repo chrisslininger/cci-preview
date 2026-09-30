@@ -17,9 +17,9 @@ rendering contract, the route manifest and why both matter.
   One change per branch.
 - Finish by committing with a clear message, pushing the branch and opening a
   pull request that says what changed and why. Then stop.
-- Merge a pull request only when the person who opened it tells you to, in that
-  session, and only after its build check has passed. Never merge the other
-  person's pull request, and never approve one — approving is a human's call.
+- Approve or merge a pull request — yours or the other person's — only when the
+  person you are working for tells you to, in that session, and only after its
+  build check has passed. Never approve or merge on your own initiative.
 - Chris's Claude runs in a cloud session that cannot reach GitHub. It makes the
   branch and the commits on his computer; Chris presses Publish/Push and Create
   Pull Request in GitHub Desktop. Say so when handing work back.
