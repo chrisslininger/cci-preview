@@ -362,7 +362,7 @@
   .bio-m .rl{display:inline-block;margin-top:8px;background:var(--color-surface-raised);color:var(--color-brand-primary-deep);font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.12em;padding:4px 12px;border-radius:100px}
   .bio-m .body{padding:22px 32px 28px}
   .bio-m .body p{font-size:14px;color:var(--color-content-secondary);line-height:1.7}
-  .bio-m .x{position:absolute;top:14px;right:16px;width:34px;height:34px;border-radius:50%;background:color-mix(in oklab, var(--color-surface-inverse) 8%, transparent);border:none;cursor:pointer;font-size:15px;color:var(--color-surface-inverse);transition:all .2s}
+  .bio-m .x{position:absolute;top:14px;right:16px;width:34px;height:34px;display:grid;place-items:center;padding:0;border-radius:50%;background:color-mix(in oklab, var(--color-surface-inverse) 8%, transparent);border:none;cursor:pointer;font-size:15px;color:var(--color-surface-inverse);transition:all .2s}
   .bio-m .x:hover{background:var(--color-brand-accent);transform:rotate(90deg)}
   .bio-m{position:relative}
   /* registration modal + forms */
