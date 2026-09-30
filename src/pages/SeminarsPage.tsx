@@ -121,7 +121,7 @@ export default function SeminarsPage() {
           <div className="goldrule"></div>
           <p className="lede">
             Every event falls on the same days each year — the rule under each name tells you
-            which — so you can plan your practice around it long before registration opens.
+            which — so you can plan your practice around it long before registration opens. Dates are subject to change.
           </p>
           <div className="evcal" role="table" aria-label={`${years[0]} and ${years[1]} event calendar`}>
             <div className="evcal-row evcal-head" role="row">

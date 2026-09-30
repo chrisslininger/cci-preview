@@ -454,6 +454,7 @@ footer .flink:hover{color:var(--color-surface-base)}
   .evcal .ev small{display:block;margin-top:3px;font-size:13px;color:var(--color-content-muted)}
   .evcal .yr{font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;color:var(--color-content-primary)}
   .evcal .where{font-size:14px;color:var(--color-content-secondary)}
+  .rulenote{margin:14px 2px 0;font-size:13.5px;color:var(--color-content-secondary)}
   .evcal-note{margin-top:18px;font-size:14.5px;color:var(--color-content-secondary)}
   .evcal-note a{color:var(--color-brand-primary-deep);font-weight:600}
   @media(max-width:700px){

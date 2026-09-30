@@ -220,6 +220,7 @@ export default function SeminarPage({ param }: { param?: string }) {
             </b>
           </div>
         </div>
+        {s.ruleNote && <p className="rulenote">{s.ruleNote}</p>}
 
         <div className="memberbar">
           <div>

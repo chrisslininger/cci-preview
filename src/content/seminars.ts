@@ -68,6 +68,8 @@ export type Seminar = {
   img?: string
   sub: string
   dates: string
+  /** The Board's standing-date rule for this event, shown under the dates. */
+  ruleNote?: string
   loc: string
   level: string
   format: string
@@ -117,7 +119,7 @@ export const SEMINARS = {
     photo:'xray',
     cat:'fundamentals', title:'Fundamental 1', kicker:'Fundamentals Series · Part 1 of 3', img:'ph-a',
     sub:'Your foundation in Advanced Orthogonal analysis begins here.',
-    dates:'Oct–Jan · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', level:'Foundation · Members Only', format:'Monthly Live Session', price:'Members Only',
+    dates:'Oct–Jan · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', ruleNote:'Standard schedule: the second Tuesday of every month, 9:00 pm Eastern. Fundamental 1 runs October–January, Fundamental 2 February–May, Fundamental 3 June–September. Subject to change.', level:'Foundation · Members Only', format:'Monthly Live Session', price:'Members Only',
     member:'Fundamentals is for AOI members — the monthly Zoom sessions are part of membership.', mbText:'Members only — the monthly Fundamentals Zoom sessions are part of AOI membership.',
     fullPrice:0, memPrice:0,
     video:'https://player.vimeo.com/video/519671965',
@@ -139,7 +141,7 @@ export const SEMINARS = {
     mux:'Cv8vCuTsBB02Mm9NRVBId5I45rNwogllO9af7GwSY5oA', muxName:'Dr. Zach Perry',
     cat:'fundamentals', title:'Fundamental 2', kicker:'Fundamentals Series · Part 2 of 3', img:'ph-a',
     sub:'X-ray analysis and line drawing — the measurement skill at the center of the technique.',
-    dates:'Feb–May · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', level:'Foundation · Requires F1', format:'Monthly Live Session', price:'Members Only',
+    dates:'Feb–May · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', ruleNote:'Standard schedule: the second Tuesday of every month, 9:00 pm Eastern. Fundamental 1 runs October–January, Fundamental 2 February–May, Fundamental 3 June–September. Subject to change.', level:'Foundation · Requires F1', format:'Monthly Live Session', price:'Members Only',
     fullPrice:0, memPrice:0,
     sessions:[{mo:'FEB–MAY',dy:'2nd Tue',yr:'9 PM ET',city:'Live on Zoom',venue:'Monthly · members only',seats:'RSVP',reg:'fund2',members:true}], noSess:{kick:'Schedule',h2:'February through May, live on Zoom',title:`Fundamental 2 meets ${listDates(zoomDates('fund2', ZOOM_SEASON))}, for AOI members.`,msg:'This year the Fundamentals Series is taught live on Zoom rather than as an in-person lecture weekend. Fundamental 2 meets on the second Tuesday of each month from February through May at 9:00 pm Eastern (8:00 pm Central, 7:00 pm Mountain, 6:00 pm Pacific). It is open to AOI members. Tell us you are interested and we will send you the details.',btn:'Tell Me About the Zoom Sessions'},
     member:'Fundamentals is for AOI members — the monthly Zoom sessions are part of membership.', mbText:'Members only — the monthly Fundamentals Zoom sessions are part of AOI membership.',
@@ -160,7 +162,7 @@ export const SEMINARS = {
     mux:'j4sZdYYoA3c2i7x1w8TocHVIFPYjI00xKL5XL602MD1Tk', muxName:'Dr. Josh Silver',
     cat:'fundamentals', title:'Fundamental 3', kicker:'Fundamentals Series · Part 3 of 3', img:'ph-a',
     sub:'The instrument, the correction, and the complete patient protocol.',
-    dates:'Jun–Sep · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', level:'Foundation · Requires F1 & F2', format:'Monthly Live Session', price:'Members Only',
+    dates:'Jun–Sep · 2nd Tuesdays · 9 PM ET', loc:'Live on Zoom', ruleNote:'Standard schedule: the second Tuesday of every month, 9:00 pm Eastern. Fundamental 1 runs October–January, Fundamental 2 February–May, Fundamental 3 June–September. Subject to change.', level:'Foundation · Requires F1 & F2', format:'Monthly Live Session', price:'Members Only',
     fullPrice:0, memPrice:0,
     sessions:[{mo:'JUN–SEP',dy:'2nd Tue',yr:'9 PM ET',city:'Live on Zoom',venue:'Monthly · members only',seats:'RSVP',reg:'fund3',members:true}], noSess:{kick:'Schedule',h2:'June through September, live on Zoom',title:`Fundamental 3 meets ${listDates(zoomDates('fund3', ZOOM_SEASON))}, for AOI members.`,msg:'This year the Fundamentals Series is taught live on Zoom rather than as an in-person lecture weekend. Fundamental 3 meets on the second Tuesday of each month from June through September at 9:00 pm Eastern (8:00 pm Central, 7:00 pm Mountain, 6:00 pm Pacific). It is open to AOI members. Tell us you are interested and we will send you the details.',btn:'Tell Me About the Zoom Sessions'},
     member:'Fundamentals is for AOI members — the monthly Zoom sessions are part of membership.', mbText:'Members only — the monthly Fundamentals Zoom sessions are part of AOI membership.',
@@ -181,7 +183,7 @@ export const SEMINARS = {
     mux:'A21LSsljbccxw2O9500U9IuqeLq00g34T02hdZHFlFgUlw', muxName:'Dr. Jeff Kahrs',
     cat:'intensive', title:'AdvO Intensive', kicker:'Hands-On Training · Two Days', img:'ph-b',
     sub:'Two days of hands-on training: the exam, x-ray and CBCT, corrective setup and the adjustment — demonstrated, then practiced.',
-    dates:monthsLine(INTENSIVES), loc:'St. Petersburg, FL & Orem, UT', level:'Advanced', format:'2-Day Hands-On', price:'$1,295',
+    dates:monthsLine(INTENSIVES), ruleNote:'Standard dates, every year: the third Friday–Saturday of February (St. Petersburg) and April (Orem), and the fourth Friday–Saturday of August (St. Petersburg). Subject to change.', loc:'St. Petersburg, FL & Orem, UT', level:'Advanced', format:'2-Day Hands-On', price:'$1,295',
     fullPrice:1295, memPrice:1095,
     sessions:INTENSIVES.map(({ r, o }) => ({ mo:MON[o.start.getMonth()], dy:`${o.start.getDate()}–${o.end.getDate()}`, yr:String(o.year), city:r.where, venue:r.venue, seats:'Registration', reg:regKey(r.id) })),
     member:'AOI members save $200 — $1,095 for members.',
@@ -211,7 +213,7 @@ export const SEMINARS = {
     mux:'A9cxLKvjJcX5u02Qzh8agXEOPLMkmNzXTKHPrx02wnG2s', muxName:'Dr. Drew',
     cat:'bootcamp', title:`AdvO Bootcamp ${BOOTCAMP.year}`, kicker:'The Immersive Week · Zero to Fully Equipped', img:'ph-a',
     sub:'Five days of hands-on training, guest experts, research updates — and the Friday night awards dinner.',
-    dates:longRange(BOOTCAMP), loc:'Tampa Bay, FL', level:'All Levels', format:'5-Day Immersive', price:'$2,495',
+    dates:longRange(BOOTCAMP), ruleNote:'Standard dates, every year: the week of the third Monday of June, Monday to Friday. Subject to change.', loc:'Tampa Bay, FL', level:'All Levels', format:'5-Day Immersive', price:'$2,495',
     fullPrice:2495, memPrice:1895, mbText:'AOI members save $600 on AdvO Bootcamp — $1,895 for members.',
     sessions:[{ mo:MON[BOOTCAMP.start.getMonth()], dy:`${BOOTCAMP.start.getDate()}–${BOOTCAMP.end.getDate()}`, yr:String(BOOTCAMP.year), city:'Tampa Bay, FL', venue:'Five-day immersive', seats:'Registration', reg:'bootcamp:week' }],
     member:'AOI members save $600 on AdvO Bootcamp — join before you register.',
@@ -237,7 +239,7 @@ export const SEMINARS = {
     photo:'conference',
     cat:'conference', title:'2026 Annual Conference', kicker:'Inflection Point · The Homecoming of the AOI Community', img:'ph-c',
     sub:'Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward — November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.',
-    dates:'November 6–7, 2026', loc:'St. Petersburg, FL', level:'All Levels', format:'2 Days · 8 AM–6 PM', price:'$797',
+    dates:'November 6–7, 2026', ruleNote:'From 2027, the Annual Conference is held the third Friday–Saturday of October every year. Subject to change.', loc:'St. Petersburg, FL', level:'All Levels', format:'2 Days · 8 AM–6 PM', price:'$797',
     fullPrice:797, memPrice:0, studentPrice:347, facultyFree:true,
     mbText:'Conference registration is INCLUDED with AOI membership — a $797 value. Sign in when you register and the fee is waived.',
     sessions:[], hideSess:true,
