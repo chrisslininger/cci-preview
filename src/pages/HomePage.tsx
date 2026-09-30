@@ -148,9 +148,9 @@ export default function HomePage() {
               <Link to="/seminars/advo-intensive" className="card">
                 <div className="imgwrap"><div className="img ph-b"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">{SEMINARS.intensive!.dates.toUpperCase()}</span><span className="loc">ST. PETERSBURG <span>&middot; FL</span> &amp; OREM <span>&middot; UT</span></span></div>
                 <div className="bd">
-                  <h3>AdvO Intensive &amp; Bridging the Gap</h3>
+                  <h3>AdvO Intensive</h3>
                   <div className="meta">2 DAYS &middot; <b>HANDS-ON</b></div>
-                  <p className="desc">A focused, hands-on event for experienced doctors who want to improve precision and consistency while transitioning into the Advanced Orthogonal approach.</p>
+                  <p className="desc">Two days of hands-on training: the exam, x-ray and CBCT, corrective setup and the adjustment — demonstrated, then practiced.</p>
                   <div className="foot"><span className="t-link">View Event Details<span className="a">&rarr;</span></span></div>
                 </div>
               </Link>
