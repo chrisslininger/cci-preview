@@ -114,10 +114,9 @@ export function zoomDates(part: string, season: number): Date[] {
   return (ZOOM_PARTS[part] ?? []).map((m) => nthWeekday(m >= 9 ? season : season + 1, m, 2, 2))
 }
 
-/** "member-zoom-2026-27" — one event covers the whole Fundamentals year. */
-export function zoomSlug(season: number): string {
-  return `member-zoom-${season}-${String(season + 1).slice(2)}`
-}
+/** The Monthly Huddle: one permanent event, each monthly call a session in it.
+ *  Members RSVP once; the address carries no year. */
+export const HUDDLE_SLUG = 'monthly-huddle'
 
 /** "October 13, November 10 and December 8, 2026, and January 12, 2027" */
 export function listDates(dates: Date[]): string {

@@ -11,6 +11,7 @@
  * -------------------------------------------------------------------------- */
 import { SB_URL, SB_KEY } from '@/lib/supabase'
 import { DB_SLUG, DB_ID, REG_SLUG, SEMINARS } from '@/content/seminars'
+import { HUDDLE_SLUG } from '@/content/calendar'
 
 export type PublicEvent = {
   id: number
@@ -152,11 +153,14 @@ export async function fetchCatalog(): Promise<EventCatalog> {
 
       const overlay: EventOverlay = { event: row, id: row.id, open: true }
 
-      const when = formatRange(row.starts_at, row.ends_at, row.timezone)
-      if (when) overlay.dates = when
+      // The Monthly Huddle never ends, so its pages keep their own monthly dates.
+      if (slug !== HUDDLE_SLUG) {
+        const when = formatRange(row.starts_at, row.ends_at, row.timezone)
+        if (when) overlay.dates = when
 
-      const cal = formatCalendar(row.starts_at, row.ends_at, row.timezone)
-      if (cal) overlay.calendar = cal
+        const cal = formatCalendar(row.starts_at, row.ends_at, row.timezone)
+        if (cal) overlay.calendar = cal
+      }
 
       const seats = row.seats_remaining
       if (seats === null || seats === undefined || !Number.isFinite(Number(seats))) {

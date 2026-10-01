@@ -6,7 +6,7 @@
  * -------------------------------------------------------------------------- */
 
 import {
-  INTENSIVE_RULES, BOOTCAMP_RULE, nextOccurrence, longRange, eventSlug, zoomSeason, zoomDates, zoomSlug, listDates,
+  INTENSIVE_RULES, BOOTCAMP_RULE, nextOccurrence, longRange, eventSlug, zoomSeason, zoomDates, HUDDLE_SLUG, listDates,
 } from './calendar'
 
 /* Dates that follow the Board's calendar rules are computed, not typed: the
@@ -325,12 +325,12 @@ export const DB_SLUG: Record<string, string | null> = {intro:'intro-to-advo',fun
   internship:null}
 
 /** Catalog key -> the event it registers for, where that is not the page's own
- *  slug. The three Fundamentals pages share one year-long member Zoom event,
+ *  slug. The three Fundamentals pages share the permanent Monthly Huddle event,
  *  and each Intensive weekend is its own event, keyed `page:session` and named
  *  by a session's `reg`. A key goes live the moment its event is published.
  *  The slugs follow the calendar rules, so they roll forward on their own. */
 export const REG_SLUG: Record<string, string> = {
-  fund1: zoomSlug(ZOOM_SEASON), fund2: zoomSlug(ZOOM_SEASON), fund3: zoomSlug(ZOOM_SEASON),
+  fund1: HUDDLE_SLUG, fund2: HUDDLE_SLUG, fund3: HUDDLE_SLUG,
   ...Object.fromEntries(INTENSIVES.map(({ r, o }) => [regKey(r.id), eventSlug(r, o, true)])),
   'bootcamp:week': eventSlug(BOOTCAMP_RULE, BOOTCAMP, false),
 }
