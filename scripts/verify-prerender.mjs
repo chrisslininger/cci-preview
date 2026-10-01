@@ -12,11 +12,11 @@
  */
 import { readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const clientDir = join(root, 'dist', 'client')
-const { manifest } = await import(join(root, 'dist', 'server', 'entry-server.js'))
+const { manifest } = await import(pathToFileURL(join(root, 'dist', 'server', 'entry-server.js')).href)
 
 /** Minimum visible characters inside #root for a page to count as real. */
 const MIN_TEXT_LENGTH = 300

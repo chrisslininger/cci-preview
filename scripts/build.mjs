@@ -16,7 +16,7 @@ import { createHash } from 'node:crypto'
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { existsSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const clientDir = join(root, 'dist', 'client')
@@ -121,7 +121,7 @@ await cp(join(root, 'public'), clientDir, { recursive: true })
 /* ------------------------------------------------------------- prerender */
 
 console.log('▸ prerender')
-const { render, manifest } = await import(join(serverDir, 'entry-server.js'))
+const { render, manifest } = await import(pathToFileURL(join(serverDir, 'entry-server.js')).href)
 
 const shell = (head, html) => `<!DOCTYPE html>
 <html lang="en">

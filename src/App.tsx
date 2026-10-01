@@ -40,11 +40,12 @@ function DocumentMeta() {
   return null
 }
 
-/** Client-side navigation should land at the top of the new page. */
+/** Client-side navigation should land at the top of the new page — at once,
+ *  not with the smooth scrolling the stylesheet sets for in-page links. */
 function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => {
-    window.scrollTo(0, 0)
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   }, [pathname])
   return null
 }
