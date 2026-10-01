@@ -75,13 +75,7 @@ function targets(today: Date): Target[] {
       const suffix = r.withMonth ? `-${MON[r.month]}` : "";
       out.push({ rule: r.id, slug: `${r.slug}-${year}${suffix}`, start, end, prefix: r.slug, year });
     }
-    // Member Zoom: one event per Fundamentals year, second Tuesday of October
-    // through the second Tuesday of the following September.
-    const zStart = nthWeekday(year, 9, 2, 2);
-    const zEnd = nthWeekday(year + 1, 8, 2, 2);
-    if (zEnd >= today && zStart <= horizon) {
-      out.push({ rule: "member-zoom", slug: `member-zoom-${year}-${String(year + 1).slice(2)}`, start: zStart, end: zEnd, prefix: "member-zoom", year });
-    }
+    // The Monthly Huddle (member Zoom) is one permanent event, not copied yearly.
   }
   return out;
 }
