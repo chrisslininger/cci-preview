@@ -2506,3 +2506,43 @@ a.othercard {
     .cfh-tiers{padding:4px 20px 2px}
     .cfh-act{padding:4px 20px 20px}
   }
+
+  /* --------------------------------------------------------------- join page
+   * Becoming a member: the form on the left, what you are buying on the right.
+   * Reuses the registration dialog's field styles so the two forms feel like
+   * one site. */
+  .joingrid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:52px;align-items:start}
+  .joinform{min-width:0}
+  .joinrow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .joinrow .flabel{margin-top:14px}
+  .flabel .opt{font-weight:400;letter-spacing:.06em;text-transform:none;color:var(--color-content-muted);margin-left:6px}
+  .fi.bad{border-color:var(--color-status-danger)}
+  .flabel.bad{color:var(--color-status-danger)}
+  .joinhint{margin:7px 0 0;font-size:12.5px;line-height:1.55;color:var(--color-content-tertiary)}
+  .joinerr{margin:18px 0 0;padding:12px 14px;border-left:3px solid var(--color-status-danger);background:var(--color-status-danger-surface);font-size:14px;line-height:1.55;color:var(--color-content-primary)}
+  .joinnote{margin:18px 0 0;padding:14px 16px;border-left:3px solid var(--color-brand-primary);background:var(--color-status-info-surface);font-size:14px;line-height:1.6;color:var(--color-content-primary)}
+  .joinnote p{margin:0}
+  .joinnote p+p{margin-top:8px}
+  .joinbtn{margin-top:24px;width:100%;justify-content:center}
+  .joinbtn:disabled{opacity:.6;cursor:default;transform:none;box-shadow:none}
+  .joinsmall{margin:14px 0 0;font-size:12.5px;line-height:1.6;color:var(--color-content-tertiary)}
+
+  .joinsum{position:sticky;top:120px;background:var(--color-surface-inverse);border-radius:var(--radius-card);padding:32px;color:var(--color-surface-base)}
+  .joinprice{font-family:var(--font-display);margin-top:4px}
+  .joinprice b{font-size:50px;font-weight:800;letter-spacing:-.02em}
+  .joinprice i{font-size:14px;font-style:normal;color:var(--color-content-on-inverse-muted);margin-left:6px}
+  .joinwhen{margin:10px 0 0;font-size:13px;line-height:1.6;color:var(--color-content-on-inverse-muted)}
+  .joinlist{list-style:none;margin:22px 0 0;padding:20px 0 0;border-top:1px solid var(--color-border-on-inverse);font-size:14px;line-height:1.55;color:var(--color-content-on-inverse-subtle)}
+  .joinlist li{position:relative;padding-left:24px}
+  .joinlist li+li{margin-top:12px}
+  .joinlist li::before{content:'✓';position:absolute;left:0;top:0;color:var(--color-brand-accent)}
+  .joinsum-note{margin:22px 0 0;padding-top:18px;border-top:1px solid var(--color-border-on-inverse);font-size:13px;line-height:1.6;color:var(--color-content-on-inverse-muted)}
+  .joinsum-note a{color:var(--color-brand-accent-bright)}
+
+  @media (max-width:900px){
+    .joingrid{grid-template-columns:minmax(0,1fr);gap:34px}
+    .joinsum{position:static;order:-1}
+  }
+  @media (max-width:520px){
+    .joinrow{grid-template-columns:1fr;gap:0}
+  }

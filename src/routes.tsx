@@ -29,6 +29,8 @@ import CertificationPage from '@/pages/CertificationPage'
 import CertLevel1Page from '@/pages/CertLevel1Page'
 import CertLevel2Page from '@/pages/CertLevel2Page'
 import MembershipPage from '@/pages/MembershipPage'
+import JoinPage from '@/pages/JoinPage'
+import MembershipWelcomePage from '@/pages/MembershipWelcomePage'
 import ArticlesPage from '@/pages/ArticlesPage'
 import ArticlePage from '@/pages/ArticlePage'
 import ProblemPage from '@/pages/ProblemPage'
@@ -194,6 +196,33 @@ const staticRoutes: RouteEntry[] = [
       priority: 0.9,
       updatedAt: UPDATED,
       breadcrumbs: [{ name: 'Membership', path: '/membership' }],
+    },
+  },
+  {
+    path: '/membership/join',
+    Component: JoinPage,
+    prerender: true,
+    meta: {
+      title: 'Join the Institute — Advanced Orthogonal Institute',
+      description:
+        'Become a member of the Advanced Orthogonal Institute. Annual membership includes Annual Conference registration, $200 off every seminar, voting rights and the doctor directory listing.',
+      image: '/images/conference.webp',
+      priority: 0.9,
+      updatedAt: UPDATED,
+      breadcrumbs: [
+        { name: 'Membership', path: '/membership' },
+        { name: 'Join', path: '/membership/join' },
+      ],
+    },
+  },
+  {
+    path: '/membership/welcome',
+    Component: MembershipWelcomePage,
+    prerender: false,
+    meta: {
+      title: 'Welcome to the Institute — Advanced Orthogonal Institute',
+      description: 'Your Advanced Orthogonal Institute membership payment was received.',
+      noindex: true,
     },
   },
   {
