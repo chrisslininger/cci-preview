@@ -127,14 +127,14 @@ export const SEMINARS = {
     h2:'Where the foundation is poured.',
     overview:'<p>Fundamental 1 is the entry point to Advanced Orthogonal training. This year it is taught live on Zoom instead of as an in-person lecture weekend: AOI members meet with experienced instructors on the second Tuesday of each month from October through January, at 9:00 pm Eastern, to build the observational and analytical foundation that everything else in the technique rests on, with time in every session for your own cases and questions.</p><p>This year\'s sessions: ' + listDates(zoomDates('fund1', ZOOM_SEASON)) + ', each at 9:00 pm Eastern.</p><p><b>The Zoom sessions do not include hands-on training.</b> Be sure to attend an <a href="/seminars/advo-intensive">AdvO Intensive</a> — its hands-on training covers all three Fundamentals.</p><p>The Fundamentals Series is sequential — each part builds directly on the last, and completing all three is a requirement on the Level 1 Certification track.</p>',
     learn:['Patient evaluation and nerve interference assessment','Upper cervical biomechanics and the atlas subluxation complex','Introduction to the specific three-dimensional x-ray series','Postural analysis and supine leg check protocol','Case history and patient management fundamentals','Instrument overview and safety'],
-    sched:[['OCT–JAN',`${listDates(zoomDates('fund1', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: instruction on the evaluation protocol, biomechanics, and x-ray positioning, then open time for your cases and questions.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
+    sched:[['OCT–JAN',`${listDates(zoomDates('fund1', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: why AdvO, the history and exam, and setting up the x-ray series, then open time for your cases and questions.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
     ctaH:'Begin the Fundamentals Series.', ctaP:'Members only · live on Zoom, October through January · completing the series is a Level 1 requirement.', ctaBtn:'RSVP for the Monthly Zoom',
     spk:['cs','jk'], keynote:null,
     agenda:[{day:null,items:[
-      {t:'PART 1',ap:'LIVE ON ZOOM',title:'Evaluation Protocol — Foundations',desc:'Nerve interference assessment and UC biomechanics.',who:['cs']},
-      {t:'PART 2',ap:'LIVE ON ZOOM',title:'Postural Analysis',desc:'Leg check, posture, and case history workflow, demonstrated and discussed.',who:['cs']},
-      {t:'PART 3',ap:'LIVE ON ZOOM',title:'The 3-D X-Ray Series',desc:'Positioning and introduction to the specific x-ray series.',who:['jk']},
-      {t:'PART 4',ap:'LIVE ON ZOOM',title:'Case Review',desc:'Your cases and questions, and next steps on the certification track.',who:['cs','jk']}]}]
+      {t:'PART 1',ap:'LIVE ON ZOOM',title:'Introduction — Why AdvO',desc:'What the technique is built on, the outcomes it measures, and the atlas subluxation.',who:['cs']},
+      {t:'PART 2',ap:'LIVE ON ZOOM',title:'History & Exam',desc:'The patient history and the exam: supine leg check, muscle balance, arm strength, head rotation and palpation.',who:['cs']},
+      {t:'PART 3',ap:'LIVE ON ZOOM',title:'X-Ray Setup — Sagittal & Axial',desc:'Positioning basics, then the sagittal and axial views: why each is taken and how to get a clean film.',who:['jk']},
+      {t:'PART 4',ap:'LIVE ON ZOOM',title:'X-Ray Setup — Frontal, Horizontal & CBCT',desc:'The frontal and horizontal views, controlling tilt and rotation, and CBCT setup.',who:['cs','jk']}]}]
   },
   fund2:{
     photo:'analyze',
@@ -148,14 +148,14 @@ export const SEMINARS = {
     h2:'The analysis becomes precise.',
     overview:'<p>Fundamental 2 goes deep on the signature skill of the Advanced Orthogonal doctor: measuring the upper cervical misalignment on specific three-dimensional x-rays using digital software.</p><p>You\'ll learn to determine each patient\'s gravitational and neurological normal — taking genetic abnormalities into account — and translate that analysis into a patient-specific correction vector.</p><p>This year Fundamental 2 is taught live on Zoom instead of as an in-person lecture weekend, for AOI members, on the second Tuesday of each month from February through May, at 9:00 pm Eastern.</p><p>This year\'s sessions: ' + listDates(zoomDates('fund2', ZOOM_SEASON)) + ', each at 9:00 pm Eastern.</p><p><b>The Zoom sessions do not include hands-on training.</b> Be sure to attend an <a href="/seminars/advo-intensive">AdvO Intensive</a> — its hands-on training covers all three Fundamentals.</p>',
     learn:['Digital x-ray line drawing and analysis software','Measuring displacement against the patient\'s own normal','Accounting for genetic anomalies in the analysis','Deriving the correction vector from the misalignment variables','Inter- and intra-examiner reliability protocols','Analysis case reviews with real film sets'],
-    sched:[['FEB–MAY',`${listDates(zoomDates('fund2', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: digital analysis and line drawing, correction vector derivation, and reliability testing, worked through on real film sets.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
+    sched:[['FEB–MAY',`${listDates(zoomDates('fund2', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: analyzing the sagittal, axial, frontal and horizontal films, the correction vector, and misalignment patterns, worked through on real film sets.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
     ctaH:'Continue the series.', ctaP:'Fundamental 1 is the prerequisite · members only · live on Zoom, February through May.', ctaBtn:'RSVP for the Monthly Zoom',
     spk:['jk','cs'], keynote:null,
     agenda:[{day:null,items:[
-      {t:'PART 1',ap:'LIVE ON ZOOM',title:'Digital Analysis Instruction',desc:'Line-drawing methodology and the analysis software.',who:['jk']},
-      {t:'PART 2',ap:'LIVE ON ZOOM',title:'Guided Line Drawing',desc:'Real film sets, measured and drawn on screen under instruction.',who:['jk']},
-      {t:'PART 3',ap:'LIVE ON ZOOM',title:'Correction Vector Derivation',desc:'From misalignment variables to a patient-specific vector.',who:['cs']},
-      {t:'PART 4',ap:'LIVE ON ZOOM',title:'Reliability Testing',desc:'Inter- and intra-examiner reliability protocols and case analysis.',who:['jk','cs']}]}]
+      {t:'PART 1',ap:'LIVE ON ZOOM',title:'X-Ray Analysis — Sagittal & Axial',desc:'Templates and the analysis software, then the sagittal and axial measurements.',who:['jk']},
+      {t:'PART 2',ap:'LIVE ON ZOOM',title:'X-Ray Analysis — Frontal',desc:'Marking the frontal film and measuring the cranium, atlas and axis lines.',who:['jk']},
+      {t:'PART 3',ap:'LIVE ON ZOOM',title:'X-Ray Analysis — Horizontal & Vectors',desc:'The horizontal film, then turning the measurements into the correction vector.',who:['cs']},
+      {t:'PART 4',ap:'LIVE ON ZOOM',title:'Misalignment Patterns',desc:'Contralateral and ipsilateral patterns and their biomechanics, with time for case review.',who:['jk','cs']}]}]
   },
   fund3:{
     photo:'adjust',
@@ -169,14 +169,14 @@ export const SEMINARS = {
     h2:'Everything comes together.',
     overview:'<p>Fundamental 3 completes the foundation: delivering the correction with the table-mounted percussive sound-wave instrument, positioning the patient with digital and laser alignment, and running the full protocol from evaluation through post-correction monitoring.</p><p>This year Fundamental 3 is taught live on Zoom instead of as an in-person lecture weekend, for AOI members, on the second Tuesday of each month from June through September, at 9:00 pm Eastern.</p><p><b>The Zoom sessions do not include hands-on training.</b> Be sure to attend an <a href="/seminars/advo-intensive">AdvO Intensive</a> — its hands-on training covers all three Fundamentals.</p><p>This year\'s sessions: ' + listDates(zoomDates('fund3', ZOOM_SEASON)) + ', each at 9:00 pm Eastern.</p><p>Graduates of the full Fundamentals Series are equipped to begin supervised practice of the technique and to enter the Level 1 Certification process.</p>',
     learn:['Percussive sound-wave instrument operation and settings','Patient positioning with digital and laser alignment','Delivering the patient-specific correction vector','Post-correction assessment and monitoring protocol','Care planning and the sustainable-corrections model','Preparing for Level 1 Certification'],
-    sched:[['JUN–SEP',`${listDates(zoomDates('fund3', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: the instrument, patient positioning, the full protocol, and certification prep.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
+    sched:[['JUN–SEP',`${listDates(zoomDates('fund3', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: corrective setup, the adjustment, leading the stylus, and upper cervical biomechanics.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
     ctaH:'Complete your foundation.', ctaP:'Members only · live on Zoom, June through September · finishing the series opens the Level 1 Certification track.', ctaBtn:'RSVP for the Monthly Zoom',
     spk:['cs','jk'], keynote:null,
     agenda:[{day:null,items:[
-      {t:'PART 1',ap:'LIVE ON ZOOM',title:'Instrument Instruction',desc:'Percussive sound-wave instrument operation and settings.',who:['cs']},
-      {t:'PART 2',ap:'LIVE ON ZOOM',title:'Patient Positioning',desc:'Positioning with digital and laser alignment, demonstrated and discussed.',who:['cs']},
-      {t:'PART 3',ap:'LIVE ON ZOOM',title:'The Full Protocol',desc:'Evaluation through post-correction monitoring.',who:['cs','jk']},
-      {t:'PART 4',ap:'LIVE ON ZOOM',title:'Certification Prep',desc:'The Level 1 process, requirements, and your application.',who:['jk']}]}]
+      {t:'PART 1',ap:'LIVE ON ZOOM',title:'Corrective Setup — Presetting & Patient Setup',desc:'Presetting the table and placing the patient: head placement, mastoid support and a neutral spine.',who:['cs']},
+      {t:'PART 2',ap:'LIVE ON ZOOM',title:'Corrective Setup — Table Setup & Verification',desc:'Headpiece and shoulder settings, then verifying the patient before the adjustment.',who:['cs']},
+      {t:'PART 3',ap:'LIVE ON ZOOM',title:'The Adjustment — Instrument & Finding the TP',desc:'The percussion instrument, aligning the vectors, and finding the transverse process.',who:['cs','jk']},
+      {t:'PART 4',ap:'LIVE ON ZOOM',title:'Leading the Stylus, Biomechanics & Wrap-Up',desc:'Leading the stylus through real cases, upper cervical biomechanics, and bringing the year together.',who:['jk']}]}]
   },
   intensive:{
     photo:'instrument',
