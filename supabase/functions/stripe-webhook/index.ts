@@ -45,6 +45,34 @@ async function verifyStripeSignature(payload: string, sigHeader: string, secret:
   return matched;
 }
 
+
+/** A first payment, not a renewal: send the new member the link that sets their
+ *  members-area password. member-access/activate only answers for a current
+ *  member, which this person now is, and it is the same email every other
+ *  member received — one place writes it, so it cannot drift.
+ *  Renewals are skipped (member_since already set), and so is anyone who
+ *  already has a login. Never blocks the webhook: a failure is logged only. */
+async function welcomeNewMember(r: { recorded: boolean; person: Record<string, any> | null; email: string | null }): Promise<void> {
+  try {
+    const p = r.person;
+    if (!p || p.member_since || p.auth_user_id) return;
+    const email = String(p.email ?? r.email ?? "").trim();
+    if (!email) return;
+    const res = await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/member-access`, {
+      method: "POST",
+      headers: {
+        apikey: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+        Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "activate", email }),
+    });
+    if (!res.ok) console.error("members-area welcome failed", res.status, (await res.text()).slice(0, 200));
+  } catch (e) {
+    console.error("members-area welcome threw", String(e).slice(0, 200));
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return new Response("method not allowed", { status: 405 });
   if (!WEBHOOK_SECRET) return new Response("webhook secret not configured", { status: 503 });
@@ -61,6 +89,12 @@ Deno.serve(async (req: Request) => {
   const sessionId = session?.id;
 
   if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
+    // Joining the Institute is a subscription, not a seat. The membership is
+    // recorded when Stripe sends the invoice, so there is nothing to finalize
+    // here and no registration row to look for.
+    if (session.mode === "subscription" || session?.metadata?.kind === "membership") {
+      return new Response(JSON.stringify({ received: true, kind: "membership" }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
     // completed with a delayed payment method (e.g. bank debit) is not paid yet — wait for async_payment_succeeded
     if (type === "checkout.session.completed" && session.payment_status && session.payment_status !== "paid") {
       return new Response(JSON.stringify({ received: true, waiting: "async_payment" }), { status: 200, headers: { "Content-Type": "application/json" } });
@@ -70,11 +104,11 @@ Deno.serve(async (req: Request) => {
   } else if (type === "invoice.paid" || type === "invoice.payment_succeeded") {
     // Every invoice is membership dues: event tickets are one-time payments and never produce an invoice.
     const r = await recordMembershipInvoice(session);
-    if (r.recorded) await notifyMembership(r, "renewed");
+    if (r.recorded) { await notifyMembership(r, "renewed"); await welcomeNewMember(r); }
   } else if (type === "charge.succeeded" && isMembershipCharge(session)) {
     // The old store platform bills yearly memberships as plain charges ("Subscription payment placed on store …"), not Stripe invoices.
     const r = await recordMembershipInvoice(session, "charge");
-    if (r.recorded) await notifyMembership(r, "renewed");
+    if (r.recorded) { await notifyMembership(r, "renewed"); await welcomeNewMember(r); }
   } else if (type === "invoice.payment_failed") {
     await notifyMembership({ recorded: false, person: null, email: session.customer_email ?? null, amountCents: Number(session.amount_due ?? 0), periodEnd: null, newExpiry: null }, "failed");
   } else if (type === "customer.subscription.deleted") {
