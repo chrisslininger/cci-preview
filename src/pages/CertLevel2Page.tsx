@@ -82,12 +82,12 @@ export default function CertLevel2Page() {
             <div className="goldrule"></div>
             <p className="lede" style={{"marginBottom": "26px"}}>Each report covers at least the first three months of the patient&rsquo;s care and the outcomes over that period. The patient must be under your direct treatment.</p>
             <div className="learn">
-              <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Pre and post x-rays.</div>
+              <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Pre and post X-rays.</div>
               <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>The initial patient presentation and complaints.</div>
-              <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>The initial diagnosis and x-ray findings.</div>
+              <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>The initial diagnosis and X-ray findings.</div>
               <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>A description of the unique misalignment.</div>
               <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>The treatment plan.</div>
-              <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Your post x-ray analysis, explained, including any modifications to the adjustment.</div>
+              <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Your post X-ray analysis, explained, including any modifications to the adjustment.</div>
               <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>The patient&rsquo;s response to care.</div>
               <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Any secondary therapies or adjustments used.</div>
               <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Any advanced imaging taken.</div>

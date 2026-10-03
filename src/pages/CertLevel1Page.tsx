@@ -29,7 +29,7 @@ export default function CertLevel1Page() {
             <div className="goldrule"></div>
             <div className="prose">
               <p>Level 1 Certification confirms that a doctor meets the minimum standards required to deliver Advanced Orthogonal care. To earn it you demonstrate a solid understanding of the fundamentals, show that you can manage moderately difficult cases, and show that you can guide a patient through basic care.</p>
-              <p>Two reviewers from separate clinics evaluate your application, your examination, and your x-ray analysis reports. Once every requirement is met, the Certification Committee issues your certification.</p>
+              <p>Two reviewers from separate clinics evaluate your application, your examination, and your X-ray analysis reports. Once every requirement is met, the Certification Committee issues your certification.</p>
             </div>
           </div>
         </section>
@@ -51,7 +51,7 @@ export default function CertLevel1Page() {
             <div className="goldrule"></div>
             <div className="learn" style={{"marginTop": "24px"}}>
               <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Pass the Advanced Orthogonal Basic Examination.</div>
-              <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Submit two post x-ray analysis reports, each with a completed HIPAA form.</div>
+              <div className="li"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-accent)" strokeWidth="2.6"><path d="M20 6 9 17l-5-5" /></svg>Submit two post X-ray analysis reports, each with a completed HIPAA form.</div>
             </div>
             <div className="prose" style={{"marginTop": "40px"}}>
               <h3>Application fee</h3>
