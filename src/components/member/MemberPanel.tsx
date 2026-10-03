@@ -149,7 +149,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
         {access.tier !== 'member' && (
           <Row
             title="Join the Institute"
-            detail="Conference registration included, $200 off every seminar, directory listing"
+            detail="Monthly Huddle and conference registration included, $200 off every Intensive, $600 off Bootcamp, directory listing"
             right={
               <Link className="b sm p-btn" to="/membership">
                 See membership

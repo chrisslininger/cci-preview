@@ -427,7 +427,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                     </div>
                   ) : (
                     <div className="reg-strip">
-                      <span>Members save $200 on seminars</span>
+                      <span>Members save $200 on every Intensive and $600 on Bootcamp</span>
                       <button
                         type="button"
                         className="b sm s-btn on-light"

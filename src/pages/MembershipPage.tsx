@@ -38,7 +38,7 @@ export default function MembershipPage() {
                 <div style={{"borderTop": "1px solid color-mix(in oklab, var(--color-surface-base) 12.0%, transparent)", "paddingTop": "20px", "fontSize": "14px", "color": "var(--color-content-on-inverse-subtle)", "lineHeight": "2"}}>
                   ✓ Annual Conference registration included ($797 value)<br />
                   ✓ $600 off AdvO Bootcamp<br />
-                  ✓ $200 off every seminar<br />
+                  ✓ $200 off every Intensive<br />
                   ✓ Voting rights &amp; board eligibility<br />
                   ✓ Doctor Directory listing (Level 1 certified)<br />
                   ✓ Exclusive partner discounts
@@ -71,7 +71,7 @@ export default function MembershipPage() {
               <div className="step">
                 <div className="n">03</div>
                 <h3>Discounts on training &amp; seminars</h3>
-                <p>Members receive $600 off the AdvO Bootcamp, $200 off every seminar, and exclusive partner discounts through UC Strategic Solutions, Synapse Continuing Education, and other collaborations that will expand as the Institute grows. These savings quickly add up, often covering the cost of membership itself.</p>
+                <p>Members receive $600 off the AdvO Bootcamp, $200 off every Intensive, and exclusive partner discounts through UC Strategic Solutions, Synapse Continuing Education, and other collaborations that will expand as the Institute grows. These savings quickly add up, often covering the cost of membership itself.</p>
                 <Link to="/seminars" className="b sm s-btn on-light">Browse Seminars</Link>
               </div>
               <div className="step">

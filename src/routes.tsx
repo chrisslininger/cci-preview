@@ -191,7 +191,7 @@ const staticRoutes: RouteEntry[] = [
     meta: {
       title: 'AOI Membership — Advanced Orthogonal Institute',
       description:
-        'Institute membership includes Annual Conference registration, a $200 discount on every seminar, the doctor directory listing, and member resources.',
+        'Institute membership includes Annual Conference registration, the Monthly Huddle, $200 off every Intensive and $600 off Bootcamp, the doctor directory listing, and member resources.',
       image: '/images/conference.webp',
       priority: 0.9,
       updatedAt: UPDATED,
@@ -205,7 +205,7 @@ const staticRoutes: RouteEntry[] = [
     meta: {
       title: 'Join the Institute — Advanced Orthogonal Institute',
       description:
-        'Become a member of the Advanced Orthogonal Institute. Annual membership includes Annual Conference registration, $200 off every seminar, voting rights and the doctor directory listing.',
+        'Become a member of the Advanced Orthogonal Institute. Annual membership includes Annual Conference registration, the Monthly Huddle, $200 off every Intensive, $600 off Bootcamp, voting rights and the doctor directory listing.',
       image: '/images/conference.webp',
       priority: 0.9,
       updatedAt: UPDATED,

@@ -151,8 +151,8 @@ export default function SeminarsPage() {
       <section className="ctaband tight">
         <div className="wrap">
           <div>
-            <h3>Members save $200 on every seminar.</h3>
-            <p>And members save $600 on the AdvO Bootcamp.</p>
+            <h3>Members save $200 on every Intensive and $600 on Bootcamp.</h3>
+            <p>The Monthly Huddle and the Annual Conference are included with membership.</p>
           </div>
           <Link className="b lg p-btn" to="/membership">
             Join &amp; Save
