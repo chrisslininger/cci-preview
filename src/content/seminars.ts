@@ -218,10 +218,10 @@ export const SEMINARS = {
     sessions:[{ mo:MON[BOOTCAMP.start.getMonth()], dy:`${BOOTCAMP.start.getDate()}–${BOOTCAMP.end.getDate()}`, yr:String(BOOTCAMP.year), city:'Tampa Bay, FL', venue:'Five-day immersive', seats:'Registration', reg:'bootcamp:week' }],
     member:'AOI members save $600 on AdvO Bootcamp — join before you register.',
     h2:'The fastest route from zero to equipped.',
-    overview:'<p>Featuring hands-on training, expert guest speakers, clinical research updates, and a celebratory Friday night awards dinner, this event will bring together the entire Advanced Orthogonal community to honor our legacy and look to the future.</p><p>Bootcamp is our immersive, fast-paced program designed to take doctors from zero to fully equipped in a highly effective format — and it is free with AOI membership.</p>',
+    overview:'<p>Featuring hands-on training, expert guest speakers, clinical research updates, and a celebratory Friday night awards dinner, this event will bring together the entire Advanced Orthogonal community to honor our legacy and look to the future.</p><p>Bootcamp is our immersive, fast-paced program designed to take doctors from zero to fully equipped in a highly effective format.</p>',
     learn:['The complete protocol, compressed into one immersive week','Daily supervised instrument labs','Analysis intensives with real case sets','Guest expert sessions and research updates','Practice-building and patient communication','Community — the entire AdvO family in one room'],
     sched:[['MON–TUE','Foundation compression: evaluation, biomechanics, and x-ray analysis intensives.'],['WED–THU','Instrument labs: positioning, correction delivery, and consistency drills.'],['FRIDAY','Capstone case day — and the awards dinner celebrating the community.']],
-    ctaH:'Free with membership.', ctaP:`Tampa Bay, FL · ${longRange(BOOTCAMP)} · included with AOI membership.`, ctaBtn:'Register for Bootcamp',
+    ctaH:'Members save $600.', ctaP:`Tampa Bay, FL · ${longRange(BOOTCAMP)} · $1,895 for AOI members, $2,495 standard.`, ctaBtn:'Register for Bootcamp',
     spk:['cs','jk','mr'], keynote:null,
     agenda:[
       {day:'Day 1–2',date:'MON–TUE',items:[
