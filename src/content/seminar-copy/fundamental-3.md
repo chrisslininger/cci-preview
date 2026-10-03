@@ -25,9 +25,8 @@ Button: RSVP for the Monthly Huddle
 ## Problem
 Heading: Knowing the vector is only half the job
 Intro: You can have a careful analysis and still lose it in the setup. The correction depends on how the patient, the table, and the instrument are set up.
-- How consistent are your patient setups on the table?
 - Are you measuring the head height angle to recalibrate the instrument?
-- Are you aware of the limitations of the ZY and ZX tables?
+- When the exam findings don’t clear, do you find yourself changing the numbers from your analysis?
 Closing: This is the last stretch, and it’s where the Fundamentals come together.
 
 ## Solution
@@ -36,7 +35,7 @@ Photo: instrument
 
 Fundamental 3 is taught live on Zoom in the Monthly Huddle, on the second Tuesday of each month from June through September at 9:00 pm Eastern.
 
-We cover presetting the table, placing the patient, headpiece and shoulder settings and verification, then the percussion instrument, aligning the vectors, finding the transverse process and leading the stylus, with upper cervical biomechanics to tie it all together.
+We work through the corrective setup the way you’ll use it in practice: five-step table placement, mastoid support that holds the head without tensing the patient, measuring the head height angle, precise Y-vector alignment, and leading the stylus to the transverse process. Then we cover how to evaluate the patient before and after the adjustment, so you know whether the correction held. Every step carries out the numbers from your analysis rather than replacing them.
 
 ## Benefits
 Heading: Why doctors take Fundamental 3
