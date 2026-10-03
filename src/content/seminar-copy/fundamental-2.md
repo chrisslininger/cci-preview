@@ -76,7 +76,7 @@ No. Fundamental 2 is taught live on Zoom in the Monthly Huddle. The Zoom session
 AOI members. The Monthly Huddle is part of membership, which is $799 a year.
 
 ### Do you teach CBCT analysis?
-Yes. X-ray analysis is still taught in full, and we also teach how to measure CBCT studies to our standards and use them to verify what you see on X-ray. CBCT is the area of the technique that’s actively changing, so the method keeps improving with input from the doctors in these sessions.
+Yes. X-ray analysis is still taught in full, and we also teach how to measure CBCT studies to our standards and use them to verify what you see on X-ray. CBCT is the area of the technique we’re actively updating, so the method keeps improving with input from the doctors in these sessions.
 
 ### Do I need a CBCT machine?
 No. X-ray analysis is the core of the course, and CBCT is taught alongside it.
