@@ -92,6 +92,27 @@ export function StoryBenefits({ story }: Props) {
   )
 }
 
+export function StoryData({ story }: Props) {
+  const d = story.data
+  if (!d) return null
+  return (
+    <section className="tight">
+      <div className="wrap">
+        <div className="kick">Did You Know</div>
+        <h2 className="t">{d.h}</h2>
+        <div className="goldrule" />
+        {d.lede && <p className="lede">{d.lede}</p>}
+        <div className="sdata">
+          {d.items.map((x) => (
+            <div className="sd" key={x.n + x.t}><b>{x.n}</b><span>{x.t}</span></div>
+          ))}
+        </div>
+        <p className="sdnote">{d.note}</p>
+      </div>
+    </section>
+  )
+}
+
 export function StorySteps({ story, cta }: Props & { cta: ReactNode }) {
   const st = story.steps
   if (!st) return null

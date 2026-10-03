@@ -5,7 +5,7 @@ import type { Seminar } from '@/content/seminars'
 import { PEOPLE, HEADSHOTS } from '@/content/people'
 import { Avatar, SpeakerPill, useBio } from '@/components/blocks/BioDialog'
 import SeminarCard from '@/components/blocks/SeminarCard'
-import { StoryGoals, StoryProblem, StorySolution, StoryBenefits, StorySteps, StoryVoices, StoryFit, StoryFaq } from '@/components/blocks/SeminarStory'
+import { StoryGoals, StoryProblem, StorySolution, StoryBenefits, StoryData, StorySteps, StoryVoices, StoryFit, StoryFaq } from '@/components/blocks/SeminarStory'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { useToast } from '@/components/ui/Toast'
 import { useAccess } from '@/lib/queries/AccessProvider'
@@ -428,6 +428,7 @@ export default function SeminarPage({ param }: { param?: string }) {
           <StoryProblem story={story} />
           <StorySolution story={story} cta={cta} />
           <StoryBenefits story={story} />
+          <StoryData story={story} />
           <StorySteps story={story} cta={cta} />
         </>
       )}

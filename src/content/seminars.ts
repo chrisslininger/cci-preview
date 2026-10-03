@@ -73,6 +73,8 @@ export type SeminarStory = {
   problem?: { h: string; lede: string; qs: string[]; close: string }
   solution?: { kick?: string; h: string; p: string[]; img?: string }
   benefits?: { h: string; items: { h: string; p: string }[] }
+  /** Figures from the Institute's own data, with a note saying where they come from. */
+  data?: { h: string; lede?: string; items: { n: string; t: string }[]; note: string }
   steps?: { h: string; items: { h: string; p: string }[] }
   voices?: { h: string; lede?: string; quotes: { q: string; who: string; cred?: string }[] }
   fit?: { h: string; yes: string[]; no: string[] }
@@ -172,6 +174,14 @@ export const SEMINARS = {
         {h:'Learn It From Home',p:'Live on Zoom, one evening a month. No travel and no time away from your practice.'},
         {h:'Bring Your Own Cases',p:'Every session leaves time for your questions and the cases you’re working on now.'},
         {h:'Your First Step to Certification',p:'Completing all three Fundamentals is a requirement on the Level 1 Certification track.'}]},
+      data:{h:'What our internal research shows',
+        lede:'The Institute tracks what happens in Advanced Orthogonal practices. These are a few of the figures you’ll go through in Fundamental 1.',
+        items:[
+          {n:'87%',t:'of supine leg checks by two experienced doctors measured within a quarter inch of each other'},
+          {n:'83%',t:'of 96 patients scored better on the RAND-36 health survey at their two-week re-evaluation'},
+          {n:'51%',t:'of patients needed only one adjustment during their entire care plan'},
+          {n:'18 mo',t:'average time a correction held'}],
+        note:'From the Institute’s internal practice data, not yet published or peer reviewed. Individual results vary.'},
       steps:{h:'Three steps to get going',items:[
         {h:'Become a Member',p:'The Monthly Huddle is part of AOI membership, $799 a year.'},
         {h:'RSVP and Join on Zoom',p:'Second Tuesdays, October through January, at 9:00 pm Eastern.'},
@@ -314,7 +324,7 @@ export const SEMINARS = {
         {t:'2:00',ap:'PM · 2 HRS',title:'Practice: Corrective Setup',desc:'2:00 simple setups · 3:00 advanced setups',who:[]},
         {t:'4:00',ap:'PM · 2 HRS',title:'Review, Case Studies & Q&A',desc:'4:00 review and case studies · 5:00 Q&A and close',who:[]}]}],
     story:{
-      goals:['Run the exam, x-ray setup and analysis yourself, step by step','Set up the correction the same way, visit after visit','Go home with real practice, not just notes'],
+      goals:['Run the exam, x-ray setup and analysis yourself, step by step','Set up the correction the same way, visit after visit','Earn CE credit through Sherman College of Chiropractic'],
       problem:{
         h:'You’ve seen it explained. Now you need it in your hands.',
         lede:'Lectures and Zoom sessions can show you the procedure. But the exam, the films and the setup are physical skills, and without enough hands-on time it’s easy to spend years with a habit no one has corrected.',
@@ -340,6 +350,7 @@ export const SEMINARS = {
         {q:'What does it cost?',a:'$1,295, or $1,095 for AOI members.'},
         {q:'When and where is it held?',a:'Three weekends a year: the third Friday and Saturday of February in St. Petersburg, Florida; the third Friday and Saturday of April in Orem, Utah; and the fourth Friday and Saturday of August in St. Petersburg. Dates are subject to change.'},
         {q:'Do I need to bring my own equipment?',a:'No. Hands-on seminars provide the instruments and imaging you train on.'},
+        {q:'Does the Intensive carry CE credit?',a:'Yes. Every Intensive carries continuing education credit through Sherman College of Chiropractic, typically 16 hours. State approvals vary, so check yours before you register, and sign in and out of every session to receive credit.'},
         {q:'What will I receive?',a:'A binder at sign-in, notes for each module, and a glossary of the updated AdvO terminology.'},
         {q:'Can students attend?',a:'Yes. Chiropractic students are welcome at Institute training. Bring proof of current enrollment.'},
         {q:'What comes after the Intensive?',a:'Keep building: the Monthly Huddle every month, the AdvO Bootcamp each June, and the Level 1 Certification track.'}]}
