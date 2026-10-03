@@ -79,6 +79,7 @@ export default function SeminarPage({ param }: { param?: string }) {
   const { access, signedIn } = useAccess()
   const catalog = useCatalog()
   const [agendaDay, setAgendaDay] = useState(0)
+  const [presenter, setPresenter] = useState<string | null>(null)
   const [attending, setAttending] = useState<null | { paid: boolean; ce: boolean }>(null)
   /* Worked out in the browser, so the prerendered page never shows a stale count. */
   const [daysLeft, setDaysLeft] = useState<number | null>(null)
@@ -584,18 +585,46 @@ export default function SeminarPage({ param }: { param?: string }) {
               {s.speakerFaces ? `${speakers.length} presenters, one weekend` : 'Your instructors'}
             </h2>
             <div className="goldrule" />
-            {s.speakerFaces && (
-              <>
-                <div className="sfaces">
-                  {speakers.map((id) => PEOPLE[id] && (
-                    <button type="button" key={id} className="sface" onClick={() => openBio(id)} title={PEOPLE[id]!.name} aria-label={`${PEOPLE[id]!.name}: read bio`}>
-                      <Face id={id} />
-                    </button>
-                  ))}
-                </div>
-                <p className="sfaces-hint">Tap any face for that presenter’s bio.</p>
-              </>
-            )}
+            {s.speakerFaces && (() => {
+              /* Pick a presenter on the left; their bio and sessions show on the
+               * right (below, on a phone). The first presenter shows by default,
+               * so the prerendered page carries a real bio. */
+              const sel = presenter && PEOPLE[presenter] ? presenter : speakers.find((id) => PEOPLE[id])
+              const p = sel ? PEOPLE[sel] : undefined
+              const talks = sel ? agenda.flatMap((day) => day.items.filter((it) => it.who?.includes(sel)).map((it) => ({ day: day.date ?? day.day, t: `${it.t} ${it.ap.split(' · ')[0]}`, title: it.title }))) : []
+              return (
+                <>
+                  <p className="spres-hint">Tap a presenter to read their bio.</p>
+                  <div className="spres">
+                    <div className="spres-grid" role="tablist" aria-label="Presenters">
+                      {speakers.map((id) => PEOPLE[id] && (
+                        <button type="button" role="tab" aria-selected={id === sel} aria-controls="spres-bio" key={id} className={`spres-face${id === sel ? ' on' : ''}`} onClick={() => setPresenter(id)}>
+                          <span className="ph"><Face id={id} /></span>
+                          <span className="nm">{PEOPLE[id]!.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    {p && (
+                      <div className="spres-bio" id="spres-bio" role="tabpanel" aria-live="polite">
+                        <div className="top">
+                          <span className="ph"><Face id={sel!} /></span>
+                          <div>
+                            <h3>{p.name}</h3>
+                            <div className="cred">{p.cred}</div>
+                          </div>
+                        </div>
+                        {talks.length > 0 && (
+                          <ul className="talks">
+                            {talks.map((x) => <li key={x.title}><span>{x.day} · {x.t}</span>{x.title}</li>)}
+                          </ul>
+                        )}
+                        <p>{p.bio}</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )
+            })()}
             {keynote && PEOPLE[keynote] && (
               <button type="button" className="keynote" onClick={() => openBio(keynote)}>
                 <div className="bd">
