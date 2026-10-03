@@ -101,7 +101,7 @@ export function StoryBenefits({ story }: Props) {
         <div className="kick">What You Gain</div>
         <h2 className="t">{b.h}</h2>
         <div className="goldrule" />
-        <div className="benegrid">
+        <div className={`benegrid${b.items.length === 4 ? ' four' : ''}`}>
           {b.items.map((x) => (
             <div className="bene" key={x.h}><div className="bar" /><h3>{x.h}</h3><p>{x.p}</p></div>
           ))}

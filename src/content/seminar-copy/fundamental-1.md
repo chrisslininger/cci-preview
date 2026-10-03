@@ -28,6 +28,7 @@ Intro: If the exam is rushed or the X-rays aren’t clean, everything after it i
 - Are you confident your exam is telling you what you think it is?
 - Do your X-rays come out clean enough to measure, every time?
 - Have you picked up the technique in pieces, without a clear place to start?
+- Thinking about adding CBCT to your practice, but not sure how it works?
 Closing: You’re not behind. You just need a solid starting point.
 
 ## Solution
@@ -40,6 +41,7 @@ Our instructors walk through why AdvO works the way it does, the patient history
 
 ## Benefits
 Heading: Why start with Fundamental 1
+- Fundamental for a Reason: Every profession drills the basics, and the best practitioners keep returning to them. Fundamental 1 is where those drills begin.
 - Learn It From Home: Live on Zoom, one evening a month, with no travel or time away from your practice. Every session is recorded, so you can watch it again whenever it suits you.
 - Bring Your Own Cases: Every session leaves time for your questions and the cases you’re working on now.
 - Your First Step to Certification: Completing all three Fundamentals is a requirement on the Level 1 Certification track.
