@@ -16,7 +16,7 @@ this file.
 
 ## Hero
 Label: Fundamentals Series · Part 3 of 3
-Subtitle: Learn the Corrective Setup to achieve optimal & consistent patient outcomes
+Subtitle: Learn the corrective setup, where a careful analysis becomes a consistent correction.
 Button: RSVP for the Monthly Huddle
 - Create the game plan to set up the patient correctly every time
 - Lock in the mastoid while keeping the patient relaxed
