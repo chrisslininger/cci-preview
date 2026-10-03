@@ -80,7 +80,7 @@ export type SeminarStory = {
   why?: { h: string; items: { h: string; p: string }[] }
   benefits?: { h: string; items: { h: string; p: string }[] }
   /** Figures from the Institute's own data, with a note saying where they come from. */
-  data?: { h: string; lede?: string; items: { n: string; t: string }[]; note: string }
+  data?: { h: string; lede?: string; items: { n: string; t: string; k?: string }[]; note: string }
   steps?: { h: string; items: { h: string; p: string }[] }
   voices?: { h: string; lede?: string; quotes: { q: string; who: string; cred?: string }[] }
   fit?: { h: string; yes: string[]; no: string[] }

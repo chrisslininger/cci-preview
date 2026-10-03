@@ -123,7 +123,7 @@ export function StoryData({ story }: Props) {
         {d.lede && <p className="lede">{d.lede}</p>}
         <div className="sdata">
           {d.items.map((x) => (
-            <div className="sd" key={x.n + x.t}><b>{x.n}</b><span>{x.t}</span></div>
+            <div className="sd" key={x.n + x.t}>{x.k && <em>{x.k}</em>}<b>{x.n}</b><span>{x.t}</span></div>
           ))}
         </div>
         <p className="sdnote">{d.note}</p>

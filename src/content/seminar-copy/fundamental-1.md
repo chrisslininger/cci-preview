@@ -48,11 +48,11 @@ Heading: Why start with Fundamental 1
 
 ## Research
 Heading: What our internal research shows
-Intro: Upper cervical doctors judge their work by three things: inter-examiner reliability (do two doctors find the same thing?), patient outcomes (do patients actually get better?), and holding patterns (how long does a correction last?). The Institute tracks all three in Advanced Orthogonal practices. Here are a few of the figures you’ll learn about in Fundamental 1.
-- 87%: of supine leg checks by two experienced doctors measured within a quarter inch of each other
-- 83%: of 96 patients scored better on the RAND-36 health survey at their two-week re-evaluation
-- 51%: of patients needed only one adjustment during their entire care plan
-- 18 mo: average time a correction held
+Intro: Upper cervical doctors judge their work by four things: neurological changes, structural changes, patient outcomes and holding patterns. The Institute tracks all four in Advanced Orthogonal practices. Here are a few of the figures you’ll learn about in Fundamental 1.
+- Neurological changes | 80%: of patients’ supine leg checks improved from the initial exam to after the adjustment. The two examining doctors agreed within a quarter inch 87% of the time.
+- Structural changes | 36–57%: median reductions in the four angles that measure an upper cervical misalignment on X-ray
+- Patient outcomes | 83%: of 96 patients scored better on the RAND-36 health survey at their two-week re-evaluation, by 8 points on average, twice the minimum meaningful change
+- Holding patterns | 51%: of patients needed only one adjustment during their entire care plan. On average, a correction held for 18 months.
 Note: From the Institute’s internal practice data, not yet published or peer reviewed. Individual results vary.
 
 ## Steps
