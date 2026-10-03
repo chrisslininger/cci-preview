@@ -127,6 +127,8 @@ export type Seminar = {
   aboutFirst?: boolean
   /** A row of headline numbers, shown after the About section. */
   stats?: [string, string][]
+  /** The line beside the numbers. */
+  statsH?: string
   /** Standout sessions from the agenda, shown as cards after the numbers.
    *  `day` is the agenda tab the card opens. */
   featured?: { title: string; who: string; when: string; desc: string; day: number }[]
@@ -285,6 +287,7 @@ export const SEMINARS = {
   conference:{
     photo:'conference',
     cat:'conference', title:'Annual Conference', aboutFirst:true, countdownTo:'2026-11-06T08:00:00-05:00',
+    statsH:'Two days, one room, the doctors moving this work forward.',
     stats:[['13','presenters'],['14','CE hours'],['2','hands-on labs']],
     featured:[
       {title:'Clarifying the Dizzy Factor',who:'billiris',when:'FRI · 10:20 AM',day:0,desc:'The short chain of questions and the bedside tests that sort out the dizzy patient fast, then a hands-on lab to practice them in pairs.'},

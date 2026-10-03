@@ -519,6 +519,14 @@ footer .flink:hover{color:var(--color-surface-base)}
   .sd b{display:block;font-family:var(--font-sans);font-variant-numeric:tabular-nums;font-size:36px;font-weight:700;line-height:1.1;color:var(--color-brand-primary-deep)}
   .sd span{display:block;margin-top:8px;font-size:14px;line-height:1.55;color:var(--color-content-secondary)}
   .sdnote{margin-top:22px;font-size:12.5px;color:var(--color-content-muted)}
+  .scd .wrap{display:grid;grid-template-columns:auto 1fr;gap:44px;align-items:center}
+  .scd-big{text-align:center;padding-right:44px;border-right:1px solid color-mix(in oklab, var(--color-surface-base) 16%, transparent)}
+  .scd-big .n{display:block;font-family:var(--font-display);font-variant-numeric:tabular-nums;font-size:112px;font-weight:800;line-height:.9;color:var(--color-brand-accent-bright)}
+  .scd-big .l{display:block;margin-top:10px;font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+  .scd h3{font-size:26px;line-height:1.25;margin-bottom:16px;text-wrap:balance}
+  .scd-pills{display:flex;flex-wrap:wrap;gap:10px}
+  .scd-pills .pill{display:inline-flex;align-items:baseline;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid color-mix(in oklab, var(--color-brand-accent) 55%, transparent);font-size:14px}
+  .scd-pills .pill b{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--color-brand-accent-bright)}
   .scount{margin-top:4px;font-family:var(--font-label);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-brand-accent-bright)}
   .sfeat{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:28px}
   .sf{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -605,6 +613,9 @@ footer .flink:hover{color:var(--color-surface-base)}
     .page-home .hero-img .inner{padding:88px 28px 76px}
     .page-home .herolead p.sub{font-size:16px}
     .probgrid{grid-template-columns:1fr}
+    .scd .wrap{grid-template-columns:1fr;gap:22px}
+    .scd-big{border-right:0;padding-right:0;text-align:left}
+    .scd-big .n{font-size:84px}
     .sfeat{grid-template-columns:1fr}
     .benegrid{grid-template-columns:1fr}
     .bene,.bene:nth-child(4),.bene:nth-child(5){grid-column:auto}

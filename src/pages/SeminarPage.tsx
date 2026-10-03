@@ -422,7 +422,6 @@ export default function SeminarPage({ param }: { param?: string }) {
             <>
               <StoryGoals story={story} />
               <div className="sherocta">{cta}</div>
-              {daysLeft !== null && <div className="scount">{daysLeft} {daysLeft === 1 ? 'day' : 'days'} to go</div>}
             </>
           )}
         </div>
@@ -471,17 +470,32 @@ export default function SeminarPage({ param }: { param?: string }) {
 
       {aboutFirst && aboutSec}
 
-      {(s.stats || s.featured) && (
-        <section className="tight">
+      {s.stats && (
+        <section className="dark tight scd">
           <div className="wrap">
-            {s.stats && (
-              <div className="sdata" style={{ marginTop: 0 }}>
-                {s.stats.map(([n, t]) => <div className="sd" key={t}><b>{n}</b><span>{t}</span></div>)}
+            {daysLeft !== null && (
+              <div className="scd-big">
+                <span className="n">{daysLeft}</span>
+                <span className="l">{daysLeft === 1 ? 'Day' : 'Days'} to go</span>
               </div>
             )}
+            <div>
+              {s.statsH && <h3>{s.statsH}</h3>}
+              <div className="scd-pills">
+                {s.stats.map(([n, t]) => <span className="pill" key={t}><b>{n}</b> {t}</span>)}
+              </div>
+              <div style={{ marginTop: '22px' }}>{cta}</div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {s.featured && (
+        <section className="tight">
+          <div className="wrap">
             {s.featured && (
               <>
-                <div className="kick" style={{ marginTop: s.stats ? '48px' : 0 }}>Featured Sessions</div>
+                <div className="kick">Featured Sessions</div>
                 <h2 className="t">A few of the talks you won’t want to miss</h2>
                 <div className="goldrule" />
                 <div className="sfeat">
