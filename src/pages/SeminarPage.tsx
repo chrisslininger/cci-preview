@@ -225,10 +225,7 @@ export default function SeminarPage({ param }: { param?: string }) {
         <div className="memberbar">
           <div>
             <div className="mb-t">{memberBanner}</div>
-            <div className="mb-s">
-              Every seminar, every time — conference registration alone covers most of a year of
-              membership.
-            </div>
+            {s.mbSub && <div className="mb-s">{s.mbSub}</div>}
           </div>
           <Link className="b sm" to="/membership">
             Become a Member &amp; Save
