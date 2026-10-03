@@ -27,7 +27,6 @@ Heading: You’ve seen it explained. Now learn it with your hands.
 Intro: A common complaint about chiropractic seminars is that there isn’t enough time to practice. And once we graduate, we rarely have an instructor watch us work and tell us whether we’re doing it right, so it’s easy to spend years with a habit no one has corrected. If that sounds familiar, this seminar is for you.
 - Do you ever hesitate, unsure whether the patient is set up correctly for the adjustment?
 - When was the last time another doctor watched you run an exam?
-- Would it help to have several experienced doctors look at a hard case with you, to see how you could help that patient more?
 Closing: That’s a common place to be, and you don’t have to work through it alone.
 
 ## Solution

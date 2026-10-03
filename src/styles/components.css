@@ -503,7 +503,7 @@ footer .flink:hover{color:var(--color-surface-base)}
   .sgoals .sck{background:transparent;border-color:var(--color-brand-accent-bright);color:var(--color-brand-accent-bright)}
   .sck.no{background:var(--color-surface-raised);border-color:var(--color-border-subtle);color:var(--color-content-muted)}
   .sherocta{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap}
-  .sqs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+  .sqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:28px}
   .sq{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-left:3px solid var(--color-brand-accent);border-radius:6px;padding:22px 22px 20px}
   .sq .n{font-family:var(--font-label);font-weight:600;font-size:10.5px;letter-spacing:.16em;color:var(--color-brand-accent-strong);margin-bottom:10px}
   .sq p{font-family:var(--font-display);font-size:17px;font-weight:600;line-height:1.4;color:var(--color-content-primary)}
