@@ -53,7 +53,7 @@ Heading: Chiropractors learn best by doing
 Heading: Getting started is simple
 - Choose Your Weekend: Pick St. Petersburg, Florida, or Orem, Utah. Each weekend is held in a working clinic set up for training.
 - Train for Two Days: Watch each step demonstrated on Friday, then do it yourself on Saturday. See it, then do it: that’s experiential learning.
-- Take It Into Practice: Use the procedure in your clinic, then keep building with the Monthly Huddle, Bootcamp and Level 1 Certification.
+- Take It Into Practice: Use the procedure in your clinic, then keep building with the Monthly Huddle, Bootcamp and Level 1 Certification. Come back at least once every three years to keep your skills sharp.
 
 ## Fit
 Heading: Is the Intensive right for you?
@@ -92,6 +92,9 @@ A binder at sign-in, notes for each module, and a glossary of the updated AdvO t
 
 ### Can students attend?
 Yes. Chiropractic students are welcome at Institute training. Bring proof of current enrollment.
+
+### How often should I attend?
+We recommend attending an Intensive at least once every three years. The technique keeps being refined, and a weekend of supervised practice is the best way to stay on top of your skills.
 
 ### What comes after the Intensive?
 Keep building: the Monthly Huddle every month, the AdvO Bootcamp each June, and the Level 1 Certification track.
