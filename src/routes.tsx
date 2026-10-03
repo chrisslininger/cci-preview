@@ -294,6 +294,16 @@ const seminarRoutes: RouteEntry[] = Object.entries(SEMINARS).map(([key, seminar]
               },
             }),
       },
+      ...(seminar.story?.faq?.length
+        ? [{
+            '@type': 'FAQPage',
+            mainEntity: seminar.story.faq.map((item) => ({
+              '@type': 'Question',
+              name: item.q,
+              acceptedAnswer: { '@type': 'Answer', text: item.a },
+            })),
+          }]
+        : []),
     ],
   },
 }))

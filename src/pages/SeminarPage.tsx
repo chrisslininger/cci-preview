@@ -5,6 +5,7 @@ import type { Seminar } from '@/content/seminars'
 import { PEOPLE, HEADSHOTS } from '@/content/people'
 import { Avatar, SpeakerPill, useBio } from '@/components/blocks/BioDialog'
 import SeminarCard from '@/components/blocks/SeminarCard'
+import { StoryGoals, StoryProblem, StorySolution, StoryBenefits, StorySteps, StoryVoices, StoryFit, StoryFaq } from '@/components/blocks/SeminarStory'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { useToast } from '@/components/ui/Toast'
 import { useAccess } from '@/lib/queries/AccessProvider'
@@ -164,76 +165,16 @@ export default function SeminarPage({ param }: { param?: string }) {
     .filter((k) => k !== key)
     .slice(0, 3)
 
-  return (
-    <>
-      <div className="hero-img short">
-        <div
-          className={`bg ${s.img ?? ''}`}
-          id="sd-img"
-          style={
-            s.photo
-              ? {
-                  backgroundImage: `url(/images/${s.photo}.webp)`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
-              : undefined
-          }
-        />
-        <div className="duo" />
-        <div className="duo2" />
-        <div className="scrim" />
-        <div className="wrap inner">
-          <div className="crumbs">
-            <Link to="/">HOME</Link> <b>/</b> <Link to="/seminars">SEMINARS</Link> <b>/</b>{' '}
-            <span>{s.title.toUpperCase()}</span>
-          </div>
-          <div className="kick">{s.kicker}</div>
-          <h1>{s.title}</h1>
-          <p className="sub">{s.sub}</p>
-        </div>
-      </div>
+  /* Pages with a story follow the homepage's marketing flow; one button
+   * wording runs through the whole page and leads to the dates. */
+  const story = s.story
+  const cta = (
+    <button type="button" className="b lg p-btn" onClick={scrollToRegistration}>
+      {regLabel(s.ctaBtn ?? 'Register Now')}
+    </button>
+  )
 
-      <div className="wrap">
-        <div className="facts">
-          <div className="fact">
-            <span>DATES</span>
-            <b>{s.dates}</b>
-          </div>
-          <div className="fact">
-            <span>LOCATION</span>
-            <b>{s.loc}</b>
-          </div>
-          <div className="fact">
-            <span>LEVEL</span>
-            <b>{s.level}</b>
-          </div>
-          <div className="fact">
-            <span>FORMAT</span>
-            <b>{s.format}</b>
-          </div>
-          <div className="fact">
-            <span>TUITION</span>
-            <b>
-              {s.price}
-              {priceNote && <em>{priceNote}</em>}
-            </b>
-          </div>
-        </div>
-        {s.ruleNote && <p className="rulenote">{s.ruleNote}</p>}
-
-        <div className="memberbar">
-          <div>
-            <div className="mb-t">{memberBanner}</div>
-            {s.mbSub && <div className="mb-s">{s.mbSub}</div>}
-          </div>
-          <Link className="b sm" to="/membership">
-            Become a Member &amp; Save
-          </Link>
-        </div>
-      </div>
-
-      {!s.hideSess && (
+  const sessionsSec = !s.hideSess && (
         <section className="tight" id="sd-sessions-sec">
           <div className="wrap">
             <div className="kick">{sessions.length ? 'Dates & Locations' : (s.noSess?.kick ?? 'Dates & Locations')}</div>
@@ -374,19 +315,9 @@ export default function SeminarPage({ param }: { param?: string }) {
             </div>
           </div>
         </section>
-      )}
+  )
 
-      <section className="tight" style={{ paddingTop: '20px' }}>
-        <div className="wrap grid2" style={{ gap: '56px', alignItems: 'start' }}>
-          <div>
-            <div className="kick">About This Event</div>
-            <h2 className="t" style={{ fontSize: '26px' }}>
-              {s.h2}
-            </h2>
-            <div className="goldrule" />
-            <div className="prose" dangerouslySetInnerHTML={{ __html: s.overview }} />
-          </div>
-          <div>
+  const videoEl = (
             <div>
               {s.mux ? (
                 <>
@@ -413,6 +344,106 @@ export default function SeminarPage({ param }: { param?: string }) {
                 </div>
               ) : null}
             </div>
+  )
+
+  return (
+    <>
+      <div className="hero-img short">
+        <div
+          className={`bg ${s.img ?? ''}`}
+          id="sd-img"
+          style={
+            s.photo
+              ? {
+                  backgroundImage: `url(/images/${s.photo}.webp)`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
+              : undefined
+          }
+        />
+        <div className="duo" />
+        <div className="duo2" />
+        <div className="scrim" />
+        <div className="wrap inner">
+          <div className="crumbs">
+            <Link to="/">HOME</Link> <b>/</b> <Link to="/seminars">SEMINARS</Link> <b>/</b>{' '}
+            <span>{s.title.toUpperCase()}</span>
+          </div>
+          <div className="kick">{s.kicker}</div>
+          <h1>{s.title}</h1>
+          <p className="sub">{s.sub}</p>
+          {story && (
+            <>
+              <StoryGoals story={story} />
+              <div className="sherocta">{cta}</div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="wrap">
+        <div className="facts">
+          <div className="fact">
+            <span>DATES</span>
+            <b>{s.dates}</b>
+          </div>
+          <div className="fact">
+            <span>LOCATION</span>
+            <b>{s.loc}</b>
+          </div>
+          <div className="fact">
+            <span>LEVEL</span>
+            <b>{s.level}</b>
+          </div>
+          <div className="fact">
+            <span>FORMAT</span>
+            <b>{s.format}</b>
+          </div>
+          <div className="fact">
+            <span>TUITION</span>
+            <b>
+              {s.price}
+              {priceNote && <em>{priceNote}</em>}
+            </b>
+          </div>
+        </div>
+        {s.ruleNote && <p className="rulenote">{s.ruleNote}</p>}
+
+        <div className="memberbar">
+          <div>
+            <div className="mb-t">{memberBanner}</div>
+            {s.mbSub && <div className="mb-s">{s.mbSub}</div>}
+          </div>
+          <Link className="b sm" to="/membership">
+            Become a Member &amp; Save
+          </Link>
+        </div>
+      </div>
+
+      {!story && sessionsSec}
+
+      {story && (
+        <>
+          <StoryProblem story={story} />
+          <StorySolution story={story} cta={cta} />
+          <StoryBenefits story={story} />
+          <StorySteps story={story} cta={cta} />
+        </>
+      )}
+
+      <section className="tight" style={{ paddingTop: '20px' }}>
+        <div className="wrap grid2" style={{ gap: '56px', alignItems: 'start' }}>
+          <div>
+            <div className="kick">About This Event</div>
+            <h2 className="t" style={{ fontSize: '26px' }}>
+              {s.h2}
+            </h2>
+            <div className="goldrule" />
+            <div className="prose" dangerouslySetInnerHTML={{ __html: s.overview }} />
+          </div>
+          <div>
+            {!story && videoEl}
             <div className="memberprice">
               <div className="mp-h">Member pricing</div>
               <p>{s.member}</p>
@@ -615,6 +646,15 @@ export default function SeminarPage({ param }: { param?: string }) {
             <p className="cenote">{s.ce.disclaimer}</p>
           </div>
         </section>
+      )}
+
+      {story && (
+        <>
+          <StoryVoices story={story} video={s.mux || s.video ? videoEl : undefined} />
+          <StoryFit story={story} />
+          <StoryFaq story={story} />
+          {sessionsSec}
+        </>
       )}
 
       {s.regBand && (
