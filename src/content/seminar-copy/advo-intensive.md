@@ -33,7 +33,7 @@ Closing: That’s a common place to be, and you don’t have to work through it 
 Heading: Two days with instructors at your side
 Photo: setup
 
-The AdvO Intensive is built for exactly this. On day one, our instructors demonstrate every step of the procedure: the history and exam, x-ray and CBCT setup and analysis, pattern understanding, the corrective setup, and the adjustment.
+The AdvO Intensive is built for exactly this. On day one, our instructors demonstrate every step of the procedure: the history and exam, X-ray and CBCT setup and analysis, pattern understanding, the corrective setup, and the adjustment.
 
 On day two, it’s your turn. You practice each step under supervision, from the exam through simple and advanced setups, and finish with case studies and your own questions.
 

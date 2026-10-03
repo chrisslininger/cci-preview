@@ -41,7 +41,7 @@ We work through the sagittal, axial, frontal and horizontal X-rays with the anal
 ## Benefits
 Heading: Why doctors take Fundamental 2
 - Measure, Don’t Guess: Learn a defined way to measure each X-ray against the patient’s own normal.
-- Real Patient X-Rays: Work through actual cases, not idealized textbook examples.
+- Real Patient X-rays: Work through actual cases, not idealized textbook examples.
 - From Numbers to a Vector: See how the measurements become a patient-specific correction vector.
 
 ## Steps
@@ -54,7 +54,7 @@ Heading: Three steps to get going
 Heading: Is Fundamental 2 right for you?
 
 Good fit:
-- Coming from Fundamental 1, or already comfortable with the exam and x-ray setup
+- Coming from Fundamental 1, or already comfortable with the exam and X-ray setup
 - An upper cervical doctor who wants more precise, repeatable analysis
 - Planning to work toward Level 1 Certification
 

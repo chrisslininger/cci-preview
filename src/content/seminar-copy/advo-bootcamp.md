@@ -36,11 +36,11 @@ Photo: adjust
 
 Bootcamp is our immersive, fast-paced program, designed to take doctors from zero to fully equipped in one week in Tampa Bay, Florida.
 
-It revisits everything in Fundamentals 1–3, adds in-depth training in post x-ray analysis and interpretation, and gives you extensive hands-on time to apply it in a clinical setting. Along the way: craniocervical neurology, biomechanics and table placement, and clinical topics such as concussion and headaches. The week ends with the Friday night awards dinner with the whole community.
+It revisits everything in Fundamentals 1–3, adds in-depth training in post X-ray analysis and interpretation, and gives you extensive hands-on time to apply it in a clinical setting. Along the way: craniocervical neurology, biomechanics and table placement, and clinical topics such as concussion and headaches. The week ends with the Friday night awards dinner with the whole community.
 
 ## Benefits
 Heading: Why doctors come to Bootcamp
-- Everything in One Week: All of Fundamentals 1–3 plus post x-ray interpretation, in five focused days.
+- Everything in One Week: All of Fundamentals 1–3 plus post X-ray interpretation, in five focused days.
 - Extensive Hands-On Time: Apply each step in a clinical setting, with instructors guiding you.
 - Your People: Guest experts, research updates, and the whole Advanced Orthogonal community at the awards dinner.
 
