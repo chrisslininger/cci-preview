@@ -16,32 +16,37 @@ this file.
 
 ## Hero
 Label: Fundamentals Series · Part 2 of 3
-Subtitle: X-ray analysis and line drawing — the measurement skill at the center of the technique.
+Subtitle: X-ray and CBCT analysis: the measurement skill at the center of the technique.
 Button: RSVP for the Monthly Huddle
 - Measure the misalignment on your X-rays with precision
+- Measure CBCT studies and use them to verify what you see on X-ray
 - Account for each patient’s own anatomy, including genetic anomalies
 - Turn your measurements into a patient-specific correction vector
 
 ## Problem
-Heading: Your X-rays only help if you can read them precisely
-Intro: X-ray analysis is the skill at the center of the technique, and it’s the hardest one to learn on your own.
+Heading: Your images only help if you can read them precisely
+Intro: Analysis is the skill at the center of the technique, and it’s the hardest one to learn on your own. CBCT adds a third dimension, but there’s still no official standard for how to measure it.
 - Do two of your own line drawings on the same X-ray come out differently?
+- Have you added CBCT, or thought about it, but aren’t sure how to measure what it shows?
 - Are you unsure how to account for a genetic anomaly in the analysis?
 - Is it hard to get from the measurements to a correction vector you trust?
 Closing: Precision can be learned. It takes a clear method and practice with people who’ve done it.
 
 ## Solution
-Heading: Analysis, worked through on real X-rays
+Heading: X-ray and CBCT analysis, worked through on real cases
 Photo: xray
 
 Fundamental 2 is taught live on Zoom in the Monthly Huddle, on the second Tuesday of each month from February through May at 9:00 pm Eastern.
 
-We work through the sagittal, axial, frontal and horizontal X-rays with the analysis software, turn the measurements into the correction vector, and look at contralateral and ipsilateral misalignment patterns, using real patient X-rays, with time for your own cases.
+We work through the sagittal, axial, frontal and horizontal X-rays with the analysis software, turn the measurements into the correction vector, and look at contralateral and ipsilateral misalignment patterns, with time for your own cases.
+
+We also teach CBCT analysis: how to measure a CBCT study, and how to use it to verify what you’re seeing on X-ray. This is where much of the newest work in the technique is happening. There’s no official standard yet for analyzing CBCT in upper cervical care, so we learn from each other. We teach the method we use, and the doctors in the Huddle help us refine it.
 
 ## Benefits
 Heading: Why doctors take Fundamental 2
-- Measure, Don’t Guess: Learn a defined way to measure each X-ray against the patient’s own normal.
-- Real Patient X-rays: Work through actual cases, not idealized textbook examples.
+- Help Shape the Standard: CBCT analysis is still being defined across upper cervical care. You learn our method and help refine it alongside the doctors moving it forward.
+- Measure, Don’t Guess: Learn a defined way to measure each X-ray and CBCT study against the patient’s own normal.
+- Real Patient Cases: Work through actual X-rays and CBCT studies, not idealized textbook examples.
 - From Numbers to a Vector: See how the measurements become a patient-specific correction vector.
 
 ## Steps
@@ -56,6 +61,7 @@ Heading: Is Fundamental 2 right for you?
 Good fit:
 - Coming from Fundamental 1, or already comfortable with the exam and X-ray setup
 - An upper cervical doctor who wants more precise, repeatable analysis
+- Using CBCT, or thinking about it, and want a method for measuring it
 - Planning to work toward Level 1 Certification
 
 Not the best fit:
@@ -69,6 +75,12 @@ No. Fundamental 2 is taught live on Zoom in the Monthly Huddle. The Zoom session
 
 ### Who can attend?
 AOI members. The Monthly Huddle is part of membership, which is $799 a year.
+
+### Do you teach CBCT analysis?
+Yes. X-ray analysis is still taught in full, and we also teach how to measure CBCT studies and use them to verify what you see on X-ray. There’s no official standard yet for CBCT analysis in upper cervical care, so the method keeps improving with input from the doctors in these sessions.
+
+### Do I need a CBCT machine?
+No. X-ray analysis is the core of the course, and CBCT is taught alongside it.
 
 ### What time are the sessions?
 9:00 pm Eastern (8:00 pm Central, 7:00 pm Mountain, 6:00 pm Pacific) on the second Tuesday of each month, February through May.
