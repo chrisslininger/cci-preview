@@ -18,15 +18,16 @@ this file.
 Label: The Immersive Week · Zero to Fully Equipped
 Subtitle: Five days of hands-on training, guest experts, research updates — and the Friday night awards dinner.
 Button: Register for Bootcamp
-- Learn the complete procedure in one focused week
-- Practice every day with instructors watching
+- Learn the complete procedure in one focused week, from exam to adjustment
+- Practice every step hands-on, with instructors watching
+- Add CBCT and post-X-ray interpretation to your analysis
 - Meet the Advanced Orthogonal community in one room
 
 ## Problem
 Heading: Learning a technique in pieces can take years
 Intro: A seminar here, a webinar there, and it can be a long time before the whole procedure comes together in your hands.
 - Do you want to learn the technique properly, but can’t spread it over a year?
-- Have you learned parts of it but never put the whole procedure together?
+- Have you learned parts of it, but never practiced the whole procedure with an instructor watching?
 - Do you miss being around doctors who do this work every day?
 Closing: There’s a faster way, and you don’t have to do it alone.
 
@@ -36,26 +37,26 @@ Photo: adjust
 
 Bootcamp is our immersive, fast-paced program, designed to take doctors from zero to fully equipped in one week in Tampa Bay, Florida.
 
-It revisits everything in Fundamentals 1–3, adds in-depth training in post X-ray analysis and interpretation, and gives you extensive hands-on time to apply it in a clinical setting. Along the way: craniocervical neurology, biomechanics and table placement, and clinical topics such as concussion and headaches. The week ends with the Friday night awards dinner with the whole community.
+It revisits everything in Fundamentals 1–3: the exam, X-ray and CBCT setup and analysis, and the corrective setup, from table placement and mastoid support to the head height angle and leading the stylus. It adds in-depth training in post-X-ray analysis and interpretation, and gives you extensive hands-on time to apply it all in a clinical setting. Along the way: craniocervical neurology and clinical topics such as concussion and headaches. The week ends with the Friday night awards dinner with the whole community.
 
 ## Benefits
 Heading: Why doctors come to Bootcamp
-- Everything in One Week: All of Fundamentals 1–3 plus post X-ray interpretation, in five focused days.
-- Extensive Hands-On Time: Apply each step in a clinical setting, with instructors guiding you.
+- Everything in One Week: All of Fundamentals 1–3 plus post-X-ray interpretation, in five focused days.
+- Extensive Hands-On Time: Chiropractors learn best by doing. You perform each step yourself, and instructors catch mistakes on the spot.
 - Your People: Guest experts, research updates, and the whole Advanced Orthogonal community at the awards dinner.
 
 ## Steps
 Heading: Three steps to get going
 - Register: AOI members save $600: $1,895 instead of $2,495.
 - Spend the Week in Tampa Bay: Monday to Friday, the week of the third Monday of June.
-- Keep Going: Use it in your practice, then continue with the Monthly Huddle and the Level 1 Certification track.
+- Keep Going: Use it in your practice, then continue with the Monthly Huddle and the Level 1 Certification track, and come back to an Intensive at least every three years to stay sharp.
 
 ## Fit
 Heading: Is Bootcamp right for you?
 
 Good fit:
 - Working toward certification, ideally after Fundamentals 1–3
-- An upper cervical doctor who wants an intensive refresh
+- An upper cervical doctor ready to learn the full AdvO procedure in depth
 - Cross-training from Atlas Orthogonal or another upper cervical system
 - Ready to commit a full week to your training
 
@@ -76,6 +77,12 @@ Tampa Bay, Florida, Monday to Friday in the week of the third Monday of June. Da
 
 ### Do I need experience?
 There are no prerequisites. We recommend Bootcamp after Fundamentals 1–3, especially if you’re seeking certification.
+
+### How is Bootcamp different from the Intensive?
+Bootcamp is five days and covers the whole procedure in depth, including post-X-ray interpretation and clinical topics. The Intensive is a two-day weekend of demonstration and hands-on practice. Bootcamp suits learning the technique; an Intensive suits refreshing it.
+
+### Does Bootcamp count toward certification?
+Yes. Bootcamp is part of the pathways to Level 1 Certification, either after Fundamentals 1–3 or together with an advanced seminar such as the Intensive.
 
 ### Do I need to bring my own equipment?
 No. Hands-on seminars provide the instruments and imaging you train on.
