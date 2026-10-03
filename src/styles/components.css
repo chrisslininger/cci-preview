@@ -536,6 +536,16 @@ footer .flink:hover{color:var(--color-surface-base)}
   .spon img{max-width:100%;max-height:78px;width:auto;height:auto;object-fit:contain}
   .spon-note{margin-top:22px;font-size:13.5px;color:color-mix(in oklab, var(--color-surface-base) 75%, transparent)}
   .spon-note .t-link{color:var(--color-brand-accent-bright)}
+  /* Seminar pages alternate white and light gray, section by section, whatever
+     sections a page has. Dark bands and the call-to-action band keep their own. */
+  .sempage > section:not(.dark):not(.ctaband){background:var(--color-surface-base)}
+  .sempage > section:not(.dark):not(.ctaband):nth-of-type(even){background:var(--color-surface-raised)}
+  .cesum{max-width:900px;font-size:15px;line-height:1.7;color:var(--color-content-secondary);margin-top:12px}
+  .cesum b{color:var(--color-content-primary);font-weight:600}
+  .cedetails{margin-top:18px;max-width:1040px}
+  .cedetails summary{cursor:pointer;font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--color-brand-primary-deep)}
+  .cedetails[open] summary{margin-bottom:16px}
+  .sempage .cecard{background:var(--color-surface-base)}
   .squote{margin-top:26px}
   .squote blockquote{font-size:19px}
   .squote .attr{margin-top:10px}

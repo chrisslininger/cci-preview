@@ -392,7 +392,7 @@ export default function SeminarPage({ param }: { param?: string }) {
   )
 
   return (
-    <>
+    <div className="sempage">
       <div className="hero-img short">
         <div
           className={`bg ${s.img ?? ''}`}
@@ -683,31 +683,37 @@ export default function SeminarPage({ param }: { param?: string }) {
           <div className="wrap">
             <div className="kick">Continuing Education</div>
             <h2 className="t" style={{ fontSize: '26px' }}>
-              {s.ce.hours} CE hours through {s.ce.sponsor.split(',')[0]}
+              {Number(s.ce.hours)} CE hours through {s.ce.sponsor.split(',')[0]}
             </h2>
             <div className="goldrule" />
-            <p className="lede" style={{ marginBottom: '22px' }}>{s.ce.note}</p>
-            <div className="cegrid">
-              <div className="cecard">
-                <div className="cek">Approved</div>
-                <ul>{s.ce.approved.map(([st, n]) => <li key={st}><b>{st}</b><span>{n}</span></li>)}</ul>
+            <p className="cesum">{s.ce.note}</p>
+            <p className="cesum">
+              <b>CE counts in</b>{' '}
+              {[...s.ce.approved.map(([st]) => st), ...s.ce.auto, ...s.ce.self].sort().join(', ')}.
+              {s.ce.pending.length > 0 && <> <b>Pending:</b> {s.ce.pending.join(', ')}.</>}
+            </p>
+            <details className="cedetails">
+              <summary>Approval numbers, states not covered and special cases</summary>
+              <div className="cegrid">
+                <div className="cecard">
+                  <div className="cek">Approved</div>
+                  <ul>{s.ce.approved.map(([st, n]) => <li key={st}><b>{st}</b><span>{n}</span></li>)}</ul>
+                </div>
+                <div className="cecard">
+                  <div className="cek">Auto-approved</div>
+                  <p>{s.ce.auto.join(' · ')}</p>
+                  <div className="cek" style={{ marginTop: '14px' }}>DC self-reporting</div>
+                  <p>{s.ce.self.join(' · ')}</p>
+                </div>
+                <div className="cecard">
+                  <div className="cek">Not applied for</div>
+                  <p>{s.ce.notApplied.join(' · ')}</p>
+                  <div className="cek" style={{ marginTop: '14px' }}>Special cases</div>
+                  <ul className="plain">{s.ce.special.map(([st, n]) => <li key={st}><b>{st}</b> {n}</li>)}</ul>
+                </div>
               </div>
-              <div className="cecard">
-                <div className="cek">Auto-approved</div>
-                <p>{s.ce.auto.join(' · ')}</p>
-                <div className="cek" style={{ marginTop: '14px' }}>DC self-reporting</div>
-                <p>{s.ce.self.join(' · ')}</p>
-                <div className="cek" style={{ marginTop: '14px' }}>Pending</div>
-                <p>{s.ce.pending.join(' · ')}</p>
-              </div>
-              <div className="cecard">
-                <div className="cek">Not applied for</div>
-                <p>{s.ce.notApplied.join(' · ')}</p>
-                <div className="cek" style={{ marginTop: '14px' }}>Special cases</div>
-                <ul className="plain">{s.ce.special.map(([st, n]) => <li key={st}><b>{st}</b> {n}</li>)}</ul>
-              </div>
-            </div>
-            <p className="cenote">{s.ce.disclaimer}</p>
+              <p className="cenote">{s.ce.disclaimer}</p>
+            </details>
           </div>
         </section>
       )}
@@ -784,6 +790,6 @@ export default function SeminarPage({ param }: { param?: string }) {
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }
