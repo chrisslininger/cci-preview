@@ -25,11 +25,10 @@ Button: RSVP for the Monthly Huddle
 
 ## Problem
 Heading: Your images only help if you can read them precisely
-Intro: Analysis is the skill at the center of the technique, and it’s the hardest one to learn on your own. CBCT adds a third dimension, and it’s the part of the analysis that’s changing fastest.
-- Do two of your own line drawings on the same X-ray come out differently?
+Intro: Analysis is the skill at the center of the technique, and it’s the hardest one to learn on your own. CBCT adds a third dimension, which requires a different mindset and framework.
 - Have you added CBCT, or thought about it, but aren’t sure how to measure what it shows?
 - Are you unsure how to account for a genetic anomaly in the analysis?
-- Is it hard to get from the measurements to a correction vector you trust?
+- Are you coming from a different technique and need to learn AdvO’s approach to analysis?
 Closing: Precision can be learned. It takes a clear method and practice with people who’ve done it.
 
 ## Solution
@@ -60,7 +59,7 @@ Heading: Is Fundamental 2 right for you?
 
 Good fit:
 - Coming from Fundamental 1, or already comfortable with the exam and X-ray setup
-- An upper cervical doctor who wants more precise, repeatable analysis
+- An upper cervical doctor who wants to learn our repeatable analysis
 - Using CBCT, or thinking about it, and want a method for measuring it
 - Planning to work toward Level 1 Certification
 
