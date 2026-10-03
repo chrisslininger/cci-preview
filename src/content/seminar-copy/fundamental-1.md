@@ -16,7 +16,7 @@ this file.
 
 ## Hero
 Label: Fundamentals Series · Part 1 of 3
-Subtitle: Your foundation in Advanced Orthogonal analysis begins here.
+Subtitle: Your foundation in Advanced Orthogonal begins here: the history, the exam and the X-ray series.
 Button: RSVP for the Monthly Huddle
 - Build the foundation every correction rests on
 - Take a history and run an exam you can trust
@@ -50,15 +50,15 @@ Heading: Why start with Fundamental 1
 Heading: What our internal research shows
 Intro: Upper cervical doctors judge their work by four things: neurological changes, structural changes, patient outcomes and holding patterns. The Institute tracks all four in Advanced Orthogonal practices. Here are a few of the figures you’ll learn about in Fundamental 1.
 - Neurological changes | 80%: of patients’ supine leg checks improved from the initial exam to after the adjustment. The two examining doctors agreed within a quarter inch 87% of the time.
-- Structural changes | 36–57%: median reductions in the four angles that measure an upper cervical misalignment on X-ray
-- Patient outcomes | 83%: of 96 patients scored better on the RAND-36 health survey at their two-week re-evaluation, by 8 points on average, twice the minimum meaningful change
+- Structural changes | 36–57%: median improvement in the misalignment angles measured on X-ray
+- Patient outcomes | 83%: of 96 patients scored better on the RAND-36 health survey at their two-week re-evaluation, by 8 points on average, which is twice the minimum meaningful change
 - Holding patterns | 51%: of patients needed only one adjustment during their entire care plan. On average, a correction held for 18 months.
 Note: From the Institute’s internal practice data, not yet published or peer reviewed. Individual results vary.
 
 ## Steps
 Heading: Three steps to get going
 - Become a Member: The Monthly Huddle is part of AOI membership, $799 a year.
-- RSVP and Join on Zoom: Second Tuesdays, October through January, at 9:00 pm Eastern. Every session is recorded, so you can watch it again whenever it suits you.
+- RSVP and Join on Zoom: Second Tuesdays, October through January, at 9:00 pm Eastern.
 - Get Hands-On: Attend an AdvO Intensive to practice what you’ve learned with instructors at your side.
 
 ## Fit
@@ -76,7 +76,7 @@ Not the best fit:
 ## Questions
 
 ### Is this in person?
-No. This year Fundamental 1 is taught live on Zoom in the Monthly Huddle. The Zoom sessions don’t include hands-on training; the AdvO Intensive covers that.
+No. Fundamental 1 is taught live on Zoom in the Monthly Huddle. The Zoom sessions don’t include hands-on training; the AdvO Intensive covers that.
 
 ### Who can attend?
 AOI members. The Monthly Huddle is part of membership, which is $799 a year.

@@ -65,7 +65,7 @@ Not the best fit:
 ## Questions
 
 ### Is this in person?
-No. This year Fundamental 3 is taught live on Zoom in the Monthly Huddle. The Zoom sessions don’t include hands-on training; the AdvO Intensive covers that.
+No. Fundamental 3 is taught live on Zoom in the Monthly Huddle. The Zoom sessions don’t include hands-on training; the AdvO Intensive covers that.
 
 ### Who can attend?
 AOI members. The Monthly Huddle is part of membership, which is $799 a year.
