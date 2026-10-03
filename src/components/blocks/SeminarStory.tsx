@@ -82,9 +82,9 @@ export function StoryWhy({ story }: Props) {
         <div className="kick">Why It Works</div>
         <h2 className="t">{w.h}</h2>
         <div className="goldrule" />
-        <div className="swhy">
+        <div className="prose swhy">
           {w.items.map((x) => (
-            <div className="bene" key={x.h}><div className="bar" /><h3>{x.h}</h3><p>{x.p}</p></div>
+            <p key={x.h}><b>{x.h}.</b> {x.p}</p>
           ))}
         </div>
       </div>

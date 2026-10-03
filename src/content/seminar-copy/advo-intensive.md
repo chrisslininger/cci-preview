@@ -37,18 +37,17 @@ The AdvO Intensive is built for exactly this. On day one, our instructors demons
 
 On day two, it’s your turn. You practice each step under supervision, from the exam through simple and advanced setups, and finish with case studies and your own questions.
 
-## Why it works
-Heading: Chiropractors learn best by doing
-- Learn It by Doing: Performing a leg check, positioning a patient and lining up the instrument are skills with our hands. You learn them the way you first learned to adjust: by doing them, with an instructor beside you.
-- It Stays With You: You remember a step you’ve performed far better than one you’ve only watched or read about, and doing it shows you right away which parts you understand and which you don’t.
-- Mistakes Become Lessons: When a step goes wrong on Saturday, an instructor catches it and shows you the fix on the spot, in a room built for practice, instead of months later in your own clinic.
-- Learn From Each Other: Working in pairs and talking through cases with other doctors sharpens your reasoning, and you go home with colleagues you can call when a case gets hard.
-
 ## Benefits
 Heading: Why doctors come to the Intensive
 - Practice, Not Just Theory: Day two is a full day of supervised practice, so you leave having done each step yourself.
 - Feedback While It Counts: Instructors watch your setup and correct it on the spot, before a habit forms.
 - All Three Fundamentals, Hands-On: Its hands-on training covers Fundamentals 1–3, making it the in-person companion to the Monthly Huddle on Zoom.
+
+## Why it works
+Heading: Chiropractors learn best by doing
+- Learn It by Doing: Performing a leg check, positioning a patient and lining up the instrument are skills with our hands.
+- It Stays With You: You remember a step you’ve performed far better than one you’ve only watched or read about.
+- Mistakes Become Lessons: When a step goes wrong on Saturday, an instructor catches it and shows you the fix on the spot.
 
 ## Steps
 Heading: Getting started is simple

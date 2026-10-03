@@ -427,8 +427,8 @@ export default function SeminarPage({ param }: { param?: string }) {
         <>
           <StoryProblem story={story} />
           <StorySolution story={story} cta={cta} />
-          <StoryWhy story={story} />
           <StoryBenefits story={story} />
+          <StoryWhy story={story} />
           <StoryData story={story} />
           <StorySteps story={story} cta={cta} />
         </>
