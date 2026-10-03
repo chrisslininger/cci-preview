@@ -306,7 +306,7 @@ export const SEMINARS = {
       tiers:[
         {k:'Doctor',p:'$797',n:'Practicing chiropractors and everyone outside the tiers below.'},
         {k:'Student',p:'$347',n:'Currently enrolled chiropractic students.'},
-        {k:'AOI Member',p:'FREE',n:'Included with your membership — sign in when you register and the fee is waived.',hi:true,flag:'INCLUDED'},
+        {k:'AOI Member',p:'FREE',n:'Included with your membership — sign in when you register and the fee is waived. Add CE credit for $50.',hi:true,flag:'INCLUDED'},
         {k:'College Faculty',p:'FREE',n:'Faculty of chiropractic colleges. Register as faculty and the Institute confirms your seat.',hi:true}
       ],
       note:'Members and chiropractic college faculty still register — the fee comes off at checkout. Members: sign in first so we can see your membership.'

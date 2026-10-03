@@ -391,6 +391,45 @@ export default function SeminarPage({ param }: { param?: string }) {
         </section>
   )
 
+  /* The registration band sits at the bottom, or near the top on a page that
+   * leads with its About section (the conference). */
+  const regSec = s.regBand && (
+        <section className="tight" id="sd-reg-sec" style={{ paddingTop: '8px' }}>
+          <div className="wrap">
+            <div className="regband">
+              <div className="rb-top">
+                <div className="rb-kick">Registration</div>
+                <h2>{s.regBand.h ?? `Register for ${s.title}`}</h2>
+                <div className="rb-rule" />
+                <p className="rb-sub">{s.regBand.sub ?? `${s.dates} · ${s.loc}`}</p>
+              </div>
+              {rsvpMode && (
+                <div className="rb-member">
+                  <b>{attending ? 'You\u2019re on the attendee list.' : 'You\u2019re an AOI member \u2014 your seat is included.'}</b>
+                  <span>{attending ? 'Your RSVP is confirmed. Details and reminders will follow as the date approaches.' : 'RSVP for yourself below. The only optional charge is the CE credit certificate.'}</span>
+                </div>
+              )}
+              <div className="rb-tiers" style={rsvpMode ? { opacity: .55 } : undefined}>
+                {s.regBand.tiers.map((tier) => (
+                  <div className={`rt${tier.hi ? ' hi' : ''}`} key={tier.k}>
+                    {tier.flag && <span className="rt-flag">{tier.flag}</span>}
+                    <div className="rt-k">{tier.k}</div>
+                    <div className="rt-p">{tier.p}</div>
+                    <div className="rt-n">{tier.n}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="rb-go">
+                <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending)}>
+                  {regLabel(s.regBand.btn ?? 'Register Now')}
+                </button>
+                {!rsvpMode && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
+              </div>
+            </div>
+          </div>
+        </section>
+  )
+
   return (
     <div className="sempage">
       <div className="hero-img short">
@@ -521,6 +560,8 @@ export default function SeminarPage({ param }: { param?: string }) {
           </div>
         </section>
       )}
+
+      {aboutFirst && regSec}
 
       {story && (
         <>
@@ -741,42 +782,7 @@ export default function SeminarPage({ param }: { param?: string }) {
         </>
       )}
 
-      {s.regBand && (
-        <section className="tight" id="sd-reg-sec" style={{ paddingTop: '8px' }}>
-          <div className="wrap">
-            <div className="regband">
-              <div className="rb-top">
-                <div className="rb-kick">Registration</div>
-                <h2>{s.regBand.h ?? `Register for ${s.title}`}</h2>
-                <div className="rb-rule" />
-                <p className="rb-sub">{s.regBand.sub ?? `${s.dates} · ${s.loc}`}</p>
-              </div>
-              {rsvpMode && (
-                <div className="rb-member">
-                  <b>{attending ? 'You\u2019re on the attendee list.' : 'You\u2019re an AOI member \u2014 your seat is included.'}</b>
-                  <span>{attending ? 'Your RSVP is confirmed. Details and reminders will follow as the date approaches.' : 'RSVP for yourself below. The only optional charge is the CE credit certificate.'}</span>
-                </div>
-              )}
-              <div className="rb-tiers" style={rsvpMode ? { opacity: .55 } : undefined}>
-                {s.regBand.tiers.map((tier) => (
-                  <div className={`rt${tier.hi ? ' hi' : ''}`} key={tier.k}>
-                    {tier.flag && <span className="rt-flag">{tier.flag}</span>}
-                    <div className="rt-k">{tier.k}</div>
-                    <div className="rt-p">{tier.p}</div>
-                    <div className="rt-n">{tier.n}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="rb-go">
-                <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending)}>
-                  {regLabel(s.regBand.btn ?? 'Register Now')}
-                </button>
-                {!rsvpMode && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+      {!aboutFirst && regSec}
 
       <section className="ctaband tight">
         <div className="wrap">
