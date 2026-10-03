@@ -47,7 +47,7 @@ Heading: Why doctors take Fundamental 2
 ## Steps
 Heading: Three steps to get going
 - Become a Member: The Monthly Huddle is part of AOI membership, $799 a year.
-- RSVP and Join on Zoom: Second Tuesdays, February through May, at 9:00 pm Eastern.
+- RSVP and Join on Zoom: Second Tuesdays, February through May, at 9:00 pm Eastern. Every session is recorded, so you can watch it again whenever it suits you.
 - Get Hands-On: Attend an AdvO Intensive to practice what you’ve learned with instructors at your side.
 
 ## Fit
@@ -75,6 +75,9 @@ AOI members. The Monthly Huddle is part of membership, which is $799 a year.
 
 ### What if I can’t start at the beginning?
 Each part builds on the last, but members can join the Monthly Huddle in any month.
+
+### What if I miss a session?
+Every session is recorded, and members can watch the recordings whenever it’s convenient.
 
 ### Does it count toward certification?
 Yes. Completing all three Fundamentals is a requirement on the Level 1 Certification track.
