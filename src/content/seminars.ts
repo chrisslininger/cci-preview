@@ -122,6 +122,8 @@ export type Seminar = {
   agenda?: unknown
   ce?: SeminarCE
   story?: SeminarStory
+  /** Put the About section straight after the hero, ahead of the story. */
+  aboutFirst?: boolean
 }
 
 export const SEMINARS = {
@@ -266,7 +268,7 @@ export const SEMINARS = {
   },
   conference:{
     photo:'conference',
-    cat:'conference', title:'Annual Conference', kicker:'Inflection Point · The Homecoming of the AOI Community', img:'ph-c',
+    cat:'conference', title:'Annual Conference', aboutFirst:true, kicker:'Inflection Point · The Homecoming of the AOI Community', img:'ph-c',
     sub:'Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward — November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.',
     dates:'November 6–7, 2026', ruleNote:'From 2027, the Annual Conference is held the third Friday–Saturday of October every year. Subject to change.', loc:'St. Petersburg, FL', level:'All Levels', format:'2 Days · 8 AM–6 PM', price:'$797',
     fullPrice:797, memPrice:0, studentPrice:347, facultyFree:true,

@@ -26,18 +26,10 @@ Button: Reserve Your Seat
 ## Problem
 Heading: Upper cervical practice can be a lonely place
 Intro: Most of us work in clinics where no one else does what we do. It’s hard to keep up with new imaging, new research and the cases that don’t fit the textbook.
-- When did you last talk a hard case through with a colleague who does this work?
+- When did you last talk through a hard case with a colleague who does this work?
 - Are you keeping up with CBCT and the updates to the protocol?
 - Do you need CE hours that actually apply to your practice?
 Closing: That’s what this weekend is for.
-
-## Solution
-Heading: Two days at the home of Advanced Orthogonal
-Photo: analyze
-
-On November 6–7, the Institute gathers at the Pierce Clinic of Chiropractic in St. Petersburg, Florida, around this year’s theme: Inflection Point.
-
-Thirteen presenters cover vestibular-ocular rehab, the dizzy patient, cone-beam CT and 3D reference frames, and the updated protocol, with case studies and the practice-based research project. Two sessions are supervised labs, because chiropractors learn best by doing.
 
 ## Benefits
 Heading: Why doctors come to the Conference

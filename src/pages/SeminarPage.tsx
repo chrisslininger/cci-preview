@@ -346,6 +346,34 @@ export default function SeminarPage({ param }: { param?: string }) {
             </div>
   )
 
+  /* The About section normally follows the marketing story; a page can put
+   * it first instead (the conference leads with its theme). */
+  const aboutFirst = Boolean(story && s.aboutFirst)
+  const aboutSec = (
+      <section className="tight" style={{ paddingTop: '20px' }}>
+          <div className="wrap grid2" style={{ gap: '56px', alignItems: 'start' }}>
+            <div>
+              <div className="kick">About This Event</div>
+              <h2 className="t" style={{ fontSize: '26px' }}>
+                {s.h2}
+              </h2>
+              <div className="goldrule" />
+              <div className="prose" dangerouslySetInnerHTML={{ __html: s.overview }} />
+            </div>
+            <div>
+              {!story && videoEl}
+              <div className="memberprice">
+                <div className="mp-h">Member pricing</div>
+                <p>{s.member}</p>
+                <Link className="t-link" to="/membership">
+                  About Membership<span className="a">→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+  )
+
   return (
     <>
       <div className="hero-img short">
@@ -423,6 +451,8 @@ export default function SeminarPage({ param }: { param?: string }) {
 
       {!story && sessionsSec}
 
+      {aboutFirst && aboutSec}
+
       {story && (
         <>
           <StoryProblem story={story} />
@@ -434,28 +464,7 @@ export default function SeminarPage({ param }: { param?: string }) {
         </>
       )}
 
-      <section className="tight" style={{ paddingTop: '20px' }}>
-        <div className="wrap grid2" style={{ gap: '56px', alignItems: 'start' }}>
-          <div>
-            <div className="kick">About This Event</div>
-            <h2 className="t" style={{ fontSize: '26px' }}>
-              {s.h2}
-            </h2>
-            <div className="goldrule" />
-            <div className="prose" dangerouslySetInnerHTML={{ __html: s.overview }} />
-          </div>
-          <div>
-            {!story && videoEl}
-            <div className="memberprice">
-              <div className="mp-h">Member pricing</div>
-              <p>{s.member}</p>
-              <Link className="t-link" to="/membership">
-                About Membership<span className="a">→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {!aboutFirst && aboutSec}
 
       {speakers.length > 0 && (
         <section className="tight" style={{ paddingTop: '8px' }}>
