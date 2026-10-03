@@ -414,21 +414,7 @@ export default function SeminarPage({ param }: { param?: string }) {
                     title={`${s.title} — preview video`}
                   />
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  className="video"
-                  onClick={() => toast('A preview film for this event is coming soon.')}
-                >
-                  <div className="play">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--color-surface-inverse)">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                  <span className="lbl">VIDEO — {s.title.toUpperCase()} PREVIEW</span>
-                  <span className="dur">1:45</span>
-                </button>
-              )}
+              ) : null}
             </div>
             <div className="memberprice">
               <div className="mp-h">Member pricing</div>
