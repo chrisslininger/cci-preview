@@ -241,7 +241,7 @@ export const SEMINARS = {
   bootcamp:{
     photo:'setup',
     mux:'A9cxLKvjJcX5u02Qzh8agXEOPLMkmNzXTKHPrx02wnG2s', muxName:'Dr. Drew',
-    cat:'bootcamp', title:`AdvO Bootcamp ${BOOTCAMP.year}`, kicker:'The Immersive Week · Zero to Fully Equipped', img:'ph-a',
+    cat:'bootcamp', title:'AdvO Bootcamp', kicker:'The Immersive Week · Zero to Fully Equipped', img:'ph-a',
     sub:'Five days of hands-on training, guest experts, research updates — and the Friday night awards dinner.',
     dates:longRange(BOOTCAMP), ruleNote:'Standard dates, every year: the week of the third Monday of June, Monday to Friday. Subject to change.', loc:'Tampa Bay, FL', level:'All Levels', format:'5-Day Immersive', price:'$2,495',
     fullPrice:2495, memPrice:1895, mbSub:'Membership is $799 a year. Members save $600 on Bootcamp.', mbText:'AOI members save $600 on AdvO Bootcamp — $1,895 for members.',
