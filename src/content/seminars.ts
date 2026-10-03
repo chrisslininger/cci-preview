@@ -118,7 +118,8 @@ export type Seminar = {
   sched: string[][]
   ctaH: string
   spk?: string[]
-  exhibitors?: string[]
+  /** Sponsors shown with their logos. `light` puts a logo made for white on a white tile. */
+  sponsors?: { name: string; logo: string; url: string; light?: boolean }[]
   agenda?: unknown
   ce?: SeminarCE
   story?: SeminarStory
@@ -284,7 +285,7 @@ export const SEMINARS = {
   conference:{
     photo:'conference',
     cat:'conference', title:'Annual Conference', aboutFirst:true, countdownTo:'2026-11-06T08:00:00-05:00',
-    stats:[['13','presenters'],['14','CE hours'],['2','hands-on labs'],['2','days at the home of Advanced Orthogonal']],
+    stats:[['13','presenters'],['14','CE hours'],['2','hands-on labs']],
     featured:[
       {title:'Clarifying the Dizzy Factor',who:'billiris',when:'FRI · 10:20 AM',day:0,desc:'The short chain of questions and the bedside tests that sort out the dizzy patient fast, then a hands-on lab to practice them in pairs.'},
       {title:'Cone-Beam CT in Upper Cervical Practice',who:'colavita',when:'SAT · 9:00 AM',day:1,desc:'What CBCT shows that plain X-ray cannot, which cases call for it, patient safety and dose, and what adopting it takes in a working clinic.'},
@@ -325,7 +326,7 @@ export const SEMINARS = {
     },
     ctaH:'Be in the room in St. Petersburg.', ctaP:'November 6–7, 2026 · Pierce Clinic of Chiropractic · $797 for doctors, $347 for students · free with AOI membership · 14 CE hours.', ctaBtn:'Reserve Your Seat',
     spk:['silver','billiris','hulsey','wooden','beadle','colavita','miranda','bollen','jobarah','pavlovic','corsello','fowler','cs'], keynote:null,
-    exhibitors:['UpperCervicalCare.com','Televere Systems','NeckCare','Cervipedic'],
+    sponsors:[{name:'Anode Imaging',logo:'sponsor-anode',url:'https://anodeimaging.com/'},{name:'Sonus: Blueprint',logo:'sponsor-sonus',url:'https://sonusblueprint.com/'},{name:'Spinalight',logo:'sponsor-spinalight',url:'https://www.spinalight.com/',light:true}],
     agenda:[
       {day:'Day 1',date:'FRI NOV 6',items:[
         {t:'7:00',ap:'AM · DOORS',title:'Registration, Breakfast & Vendor Hall',desc:'Check-in with photo ID, coffee, and the vendor floor opens. Breakfast from 8:00.',who:[]},

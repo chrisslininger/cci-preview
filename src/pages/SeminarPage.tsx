@@ -568,29 +568,27 @@ export default function SeminarPage({ param }: { param?: string }) {
         </section>
       )}
 
-      {s.exhibitors && s.exhibitors.length > 0 && (
-        <section className="tight" style={{ paddingTop: '8px' }}>
+      {s.sponsors && s.sponsors.length > 0 && (
+        <section className="dark tight sponsors">
           <div className="wrap">
-            <div className="kick">Exhibitors &amp; Partners</div>
+            <div className="kick">Sponsors</div>
             <h2 className="t" style={{ fontSize: '26px' }}>
-              The companies serving upper cervical
+              Thank you to this year’s sponsors
             </h2>
             <div className="goldrule" />
-            <p className="exhib-note">
-              Exhibitors from last year&apos;s conference — the 2026 floor is filling now. Interested
-              in exhibiting?{' '}
-              <Link className="t-link" style={{ fontSize: '11px' }} to="/contact">
-                Contact the Institute
-              </Link>
-              .
-            </p>
-            <div className="exhib-grid">
-              {s.exhibitors.map((name) => (
-                <div className="exhib" key={name}>
-                  {name}
-                </div>
+            <div className="spons">
+              {s.sponsors.map((x) => (
+                <a className={`spon${x.light ? ' light' : ''}`} key={x.name} href={x.url} target="_blank" rel="noopener noreferrer">
+                  <img src={`/images/${x.logo}.webp`} alt={x.name} loading="lazy" decoding="async" />
+                </a>
               ))}
             </div>
+            <p className="spon-note">
+              Interested in sponsoring?{' '}
+              <Link className="t-link" to="/contact">
+                Contact the Institute
+              </Link>
+            </p>
           </div>
         </section>
       )}
