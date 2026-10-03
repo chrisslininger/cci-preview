@@ -4,8 +4,8 @@ This file is the marketing text on the 2026 Annual Conference page. Change any w
 like and the page changes with it. Three rules keep it working:
 
 1. Keep every line that starts with "##" or "###" (the sections and questions).
-2. Keep the labels at the start of a line: Heading, Intro, Closing, Photo,
-   Note, Good fit, Not the best fit. Change only the words after the colon.
+2. Keep the labels at the start of a line: Label, Subtitle, Button, Heading,
+   Intro, Closing, Photo, Note, Good fit, Not the best fit. Change only the words after the colon.
 3. A line starting with "- " is one item in a list. Where an item has a title,
    write it as "- Title: the text". Add or remove items freely.
 
@@ -14,7 +14,10 @@ paragraphs. To drop a whole section from the page, delete it, heading and all.
 Dates, prices, the agenda and the instructors are set elsewhere and are not in
 this file.
 
-## Hero goals
+## Hero
+Label: Inflection Point · The Homecoming of the AOI Community
+Subtitle: Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward — November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.
+Button: Reserve Your Seat
 - Catch up on what’s new in imaging, research and the protocol
 - Earn 14 CE hours through Sherman College of Chiropractic
 - Spend two days with the doctors moving this work forward

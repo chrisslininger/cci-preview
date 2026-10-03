@@ -26,7 +26,7 @@ const FILES: Record<string, [string, string]> = {
   conference: ['annual-conference.md', conference],
 }
 
-const LABELS = ['Heading', 'Intro', 'Closing', 'Photo', 'Note', 'Label', 'Good fit', 'Not the best fit']
+const LABELS = ['Heading', 'Intro', 'Closing', 'Photo', 'Note', 'Label', 'Subtitle', 'Button', 'Good fit', 'Not the best fit']
 
 type Block = { name: string; line: number; labels: Record<string, string>; items: string[]; paras: string[]; fitYes: string[]; fitNo: string[]; faq: { q: string; a: string }[] }
 
@@ -88,7 +88,7 @@ function parse(file: string, text: string): SeminarStory {
   endPara()
 
   const find = (name: string) => blocks.find((b) => b.name === name)
-  const known = ['hero goals', 'problem', 'solution', 'benefits', 'research', 'steps', 'fit', 'questions']
+  const known = ['hero', 'problem', 'solution', 'benefits', 'research', 'steps', 'fit', 'questions']
   for (const b of blocks) if (!known.includes(b.name)) fail(b.line, `"## ${b.name}" is not a section this page knows. Sections are: ${known.join(', ')}.`)
   const need = (b: Block, label: string) => b.labels[label] || fail(b.line, `the "${b.name}" section needs a "${label}:" line.`)
   const pair = (b: Block, s: string) => {
@@ -97,7 +97,7 @@ function parse(file: string, text: string): SeminarStory {
     return { h: s.slice(0, at).trim(), rest: s.slice(at + 2).trim() }
   }
 
-  const goals = find('hero goals')
+  const hero = find('hero')
   const problem = find('problem')
   const solution = find('solution')
   const benefits = find('benefits')
@@ -107,7 +107,8 @@ function parse(file: string, text: string): SeminarStory {
   const questions = find('questions')
 
   return {
-    goals: goals?.items ?? [],
+    goals: hero?.items ?? [],
+    ...(hero && { hero: { kick: need(hero, 'Label'), sub: need(hero, 'Subtitle'), btn: need(hero, 'Button') } }),
     ...(problem && { problem: { h: need(problem, 'Heading'), lede: need(problem, 'Intro'), qs: problem.items, close: problem.labels.Closing ?? '' } }),
     ...(solution && { solution: { h: need(solution, 'Heading'), p: solution.paras, ...(solution.labels.Label && { kick: solution.labels.Label }), ...(solution.labels.Photo && { img: solution.labels.Photo }) } }),
     ...(benefits && { benefits: { h: need(benefits, 'Heading'), items: benefits.items.map((s) => { const x = pair(benefits, s); return { h: x.h, p: x.rest } }) } }),

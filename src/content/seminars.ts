@@ -71,6 +71,9 @@ export type SeminarCE = {
 export type SeminarStory = {
   /** Three goals the doctor wants, shown in the hero. Goals, not guarantees. */
   goals: string[]
+  /** The hero's small label, the line under the title, and the wording of
+   *  every registration button on the page. */
+  hero?: { kick: string; sub: string; btn: string }
   problem?: { h: string; lede: string; qs: string[]; close: string }
   solution?: { kick?: string; h: string; p: string[]; img?: string }
   benefits?: { h: string; items: { h: string; p: string }[] }
@@ -342,7 +345,12 @@ export const SEMINARS = {
 
 /* The marketing copy for each page is written in plain documents under
  * `seminar-copy/`; see `./seminarCopy.ts`. */
-for (const [key, story] of Object.entries(SEMINAR_COPY)) if (SEMINARS[key]) SEMINARS[key].story = story
+for (const [key, story] of Object.entries(SEMINAR_COPY)) {
+  const s = SEMINARS[key] as (Seminar & { ctaBtn?: string }) | undefined
+  if (!s) continue
+  s.story = story
+  if (story.hero) { s.kicker = story.hero.kick; s.sub = story.hero.sub; s.ctaBtn = story.hero.btn }
+}
 
 /** Category label shown on catalog cards. */
 export const CATEGORY_LABEL: Record<string, string> = {free:'FREE',fundamentals:'FOUNDATION',intensive:'ADVANCED',bootcamp:'ALL LEVELS',conference:'ALL LEVELS',internship:'BY APPLICATION'}

@@ -4,8 +4,8 @@ This file is the marketing text on the Fundamental 1 page. Change any words you
 like and the page changes with it. Three rules keep it working:
 
 1. Keep every line that starts with "##" or "###" (the sections and questions).
-2. Keep the labels at the start of a line: Heading, Intro, Closing, Photo,
-   Note, Good fit, Not the best fit. Change only the words after the colon.
+2. Keep the labels at the start of a line: Label, Subtitle, Button, Heading,
+   Intro, Closing, Photo, Note, Good fit, Not the best fit. Change only the words after the colon.
 3. A line starting with "- " is one item in a list. Where an item has a title,
    write it as "- Title: the text". Add or remove items freely.
 
@@ -14,7 +14,10 @@ paragraphs. To drop a whole section from the page, delete it, heading and all.
 Dates, prices, the agenda and the instructors are set elsewhere and are not in
 this file.
 
-## Hero goals
+## Hero
+Label: Fundamentals Series · Part 1 of 3
+Subtitle: Your foundation in Advanced Orthogonal analysis begins here.
+Button: RSVP for the Monthly Huddle
 - Build the foundation every correction rests on
 - Take a history and run an exam you can trust
 - Set up a clean, specific x-ray series

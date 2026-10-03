@@ -4,8 +4,8 @@ This file is the marketing text on the AdvO Bootcamp page. Change any words you
 like and the page changes with it. Three rules keep it working:
 
 1. Keep every line that starts with "##" or "###" (the sections and questions).
-2. Keep the labels at the start of a line: Heading, Intro, Closing, Photo,
-   Note, Good fit, Not the best fit. Change only the words after the colon.
+2. Keep the labels at the start of a line: Label, Subtitle, Button, Heading,
+   Intro, Closing, Photo, Note, Good fit, Not the best fit. Change only the words after the colon.
 3. A line starting with "- " is one item in a list. Where an item has a title,
    write it as "- Title: the text". Add or remove items freely.
 
@@ -14,7 +14,10 @@ paragraphs. To drop a whole section from the page, delete it, heading and all.
 Dates, prices, the agenda and the instructors are set elsewhere and are not in
 this file.
 
-## Hero goals
+## Hero
+Label: The Immersive Week · Zero to Fully Equipped
+Subtitle: Five days of hands-on training, guest experts, research updates — and the Friday night awards dinner.
+Button: Register for Bootcamp
 - Learn the complete procedure in one focused week
 - Practice every day with instructors watching
 - Meet the Advanced Orthogonal community in one room
