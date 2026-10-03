@@ -80,6 +80,13 @@ export default function SeminarPage({ param }: { param?: string }) {
   const catalog = useCatalog()
   const [agendaDay, setAgendaDay] = useState(0)
   const [attending, setAttending] = useState<null | { paid: boolean; ce: boolean }>(null)
+  /* Worked out in the browser, so the prerendered page never shows a stale count. */
+  const [daysLeft, setDaysLeft] = useState<number | null>(null)
+  useEffect(() => {
+    const to = seminar?.countdownTo
+    const d = to ? Math.ceil((new Date(to).getTime() - Date.now()) / 86400000) : 0
+    setDaysLeft(d > 0 ? d : null)
+  }, [seminar?.countdownTo])
 
   /* A signed-in current member RSVPs instead of registering when the event is
    * free with membership; once they are on the list the buttons say so. */
@@ -415,6 +422,7 @@ export default function SeminarPage({ param }: { param?: string }) {
             <>
               <StoryGoals story={story} />
               <div className="sherocta">{cta}</div>
+              {daysLeft !== null && <div className="scount">{daysLeft} {daysLeft === 1 ? 'day' : 'days'} to go</div>}
             </>
           )}
         </div>
@@ -462,6 +470,43 @@ export default function SeminarPage({ param }: { param?: string }) {
       {!story && sessionsSec}
 
       {aboutFirst && aboutSec}
+
+      {(s.stats || s.featured) && (
+        <section className="tight">
+          <div className="wrap">
+            {s.stats && (
+              <div className="sdata" style={{ marginTop: 0 }}>
+                {s.stats.map(([n, t]) => <div className="sd" key={t}><b>{n}</b><span>{t}</span></div>)}
+              </div>
+            )}
+            {s.featured && (
+              <>
+                <div className="kick" style={{ marginTop: s.stats ? '48px' : 0 }}>Featured Sessions</div>
+                <h2 className="t">A few of the talks you won’t want to miss</h2>
+                <div className="goldrule" />
+                <div className="sfeat">
+                  {s.featured.map((f) => {
+                    const person = PEOPLE[f.who]
+                    return (
+                      <div className="sf" key={f.title}>
+                        <button type="button" className="who" onClick={() => openBio(f.who)}>
+                          <span className="ph"><Face id={f.who} /></span>
+                          <span><span className="nm">{person?.name}</span><span className="when">{f.when}</span></span>
+                        </button>
+                        <h3>{f.title}</h3>
+                        <p>{f.desc}</p>
+                        <button type="button" className="go" onClick={() => { setAgendaDay(f.day); document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth' }) }}>
+                          In the agenda <span aria-hidden="true">→</span>
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+        </section>
+      )}
 
       {story && (
         <>
@@ -576,7 +621,7 @@ export default function SeminarPage({ param }: { param?: string }) {
           </div>
 
           {agenda.length > 0 && (
-            <div style={{ marginTop: '44px' }}>
+            <div style={{ marginTop: '44px' }} id="agenda">
               <div className="kick">Agenda</div>
               <h2 className="t" style={{ fontSize: '26px' }}>
                 How the time is spent

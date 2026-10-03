@@ -26,22 +26,13 @@ Button: Reserve Your Seat
 ## Problem
 Heading: Upper cervical practice can be a lonely place
 Intro: Most of us work in clinics where no one else does what we do. It’s hard to keep up with new imaging, new research and the cases that don’t fit the textbook.
-- When did you last talk through a hard case with a colleague who does this work?
-- Are you keeping up with CBCT and the updates to the protocol?
-- Do you need CE hours that actually apply to your practice?
-Closing: That’s what this weekend is for.
+Closing: 
 
 ## Benefits
 Heading: Why doctors come to the Conference
 - Practical Clinical Topics: The dizzy patient, why a correction doesn’t hold, scar tissue, and more, with two hands-on labs where you practice what you’ve just learned.
 - 14 CE Hours: Live, in-person instruction through Sherman College of Chiropractic. Check your state’s status below.
 - Shape the Year Ahead: The research project, the instructor pathway and the 2027 announcements happen here, with members in the room.
-
-## Steps
-Heading: Three steps to get there
-- Reserve Your Seat: Free for AOI members (add CE credit for $50), $797 for doctors, $347 for students.
-- Come to St. Petersburg: November 6–7, 8:00 am to 6:00 pm both days.
-- Bring It Home: Take what you learn back to your practice, and join the research project if you’d like to take part.
 
 ## Fit
 Heading: Is the Conference right for you?

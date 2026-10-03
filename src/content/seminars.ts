@@ -124,6 +124,13 @@ export type Seminar = {
   story?: SeminarStory
   /** Put the About section straight after the hero, ahead of the story. */
   aboutFirst?: boolean
+  /** A row of headline numbers, shown after the About section. */
+  stats?: [string, string][]
+  /** Standout sessions from the agenda, shown as cards after the numbers.
+   *  `day` is the agenda tab the card opens. */
+  featured?: { title: string; who: string; when: string; desc: string; day: number }[]
+  /** The hero counts down the days to this moment, then the line disappears. */
+  countdownTo?: string
 }
 
 export const SEMINARS = {
@@ -276,7 +283,13 @@ export const SEMINARS = {
   },
   conference:{
     photo:'conference',
-    cat:'conference', title:'Annual Conference', aboutFirst:true, kicker:'Inflection Point · The Homecoming of the AOI Community', img:'ph-c',
+    cat:'conference', title:'Annual Conference', aboutFirst:true, countdownTo:'2026-11-06T08:00:00-05:00',
+    stats:[['13','presenters'],['14','CE hours'],['2','hands-on labs'],['2','days at the home of Advanced Orthogonal']],
+    featured:[
+      {title:'Clarifying the Dizzy Factor',who:'billiris',when:'FRI · 10:20 AM',day:0,desc:'The short chain of questions and the bedside tests that sort out the dizzy patient fast, then a hands-on lab to practice them in pairs.'},
+      {title:'Cone-Beam CT in Upper Cervical Practice',who:'colavita',when:'SAT · 9:00 AM',day:1,desc:'What CBCT shows that plain X-ray cannot, which cases call for it, patient safety and dose, and what adopting it takes in a working clinic.'},
+      {title:'Upper Cervical Misalignments in Operator Syndrome',who:'hulsey',when:'FRI · 11:20 AM',day:0,desc:'Clinical lessons from caring for combat veterans, with a detailed case and a nonprofit care pathway for veterans.'},
+      {title:'Practice-Based Research',who:'cs',when:'SAT · 3:45 PM',day:1,desc:'How the Institute’s research project works inside a working practice, and how you can take part and add your cases.'}], kicker:'Inflection Point · The Homecoming of the AOI Community', img:'ph-c',
     sub:'Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward — November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.',
     dates:'November 6–7, 2026', ruleNote:'From 2027, the Annual Conference is held the third Friday–Saturday of October every year. Subject to change.', loc:'St. Petersburg, FL', level:'All Levels', format:'2 Days · 8 AM–6 PM', price:'$797',
     fullPrice:797, memPrice:0, studentPrice:347, facultyFree:true,

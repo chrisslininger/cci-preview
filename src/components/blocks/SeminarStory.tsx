@@ -31,15 +31,15 @@ export function StoryProblem({ story }: Props) {
         <h2 className="t">{p.h}</h2>
         <div className="goldrule" />
         <p className="lede">{p.lede}</p>
-        <div className="sqs">
+        {p.qs.length > 0 && <div className="sqs">
           {p.qs.map((q, i) => (
             <div className="sq" key={q}>
               <div className="n">{String(i + 1).padStart(2, '0')}</div>
               <p>{q}</p>
             </div>
           ))}
-        </div>
-        <p className="probclose">{p.close}</p>
+        </div>}
+        {p.close && <p className="probclose">{p.close}</p>}
       </div>
     </section>
   )
