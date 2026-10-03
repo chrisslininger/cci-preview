@@ -579,11 +579,23 @@ export default function SeminarPage({ param }: { param?: string }) {
       {speakers.length > 0 && (
         <section className="tight" style={{ paddingTop: '8px' }}>
           <div className="wrap">
-            <div className="kick">Faculty</div>
+            <div className="kick">{s.speakerFaces ? 'Presenters' : 'Faculty'}</div>
             <h2 className="t" style={{ fontSize: '26px' }}>
-              Your instructors
+              {s.speakerFaces ? `${speakers.length} presenters, one weekend` : 'Your instructors'}
             </h2>
             <div className="goldrule" />
+            {s.speakerFaces && (
+              <>
+                <div className="sfaces">
+                  {speakers.map((id) => PEOPLE[id] && (
+                    <button type="button" key={id} className="sface" onClick={() => openBio(id)} title={PEOPLE[id]!.name} aria-label={`${PEOPLE[id]!.name}: read bio`}>
+                      <Face id={id} />
+                    </button>
+                  ))}
+                </div>
+                <p className="sfaces-hint">Tap any face for that presenter’s bio.</p>
+              </>
+            )}
             {keynote && PEOPLE[keynote] && (
               <button type="button" className="keynote" onClick={() => openBio(keynote)}>
                 <div className="bd">
@@ -600,7 +612,7 @@ export default function SeminarPage({ param }: { param?: string }) {
                 </div>
               </button>
             )}
-            <div className="spk-grid">
+            {!s.speakerFaces && <div className="spk-grid">
               {rest.map((id) => {
                 const person = PEOPLE[id]
                 if (!person) return null
@@ -618,7 +630,7 @@ export default function SeminarPage({ param }: { param?: string }) {
                   </button>
                 )
               })}
-            </div>
+            </div>}
           </div>
         </section>
       )}

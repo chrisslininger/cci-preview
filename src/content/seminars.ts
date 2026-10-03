@@ -129,6 +129,8 @@ export type Seminar = {
   stats?: [string, string][]
   /** The line beside the numbers. */
   statsH?: string
+  /** Show the speakers as one row of faces instead of large cards. */
+  speakerFaces?: boolean
   /** Standout sessions from the agenda, shown as cards after the numbers.
    *  `day` is the agenda tab the card opens. */
   featured?: { title: string; who: string; when: string; desc: string; day: number }[]
@@ -286,7 +288,7 @@ export const SEMINARS = {
   },
   conference:{
     photo:'conference',
-    cat:'conference', title:'Annual Conference', aboutFirst:true, countdownTo:'2026-11-06T08:00:00-05:00',
+    cat:'conference', title:'Annual Conference', aboutFirst:true, speakerFaces:true, countdownTo:'2026-11-06T08:00:00-05:00',
     statsH:'Two days, one room, the doctors moving this work forward.',
     stats:[['13','presenters'],['14','CE hours'],['2','hands-on labs']],
     featured:[

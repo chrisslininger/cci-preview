@@ -527,6 +527,11 @@ footer .flink:hover{color:var(--color-surface-base)}
   .scd-pills{display:flex;flex-wrap:wrap;gap:10px}
   .scd-pills .pill{display:inline-flex;align-items:baseline;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid color-mix(in oklab, var(--color-brand-accent) 55%, transparent);font-size:14px}
   .scd-pills .pill b{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--color-brand-accent-bright)}
+  .sfaces{display:flex;flex-wrap:wrap;padding-left:16px;margin-top:26px}
+  .sface{position:relative;width:84px;height:84px;border-radius:50%;overflow:hidden;margin-left:-16px;padding:0;border:4px solid var(--color-surface-base);background:var(--color-surface-raised);cursor:pointer;box-shadow:0 6px 18px color-mix(in oklab, var(--color-surface-inverse) 16%, transparent);transition:transform .2s ease, box-shadow .2s ease}
+  .sface:hover,.sface:focus-visible{transform:translateY(-6px);box-shadow:0 12px 26px color-mix(in oklab, var(--color-surface-inverse) 24%, transparent);z-index:1;outline:none}
+  .sface .ini{font-size:20px}
+  .sfaces-hint{margin-top:16px;font-size:13.5px;color:var(--color-content-muted)}
   .scount{margin-top:4px;font-family:var(--font-label);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-brand-accent-bright)}
   .sfeat{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:28px}
   .sf{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -613,6 +618,7 @@ footer .flink:hover{color:var(--color-surface-base)}
     .page-home .hero-img .inner{padding:88px 28px 76px}
     .page-home .herolead p.sub{font-size:16px}
     .probgrid{grid-template-columns:1fr}
+    .sface{width:64px;height:64px;margin-left:-12px;border-width:3px}
     .scd .wrap{grid-template-columns:1fr;gap:22px}
     .scd-big{border-right:0;padding-right:0;text-align:left}
     .scd-big .n{font-size:84px}
