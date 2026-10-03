@@ -44,7 +44,7 @@ Heading: Why start with Fundamental 1
 - Fundamental for a Reason: Every profession drills the basics, and the best practitioners keep returning to them. Fundamental 1 is where those drills begin.
 - Learn It From Home: Live on Zoom, one evening a month, with no travel or time away from your practice. Every session is recorded, so you can watch it again whenever it suits you.
 - Bring Your Own Cases: Every session leaves time for your questions and the cases you’re working on now.
-- Your First Step to Certification: Completing all three Fundamentals is a requirement on the Level 1 Certification track.
+- Your First Step to Certification: The full Fundamentals Series, together with Bootcamp, is one of the pathways to Level 1 Certification.
 
 ## Research
 Heading: What our internal research shows
@@ -91,4 +91,4 @@ Each part builds on the last, but members can join the Monthly Huddle in any mon
 Every session is recorded, and members can watch the recordings whenever it’s convenient.
 
 ### Does it count toward certification?
-Yes. Completing all three Fundamentals is a requirement on the Level 1 Certification track.
+Yes. The full Fundamentals Series together with Bootcamp is one of the pathways to Level 1 Certification.

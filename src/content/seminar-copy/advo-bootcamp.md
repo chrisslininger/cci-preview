@@ -43,7 +43,7 @@ It revisits everything in Fundamentals 1–3: the exam, X-ray and CBCT setup and
 Heading: Why doctors come to Bootcamp
 - Everything in One Week: All of Fundamentals 1–3 plus post-X-ray interpretation, in five focused days.
 - Extensive Hands-On Time: Chiropractors learn best by doing. You perform each step yourself, and instructors catch mistakes on the spot.
-- Your People: Guest experts, research updates, and the whole Advanced Orthogonal community at the awards dinner.
+- Your People: Hear from guest experts, catch up on the latest research, and join the Advanced Orthogonal community at the awards dinner.
 
 ## Steps
 Heading: Three steps to get going
@@ -90,6 +90,9 @@ Yes. Bootcamp is part of the pathways to Level 1 Certification, either after Fun
 
 ### Do I need to bring my own equipment?
 No. Hands-on seminars provide the instruments and imaging you train on.
+
+### What should I bring?
+Your laptop, and any cases you’d like help with: X-rays, exam findings and other case information, with patient names removed.
 
 ### Can students attend?
 Yes. Chiropractic students are welcome at Institute training. Bring proof of current enrollment.

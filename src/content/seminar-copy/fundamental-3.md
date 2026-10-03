@@ -42,7 +42,7 @@ We work through the corrective setup the way you’ll use it in practice: five-s
 Heading: Why doctors take Fundamental 3
 - A Setup You Can Repeat: Follow a defined sequence for the table and the patient, so every visit starts from the same place.
 - The Instrument, Explained: Understand how to aim and deliver the correction with the table-mounted instrument.
-- Ready for Level 1: Finishing the series opens the Level 1 Certification track.
+- Ready for Level 1: Finishing the series, together with Bootcamp, is one of the pathways to Level 1 Certification.
 
 ## Steps
 Heading: Three steps to get going

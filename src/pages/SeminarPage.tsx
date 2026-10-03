@@ -38,6 +38,8 @@ type NoSess = {
   msg?: string
   btn?: string
   primary?: boolean
+  /** Set when the button should start registration rather than go to Contact. */
+  act?: string
 }
 
 const money = (n: number) => n.toLocaleString()
@@ -148,6 +150,7 @@ export default function SeminarPage({ param }: { param?: string }) {
   /* The bottom button does what the session's own button does when there is
    * only one session to choose; with several (or none open) it scrolls up. */
   const onBottom = () => {
+    if (!sessions.length && s.noSess?.act) { onRegister(); return }
     const only = sessions.length === 1 ? sessions[0]! : null
     if (only) {
       const open = only.reg ? catalog.byKey[only.reg]?.open === true : !only.soon && !only.apply
@@ -208,12 +211,19 @@ export default function SeminarPage({ param }: { param?: string }) {
                     </p>
                   </div>
                   <div className="ns-cta">
+                    {s.noSess?.act ? (
+                      /* An open-enrollment course (the free Intro) starts from here. */
+                      <button type="button" className="b sm p-btn" onClick={onRegister}>
+                        {regLabel(s.noSess.btn ?? 'Start Now')}
+                      </button>
+                    ) : (
                     <Link
                       className={`b sm ${s.noSess?.primary ? 'p-btn' : 's-btn on-light'}`}
                       to="/contact"
                     >
                       {s.noSess?.btn ?? 'Notify Me When Dates Are Set'}
                     </Link>
+                    )}
                   </div>
                 </div>
               ) : (

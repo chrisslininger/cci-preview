@@ -91,4 +91,4 @@ Each part builds on the last, but members can join the Monthly Huddle in any mon
 Every session is recorded, and members can watch the recordings whenever it’s convenient.
 
 ### Does it count toward certification?
-Yes. Completing all three Fundamentals is a requirement on the Level 1 Certification track.
+Yes. The full Fundamentals Series together with Bootcamp is one of the pathways to Level 1 Certification.

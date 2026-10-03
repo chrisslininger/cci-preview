@@ -33,13 +33,13 @@ Closing: That’s what this weekend is for.
 
 ## Benefits
 Heading: Why doctors come to the Conference
-- Practical Clinical Topics: The dizzy patient, why a correction doesn’t hold, scar tissue and the atlas, and more, with two hands-on labs where you practice what you’ve just learned.
+- Practical Clinical Topics: The dizzy patient, why a correction doesn’t hold, scar tissue, and more, with two hands-on labs where you practice what you’ve just learned.
 - 14 CE Hours: Live, in-person instruction through Sherman College of Chiropractic. Check your state’s status below.
 - Shape the Year Ahead: The research project, the instructor pathway and the 2027 announcements happen here, with members in the room.
 
 ## Steps
 Heading: Three steps to get there
-- Reserve Your Seat: Free for AOI members, $797 for doctors, $347 for students.
+- Reserve Your Seat: Free for AOI members (add CE credit for $50), $797 for doctors, $347 for students.
 - Come to St. Petersburg: November 6–7, 8:00 am to 6:00 pm both days.
 - Bring It Home: Take what you learn back to your practice, and join the research project if you’d like to take part.
 
@@ -54,12 +54,12 @@ Good fit:
 
 Not the best fit:
 - CE credit is your main reason to come and your state isn’t covered; check the list above first
-- You’re brand new to upper cervical care; the free Intro to AdvO course is a better first step
+- You’re looking to learn the basics of the technique; the free Intro to AdvO course is a better first step
 
 ## Questions
 
 ### Is the Conference free for members?
-Yes. Registration is included with AOI membership. Sign in when you register and the fee is waived.
+Yes. Registration is included with AOI membership. Sign in when you register and the fee is waived. Members add the 14 hours of CE credit for $50.
 
 ### How many CE hours can I earn?
 14 hours through Sherman College of Chiropractic, for live, in-person attendance. Sign in and out of every session with photo ID to receive credit.

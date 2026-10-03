@@ -183,7 +183,7 @@ export default function HomePage() {
                 </div>
               </Link>
               <Link to="/seminars/annual-conference-2026" className="card">
-                <div className="imgwrap"><div className="img ph-c"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">NOV 6&ndash;7</span><span className="loc">TAMPA BAY <span>&middot; FL</span></span></div>
+                <div className="imgwrap"><div className="img ph-c"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">NOV 6&ndash;7</span><span className="loc">ST. PETERSBURG <span>&middot; FL</span></span></div>
                 <div className="bd">
                   <h3>AOI Annual Conference</h3>
                   <div className="meta">2 DAYS &middot; <b>ALL LEVELS</b></div>

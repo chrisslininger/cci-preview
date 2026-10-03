@@ -84,6 +84,12 @@ Three weekends a year: the third Friday and Saturday of February at the Pierce C
 ### Do I need to bring my own equipment?
 No. Hands-on seminars provide the instruments and imaging you train on.
 
+### What should I bring?
+Your laptop, and any cases you’d like help with: X-rays, exam findings and other case information, with patient names removed.
+
+### What are the hours?
+9:00 am to 6:00 pm on Friday and Saturday. Snacks and lunch are provided both days.
+
 ### Does the Intensive carry CE credit?
 Yes. Every Intensive carries 16 hours of continuing education credit through Sherman College of Chiropractic. State approvals vary, so check yours before you register, and sign in and out of every session to receive credit.
 
