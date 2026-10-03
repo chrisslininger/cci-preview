@@ -21,7 +21,7 @@ Button: Register for Bootcamp
 - Learn the complete procedure in one focused week, from exam to adjustment
 - Practice every step hands-on, with instructors watching
 - Add CBCT and post-X-ray interpretation to your analysis
-- Gain immense confidence in your UC skills in a short timeframe
+- Build confidence in your upper cervical skills in a short time
 
 ## Problem
 Heading: Learning a technique in pieces can take years
