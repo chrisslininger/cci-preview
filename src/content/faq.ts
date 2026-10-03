@@ -39,7 +39,7 @@ export const FAQ: Faq[] = [
   },
   {
     q: "Can students attend seminars?",
-    a: "Yes. Chiropractic students are welcome at Institute training, and students are part of who this work is built for. Where a student rate is offered it is published on the event page \u2014 the 2026 Annual Conference student rate is $347. Bring proof of current enrollment.",
+    a: "Yes. Chiropractic students are welcome at Institute training, and students are part of who this work is built for. Where a student rate is offered it is published on the event page \u2014 the Annual Conference student rate is $347. Bring proof of current enrollment.",
   },
   {
     q: "How long does certification take?",

@@ -1,6 +1,6 @@
-# 2026 Annual Conference: page copy
+# Annual Conference: page copy
 
-This file is the marketing text on the 2026 Annual Conference page. Change any words you
+This file is the marketing text on the Annual Conference page. Change any words you
 like and the page changes with it. Three rules keep it working:
 
 1. Keep every line that starts with "##" or "###" (the sections and questions).
@@ -18,7 +18,8 @@ this file.
 Label: Inflection Point · The Homecoming of the AOI Community
 Subtitle: Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward — November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.
 Button: Reserve Your Seat
-- Catch up on what’s new in imaging, research and the protocol
+- Catch up on what’s new in CBCT, research and the protocol
+- Practice new skills hands-on in two supervised labs
 - Earn 14 CE hours through Sherman College of Chiropractic
 - Spend two days with the doctors moving this work forward
 
@@ -26,7 +27,7 @@ Button: Reserve Your Seat
 Heading: Upper cervical practice can be a lonely place
 Intro: Most of us work in clinics where no one else does what we do. It’s hard to keep up with new imaging, new research and the cases that don’t fit the textbook.
 - When did you last talk a hard case through with a colleague who does this work?
-- Are you keeping up with CBCT and the changes to the protocol?
+- Are you keeping up with CBCT and the updates to the protocol?
 - Do you need CE hours that actually apply to your practice?
 Closing: That’s what this weekend is for.
 
@@ -36,11 +37,11 @@ Photo: analyze
 
 On November 6–7, the Institute gathers at the Pierce Clinic of Chiropractic in St. Petersburg, Florida, around this year’s theme: Inflection Point.
 
-Thirteen presenters cover vestibular-ocular rehab, the dizzy patient, cone-beam CT and 3D reference frames, the updated protocol with supervised labs, case studies and the practice-based research project.
+Thirteen presenters cover vestibular-ocular rehab, the dizzy patient, cone-beam CT and 3D reference frames, and the updated protocol, with case studies and the practice-based research project. Two sessions are supervised labs, because chiropractors learn best by doing.
 
 ## Benefits
 Heading: Why doctors come to the Conference
-- Practical Clinical Topics: The dizzy patient, why a correction doesn’t hold, scar tissue and the atlas, and more, with two supervised labs.
+- Practical Clinical Topics: The dizzy patient, why a correction doesn’t hold, scar tissue and the atlas, and more, with two hands-on labs where you practice what you’ve just learned.
 - 14 CE Hours: Live, in-person instruction through Sherman College of Chiropractic. Check your state’s status below.
 - Shape the Year Ahead: The research project, the instructor pathway and the 2027 announcements happen here, with members in the room.
 
@@ -76,6 +77,9 @@ At the Pierce Clinic of Chiropractic in St. Petersburg, Florida.
 
 ### What are the hours?
 8:00 am to 6:00 pm both days. Doors open at 7:00 am on Friday for registration and breakfast.
+
+### Do I need to be an Advanced Orthogonal doctor?
+No. The program is built for upper cervical doctors of every technique, as well as students and chiropractic college faculty.
 
 ### Can students and faculty attend?
 Yes. Students register at $347. Chiropractic college faculty attend free; register as faculty and the Institute confirms your seat.

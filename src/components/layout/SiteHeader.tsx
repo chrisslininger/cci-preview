@@ -39,7 +39,7 @@ const SEMINARS: Group = {
     { group: 'ADVANCED TRAINING' },
     { label: 'AdvO Intensive', to: '/seminars/advo-intensive' },
     { label: 'AdvO Bootcamp', to: '/seminars/advo-bootcamp-2027' },
-    { label: '2026 Annual Conference', to: '/seminars/annual-conference-2026' },
+    { label: 'Annual Conference', to: '/seminars/annual-conference-2026' },
     { group: 'IN PRACTICE' },
     { label: 'Internships', to: '/seminars/internships' },
     { label: 'View All Events →', to: '/seminars' },

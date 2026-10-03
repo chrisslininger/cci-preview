@@ -266,14 +266,14 @@ export const SEMINARS = {
   },
   conference:{
     photo:'conference',
-    cat:'conference', title:'2026 Annual Conference', kicker:'Inflection Point · The Homecoming of the AOI Community', img:'ph-c',
+    cat:'conference', title:'Annual Conference', kicker:'Inflection Point · The Homecoming of the AOI Community', img:'ph-c',
     sub:'Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward — November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.',
     dates:'November 6–7, 2026', ruleNote:'From 2027, the Annual Conference is held the third Friday–Saturday of October every year. Subject to change.', loc:'St. Petersburg, FL', level:'All Levels', format:'2 Days · 8 AM–6 PM', price:'$797',
     fullPrice:797, memPrice:0, studentPrice:347, facultyFree:true,
     mbSub:'Membership is $799 a year and includes the Annual Conference, a $797 value.', mbText:'Conference registration is INCLUDED with AOI membership — a $797 value. Sign in when you register and the fee is waived.',
     sessions:[], hideSess:true,
     regBand:{
-      h:'Register for the 2026 Annual Conference',
+      h:'Register for the Annual Conference',
       sub:'November 6–7, 2026 · 8:00 AM–6:00 PM both days · Pierce Clinic of Chiropractic, St. Petersburg, FL · 14 CE hours through Sherman College of Chiropractic.',
       btn:'Register for the Conference',
       tiers:[
