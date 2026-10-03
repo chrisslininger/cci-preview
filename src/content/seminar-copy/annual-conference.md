@@ -23,14 +23,10 @@ Button: Reserve Your Seat
 - Earn 14 CE hours through Sherman College of Chiropractic
 - Spend two days with the doctors moving this work forward
 
-## Problem
-Heading: Upper cervical practice can be a lonely place
-Intro: Most of us work in clinics where no one else does what we do. It’s hard to keep up with new imaging, new research and the cases that don’t fit the textbook.
-Closing: 
-
 ## Benefits
 Heading: Why doctors come to the Conference
 - Practical Clinical Topics: The dizzy patient, why a correction doesn’t hold, scar tissue, and more, with two hands-on labs where you practice what you’ve just learned.
+- Your Colleagues, in One Room: Talk through hard cases with doctors who do what you do, and keep up with imaging and research together instead of on your own.
 - 14 CE Hours: Live, in-person instruction through Sherman College of Chiropractic. Check your state’s status below.
 - Shape the Year Ahead: The research project, the instructor pathway and the 2027 announcements happen here, with members in the room.
 
