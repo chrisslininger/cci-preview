@@ -16,18 +16,18 @@ this file.
 
 ## Hero
 Label: Fundamentals Series · Part 3 of 3
-Subtitle: The instrument, the correction, and the complete patient protocol.
+Subtitle: Learn the Corrective Setup to achieve optimal & consistent patient outcomes
 Button: RSVP for the Monthly Huddle
-- Set up the patient and the table the same way every visit
-- Deliver the correction with the percussive instrument
-- Bring the whole procedure together, from exam to adjustment
+- Create the game plan to set up the patient correctly every time
+- Lock in the mastoid while keeping the patient relaxed
+- Use the latest mathematical model to calibrate the instrument
 
 ## Problem
 Heading: Knowing the vector is only half the job
-Intro: You can have a careful analysis and still lose it in the setup. The correction depends on how the patient, the table and the instrument are placed.
-- Does your table setup change from one visit to the next?
-- Are you unsure the instrument is aimed where your analysis says it should be?
-- Do the pieces still feel separate, instead of one procedure?
+Intro: You can have a careful analysis and still lose it in the setup. The correction depends on how the patient, the table, and the instrument are set up.
+- How consistent are your patient setups on the table?
+- Are you measuring the head height angle to recalibrate the instrument?
+- Are you aware of the limitations of the ZY and ZX tables?
 Closing: This is the last stretch, and it’s where the Fundamentals come together.
 
 ## Solution
@@ -55,7 +55,7 @@ Heading: Is Fundamental 3 right for you?
 
 Good fit:
 - Coming from Fundamentals 1 and 2, or comfortable with the exam and the analysis
-- An upper cervical doctor who wants a more consistent setup
+- An upper cervical doctor who wants to refine their corrective setup
 - Getting ready for Level 1 Certification
 
 Not the best fit:
