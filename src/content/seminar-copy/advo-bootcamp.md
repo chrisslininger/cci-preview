@@ -49,7 +49,7 @@ Heading: Why doctors come to Bootcamp
 Heading: Three steps to get going
 - Register: AOI members save $600: $1,895 instead of $2,495.
 - Spend the Week in Tampa Bay: Monday to Friday, the week of the third Monday of June.
-- Keep Going: Use it in your practice, then continue with the Monthly Huddle and the Level 1 Certification track, and come back to an Intensive at least every three years to stay sharp.
+- Keep Going: Use it in your practice, then continue with the Monthly Huddle and the Level 1 Certification track. To stay sharp, come back to Bootcamp at least every five years and an Intensive at least every three.
 
 ## Fit
 Heading: Is Bootcamp right for you?
@@ -57,6 +57,7 @@ Heading: Is Bootcamp right for you?
 Good fit:
 - Working toward certification, ideally after Fundamentals 1–3
 - An upper cervical doctor ready to learn the full AdvO procedure in depth
+- An AdvO doctor due for a full refresher; we recommend Bootcamp at least once every five years
 - Cross-training from Atlas Orthogonal or another upper cervical system
 - Ready to commit a full week to your training
 
@@ -79,7 +80,10 @@ Tampa Bay, Florida, Monday to Friday in the week of the third Monday of June. Da
 There are no prerequisites. We recommend Bootcamp after Fundamentals 1–3, especially if you’re seeking certification.
 
 ### How is Bootcamp different from the Intensive?
-Bootcamp is five days and covers the whole procedure in depth, including post-X-ray interpretation and clinical topics. The Intensive is a two-day weekend of demonstration and hands-on practice. Bootcamp suits learning the technique; an Intensive suits refreshing it.
+Bootcamp is five days and covers the whole procedure in depth, including post-X-ray interpretation and clinical topics. The Intensive is a two-day weekend of demonstration and hands-on practice. Bootcamp is where you learn the technique in full; an Intensive keeps your skills sharp in between.
+
+### How often should I attend?
+We recommend attending Bootcamp at least once every five years, with an Intensive at least every three years in between. The technique keeps being refined, and a full week of supervised practice keeps your whole procedure current.
 
 ### Does Bootcamp count toward certification?
 Yes. Bootcamp is part of the pathways to Level 1 Certification, either after Fundamentals 1–3 or together with an advanced seminar such as the Intensive.
