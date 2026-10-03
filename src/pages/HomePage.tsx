@@ -5,6 +5,7 @@ import TestimonialReel from '@/components/blocks/TestimonialReel'
 import HeroVideo from '@/components/blocks/HeroVideo'
 import { SEMINARS } from '@/content/seminars'
 import ConferenceHero from '@/components/blocks/ConferenceHero'
+import { seminarYear } from '@/content/calendar'
 
 /* The morning after the conference's last day, Eastern. Until then the hero
  * announces the conference; from then on the standing hero comes back on its
@@ -16,6 +17,10 @@ export default function HomePage() {
    * browser opening the page after the conference swaps it back on mount. */
   const [over, setOver] = useState(Date.now() >= CONFERENCE_ENDS.getTime())
   useEffect(() => setOver(Date.now() >= CONFERENCE_ENDS.getTime()), [])
+  /* "Explore 2026 Seminars" moves to the next year once this year's last
+   * in-person event is over, the same way. */
+  const [year, setYear] = useState(seminarYear())
+  useEffect(() => setYear(seminarYear()), [])
 
   return (
     <div className="page-home">
@@ -103,7 +108,7 @@ export default function HomePage() {
                 <div className="n">STEP 02</div>
                 <h3>Train Hands-On</h3>
                 <p>Build your skills through seminars, Intensives, and Bootcamp.</p>
-                <Link to="/seminars" className="b sm s-btn on-light">Explore 2026 Seminars</Link>
+                <Link to="/seminars" className="b sm s-btn on-light">Explore {year} Seminars</Link>
               </div>
               <div className="step">
                 <div className="n">STEP 03</div>
@@ -187,7 +192,7 @@ export default function HomePage() {
                 </div>
               </Link>
             </div>
-            <div style={{"marginTop": "30px"}}><Link to="/seminars" className="t-link">View every 2026 event, including the Fundamentals Series<span className="a">&rarr;</span></Link></div>
+            <div style={{"marginTop": "30px"}}><Link to="/seminars" className="t-link">View every {year} event, including the Fundamentals Series<span className="a">&rarr;</span></Link></div>
           </div>
         </section>
 
@@ -223,7 +228,7 @@ export default function HomePage() {
             <div style={{"textAlign": "right"}}>
               <Link to="/seminars/intro-to-advo" className="b lg p-btn" style={{"background": "var(--color-surface-base)", "color": "var(--color-brand-primary-deep)"}}>Start the Free Intro Course</Link>
               <div style={{"marginTop": "12px", "fontFamily": "var(--font-label)", "fontWeight": "600", "fontSize": "11px", "letterSpacing": ".14em", "textTransform": "uppercase", "color": "color-mix(in oklab, var(--color-surface-base) 85.0%, transparent)"}}>No prerequisites &middot; Self-paced &middot; Free</div>
-              <div style={{"marginTop": "16px"}}><Link to="/seminars" className="t-link" style={{"color": "var(--color-surface-base)"}}>Explore 2026 Seminars<span className="a">&rarr;</span></Link></div>
+              <div style={{"marginTop": "16px"}}><Link to="/seminars" className="t-link" style={{"color": "var(--color-surface-base)"}}>Explore {year} Seminars<span className="a">&rarr;</span></Link></div>
             </div>
           </div>
         </section>

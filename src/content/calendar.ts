@@ -96,6 +96,18 @@ export const CONFERENCE_RULE: Rule = { id: 'conference', event: 'Annual Conferen
 /** Every weekend event, in calendar order. */
 export const WEEKEND_RULES: Rule[] = [INTENSIVE_RULES[0]!, INTENSIVE_RULES[1]!, BOOTCAMP_RULE, INTENSIVE_RULES[2]!, CONFERENCE_RULE]
 
+/** The last day of the 2026 conference, which kept its November date. */
+const CONFERENCE_2026_END = new Date(2026, 10, 7)
+
+/** The year of the next in-person event, for labels such as "Explore 2027
+ *  Seminars". It moves on by itself the day after the year's last weekend
+ *  event ends. */
+export function seminarYear(today = new Date()): number {
+  const day = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  if (day <= CONFERENCE_2026_END) return 2026
+  return Math.min(...WEEKEND_RULES.map((r) => nextOccurrence(r, day).start.getFullYear()))
+}
+
 /* -------------------------------------------------------- member Zoom call */
 
 /** The second Tuesday of the month. The Fundamentals year runs October to
