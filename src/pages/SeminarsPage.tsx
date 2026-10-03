@@ -141,7 +141,7 @@ export default function SeminarsPage() {
             ))}
           </div>
           <p className="evcal-note">
-            <b>Fundamentals 1–3</b> are taught live on Zoom in the <b>Monthly Huddle</b> for AOI members this year, on the second
+            <b>Fundamentals 1–3</b> are taught live on Zoom in the <b>Monthly Huddle</b> for AOI members, on the second
             Tuesday of the month at 9:00 pm Eastern (8:00 Central, 7:00 Mountain, 6:00 Pacific):
             Fundamental 1 October–January, Fundamental 2 February–May, Fundamental 3 June–September.
           </p>
