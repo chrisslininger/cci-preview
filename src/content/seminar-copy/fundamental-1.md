@@ -26,7 +26,7 @@ Button: RSVP for the Monthly Huddle
 Heading: Every correction is only as good as what comes before it
 Intro: If the exam is rushed or the films aren’t clean, everything after it is a guess. Many of us learned the basics once and filled in the gaps on our own.
 - Are you confident your exam is telling you what you think it is?
-- Do your films come out clean enough to measure, every time?
+- Do your x-rays come out clean enough to measure, every time?
 - Have you picked up the technique in pieces, without a clear place to start?
 Closing: You’re not behind. You just need a solid starting point.
 
@@ -40,7 +40,7 @@ Our instructors walk through why AdvO works the way it does, the patient history
 
 ## Benefits
 Heading: Why start with Fundamental 1
-- Learn It From Home: Live on Zoom, one evening a month. No travel and no time away from your practice.
+- Learn It From Home: Live on Zoom, one evening a month, with no travel or time away from your practice. Every session is recorded, so you can watch it again whenever it suits you.
 - Bring Your Own Cases: Every session leaves time for your questions and the cases you’re working on now.
 - Your First Step to Certification: Completing all three Fundamentals is a requirement on the Level 1 Certification track.
 
@@ -56,7 +56,7 @@ Note: From the Institute’s internal practice data, not yet published or peer r
 ## Steps
 Heading: Three steps to get going
 - Become a Member: The Monthly Huddle is part of AOI membership, $799 a year.
-- RSVP and Join on Zoom: Second Tuesdays, October through January, at 9:00 pm Eastern.
+- RSVP and Join on Zoom: Second Tuesdays, October through January, at 9:00 pm Eastern. Every session is recorded, so you can watch it again whenever it suits you.
 - Get Hands-On: Attend an AdvO Intensive to practice what you’ve learned with instructors at your side.
 
 ## Fit
@@ -84,6 +84,9 @@ AOI members. The Monthly Huddle is part of membership, which is $799 a year.
 
 ### What if I can’t start at the beginning?
 Each part builds on the last, but members can join the Monthly Huddle in any month.
+
+### What if I miss a session?
+Every session is recorded, and members can watch the recordings whenever it’s convenient.
 
 ### Does it count toward certification?
 Yes. Completing all three Fundamentals is a requirement on the Level 1 Certification track.
