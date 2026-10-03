@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from '@/lib/router'
 import SeminarCard from '@/components/blocks/SeminarCard'
-import { SEMINARS } from '@/content/seminars'
+import { SEMINARS, SEMINAR_SLUG } from '@/content/seminars'
+import { calendarRows, firstCalendarYear } from '@/content/calendar'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
 
 /** `intro` is the featured START HERE banner, so it is not in the grid. */
@@ -18,6 +19,8 @@ const FILTERS = [
 ]
 
 export default function SeminarsPage() {
+  const first = firstCalendarYear()
+  const years = [first, first + 1]
   const [filter, setFilter] = useState('all')
   const register = useRegistration()
 
@@ -108,6 +111,40 @@ export default function SeminarsPage() {
               No events in this category right now — check back soon.
             </p>
           )}
+        </div>
+      </section>
+
+      <section className="mist tight" id="calendar">
+        <div className="wrap">
+          <div className="kick">Plan Ahead</div>
+          <h2 className="t">The {years[0]} &amp; {years[1]} Calendar</h2>
+          <div className="goldrule"></div>
+          <p className="lede">
+            Every event falls on the same days each year — the rule under each name tells you
+            which — so you can plan your practice around it long before registration opens. Dates are subject to change.
+          </p>
+          <div className="evcal" role="table" aria-label={`${years[0]} and ${years[1]} event calendar`}>
+            <div className="evcal-row evcal-head" role="row">
+              <span role="columnheader">Event</span>
+              {years.map((y) => <span role="columnheader" key={y}>{y}</span>)}
+              <span role="columnheader">Where</span>
+            </div>
+            {calendarRows(years).map((row) => (
+              <div className="evcal-row" role="row" key={row.rule}>
+                <span className="ev" role="cell">
+                  {row.page ? <Link to={`/seminars/${SEMINAR_SLUG[row.page]}`}>{row.event}</Link> : <b>{row.event}</b>}
+                  <small>{row.rule}</small>
+                </span>
+                {row.years.map((d, i) => <span className="yr" role="cell" data-yr={years[i]} key={years[i]}>{d}</span>)}
+                <span className="where" role="cell">{row.where}</span>
+              </div>
+            ))}
+          </div>
+          <p className="evcal-note">
+            <b>Fundamentals 1–3</b> are taught live on Zoom for AOI members this year, on the second
+            Tuesday of the month at 9:00 pm Eastern (8:00 Central, 7:00 Mountain, 6:00 Pacific):
+            Fundamental 1 October–January, Fundamental 2 February–May, Fundamental 3 June–September.
+          </p>
         </div>
       </section>
 

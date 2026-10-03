@@ -3,6 +3,7 @@ import { Link } from '@/lib/router'
 import ProblemGrid from '@/components/blocks/ProblemGrid'
 import TestimonialReel from '@/components/blocks/TestimonialReel'
 import HeroVideo from '@/components/blocks/HeroVideo'
+import { SEMINARS } from '@/content/seminars'
 import ConferenceHero from '@/components/blocks/ConferenceHero'
 
 /* The morning after the conference's last day, Eastern. Until then the hero
@@ -158,17 +159,17 @@ export default function HomePage() {
             <h2 className="t">Upcoming Training Opportunities</h2>
             <div className="goldrule"></div>
             <div className="grid3">
-              <Link to="/seminars/advo-intensive-west" className="card">
-                <div className="imgwrap"><div className="img ph-b"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">DATES SOON</span><span className="loc">OREM <span>&middot; UT</span></span></div>
+              <Link to="/seminars/advo-intensive" className="card">
+                <div className="imgwrap"><div className="img ph-b"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">{SEMINARS.intensive!.dates.toUpperCase()}</span><span className="loc">ST. PETERSBURG <span>&middot; FL</span> &amp; OREM <span>&middot; UT</span></span></div>
                 <div className="bd">
-                  <h3>AdvO Intensive &amp; Bridging the Gap</h3>
+                  <h3>AdvO Intensive</h3>
                   <div className="meta">2 DAYS &middot; <b>HANDS-ON</b></div>
-                  <p className="desc">A focused, hands-on event for experienced doctors who want to improve precision and consistency while transitioning into the Advanced Orthogonal approach.</p>
+                  <p className="desc">Two days of hands-on training: the exam, x-ray and CBCT, corrective setup and the adjustment — demonstrated, then practiced.</p>
                   <div className="foot"><span className="t-link">View Event Details<span className="a">&rarr;</span></span></div>
                 </div>
               </Link>
               <Link to="/seminars/advo-bootcamp-2027" className="card">
-                <div className="imgwrap"><div className="img ph-a"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">DATES SOON</span><span className="loc">TAMPA BAY <span>&middot; FL</span></span></div>
+                <div className="imgwrap"><div className="img ph-a"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">{SEMINARS.bootcamp!.dates.toUpperCase()}</span><span className="loc">TAMPA BAY <span>&middot; FL</span></span></div>
                 <div className="bd">
                   <h3>AdvO Bootcamp</h3>
                   <div className="meta">5 DAYS &middot; <b>ALL LEVELS</b></div>

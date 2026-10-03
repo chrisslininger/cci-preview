@@ -23,5 +23,7 @@
 /conference            /seminars/annual-conference-2026       301
 /annual-conference     /seminars/annual-conference-2026       301
 /intro                 /seminars/intro-to-advo                301
+/seminars/advo-intensive-west       /seminars/advo-intensive       301
+/seminars/advo-intensive-west/*     /seminars/advo-intensive/:splat 301
 /internships           /seminars/internships                  301
 /articles-research     /articles                              301
