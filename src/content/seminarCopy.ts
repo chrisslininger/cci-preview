@@ -88,7 +88,7 @@ function parse(file: string, text: string): SeminarStory {
   endPara()
 
   const find = (name: string) => blocks.find((b) => b.name === name)
-  const known = ['hero', 'problem', 'solution', 'benefits', 'research', 'steps', 'fit', 'questions']
+  const known = ['hero', 'problem', 'solution', 'why it works', 'benefits', 'research', 'steps', 'fit', 'questions']
   for (const b of blocks) if (!known.includes(b.name)) fail(b.line, `"## ${b.name}" is not a section this page knows. Sections are: ${known.join(', ')}.`)
   const need = (b: Block, label: string) => b.labels[label] || fail(b.line, `the "${b.name}" section needs a "${label}:" line.`)
   const pair = (b: Block, s: string) => {
@@ -100,6 +100,7 @@ function parse(file: string, text: string): SeminarStory {
   const hero = find('hero')
   const problem = find('problem')
   const solution = find('solution')
+  const why = find('why it works')
   const benefits = find('benefits')
   const research = find('research')
   const steps = find('steps')
@@ -111,6 +112,7 @@ function parse(file: string, text: string): SeminarStory {
     ...(hero && { hero: { kick: need(hero, 'Label'), sub: need(hero, 'Subtitle'), btn: need(hero, 'Button') } }),
     ...(problem && { problem: { h: need(problem, 'Heading'), lede: need(problem, 'Intro'), qs: problem.items, close: problem.labels.Closing ?? '' } }),
     ...(solution && { solution: { h: need(solution, 'Heading'), p: solution.paras, ...(solution.labels.Label && { kick: solution.labels.Label }), ...(solution.labels.Photo && { img: solution.labels.Photo }) } }),
+    ...(why && { why: { h: need(why, 'Heading'), items: why.items.map((s) => { const x = pair(why, s); return { h: x.h, p: x.rest } }) } }),
     ...(benefits && { benefits: { h: need(benefits, 'Heading'), items: benefits.items.map((s) => { const x = pair(benefits, s); return { h: x.h, p: x.rest } }) } }),
     ...(research && { data: { h: need(research, 'Heading'), ...(research.labels.Intro && { lede: research.labels.Intro }), items: research.items.map((s) => { const x = pair(research, s); return { n: x.h, t: x.rest } }), note: need(research, 'Note') } }),
     ...(steps && { steps: { h: need(steps, 'Heading'), items: steps.items.map((s) => { const x = pair(steps, s); return { h: x.h, p: x.rest } }) } }),

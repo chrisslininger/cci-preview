@@ -76,6 +76,8 @@ export type SeminarStory = {
   hero?: { kick: string; sub: string; btn: string }
   problem?: { h: string; lede: string; qs: string[]; close: string }
   solution?: { kick?: string; h: string; p: string[]; img?: string }
+  /** Short cards on why the format works, shown right after the solution. */
+  why?: { h: string; items: { h: string; p: string }[] }
   benefits?: { h: string; items: { h: string; p: string }[] }
   /** Figures from the Institute's own data, with a note saying where they come from. */
   data?: { h: string; lede?: string; items: { n: string; t: string }[]; note: string }

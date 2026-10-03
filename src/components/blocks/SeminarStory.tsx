@@ -73,6 +73,25 @@ export function StorySolution({ story, cta }: Props & { cta: ReactNode }) {
   )
 }
 
+export function StoryWhy({ story }: Props) {
+  const w = story.why
+  if (!w) return null
+  return (
+    <section>
+      <div className="wrap">
+        <div className="kick">Why It Works</div>
+        <h2 className="t">{w.h}</h2>
+        <div className="goldrule" />
+        <div className="swhy">
+          {w.items.map((x) => (
+            <div className="bene" key={x.h}><div className="bar" /><h3>{x.h}</h3><p>{x.p}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export function StoryBenefits({ story }: Props) {
   const b = story.benefits
   if (!b) return null
