@@ -81,11 +81,12 @@ export function eventSlug(r: Rule, o: Occurrence, withMonth: boolean): string {
 
 const PIERCE = { where: 'St. Petersburg, FL', venue: 'Pierce Clinic of Chiropractic' }
 const OREM = { where: 'Orem, UT', venue: 'Sound Corrections Chiropractic' }
+const CEREBRAL = { where: 'St. Petersburg, FL', venue: 'Cerebral' }
 
 export const INTENSIVE_RULES: Rule[] = [
   { id: 'intensive-feb', event: 'AdvO Intensive', rule: 'Third Friday–Saturday of February', month: 1, weekday: 5, nth: 3, days: 2, ...PIERCE, page: 'intensive', slug: 'advo-intensive' },
   { id: 'intensive-apr', event: 'AdvO Intensive', rule: 'Third Friday–Saturday of April', month: 3, weekday: 5, nth: 3, days: 2, ...OREM, page: 'intensive', slug: 'advo-intensive' },
-  { id: 'intensive-aug', event: 'AdvO Intensive', rule: 'Fourth Friday–Saturday of August', month: 7, weekday: 5, nth: 4, days: 2, ...PIERCE, page: 'intensive', slug: 'advo-intensive' },
+  { id: 'intensive-aug', event: 'AdvO Intensive', rule: 'Fourth Friday–Saturday of August', month: 7, weekday: 5, nth: 4, days: 2, ...CEREBRAL, page: 'intensive', slug: 'advo-intensive' },
 ]
 
 export const BOOTCAMP_RULE: Rule = { id: 'bootcamp', event: 'AdvO Bootcamp', rule: 'The week of the third Monday of June', month: 5, weekday: 1, nth: 3, days: 5, where: 'Tampa Bay, FL', venue: '', page: 'bootcamp', slug: 'advo-bootcamp' }

@@ -82,6 +82,7 @@ const clientBuild = await build({
   outfile: join(clientDir, 'assets', 'client.js'),
   define: { 'process.env.NODE_ENV': '"production"' },
   plugins: [alias],
+  loader: { '.md': 'text' },
 })
 const jsFile = clientBuild.outputFiles.find((f) => !f.path.endsWith('.map'))
 const mapFile = clientBuild.outputFiles.find((f) => f.path.endsWith('.map'))
@@ -110,6 +111,7 @@ await build({
   outfile: join(serverDir, 'entry-server.js'),
   define: { 'process.env.NODE_ENV': '"production"' },
   plugins: [alias],
+  loader: { '.md': 'text' },
   packages: 'external',
 })
 
