@@ -48,7 +48,7 @@ Heading: Why start with Fundamental 1
 
 ## Research
 Heading: What our internal research shows
-Intro: The Institute tracks what happens in Advanced Orthogonal practices. These are a few of the figures you’ll go through in Fundamental 1.
+Intro: Upper cervical doctors judge their work by three things: inter-examiner reliability (do two doctors find the same thing?), patient outcomes (do patients actually get better?), and holding patterns (how long does a correction last?). The Institute tracks all three in Advanced Orthogonal practices. Here are a few of the figures you’ll learn about in Fundamental 1.
 - 87%: of supine leg checks by two experienced doctors measured within a quarter inch of each other
 - 83%: of 96 patients scored better on the RAND-36 health survey at their two-week re-evaluation
 - 51%: of patients needed only one adjustment during their entire care plan
