@@ -16,12 +16,12 @@ this file.
 
 ## Hero
 Label: The Immersive Week · Zero to Fully Equipped
-Subtitle: Five days of hands-on training, guest experts, research updates — and the Friday night awards dinner.
+Subtitle: Five days of lecture, hands-on training, guest experts, research updates — and the Friday night awards dinner.
 Button: Register for Bootcamp
 - Learn the complete procedure in one focused week, from exam to adjustment
 - Practice every step hands-on, with instructors watching
 - Add CBCT and post-X-ray interpretation to your analysis
-- Meet the Advanced Orthogonal community in one room
+- Gain immense confidence in your UC skills in a short timeframe
 
 ## Problem
 Heading: Learning a technique in pieces can take years
@@ -29,7 +29,7 @@ Intro: A seminar here, a webinar there, and it can be a long time before the who
 - Do you want to learn the technique properly, but can’t spread it over a year?
 - Have you learned parts of it, but never practiced the whole procedure with an instructor watching?
 - Do you miss being around doctors who do this work every day?
-Closing: There’s a faster way, and you don’t have to do it alone.
+Closing: There’s a faster way: the whole procedure in one focused week.
 
 ## Solution
 Heading: One immersive week
