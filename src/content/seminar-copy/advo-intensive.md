@@ -19,7 +19,7 @@ Label: Hands-On Training · Two Days
 Subtitle: One day to learn the procedure. One day of hands-on training. Come ready to jump in and move fast.
 Button: Choose Your Intensive Weekend
 - Understand each part of the technique quickly, step by step
-- No death by PowerPoint: over 10 hours of hands-on practice
+- No death by PowerPoint: about 10 hours of live demonstration and hands-on practice
 - Earn 16 CE hours through Sherman College of Chiropractic
 
 ## Problem
