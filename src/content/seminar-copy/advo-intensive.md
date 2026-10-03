@@ -16,40 +16,46 @@ this file.
 
 ## Hero
 Label: Hands-On Training · Two Days
-Subtitle: Two days of hands-on training: the exam, x-ray and CBCT, corrective setup and the adjustment — demonstrated, then practiced.
+Subtitle: One day to learn the procedure. One day of hands-on training. Come ready to jump in and move fast.
 Button: Choose Your Intensive Weekend
-- Run the exam, x-ray setup and analysis yourself, step by step
-- Set up the correction the same way, visit after visit
+- Understand each part of the technique quickly, step by step
+- No death by PowerPoint: over 10 hours of hands-on practice
 - Earn 16 CE hours through Sherman College of Chiropractic
 
 ## Problem
-Heading: You’ve seen it explained. Now you need it in your hands.
-Intro: Lectures and Zoom sessions can show you the procedure. But the exam, the films and the setup are physical skills, and without enough hands-on time it’s easy to spend years with a habit no one has corrected.
-- Do you follow the analysis on paper but hesitate once the patient is on the table?
-- Are you unsure whether your setup matches what the films are telling you?
-- Have you been practicing on your own, with no one to tell you what to change?
+Heading: You’ve seen it explained. Now learn it with your hands.
+Intro: A common complaint about chiropractic seminars is that there isn’t enough time to practice. And once we graduate, we rarely have an instructor watch us work and tell us whether we’re doing it right, so it’s easy to spend years with a habit no one has corrected. If that sounds familiar, this seminar is for you.
+- Do you ever hesitate, unsure whether the patient is set up correctly for the adjustment?
+- When was the last time another doctor watched you run an exam?
+- Would it help to have several experienced doctors look at a hard case with you, to see how you could help that patient more?
 Closing: That’s a common place to be, and you don’t have to work through it alone.
 
 ## Solution
 Heading: Two days with instructors at your side
 Photo: setup
 
-The AdvO Intensive is built for exactly this. On day one, our instructors demonstrate every step of the procedure: the history and exam, x-ray and CBCT setup and analysis, pattern understanding, the corrective setup and the adjustment.
+The AdvO Intensive is built for exactly this. On day one, our instructors demonstrate every step of the procedure: the history and exam, x-ray and CBCT setup and analysis, pattern understanding, the corrective setup, and the adjustment.
 
 On day two, it’s your turn. You practice each step under supervision, from the exam through simple and advanced setups, and finish with case studies and your own questions.
 
-It’s a different way of thinking about the craniocervical junction. Take what’s useful: if you leave with a clearer framework, even without changing a thing, the weekend has done its job.
+Chiropractors learn best by doing. Reading a leg check, positioning a patient and lining up the instrument are skills of the hands. You learn them the way you first learned to adjust: by doing them, with an instructor beside you.
+
+What you do yourself stays with you. You remember a step you’ve performed far better than one you’ve only watched or read about, and doing it shows you right away which parts you understand and which you don’t.
+
+Mistakes become lessons. When a step goes wrong on Saturday, an instructor catches it and shows you the fix on the spot, in a room built for practice, instead of months later in your own clinic. That’s how good habits form, and how you leave ready to use the procedure in practice.
+
+You also learn from each other. Working in pairs and talking through cases with other doctors sharpens your own reasoning, and you go home with colleagues you can call when a case gets hard.
 
 ## Benefits
 Heading: Why doctors come to the Intensive
-- Practice, Not Just Theory: Most of day two is supervised practice, so you leave having done each step yourself.
+- Practice, Not Just Theory: Day two is a full day of supervised practice, so you leave having done each step yourself.
 - Feedback While It Counts: Instructors watch your setup and correct it on the spot, before a habit forms.
 - All Three Fundamentals, Hands-On: Its hands-on training covers Fundamentals 1–3, making it the in-person companion to the Monthly Huddle on Zoom.
 
 ## Steps
 Heading: Getting started is simple
-- Choose Your Weekend: Pick St. Petersburg, Florida, or Orem, Utah. AOI members save $200.
-- Train for Two Days: Watch each step demonstrated on Friday, then do it yourself on Saturday.
+- Choose Your Weekend: Pick St. Petersburg, Florida, or Orem, Utah. Each weekend is held in a working clinic set up for training.
+- Train for Two Days: Watch each step demonstrated on Friday, then do it yourself on Saturday. See it, then do it: that’s experiential learning.
 - Take It Into Practice: Use the procedure in your clinic, then keep building with the Monthly Huddle, Bootcamp and Level 1 Certification.
 
 ## Fit
