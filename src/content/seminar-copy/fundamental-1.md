@@ -24,7 +24,7 @@ Button: RSVP for the Monthly Huddle
 
 ## Problem
 Heading: Every correction is only as good as what comes before it
-Intro: If the exam is rushed or the films aren’t clean, everything after it is a guess. Many of us learned the basics once and filled in the gaps on our own.
+Intro: If the exam is rushed or the X-rays aren’t clean, everything after it is a guess. Many of us learned the basics once and filled in the gaps on our own.
 - Are you confident your exam is telling you what you think it is?
 - Do your x-rays come out clean enough to measure, every time?
 - Have you picked up the technique in pieces, without a clear place to start?

@@ -18,30 +18,30 @@ this file.
 Label: Fundamentals Series · Part 2 of 3
 Subtitle: X-ray analysis and line drawing — the measurement skill at the center of the technique.
 Button: RSVP for the Monthly Huddle
-- Measure the misalignment on your films with precision
+- Measure the misalignment on your X-rays with precision
 - Account for each patient’s own anatomy, including genetic anomalies
 - Turn your measurements into a patient-specific correction vector
 
 ## Problem
-Heading: The films only help if you can read them precisely
+Heading: Your X-rays only help if you can read them precisely
 Intro: X-ray analysis is the skill at the center of the technique, and it’s the hardest one to learn on your own.
-- Do two of your own line drawings on the same film come out differently?
+- Do two of your own line drawings on the same X-ray come out differently?
 - Are you unsure how to account for a genetic anomaly in the analysis?
 - Is it hard to get from the measurements to a correction vector you trust?
 Closing: Precision can be learned. It takes a clear method and practice with people who’ve done it.
 
 ## Solution
-Heading: Analysis, worked through on real films
+Heading: Analysis, worked through on real X-rays
 Photo: xray
 
 Fundamental 2 is taught live on Zoom in the Monthly Huddle, on the second Tuesday of each month from February through May at 9:00 pm Eastern.
 
-We work through the sagittal, axial, frontal and horizontal films with the analysis software, turn the measurements into the correction vector, and look at contralateral and ipsilateral misalignment patterns, using real film sets with time for your own cases.
+We work through the sagittal, axial, frontal and horizontal X-rays with the analysis software, turn the measurements into the correction vector, and look at contralateral and ipsilateral misalignment patterns, using real patient X-rays, with time for your own cases.
 
 ## Benefits
 Heading: Why doctors take Fundamental 2
-- Measure, Don’t Guess: Learn a defined way to measure each film against the patient’s own normal.
-- Real Film Sets: Work through actual cases, not idealized textbook examples.
+- Measure, Don’t Guess: Learn a defined way to measure each X-ray against the patient’s own normal.
+- Real Patient X-Rays: Work through actual cases, not idealized textbook examples.
 - From Numbers to a Vector: See how the measurements become a patient-specific correction vector.
 
 ## Steps
