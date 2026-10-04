@@ -118,7 +118,7 @@ export default function EventsPanel() {
   if (loading) return <><h1>Events</h1><div className="ma-sub">Reading the Institute calendar…</div><div className="ma-panel"><p className="ma-empty">One moment.</p></div></>
 
   const upcoming = list.filter((e) => !isPast(e))
-  const past = list.filter(isPast).reverse()
+  const past = list.filter((e) => isPast(e)).reverse()
   const card = (e: EventRow) => {
     const d = dateBlock(e)
     const where = e.venue ? `${e.venue.name}${e.venue.city ? ` · ${e.venue.city}, ${e.venue.state ?? ''}` : ''}` : e.location
