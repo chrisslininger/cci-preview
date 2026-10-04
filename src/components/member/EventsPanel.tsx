@@ -29,8 +29,12 @@ function Pill({ kind = '', children }: { kind?: string; children: React.ReactNod
   return <span className={`cpill ${kind}`}>{children}</span>
 }
 
-type View = 'list' | 'compact' | 'cal'
-const VIEW_KEY = 'aoi.events.view'
+type Layout = 'list' | 'cal'
+type Density = 'compact' | 'comfortable'
+const LAYOUT_KEY = 'aoi.events.layout'
+const DENSITY_KEY = 'aoi.events.density'
+const stored = <T extends string>(key: string, ok: readonly T[], fallback: T): T => { try { const v = localStorage.getItem(key); if (v && (ok as readonly string[]).includes(v)) return v as T } catch { /* no storage */ } return fallback }
+const store = (key: string, v: string) => { try { localStorage.setItem(key, v) } catch { /* no storage */ } }
 /* Small line icons for the compact rows: pencil, two sheets, an X. */
 const svg = (d: string) => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>
 const IC = {
@@ -73,15 +77,15 @@ export default function EventsPanel() {
   const [error, setError] = useState<string | null>(null)
   const [tab, setTab] = useState<Tab>('upcoming')
   const [q, setQ] = useState('')
-  /* Compact (one row per event) on computers, the roomier cards on phones.
-   * The choice is remembered on this device. */
+  /* Two independent choices, both remembered on this device: list or calendar,
+   * and compact (one row per event) or comfortable (cards). Phones always get
+   * the cards. */
   const narrow = useNarrow()
-  const [view, setViewState] = useState<View>(() => {
-    try { const v = localStorage.getItem(VIEW_KEY); if (v === 'list' || v === 'compact' || v === 'cal') return v } catch { /* no storage */ }
-    return 'compact'
-  })
-  const setView = (v: View) => { setViewState(v); try { localStorage.setItem(VIEW_KEY, v) } catch { /* no storage */ } }
-  const shown: View = view === 'compact' && narrow ? 'list' : view
+  const [layout, setLayoutState] = useState<Layout>(() => stored(LAYOUT_KEY, ['list', 'cal'] as const, 'list'))
+  const [density, setDensityState] = useState<Density>(() => stored(DENSITY_KEY, ['compact', 'comfortable'] as const, 'compact'))
+  const setLayout = (v: Layout) => { setLayoutState(v); store(LAYOUT_KEY, v) }
+  const setDensity = (v: Density) => { setDensityState(v); store(DENSITY_KEY, v) }
+  const compact = density === 'compact' && !narrow
   const [open, setOpen] = useState<number | null>(null)
   const [edit, setEdit] = useState<EventRow | 'new' | null>(null)
   const [confirm, setConfirm] = useState<EventRow | null>(null)
@@ -196,7 +200,7 @@ export default function EventsPanel() {
   }
   const table = (items: EventRow[]) => <div className="evt-table"><div className="evt-row head"><span>Date</span><span>Time</span><span>Title</span><span>Location</span><span>Tags</span><span /></div>{items.map(row)}</div>
   const months: Record<string, { y: number; m: number; items: EventRow[] }> = {}
-  if (shown === 'cal') for (const e of list) { const z = zoned(e.starts_at, e.timezone); if (!z) continue; const k = `${z.y}-${String(z.m).padStart(2, '0')}`; (months[k] ??= { y: z.y, m: z.m, items: [] }).items.push(e) }
+  if (layout === 'cal') for (const e of list) { const z = zoned(e.starts_at, e.timezone); if (!z) continue; const k = `${z.y}-${String(z.m).padStart(2, '0')}`; (months[k] ??= { y: z.y, m: z.m, items: [] }).items.push(e) }
   const current = open ? rows.find((x) => x.id === open) ?? null : null
 
   return (
@@ -213,13 +217,11 @@ export default function EventsPanel() {
         {q && <button type="button" className="clr" aria-label="Clear search" onClick={() => setQ('')}>×</button>}
       </div>
       <div className="evt-bar"><span className="cnt">{list.length} {list.length === 1 ? 'event' : 'events'}{q ? ` matching “${q}”` : ''} · sorted by date</span>
-        <div className="evt-seg">{!narrow && <button type="button" className={shown === 'compact' ? 'on' : ''} onClick={() => setView('compact')}>Compact</button>}<button type="button" className={shown === 'list' ? 'on' : ''} onClick={() => setView('list')}>{narrow ? 'List' : 'Comfortable'}</button><button type="button" className={shown === 'cal' ? 'on' : ''} onClick={() => setView('cal')}>Calendar</button></div></div>
+        <div className="evt-segs">{!narrow && <div className="evt-seg"><button type="button" className={compact ? 'on' : ''} onClick={() => setDensity('compact')}>Compact</button><button type="button" className={!compact ? 'on' : ''} onClick={() => setDensity('comfortable')}>Comfortable</button></div>}<div className="evt-seg"><button type="button" className={layout === 'list' ? 'on' : ''} onClick={() => setLayout('list')}>List</button><button type="button" className={layout === 'cal' ? 'on' : ''} onClick={() => setLayout('cal')}>Calendar</button></div></div></div>
       {list.length === 0 && <div className="cert-card" style={{ textAlign: 'center', color: 'var(--color-content-muted)', padding: 30 }}>{q ? `Nothing matches “${q}”.` : 'No events in this list.'}</div>}
-      {shown === 'compact'
-        ? <>{upcoming.length > 0 && <><div className="evt-grp">Upcoming</div>{table(upcoming)}</>}{past.length > 0 && <><div className="evt-grp">Past</div>{table(past)}</>}</>
-        : shown === 'list'
-        ? <>{upcoming.length > 0 && <div className="evt-grp">Upcoming</div>}{upcoming.map(card)}{past.length > 0 && <div className="evt-grp">Past</div>}{past.map(card)}</>
-        : Object.keys(months).sort().map((k) => <div key={k}><div className="evt-grp">{MONL[months[k]!.m]} {months[k]!.y}</div>{months[k]!.items.map(card)}</div>)}
+      {layout === 'list'
+        ? <>{upcoming.length > 0 && <><div className="evt-grp">Upcoming</div>{compact ? table(upcoming) : upcoming.map(card)}</>}{past.length > 0 && <><div className="evt-grp">Past</div>{compact ? table(past) : past.map(card)}</>}</>
+        : Object.keys(months).sort().map((k) => <div key={k}><div className="evt-grp">{MONL[months[k]!.m]} {months[k]!.y}</div>{compact ? table(months[k]!.items) : months[k]!.items.map(card)}</div>)}
 
       {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} onCheckin={canCheckin ? () => { setOpen(null); setRoom(current.id) } : undefined} />}
       {edit && <FormDialog e={edit === 'new' ? null : edit} venues={venues} committees={committees} meId={meId} onClose={() => setEdit(null)} onSaved={async (m) => { setEdit(null); await load(); toast(m) }} onRemove={(e) => { setEdit(null); setConfirm(e) }} />}

@@ -1899,6 +1899,7 @@ a.othercard {
 .cpill.ce { background: var(--color-status-pending-surface); border-color: var(--color-brand-accent); color: var(--color-status-pending-content); }
 .evt-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin: -4px 0 14px; }
 .evt-bar .cnt { font-family: var(--font-sans); font-weight: 500; font-variant-numeric: tabular-nums; font-size: 11px; color: var(--color-content-muted); }
+.evt-segs { display: inline-flex; gap: 8px; flex-wrap: wrap; }
 .evt-seg { display: inline-flex; border: 1px solid var(--color-border-strong); border-radius: 4px; overflow: hidden; }
 .evt-seg button { border: 0; background: transparent; padding: 7px 12px; font: inherit; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; color: var(--color-content-secondary); }
 .evt-seg button.on { background: var(--color-surface-inverse); color: var(--color-content-on-inverse); }
