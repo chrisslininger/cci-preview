@@ -1256,6 +1256,9 @@ a.othercard {
 }
 /* A committee this person chairs or co-chairs. */
 .ma-rail a.lead { color: var(--color-content-on-inverse); font-weight: 600; }
+/* A hairline between your committees and the rest. */
+.ma-rail a.lead-end { margin-bottom: 5px; box-shadow: 0 5px 0 -4px var(--color-border-on-inverse); }
+@media (max-width: 760px) { .ma-rail a.lead-end { margin-bottom: 0; box-shadow: none; } }
 .ma-lead {
   margin-left: 8px;
   padding: 1px 6px;
