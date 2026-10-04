@@ -399,7 +399,10 @@ export const DB_SLUG: Record<string, string | null> = {intro:'intro-to-advo',fun
 export const REG_SLUG: Record<string, string> = {
   fund1: HUDDLE_SLUG, fund2: HUDDLE_SLUG, fund3: HUDDLE_SLUG,
   ...Object.fromEntries(INTENSIVES.map(({ r, o }) => [regKey(r.id), eventSlug(r, o, true)])),
-  'bootcamp:week': eventSlug(BOOTCAMP_RULE, BOOTCAMP, false),
+  /* Bootcamp registers through one permanent event with no year in its
+   * address; the page keeps its own address until #21 moves it. */
+  bootcamp: 'advo-bootcamp',
+  'bootcamp:week': 'advo-bootcamp',
 }
 
 /** Fallback event ids used only when the live sync request fails. */
