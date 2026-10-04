@@ -1663,6 +1663,8 @@ a.othercard {
  * ------------------------------------------------------------------------- */
 
 .acctmenu { position: relative; }
+/* Signed in, the name and circle sit at the window's right edge, not the page column's. */
+.lr-r:has(.acctmenu) { margin-right: calc(min(0px, (1180px - 100vw) / 2)); }
 
 .acctbtn {
   padding: 0;
