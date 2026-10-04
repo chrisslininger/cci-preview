@@ -81,6 +81,15 @@ export default function MemberShell() {
   // On a phone the rail folds away behind one button; picking a page closes it again.
   const [railOpen, setRailOpen] = useState(false)
   useEffect(() => setRailOpen(false), [tab])
+  // While it is open the page behind stays put, and a tap outside the menu closes it.
+  useEffect(() => {
+    if (!railOpen) return
+    const was = document.documentElement.style.overflow
+    document.documentElement.style.overflow = 'hidden'
+    const onDown = (e: PointerEvent) => { if (!(e.target as Element).closest?.('.ma-railwrap')) setRailOpen(false) }
+    document.addEventListener('pointerdown', onDown)
+    return () => { document.documentElement.style.overflow = was; document.removeEventListener('pointerdown', onDown) }
+  }, [railOpen])
   const anyDot = groups.some((g) => g.items.some((i) => dot(i.key)))
 
   return (

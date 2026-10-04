@@ -1518,7 +1518,7 @@ a.othercard {
   .ma-railbtn[aria-expanded="true"]::after { transform: rotate(-135deg) translateY(-2px); }
   .ma-rail {
     display: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
-    height: auto; max-height: 75vh; padding: 6px 0 14px;
+    height: auto; max-height: 75vh; padding: 6px 0 14px; overscroll-behavior: contain;
     box-shadow: 0 14px 30px oklch(20.85% 0.0346 238.78 / 35%);
   }
   .ma-rail.open { display: block; }
