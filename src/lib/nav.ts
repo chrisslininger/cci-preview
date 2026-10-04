@@ -30,7 +30,18 @@ export type NavItem = {
   under?: string
   /** The item's name on its own page's tab row, when it differs from the rail. */
   tabLabel?: string
+  /** The committee this item belongs to — a stem matched against the committee's key or name. */
+  committee?: string
 }
+
+/** Does a committee row match a stem? Key first, name as the fallback ("nominat" finds "Nominations and Elections"). */
+export function isCommittee(c: { key: string; name: string }, stem: string): boolean {
+  return c.key.startsWith(stem) || c.name.toLowerCase().includes(stem)
+}
+
+/** A committee with no page of its own yet: Board, administrators and its own members see it; it opens its reports. */
+const committeeOnly = (stem: string) => (a: Access) =>
+  a.capabilities.includes('board') || a.capabilities.includes('full_admin') || a.committees.some((c) => isCommittee(c, stem))
 
 /** Every management surface — used where a tab opens to anyone who runs anything. */
 const MANAGES: Capability[] = [
@@ -92,15 +103,22 @@ export const NAV: NavItem[] = [
     any: ['board', 'full_admin', 'manage_leads', 'manage_certifications', 'manage_instructors', 'manage_internships'],
   },
   { key: 'leads', label: 'Contacts', group: 'people', any: ['board', 'full_admin', 'manage_leads'] },
-  { key: 'instructors', label: 'Instructors', group: 'people', any: ['manage_instructors', 'manage_seminars', 'board', 'full_admin'] },
   { key: 'board', label: 'Board', group: 'people', any: ['board', 'manage_board'] },
   { key: 'org', label: 'Org Chart', group: 'people', any: ['board', 'full_admin'] },
 
-  /* ----------------------------------------------------------- committees -- */
-  { key: 'certification', label: 'Certifications', group: 'committees', any: ['manage_certifications'] },
-  { key: 'internships', label: 'Internships', group: 'committees', any: ['manage_internships', 'manage_certifications', 'board', 'full_admin'] },
-  { key: 'research', label: 'Research', group: 'committees', any: ['manage_research', 'board', 'full_admin'] },
-  { key: 'colleges', label: 'Colleges', group: 'committees', any: ['manage_colleges', 'manage_internships', 'board', 'full_admin'] },
+  /* ----------------------------------------------------------- committees --
+   * In the Institute's own numbering (the committee folders, 01–10). Five have
+   * a page of their own; the rest open their monthly reports until they do. */
+  { key: 'instructors', label: 'Instructor', committee: 'instructor', group: 'committees', any: ['manage_instructors', 'manage_seminars', 'board', 'full_admin'] },
+  { key: 'c-curriculum', label: 'Curriculum', committee: 'curriculum', group: 'committees', when: committeeOnly('curriculum') },
+  { key: 'c-seminar', label: 'Seminar', committee: 'seminar', group: 'committees', when: committeeOnly('seminar') },
+  { key: 'colleges', label: 'College Outreach', committee: 'college', group: 'committees', any: ['manage_colleges', 'manage_internships', 'board', 'full_admin'] },
+  { key: 'internships', label: 'Internship', committee: 'internship', group: 'committees', any: ['manage_internships', 'manage_certifications', 'board', 'full_admin'] },
+  { key: 'certification', label: 'Certification', committee: 'certification', group: 'committees', any: ['manage_certifications'] },
+  { key: 'research', label: 'Research', committee: 'research', group: 'committees', any: ['manage_research', 'board', 'full_admin'] },
+  { key: 'c-marketing', label: 'Marketing', committee: 'marketing', group: 'committees', when: committeeOnly('marketing') },
+  { key: 'c-nominations', label: 'Nominations & Elections', committee: 'nominat', group: 'committees', when: committeeOnly('nominat') },
+  { key: 'c-collaboration', label: 'Collaboration', committee: 'collaborat', group: 'committees', when: committeeOnly('collaborat') },
 
   /* ---------------------------------------------------------------- admin -- */
   // The Executive Director's cockpit — the role, not the capability, so a Board member or administrator never sees it.

@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
-import { navFor, findNav, railKey, FOLDS, GROUP_LABEL } from '@/lib/nav'
+import { navFor, findNav, railKey, isCommittee, FOLDS, GROUP_LABEL } from '@/lib/nav'
 import type { NavGroup } from '@/lib/nav'
 import { roleLabel } from '@/lib/access'
 import { session } from '@/lib/supabase'
@@ -45,6 +45,8 @@ export default function MemberShell() {
   const [opened, setOpened] = useState<Set<NavGroup>>(new Set())
   const hereGroup = groups.find((g) => g.items.some((i) => i.key === here))?.group
   useEffect(() => { if (hereGroup) setOpened((o) => (o.has(hereGroup) ? o : new Set(o).add(hereGroup))) }, [hereGroup])
+  // Committees this person chairs or co-chairs stand out in the rail.
+  const chairs = (stem?: string) => Boolean(stem) && access.committees.some((c) => c.leads && isCommittee(c, stem!))
   const toggle = (g: NavGroup) => setOpened((o) => { const n = new Set(o); if (n.has(g)) n.delete(g); else n.add(g); return n })
 
   // Red dots: what needs this person right now — a report they owe, a task due, new registrations.
@@ -97,10 +99,13 @@ export default function MemberShell() {
                   <Link
                     key={nav.key}
                     to={`/account#${nav.key}`}
-                    className={nav.key === here ? 'on' : undefined}
+                    className={[nav.key === here ? 'on' : '', chairs(nav.committee) ? 'lead' : ''].filter(Boolean).join(' ') || undefined}
                     aria-current={nav.key === here ? 'page' : undefined}
                   >
-                    {nav.label}
+                    <span>
+                      {nav.label}
+                      {chairs(nav.committee) && <span className="ma-lead">Chair</span>}
+                    </span>
                     {dot(nav.key) && <span className={`ma-dot${dot(nav.key)!.urgent ? ' urgent' : ''}`} title={dot(nav.key)!.title} aria-label={dot(nav.key)!.title} />}
                   </Link>
                 ))}

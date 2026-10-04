@@ -1254,6 +1254,21 @@ a.othercard {
   color: var(--color-rail-label);
   padding: 12px 18px 5px;
 }
+/* A committee this person chairs or co-chairs. */
+.ma-rail a.lead { color: var(--color-content-on-inverse); font-weight: 600; }
+.ma-lead {
+  margin-left: 8px;
+  padding: 1px 6px;
+  border: 1px solid var(--color-brand-accent);
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-brand-accent-bright);
+  vertical-align: 1px;
+}
 /* A folding heading: a chevron that turns when the group opens. */
 .ma-rail button.grp { cursor: pointer; }
 .ma-rail button.grp::after {
