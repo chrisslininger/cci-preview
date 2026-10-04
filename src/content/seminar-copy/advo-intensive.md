@@ -74,10 +74,10 @@ Not the best fit:
 No. You can attend an Intensive at any point. Its hands-on training covers all three Fundamentals, and it pairs well with the Monthly Huddle on Zoom, where Fundamentals 1–3 are taught live.
 
 ### What does it cost?
-$1,295, or $1,095 for AOI members.
+$1,295 per weekend, or $1,095 for AOI members.
 
 ### When and where is it held?
-Three weekends a year: the third Friday and Saturday of February at the Pierce Clinic of Chiropractic in St. Petersburg, Florida; the third Friday and Saturday of April at Sound Corrections Chiropractic in Orem, Utah; and the fourth Friday and Saturday of August at Cerebral, 7601 Dr. M.L.K. Jr. St. N., Suite E, St. Petersburg, Florida. Dates are subject to change.
+The Intensive is offered three times a year, and each registration is for one weekend: the third Friday and Saturday of February at the Pierce Clinic of Chiropractic in St. Petersburg, Florida; the third Friday and Saturday of April at Sound Corrections Chiropractic in Orem, Utah; and the fourth Friday and Saturday of August at Cerebral, 7601 Dr. M.L.K. Jr. St. N., Suite E, St. Petersburg, Florida. Dates are subject to change.
 
 ### Do I need to bring my own equipment?
 No. Hands-on seminars provide the instruments and imaging you train on.
