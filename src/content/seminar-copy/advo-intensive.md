@@ -89,7 +89,7 @@ Your laptop, and any cases you’d like help with: X-rays, exam findings and oth
 9:00 am to 6:00 pm on Friday and Saturday. Snacks and lunch are provided both days.
 
 ### Does the Intensive carry CE credit?
-Yes. Every Intensive carries 16 hours of continuing education credit through Sherman College of Chiropractic. State approvals vary, so check yours before you register, and sign in and out of every session to receive credit.
+Yes. Every Intensive carries 16 hours of continuing education credit through Sherman College of Chiropractic. CE for one state is included in the price. State approvals vary, so check yours before you register, and sign in and out of every session to receive credit.
 
 ### What will I receive?
 A binder at sign-in, notes for each module, and a glossary of the updated AdvO terminology.
