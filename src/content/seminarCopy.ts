@@ -10,6 +10,7 @@
  * -------------------------------------------------------------------------- */
 
 import type { SeminarStory } from './seminars'
+import intro from './seminar-copy/intro-to-advo.md'
 import intensive from './seminar-copy/advo-intensive.md'
 import fund1 from './seminar-copy/fundamental-1.md'
 import fund2 from './seminar-copy/fundamental-2.md'
@@ -18,6 +19,7 @@ import bootcamp from './seminar-copy/advo-bootcamp.md'
 import conference from './seminar-copy/annual-conference.md'
 
 const FILES: Record<string, [string, string]> = {
+  intro: ['intro-to-advo.md', intro],
   intensive: ['advo-intensive.md', intensive],
   fund1: ['fundamental-1.md', fund1],
   fund2: ['fundamental-2.md', fund2],

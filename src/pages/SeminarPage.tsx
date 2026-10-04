@@ -211,7 +211,7 @@ export default function SeminarPage({ param }: { param?: string }) {
    * wording runs through the whole page and leads to the dates. */
   const story = s.story
   const cta = (
-    <button type="button" className="b lg p-btn" onClick={scrollToRegistration}>
+    <button type="button" className="b lg p-btn" onClick={!sessions.length && s.noSess?.act ? onRegister : scrollToRegistration}>
       {regLabel(s.ctaBtn ?? 'Register Now')}
     </button>
   )
