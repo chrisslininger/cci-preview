@@ -199,9 +199,13 @@ export default function SeminarPage({ param }: { param?: string }) {
     scrollToRegistration()
   }
 
-  const related = Object.keys(SEMINARS)
-    .filter((k) => k !== key)
-    .slice(0, 3)
+  /* Related training follows the path a doctor takes: the seminar before this
+   * one and the two after it. Near either end the window slides so there are
+   * always three. Pages off the path (Internships) show its start. */
+  const FLOW = ['intro', 'fund1', 'fund2', 'fund3', 'intensive', 'bootcamp', 'conference'].filter((k) => SEMINARS[k])
+  const at = FLOW.indexOf(key)
+  const from = at < 0 ? 0 : Math.max(0, Math.min(at - 1, FLOW.length - 4))
+  const related = FLOW.slice(from, from + 4).filter((k) => k !== key).slice(0, 3)
 
   /* Pages with a story follow the homepage's marketing flow; one button
    * wording runs through the whole page and leads to the dates. */
