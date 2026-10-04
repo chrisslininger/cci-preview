@@ -25,11 +25,8 @@ Button: RSVP for the Monthly Huddle
 
 ## Problem
 Heading: Your images only help if you can read them precisely
-Intro: Analysis is the skill at the center of the technique, and it’s the hardest one to learn on your own. CBCT adds a third dimension, which requires a different mindset and framework.
-- Have you added CBCT, or thought about it, but aren’t sure how to measure what it shows?
-- Are you unsure how to account for a genetic anomaly in the analysis?
-- Are you coming from a different technique and need to learn AdvO’s approach to analysis?
-Closing: Precision can be learned. It takes a clear method and practice with people who’ve done it.
+Intro: You take the X-rays, maybe a CBCT too, and measuring them is where the doubt creeps in. A genetic anomaly throws off the analysis, or you’re coming from another technique and the AdvO approach still feels unfamiliar.
+Closing: Analysis is the hardest skill to learn on your own, and CBCT adds a third dimension that calls for a different way of thinking. Without a clear method and people to check your work, it’s easy to stay unsure.
 
 ## Solution
 Heading: X-ray and CBCT analysis, worked through on real cases

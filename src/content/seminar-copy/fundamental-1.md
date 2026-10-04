@@ -24,12 +24,8 @@ Button: RSVP for the Monthly Huddle
 
 ## Problem
 Heading: Every correction is only as good as what comes before it
-Intro: If the exam is rushed or the X-rays aren’t clean, everything after it is a guess. Many of us learned the basics once and filled in the gaps on our own.
-- Are you confident your exam is telling you what you think it is?
-- Do your X-rays come out clean enough to measure, every time?
-- Have you picked up the technique in pieces, without a clear place to start?
-- Thinking about adding CBCT to your practice, but not sure how it works?
-Closing: You’re not behind. You just need a solid starting point.
+Intro: You want to know your exam is telling you the truth and your X-rays are clean enough to measure. Maybe you learned the basics once, filled in the gaps on your own, and now you’re eyeing CBCT without knowing where to start.
+Closing: The problem usually isn’t skill. It’s that the foundation was never laid out step by step, and when the exam or the images are off, everything after them is a guess.
 
 ## Solution
 Heading: The Monthly Huddle starts at the beginning

@@ -25,11 +25,8 @@ Button: Register for Bootcamp
 
 ## Problem
 Heading: Learning a technique in pieces can take years
-Intro: A seminar here, a webinar there, and it can be a long time before the whole procedure comes together in your hands.
-- Do you want to learn the technique properly, but can’t spread it over a year?
-- Have you learned parts of it, but never practiced the whole procedure with an instructor watching?
-- Do you miss being around doctors who do this work every day?
-Closing: There’s a faster way: the whole procedure in one focused week.
+Intro: You want to learn the technique properly, but a seminar here and a webinar there means years before the whole procedure comes together. You may know parts of it and still never have practiced it start to finish with an instructor watching.
+Closing: It’s hard to grow alone, too. Most of us work in clinics where no one else does what we do, with no one to talk a hard case through with.
 
 ## Solution
 Heading: One immersive week

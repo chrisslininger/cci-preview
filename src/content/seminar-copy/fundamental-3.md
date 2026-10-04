@@ -24,11 +24,8 @@ Button: RSVP for the Monthly Huddle
 
 ## Problem
 Heading: Knowing the vector is only half the job
-Intro: You can have a careful analysis and still lose it in the setup. The correction depends on how the patient, the table, and the instrument are set up.
-- Are you measuring the head height angle to recalibrate the instrument?
-- When the exam findings don’t clear, do you find yourself changing the numbers from your analysis?
-- Are you locking the head in so that rotation or rocking doesn’t happen?
-Closing: This is the last stretch, and it’s where the Fundamentals come together.
+Intro: You’ve done a careful analysis, then the setup quietly undoes it. The head rocks or rotates, the head height angle goes unmeasured, and when the exam findings don’t clear, it’s tempting to start changing the numbers.
+Closing: The correction depends on how the patient, the table and the instrument are set up. This is the last stretch, where your analysis becomes an adjustment you can repeat.
 
 ## Solution
 Heading: The setup and the adjustment, step by step

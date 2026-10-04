@@ -38,7 +38,7 @@ export function StoryProblem({ story }: Props) {
             <p key={pair[0]}>{pair.join(' ')}</p>
           ))}
         </div>}
-        {p.close && <p className="probclose">{p.close}</p>}
+        {p.close && (p.qs.length ? <p className="probclose">{p.close}</p> : <p className="lede" style={{ marginTop: '14px' }}>{p.close}</p>)}
       </div>
     </section>
   )
