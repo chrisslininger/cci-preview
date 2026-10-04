@@ -464,6 +464,272 @@ export default function SeminarPage({ param }: { param?: string }) {
         </section>
   )
 
+  const facultySec = (
+      speakers.length > 0 && (
+        <section className="tight" style={{ paddingTop: '8px' }} id="presenters">
+          <div className="wrap">
+            <div className="kick">{s.speakerFaces ? 'Presenters' : 'Faculty'}</div>
+            <h2 className="t" style={{ fontSize: '26px' }}>
+              {s.speakerFaces ? `${speakers.length} presenters, one weekend` : 'Your instructors'}
+            </h2>
+            <div className="goldrule" />
+            {s.speakerFaces && (() => {
+              /* Pick a presenter on the left; their bio and sessions show on the
+               * right (below, on a phone). The first presenter shows by default,
+               * so the prerendered page carries a real bio. */
+              const sel = presenter && PEOPLE[presenter] ? presenter : speakers.find((id) => PEOPLE[id])
+              const p = sel ? PEOPLE[sel] : undefined
+              const talks = sel ? agenda.flatMap((day) => day.items.filter((it) => it.who?.includes(sel)).map((it) => ({ day: day.date ?? day.day, t: `${it.t} ${it.ap.split(' · ')[0]}`, title: it.title }))) : []
+              return (
+                <>
+                  <p className="spres-hint">Tap a presenter to read their bio.<span className="swipe"> Swipe or tap the arrows to see everyone.</span></p>
+                  <div className="spres">
+                    <div className={`spres-strip${stripEnds.start ? ' at-start' : ''}${stripEnds.end ? ' at-end' : ''}`}>
+                    <button type="button" className="spres-arrow prev" aria-label="Previous presenters" disabled={stripEnds.start} onClick={() => moveStrip(-1)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+                    </button>
+                    <div className="spres-grid" role="tablist" aria-label="Presenters" ref={stripRef} onScroll={readStrip}>
+                      {speakers.map((id) => PEOPLE[id] && (
+                        <button type="button" role="tab" aria-selected={id === sel} aria-controls="spres-bio" key={id} className={`spres-face${id === sel ? ' on' : ''}`} onClick={() => setPresenter(id)}>
+                          <span className="ph"><Face id={id} /></span>
+                          <span className="nm">{PEOPLE[id]!.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <button type="button" className="spres-arrow next" aria-label="More presenters" disabled={stripEnds.end} onClick={() => moveStrip(1)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                    </div>
+                    {p && (
+                      <div className="spres-bio" id="spres-bio" role="tabpanel" aria-live="polite">
+                        <div className="top">
+                          <span className="ph"><Face id={sel!} /></span>
+                          <div>
+                            <h3>{p.name}</h3>
+                            <div className="cred">{p.cred}</div>
+                          </div>
+                        </div>
+                        {talks.length > 0 && (
+                          <ul className="talks">
+                            {talks.map((x) => <li key={x.title}><span>{x.day} · {x.t}</span>{x.title}</li>)}
+                          </ul>
+                        )}
+                        <p>{p.bio}</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )
+            })()}
+            {keynote && PEOPLE[keynote] && (
+              <button type="button" className="keynote" onClick={() => openBio(keynote)}>
+                <div className="bd">
+                  <span className="flag">KEYNOTE SPEAKER</span>
+                  <h4>{PEOPLE[keynote]!.name}</h4>
+                  <div className="cred">{PEOPLE[keynote]!.cred}</div>
+                  <p>{s.keynoteBlurb ?? PEOPLE[keynote]!.bio}</p>
+                  <span className="t-link" style={{ color: 'var(--color-brand-accent-bright)' }}>
+                    Full Bio →
+                  </span>
+                </div>
+                <div className="pho">
+                  <Face id={keynote} />
+                </div>
+              </button>
+            )}
+            {!s.speakerFaces && <div className="spk-grid">
+              {rest.map((id) => {
+                const person = PEOPLE[id]
+                if (!person) return null
+                return (
+                  <button type="button" className="spk-card" key={id} onClick={() => openBio(id)}>
+                    <div className="pho">
+                      <Face id={id} />
+                    </div>
+                    <span className="rtag">{person.role}</span>
+                    <div className="bd">
+                      <h4>{person.name}</h4>
+                      <div className="cred">{person.cred}</div>
+                      <p>Tap for bio</p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>}
+          </div>
+        </section>
+      )
+  )
+
+  const sponsorsSec = (
+      s.sponsors && s.sponsors.length > 0 && (
+        <section className="dark tight sponsors">
+          <div className="wrap">
+            <div className="kick">Sponsors</div>
+            <h2 className="t" style={{ fontSize: '26px' }}>
+              Thank you to this year’s sponsors
+            </h2>
+            <div className="goldrule" />
+            <div className="spons">
+              {s.sponsors.map((x) => (
+                <a className={`spon${x.light ? ' light' : ''}`} key={x.name} href={x.url} target="_blank" rel="noopener noreferrer">
+                  <img src={`/images/${x.logo}.webp`} alt={x.name} loading="lazy" decoding="async" />
+                </a>
+              ))}
+            </div>
+            <p className="spon-note">
+              Interested in sponsoring?{' '}
+              <Link className="t-link" to="/contact">
+                Contact the Institute
+              </Link>
+            </p>
+          </div>
+        </section>
+      )
+  )
+
+  const curriculumSec = (
+      <section className="mist">
+        <div className="wrap">
+          <div className="learn-center">
+          <div className="kick">Curriculum</div>
+          <h2 className="t" style={{ fontSize: '26px' }}>
+            What you&apos;ll learn
+          </h2>
+          <div className="goldrule" />
+          </div>
+          <div className="learn learn-centered">
+            {s.learn.map((item) => (
+              <div className="li" key={item}>
+                <svg
+                  width="17"
+                  height="17"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--color-brand-accent)"
+                  strokeWidth="2.6"
+                >
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                {item}
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+  )
+
+  const agendaSec = (
+      agenda.length > 0 && (
+        <section className="tight">
+          <div className="wrap">
+            <div id="agenda" className={`agwrap${agendaOpen ? ' open' : ''}`}>
+              <div className="kick">Agenda</div>
+              <h2 className="t" style={{ fontSize: '26px' }}>
+                How the time is spent
+              </h2>
+              <div className="goldrule" />
+              <button type="button" className="b sm s-btn on-light agopen" onClick={() => setAgendaOpen(true)}>
+                View the full agenda
+              </button>
+              <div className="agbody">
+                {agenda.length > 1 && (
+                  <div className="agtabs" role="tablist">
+                    {agenda.map((day, i) => (
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={i === agendaDay}
+                        className={`agtab${i === agendaDay ? ' on' : ''}`}
+                        key={day.day}
+                        onClick={() => setAgendaDay(i)}
+                      >
+                        {day.day}
+                        <small>{day.date ?? ''}</small>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {agenda.map((day, i) => (
+                  <div
+                    className={`agday${i === agendaDay || agenda.length === 1 ? ' on' : ''}`}
+                    key={day.day}
+                  >
+                    {day.items.map((item) => (
+                      <div className="agrow" key={`${item.t}-${item.title}`}>
+                        <div className="rail">
+                          <div className="tm">{item.t}</div>
+                          <div className="ap">{item.ap}</div>
+                        </div>
+                        <div className="acard">
+                          <h4>{item.title}</h4>
+                          <p>{item.desc}</p>
+                          {item.who && item.who.length > 0 && (
+                            <div>
+                              {item.who.map((id) => (
+                                <SpeakerPill id={id} key={id} />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              {agenda.some((day) => day.items.some((item) => item.who && item.who.length > 0)) && (
+                <p className="agenda-hint">TAP ANY INSTRUCTOR PILL FOR THEIR BIO</p>
+              )}
+            </div>
+
+          </div>
+        </section>
+      )
+  )
+
+  const ceSec = (
+      s.ce && (
+        <section className="tight" id="sd-ce">
+          <div className="wrap">
+            <div className="kick">Continuing Education</div>
+            <h2 className="t" style={{ fontSize: '26px' }}>
+              {Number(s.ce.hours)} CE hours through {s.ce.sponsor.split(',')[0]}
+            </h2>
+            <div className="goldrule" />
+            <p className="cesum">{s.ce.note}</p>
+            <p className="cesum">
+              <b>CE counts in</b>{' '}
+              {[...s.ce.approved.map(([st]) => st), ...s.ce.auto, ...s.ce.self].sort().join(', ')}.
+              {s.ce.pending.length > 0 && <> <b>Pending:</b> {s.ce.pending.join(', ')}.</>}
+            </p>
+            <details className="cedetails">
+              <summary>Approval numbers, states not covered and special cases</summary>
+              <div className="cegrid">
+                <div className="cecard">
+                  <div className="cek">Approved</div>
+                  <ul>{s.ce.approved.map(([st, n]) => <li key={st}><b>{st}</b><span>{n}</span></li>)}</ul>
+                </div>
+                <div className="cecard">
+                  <div className="cek">Auto-approved</div>
+                  <p>{s.ce.auto.join(' · ')}</p>
+                  <div className="cek" style={{ marginTop: '14px' }}>DC self-reporting</div>
+                  <p>{s.ce.self.join(' · ')}</p>
+                </div>
+                <div className="cecard">
+                  <div className="cek">Not applied for</div>
+                  <p>{s.ce.notApplied.join(' · ')}</p>
+                  <div className="cek" style={{ marginTop: '14px' }}>Special cases</div>
+                  <ul className="plain">{s.ce.special.map(([st, n]) => <li key={st}><b>{st}</b> {n}</li>)}</ul>
+                </div>
+              </div>
+              <p className="cenote">{s.ce.disclaimer}</p>
+            </details>
+          </div>
+        </section>
+      )
+  )
+
   return (
     <div className="sempage">
       <div className="hero-img short">
@@ -617,272 +883,39 @@ export default function SeminarPage({ param }: { param?: string }) {
        * still feeds the page's search description. */}
       {!story && aboutSec}
 
-      {speakers.length > 0 && (
-        <section className="tight" style={{ paddingTop: '8px' }} id="presenters">
-          <div className="wrap">
-            <div className="kick">{s.speakerFaces ? 'Presenters' : 'Faculty'}</div>
-            <h2 className="t" style={{ fontSize: '26px' }}>
-              {s.speakerFaces ? `${speakers.length} presenters, one weekend` : 'Your instructors'}
-            </h2>
-            <div className="goldrule" />
-            {s.speakerFaces && (() => {
-              /* Pick a presenter on the left; their bio and sessions show on the
-               * right (below, on a phone). The first presenter shows by default,
-               * so the prerendered page carries a real bio. */
-              const sel = presenter && PEOPLE[presenter] ? presenter : speakers.find((id) => PEOPLE[id])
-              const p = sel ? PEOPLE[sel] : undefined
-              const talks = sel ? agenda.flatMap((day) => day.items.filter((it) => it.who?.includes(sel)).map((it) => ({ day: day.date ?? day.day, t: `${it.t} ${it.ap.split(' · ')[0]}`, title: it.title }))) : []
-              return (
-                <>
-                  <p className="spres-hint">Tap a presenter to read their bio.<span className="swipe"> Swipe or tap the arrows to see everyone.</span></p>
-                  <div className="spres">
-                    <div className={`spres-strip${stripEnds.start ? ' at-start' : ''}${stripEnds.end ? ' at-end' : ''}`}>
-                    <button type="button" className="spres-arrow prev" aria-label="Previous presenters" disabled={stripEnds.start} onClick={() => moveStrip(-1)}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-                    </button>
-                    <div className="spres-grid" role="tablist" aria-label="Presenters" ref={stripRef} onScroll={readStrip}>
-                      {speakers.map((id) => PEOPLE[id] && (
-                        <button type="button" role="tab" aria-selected={id === sel} aria-controls="spres-bio" key={id} className={`spres-face${id === sel ? ' on' : ''}`} onClick={() => setPresenter(id)}>
-                          <span className="ph"><Face id={id} /></span>
-                          <span className="nm">{PEOPLE[id]!.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                    <button type="button" className="spres-arrow next" aria-label="More presenters" disabled={stripEnds.end} onClick={() => moveStrip(1)}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
-                    </button>
-                    </div>
-                    {p && (
-                      <div className="spres-bio" id="spres-bio" role="tabpanel" aria-live="polite">
-                        <div className="top">
-                          <span className="ph"><Face id={sel!} /></span>
-                          <div>
-                            <h3>{p.name}</h3>
-                            <div className="cred">{p.cred}</div>
-                          </div>
-                        </div>
-                        {talks.length > 0 && (
-                          <ul className="talks">
-                            {talks.map((x) => <li key={x.title}><span>{x.day} · {x.t}</span>{x.title}</li>)}
-                          </ul>
-                        )}
-                        <p>{p.bio}</p>
-                      </div>
-                    )}
-                  </div>
-                </>
-              )
-            })()}
-            {keynote && PEOPLE[keynote] && (
-              <button type="button" className="keynote" onClick={() => openBio(keynote)}>
-                <div className="bd">
-                  <span className="flag">KEYNOTE SPEAKER</span>
-                  <h4>{PEOPLE[keynote]!.name}</h4>
-                  <div className="cred">{PEOPLE[keynote]!.cred}</div>
-                  <p>{s.keynoteBlurb ?? PEOPLE[keynote]!.bio}</p>
-                  <span className="t-link" style={{ color: 'var(--color-brand-accent-bright)' }}>
-                    Full Bio →
-                  </span>
-                </div>
-                <div className="pho">
-                  <Face id={keynote} />
-                </div>
-              </button>
-            )}
-            {!s.speakerFaces && <div className="spk-grid">
-              {rest.map((id) => {
-                const person = PEOPLE[id]
-                if (!person) return null
-                return (
-                  <button type="button" className="spk-card" key={id} onClick={() => openBio(id)}>
-                    <div className="pho">
-                      <Face id={id} />
-                    </div>
-                    <span className="rtag">{person.role}</span>
-                    <div className="bd">
-                      <h4>{person.name}</h4>
-                      <div className="cred">{person.cred}</div>
-                      <p>Tap for bio</p>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>}
-          </div>
-        </section>
-      )}
-
-      {s.sponsors && s.sponsors.length > 0 && (
-        <section className="dark tight sponsors">
-          <div className="wrap">
-            <div className="kick">Sponsors</div>
-            <h2 className="t" style={{ fontSize: '26px' }}>
-              Thank you to this year’s sponsors
-            </h2>
-            <div className="goldrule" />
-            <div className="spons">
-              {s.sponsors.map((x) => (
-                <a className={`spon${x.light ? ' light' : ''}`} key={x.name} href={x.url} target="_blank" rel="noopener noreferrer">
-                  <img src={`/images/${x.logo}.webp`} alt={x.name} loading="lazy" decoding="async" />
-                </a>
-              ))}
-            </div>
-            <p className="spon-note">
-              Interested in sponsoring?{' '}
-              <Link className="t-link" to="/contact">
-                Contact the Institute
-              </Link>
-            </p>
-          </div>
-        </section>
-      )}
-
-      <section className="mist">
-        <div className="wrap">
-          <div className="learn-center">
-          <div className="kick">Curriculum</div>
-          <h2 className="t" style={{ fontSize: '26px' }}>
-            What you&apos;ll learn
-          </h2>
-          <div className="goldrule" />
-          </div>
-          <div className="learn learn-centered">
-            {s.learn.map((item) => (
-              <div className="li" key={item}>
-                <svg
-                  width="17"
-                  height="17"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="var(--color-brand-accent)"
-                  strokeWidth="2.6"
-                >
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
-                {item}
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {agenda.length > 0 && (
-        <section className="tight">
-          <div className="wrap">
-            <div id="agenda" className={`agwrap${agendaOpen ? ' open' : ''}`}>
-              <div className="kick">Agenda</div>
-              <h2 className="t" style={{ fontSize: '26px' }}>
-                How the time is spent
-              </h2>
-              <div className="goldrule" />
-              <button type="button" className="b sm s-btn on-light agopen" onClick={() => setAgendaOpen(true)}>
-                View the full agenda
-              </button>
-              <div className="agbody">
-                {agenda.length > 1 && (
-                  <div className="agtabs" role="tablist">
-                    {agenda.map((day, i) => (
-                      <button
-                        type="button"
-                        role="tab"
-                        aria-selected={i === agendaDay}
-                        className={`agtab${i === agendaDay ? ' on' : ''}`}
-                        key={day.day}
-                        onClick={() => setAgendaDay(i)}
-                      >
-                        {day.day}
-                        <small>{day.date ?? ''}</small>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {agenda.map((day, i) => (
-                  <div
-                    className={`agday${i === agendaDay || agenda.length === 1 ? ' on' : ''}`}
-                    key={day.day}
-                  >
-                    {day.items.map((item) => (
-                      <div className="agrow" key={`${item.t}-${item.title}`}>
-                        <div className="rail">
-                          <div className="tm">{item.t}</div>
-                          <div className="ap">{item.ap}</div>
-                        </div>
-                        <div className="acard">
-                          <h4>{item.title}</h4>
-                          <p>{item.desc}</p>
-                          {item.who && item.who.length > 0 && (
-                            <div>
-                              {item.who.map((id) => (
-                                <SpeakerPill id={id} key={id} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-              {agenda.some((day) => day.items.some((item) => item.who && item.who.length > 0)) && (
-                <p className="agenda-hint">TAP ANY INSTRUCTOR PILL FOR THEIR BIO</p>
-              )}
-            </div>
-
-          </div>
-        </section>
-      )}
-
-      {s.ce && (
-        <section className="tight" id="sd-ce">
-          <div className="wrap">
-            <div className="kick">Continuing Education</div>
-            <h2 className="t" style={{ fontSize: '26px' }}>
-              {Number(s.ce.hours)} CE hours through {s.ce.sponsor.split(',')[0]}
-            </h2>
-            <div className="goldrule" />
-            <p className="cesum">{s.ce.note}</p>
-            <p className="cesum">
-              <b>CE counts in</b>{' '}
-              {[...s.ce.approved.map(([st]) => st), ...s.ce.auto, ...s.ce.self].sort().join(', ')}.
-              {s.ce.pending.length > 0 && <> <b>Pending:</b> {s.ce.pending.join(', ')}.</>}
-            </p>
-            <details className="cedetails">
-              <summary>Approval numbers, states not covered and special cases</summary>
-              <div className="cegrid">
-                <div className="cecard">
-                  <div className="cek">Approved</div>
-                  <ul>{s.ce.approved.map(([st, n]) => <li key={st}><b>{st}</b><span>{n}</span></li>)}</ul>
-                </div>
-                <div className="cecard">
-                  <div className="cek">Auto-approved</div>
-                  <p>{s.ce.auto.join(' · ')}</p>
-                  <div className="cek" style={{ marginTop: '14px' }}>DC self-reporting</div>
-                  <p>{s.ce.self.join(' · ')}</p>
-                </div>
-                <div className="cecard">
-                  <div className="cek">Not applied for</div>
-                  <p>{s.ce.notApplied.join(' · ')}</p>
-                  <div className="cek" style={{ marginTop: '14px' }}>Special cases</div>
-                  <ul className="plain">{s.ce.special.map(([st, n]) => <li key={st}><b>{st}</b> {n}</li>)}</ul>
-                </div>
-              </div>
-              <p className="cenote">{s.ce.disclaimer}</p>
-            </details>
-          </div>
-        </section>
-      )}
-
-      {story && (
+      {story && !aboutFirst ? (
+        /* Seminar pages: proof and fit come before the detail, then dates,
+         * the instructors and the questions. */
         <>
           <StoryVoices story={story} video={s.mux || s.video ? videoEl : undefined} />
           <StoryFit story={story} />
-          <StoryFaq story={story} />
+          {curriculumSec}
+          {agendaSec}
           {sessionsSec}
+          {facultySec}
+          <StoryFaq story={story} />
+          {ceSec}
+          {sponsorsSec}
+          {regSec}
+        </>
+      ) : (
+        <>
+          {facultySec}
+          {sponsorsSec}
+          {curriculumSec}
+          {agendaSec}
+          {ceSec}
+          {story && (
+            <>
+              <StoryVoices story={story} video={s.mux || s.video ? videoEl : undefined} />
+              <StoryFit story={story} />
+              <StoryFaq story={story} />
+              {sessionsSec}
+            </>
+          )}
+          {!aboutFirst && regSec}
         </>
       )}
-
-      {!aboutFirst && regSec}
 
       <section className="ctaband tight">
         <div className="wrap">
