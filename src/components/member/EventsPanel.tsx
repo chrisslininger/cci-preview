@@ -423,7 +423,7 @@ function FormDialog({ e, venues, committees, meId, onClose, onSaved, onRemove }:
               {gov ? <F l="COMMITTEE"><select className="fi" value={v.committee_id ?? ''} onChange={(ev) => set('committee_id', ev.target.value ? Number(ev.target.value) : null)}><option value="">— none —</option>{committees.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></F>
                 : <F l="CATEGORY"><select className="fi" value={v.category ?? ''} onChange={txt('category')}><option value="">— choose —</option>{CATEGORIES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></F>}
               <F l="AUDIENCE"><input className="fi" value={v.audience ?? ''} onChange={txt('audience')} placeholder="Doctors & Students" /></F>
-              <F l="PUBLIC URL"><div className="evt-slug"><span>/seminars/</span><input className="fi" value={v.slug ?? ''} onChange={txt('slug')} placeholder="auto from title" /></div></F>
+              <F l="EVENT ID" hint="How the website and email links find this event. Don’t change it after people have registered."><input className="fi" value={v.slug ?? ''} onChange={txt('slug')} placeholder="auto from title" /></F>
               <div className="full evt-togrow"><Tog on={!!v.is_keystone} onChange={chk('is_keystone')} l="Keystone event" sub="Highlighted on the Overview pulse" /></div>
             </>}
             {step === 'when' && <>
