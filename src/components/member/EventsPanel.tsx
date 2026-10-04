@@ -31,6 +31,13 @@ function Pill({ kind = '', children }: { kind?: string; children: React.ReactNod
 
 type View = 'list' | 'compact' | 'cal'
 const VIEW_KEY = 'aoi.events.view'
+/* Small line icons for the compact rows: pencil, two sheets, an X. */
+const svg = (d: string) => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>
+const IC = {
+  edit: svg('M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'),
+  copy: svg('M9 9h11v11H9zM5 15H4V4h11v1'),
+  remove: svg('M18 6 6 18M6 6l12 12'),
+}
 const titleCase = (s: string) => s.toLowerCase().replace(/(^|–)([a-z])/g, (_, p: string, c: string) => p + c.toUpperCase())
 /** True on phone-width screens; follows the window as it is resized. */
 function useNarrow(): boolean {
@@ -179,9 +186,9 @@ export default function EventsPanel() {
         <span className="g">{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</span>
         <span className="ac" onClick={(k) => k.stopPropagation()}>
           {canManage && <>
-            <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(e)}>Edit</button>
-            <button type="button" className="b s-btn on-light xs" onClick={() => void onDuplicate(e)}>Duplicate</button>
-            <button type="button" className="b dgr xs" onClick={() => setConfirm(e)}>Remove</button>
+            <button type="button" className="evt-ic" title="Edit" aria-label={`Edit ${e.title}`} onClick={() => setEdit(e)}>{IC.edit}</button>
+            <button type="button" className="evt-ic" title="Duplicate" aria-label={`Duplicate ${e.title}`} onClick={() => void onDuplicate(e)}>{IC.copy}</button>
+            <button type="button" className="evt-ic del" title="Remove" aria-label={`Remove ${e.title}`} onClick={() => setConfirm(e)}>{IC.remove}</button>
           </>}
         </span>
       </article>
