@@ -1235,7 +1235,10 @@ a.othercard {
   align-self: start;
   height: 100vh;
   overflow-y: auto;
+  /* Still scrolls on a short window; the bar itself is hidden. */
+  scrollbar-width: none;
 }
+.ma-rail::-webkit-scrollbar { display: none; }
 .ma-rail .grp {
   display: block;
   font-family: var(--font-label); font-weight: 600;
@@ -1292,55 +1295,6 @@ a.othercard {
   font-size: 14px;
   color: var(--color-content-muted);
   margin-bottom: 22px;
-}
-
-/* ---------------------------------------------------------------- person -- */
-.ma-top {
-  background: var(--color-surface-inverse);
-}
-.ma-top .in {
-  max-width: var(--container-page);
-  margin: 0 auto;
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.ma-who {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-.ma-av {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(142deg, var(--color-brand-primary), var(--color-surface-inverse));
-  color: var(--color-content-on-inverse);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 11.5px;
-  flex-shrink: 0;
-}
-.ma-who b {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 13px;
-  color: var(--color-content-on-inverse);
-  font-weight: 600;
-  line-height: 1.25;
-}
-.ma-who span {
-  font-family: var(--font-label); font-weight: 600;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-brand-accent-bright);
 }
 
 /* --------------------------------------------------------------- chips --- */

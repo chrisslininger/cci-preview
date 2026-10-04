@@ -12,7 +12,7 @@
  * -------------------------------------------------------------------------- */
 import type { Access, Capability } from './access'
 
-export type NavGroup = 'home' | 'mine' | 'institute' | 'admin'
+export type NavGroup = 'home' | 'mine' | 'events' | 'work' | 'people' | 'committees' | 'admin'
 
 export type NavItem = {
   key: string
@@ -63,30 +63,36 @@ export const NAV: NavItem[] = [
     when: (a) => ['level_1', 'level_2'].includes(a.person?.cert_level ?? ''),
   },
 
-  /* ------------------------------------------------------------ institute -- */
-  { key: 'events', label: 'Events', group: 'institute', always: true },
-  { key: 'calendar', label: 'Calendar', group: 'institute', always: true },
-  // Reports: every committee seat can read their committee's submitted reports; chairs file them.
-  { key: 'reports', label: 'Reports', group: 'institute', any: LEADERSHIP, when: (a) => a.committees.length > 0 || a.capabilities.includes('board') || a.capabilities.includes('full_admin') },
+  /* --------------------------------------------------------------- events -- */
+  { key: 'events', label: 'Events', group: 'events', always: true },
+  { key: 'calendar', label: 'Calendar', group: 'events', always: true },
+
+  /* ----------------------------------------------------------------- work -- */
   // Tasks: anyone with a role can be assigned, so anyone with a role sees the tab.
-  { key: 'tasks', label: 'Tasks', group: 'institute', any: [...LEADERSHIP, 'instructor_tools'], when: (a) => a.roles.length > 0 || a.capabilities.includes('full_admin') },
-  { key: 'stats', label: 'Stats', group: 'institute', any: [...LEADERSHIP, 'instructor_tools'] },
-  { key: 'records', label: 'Records', group: 'institute', any: LEADERSHIP, when: (a) => a.committees.length > 0 || a.capabilities.includes('board') || a.capabilities.includes('full_admin') },
+  { key: 'tasks', label: 'Tasks', group: 'work', any: [...LEADERSHIP, 'instructor_tools'], when: (a) => a.roles.length > 0 || a.capabilities.includes('full_admin') },
+  // Reports: every committee seat can read their committee's submitted reports; chairs file them.
+  { key: 'reports', label: 'Reports', group: 'work', any: LEADERSHIP, when: (a) => a.committees.length > 0 || a.capabilities.includes('board') || a.capabilities.includes('full_admin') },
+  { key: 'records', label: 'Records', group: 'work', any: LEADERSHIP, when: (a) => a.committees.length > 0 || a.capabilities.includes('board') || a.capabilities.includes('full_admin') },
+  { key: 'stats', label: 'Stats', group: 'work', any: [...LEADERSHIP, 'instructor_tools'] },
+  { key: 'email', label: 'Email', group: 'work', any: ['full_admin', 'instructor_tools', ...MANAGES] },
+
+  /* --------------------------------------------------------------- people -- */
   {
     key: 'directory',
     label: 'Members',
-    group: 'institute',
+    group: 'people',
     any: ['board', 'full_admin', 'manage_leads', 'manage_certifications', 'manage_instructors', 'manage_internships'],
   },
-  { key: 'leads', label: 'Contacts', group: 'institute', any: ['board', 'full_admin', 'manage_leads'] },
-  { key: 'certification', label: 'Certifications', group: 'institute', any: ['manage_certifications'] },
-  { key: 'instructors', label: 'Instructors', group: 'institute', any: ['manage_instructors', 'manage_seminars', 'board', 'full_admin'] },
-  { key: 'internships', label: 'Internships', group: 'institute', any: ['manage_internships', 'manage_certifications', 'board', 'full_admin'] },
-  { key: 'research', label: 'Research', group: 'institute', any: ['manage_research', 'board', 'full_admin'] },
-  { key: 'colleges', label: 'Colleges', group: 'institute', any: ['manage_colleges', 'manage_internships', 'board', 'full_admin'] },
-  { key: 'board', label: 'Board', group: 'institute', any: ['board', 'manage_board'] },
-  { key: 'org', label: 'Org Chart', group: 'institute', any: ['board', 'full_admin'] },
-  { key: 'email', label: 'Email', group: 'institute', any: ['full_admin', 'instructor_tools', ...MANAGES] },
+  { key: 'leads', label: 'Contacts', group: 'people', any: ['board', 'full_admin', 'manage_leads'] },
+  { key: 'instructors', label: 'Instructors', group: 'people', any: ['manage_instructors', 'manage_seminars', 'board', 'full_admin'] },
+  { key: 'board', label: 'Board', group: 'people', any: ['board', 'manage_board'] },
+  { key: 'org', label: 'Org Chart', group: 'people', any: ['board', 'full_admin'] },
+
+  /* ----------------------------------------------------------- committees -- */
+  { key: 'certification', label: 'Certifications', group: 'committees', any: ['manage_certifications'] },
+  { key: 'internships', label: 'Internships', group: 'committees', any: ['manage_internships', 'manage_certifications', 'board', 'full_admin'] },
+  { key: 'research', label: 'Research', group: 'committees', any: ['manage_research', 'board', 'full_admin'] },
+  { key: 'colleges', label: 'Colleges', group: 'committees', any: ['manage_colleges', 'manage_internships', 'board', 'full_admin'] },
 
   /* ---------------------------------------------------------------- admin -- */
   // The Executive Director's cockpit — the role, not the capability, so a Board member or administrator never sees it.
@@ -97,8 +103,11 @@ export const NAV: NavItem[] = [
 
 export const GROUP_LABEL: Record<NavGroup, string> = {
   home: 'Home',
-  mine: 'Mine',
-  institute: 'Institute',
+  mine: 'My Account',
+  events: 'Events',
+  work: 'Work',
+  people: 'People',
+  committees: 'Committees',
   admin: 'Administration',
 }
 
@@ -113,7 +122,7 @@ export function canSee(item: NavItem, access: Access): boolean {
 
 /** The rail, grouped, with empty groups dropped. */
 export function navFor(access: Access): { group: NavGroup; items: NavItem[] }[] {
-  const order: NavGroup[] = ['home', 'mine', 'institute', 'admin']
+  const order: NavGroup[] = ['home', 'mine', 'events', 'work', 'people', 'committees', 'admin']
   return order
     .map((group) => ({
       group,

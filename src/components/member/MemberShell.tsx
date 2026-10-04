@@ -4,20 +4,22 @@
  * The rail is generated from the capability list, so what a person sees is a
  * consequence of the roles they hold. Assigning a role in the roster is the
  * only administrative act needed — no code changes, no per-person switches.
+ *
+ * Who is signed in, and Sign Out, live in the header's account menu only.
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { navFor, findNav, GROUP_LABEL } from '@/lib/nav'
-import { displayName, initials, primaryRole, roleLabel } from '@/lib/access'
-import { signOut, session } from '@/lib/supabase'
+import { roleLabel } from '@/lib/access'
+import { session } from '@/lib/supabase'
 import { attention, EMPTY, markEventsSeen, logSignInOnce, logActivity } from '@/lib/queries/attention'
 import type { Attention } from '@/lib/queries/attention'
 import MemberPanel from './MemberPanel'
 import Overview from './Overview'
 
 export default function MemberShell() {
-  const { access, refresh } = useAccess()
+  const { access } = useAccess()
   const navigate = useNavigate()
   const { hash } = useLocation()
   const groups = navFor(access)
@@ -66,29 +68,6 @@ export default function MemberShell() {
 
   return (
     <>
-      <div className="ma-top">
-        <div className="in">
-          <div className="ma-who">
-            <div className="ma-av">{initials(access)}</div>
-            <div>
-              <b>{displayName(access)}</b>
-              <span>{primaryRole(access)}</span>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="b sm s-btn on-dark"
-            onClick={() => {
-              signOut()
-              void refresh()
-              navigate('/account')
-            }}
-          >
-            Sign Out
-          </button>
-        </div>
-      </div>
-
       <div className="ma">
         <nav className="ma-rail" aria-label="Member area">
           {groups.map((group) => (
