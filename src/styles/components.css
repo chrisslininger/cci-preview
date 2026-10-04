@@ -513,7 +513,14 @@ footer .flink:hover{color:var(--color-surface-base)}
   .sfit h3{font-size:18px;margin-top:20px}
   .quallist.one{grid-template-columns:1fr;margin-top:16px}
   .benegrid.four .bene:nth-child(n){grid-column:span 3}
-  .swhy{max-width:720px;margin-top:8px}
+  .swhy{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 36px;margin-top:8px;max-width:none}
+  .spain{display:grid;grid-template-columns:1fr 1fr;gap:12px 40px}
+  .spain p.lede{max-width:none}
+  .about-wide .prose{max-width:none;columns:2;column-gap:56px}
+  .about-wide .prose p{break-inside:avoid}
+  .sempage .faq{max-width:none}
+  @media(min-width:961px){.sempage .ctaband .wrap{flex-wrap:nowrap}.sempage .ctaband .wrap > div:first-child{flex:1 1 auto;min-width:0}.sempage .ctaband .wrap > .b{flex:none}}
+  .sempage .cesum{max-width:none}
   .swhy b{color:var(--color-content-primary)}
   .sdata{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:18px;margin-top:28px}
   .sd{border-top:3px solid var(--color-brand-accent);padding-top:16px}
@@ -653,6 +660,8 @@ footer .flink:hover{color:var(--color-surface-base)}
     .page-home .herolead p.sub{font-size:16px}
     .probgrid{grid-template-columns:1fr}
     .spres{grid-template-columns:1fr;gap:18px}
+    .spain{grid-template-columns:1fr}
+    .about-wide .prose{columns:1}
     .agwrap:not(.open) .agopen{display:inline-flex}
     .agwrap:not(.open) .agbody,.agwrap:not(.open) .agenda-hint{display:none}
     .spres-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:6px;padding:4px 44px 10px;margin:0;scrollbar-width:none}

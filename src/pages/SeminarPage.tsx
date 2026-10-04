@@ -397,7 +397,7 @@ export default function SeminarPage({ param }: { param?: string }) {
   const aboutSec = (
       <section className="tight" style={{ paddingTop: '20px' }}>
           <div className={story ? 'wrap' : 'wrap grid2'} style={story ? undefined : { gap: '56px', alignItems: 'start' }}>
-            <div style={story ? { maxWidth: '760px' } : undefined}>
+            <div className={story ? 'about-wide' : undefined}>
               <div className="kick">About This Event</div>
               <h2 className="t" style={{ fontSize: '26px' }}>
                 {s.h2}

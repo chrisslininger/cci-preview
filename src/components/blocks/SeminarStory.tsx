@@ -30,7 +30,12 @@ export function StoryProblem({ story }: Props) {
         <div className="kick">Where You Are</div>
         <h2 className="t">{p.h}</h2>
         <div className="goldrule" />
-        <p className="lede">{p.lede}</p>
+        {p.qs.length === 0 && p.close ? (
+          <div className="spain">
+            <p className="lede">{p.lede}</p>
+            <p className="lede">{p.close}</p>
+          </div>
+        ) : <p className="lede">{p.lede}</p>}
         {/* The questions read as short paragraphs, two to a paragraph: no
             boxes, so they stay compact on a phone. */}
         {p.qs.length > 0 && <div className="sqp">
@@ -38,7 +43,7 @@ export function StoryProblem({ story }: Props) {
             <p key={pair[0]}>{pair.join(' ')}</p>
           ))}
         </div>}
-        {p.close && (p.qs.length ? <p className="probclose">{p.close}</p> : <p className="lede" style={{ marginTop: '14px' }}>{p.close}</p>)}
+        {p.close && p.qs.length > 0 && <p className="probclose">{p.close}</p>}
       </div>
     </section>
   )
