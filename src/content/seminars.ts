@@ -265,7 +265,7 @@ export const SEMINARS = {
     overview:'<p>Bootcamp is a week-long, comprehensive training in the Advanced Orthogonal technique and procedures. It revisits every part of Fundamentals 1–3, adds comprehensive training in post-X-ray analysis and interpretation, and gives you extensive hands-on time to apply it all in a clinical setting.</p><p>We recommend it after Fundamentals 1–3, especially if you’re seeking certification. The week closes with the Friday night awards dinner, with guest experts, research updates and the whole Advanced Orthogonal community.</p>',
     learn:['Every part of Fundamentals 1–3, revisited in one week','X-ray and CBCT positioning and analysis','Biomechanics and table placement','Post-X-ray interpretation and post-adjustment reasoning','Craniocervical neurology, CSF dynamics, concussion and headaches','Extensive supervised hands-on practice'],
     sched:[['MON–TUE','History and exam, craniocervical neurology, X-ray and CBCT positioning and analysis.'],['WED–THU','Biomechanics and table placement, post-X-ray interpretation, and post-adjustment reasoning, with hands-on practice.'],['FRIDAY','Concussion and headaches, then the awards dinner celebrating the community.']],
-    ctaH:'Members save $600.', ctaP:`Tampa Bay, FL · ${longRange(BOOTCAMP)} · $1,895 for AOI members, $2,495 standard.`, ctaBtn:'Register for Bootcamp',
+    ctaH:'One week. The whole procedure.', ctaP:`Tampa Bay, FL · ${longRange(BOOTCAMP)} · $1,895 for AOI members, $2,495 standard.`, ctaBtn:'Register for Bootcamp',
     spk:['cs','jk'], keynote:null,
     agenda:[
       {day:'Day 1',date:'MONDAY',items:[
