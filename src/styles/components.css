@@ -1484,30 +1484,47 @@ a.othercard {
 .ma-tabs a:hover { color: var(--color-content-primary); }
 .ma-tabs a.on { color: var(--color-brand-primary-deep); border-bottom-color: var(--color-brand-accent); }
 
-/* A shut group shows only its heading — on a computer. The phone strip shows everything. */
-@media (min-width: 761px) {
-  .ma-rail .shut a { display: none; }
-}
+/* A shut group shows only its heading. */
+.ma-rail .shut a { display: none; }
+
+/* The phone's menu button; hidden on a computer, where the rail is always there. */
+.ma-railbtn { display: none; }
+/* On a computer the wrapper steps aside and the rail is the grid's first column. */
+.ma-railwrap { display: contents; }
 
 @media (max-width: 760px) {
   /* auto 1fr: the rail row takes only its content; min-height goes to main. */
   .ma { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-  /* On a phone the rail is a sticky strip you swipe sideways — one thumb
-   * gesture, the current tab scrolled into view, content on the first screen. */
+  /* On a phone the rail folds away behind one button that names the page you
+   * are on; tapping it drops the same grouped list down over the page. */
+  .ma-railwrap { display: block; position: sticky; top: 0; z-index: 21; }
+  .ma-railbtn {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 12px 16px; border: 0; border-bottom: 1px solid var(--color-border-on-inverse);
+    background: var(--color-surface-rail); color: var(--color-content-on-inverse);
+    text-align: left; cursor: pointer;
+  }
+  .ma-railbtn .lbl {
+    font-family: var(--font-label); font-weight: 600; font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--color-rail-label);
+  }
+  .ma-railbtn b { font-family: var(--font-sans); font-weight: 600; font-size: 14px; }
+  .ma-railbtn .ma-dot { margin-left: 0; }
+  .ma-railbtn::after {
+    content: ''; width: 7px; height: 7px; margin-left: auto;
+    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg) translateY(-2px); transition: transform var(--duration-fast) var(--ease-standard);
+  }
+  .ma-railbtn[aria-expanded="true"]::after { transform: rotate(-135deg) translateY(-2px); }
   .ma-rail {
-    position: sticky; top: 0; z-index: 20; height: auto; align-self: auto;
-    padding: 8px 10px; display: flex; flex-wrap: nowrap; gap: 6px;
-    overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; box-shadow: 0 6px 18px oklch(20.85% 0.0346 238.78 / 25%);
+    display: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
+    height: auto; max-height: 75vh; padding: 6px 0 14px;
+    box-shadow: 0 14px 30px oklch(20.85% 0.0346 238.78 / 35%);
   }
-  .ma-rail::-webkit-scrollbar { display: none; }
-  .ma-rail > div { display: contents; }
-  .ma-rail .grp { display: none; }
-  .ma-rail a {
-    width: auto; flex: 0 0 auto; padding: 8px 13px; min-height: 38px;
-    border: 1px solid var(--color-border-on-inverse); border-radius: 999px; border-left-width: 1px;
-  }
-  .ma-rail a.on { border-color: var(--color-brand-accent); background: var(--color-surface-rail-active); }
+  .ma-rail.open { display: block; }
+  /* Bigger targets for a thumb. */
+  .ma-rail a { padding: 10px 18px 10px 32px; }
+  .ma-rail .grp { padding: 14px 18px 7px; }
   .ma-main { padding: 20px 16px 50px; }
 }
 

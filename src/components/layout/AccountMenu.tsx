@@ -17,9 +17,9 @@ import { displayName, initials, primaryRole } from '@/lib/access'
 import { signOut } from '@/lib/supabase'
 
 const ITEMS = [
-  { label: 'My Profile', to: '/account#membership' },
+  { label: 'My Account', to: '/account#membership' },
   { label: 'My Events', to: '/account#events' },
-  { label: 'My Certifications', to: '/account#mycert' },
+  { label: 'My Certification', to: '/account#mycert' },
   { label: 'My CE', to: '/account#myce' },
 ]
 

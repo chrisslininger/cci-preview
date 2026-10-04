@@ -78,48 +78,54 @@ export default function MemberShell() {
     return null
   }
 
-  // On a phone the rail is a horizontal strip; keep the current tab in view.
-  useEffect(() => {
-    if (typeof window === 'undefined' || window.innerWidth > 760) return
-    document.querySelector('.ma-rail a.on')?.scrollIntoView({ inline: 'center', block: 'nearest' })
-  }, [tab])
+  // On a phone the rail folds away behind one button; picking a page closes it again.
+  const [railOpen, setRailOpen] = useState(false)
+  useEffect(() => setRailOpen(false), [tab])
+  const anyDot = groups.some((g) => g.items.some((i) => dot(i.key)))
 
   return (
     <>
       <div className="ma">
-        <nav className="ma-rail" aria-label="Member area">
-          {groups.map((group) => {
-            const folds = FOLDS.includes(group.group)
-            const open = !folds || opened.has(group.group)
-            const dots = group.items.some((i) => dot(i.key))
-            return (
-              <div key={group.group} className={open ? undefined : 'shut'}>
-                {folds ? (
-                  <button type="button" className="grp" aria-expanded={open} onClick={() => toggle(group.group)}>
-                    {group.group === 'committees' && hasMine ? 'Other Committees' : GROUP_LABEL[group.group]}
-                    {!open && dots && <span className="ma-dot" aria-hidden="true" />}
-                  </button>
-                ) : (
-                  <span className="grp">{GROUP_LABEL[group.group]}</span>
-                )}
-                {group.items.filter((nav) => !nav.under).map((nav) => (
-                  <Link
-                    key={nav.key}
-                    to={`/account#${nav.key}`}
-                    className={[nav.key === here ? 'on' : '', chairs(nav.committee) ? 'lead' : ''].filter(Boolean).join(' ') || undefined}
-                    aria-current={nav.key === here ? 'page' : undefined}
-                  >
-                    <span>
-                      {nav.label}
-                      {chairs(nav.committee) && <span className="ma-lead">Chair</span>}
-                    </span>
-                    {dot(nav.key) && <span className={`ma-dot${dot(nav.key)!.urgent ? ' urgent' : ''}`} title={dot(nav.key)!.title} aria-label={dot(nav.key)!.title} />}
-                  </Link>
-                ))}
-              </div>
-            )
-          })}
-        </nav>
+        <div className="ma-railwrap">
+          <button type="button" className="ma-railbtn" aria-expanded={railOpen} aria-controls="ma-rail" onClick={() => setRailOpen((v) => !v)}>
+            <span className="lbl">Menu</span>
+            <b>{findNav(here)?.label ?? 'Overview'}</b>
+            {!railOpen && anyDot && <span className="ma-dot" aria-hidden="true" />}
+          </button>
+          <nav id="ma-rail" className={`ma-rail${railOpen ? ' open' : ''}`} aria-label="Member area">
+            {groups.map((group) => {
+              const folds = FOLDS.includes(group.group)
+              const open = !folds || opened.has(group.group)
+              const dots = group.items.some((i) => dot(i.key))
+              return (
+                <div key={group.group} className={open ? undefined : 'shut'}>
+                  {folds ? (
+                    <button type="button" className="grp" aria-expanded={open} onClick={() => toggle(group.group)}>
+                      {group.group === 'committees' && hasMine ? 'Other Committees' : GROUP_LABEL[group.group]}
+                      {!open && dots && <span className="ma-dot" aria-hidden="true" />}
+                    </button>
+                  ) : (
+                    <span className="grp">{GROUP_LABEL[group.group]}</span>
+                  )}
+                  {group.items.filter((nav) => !nav.under).map((nav) => (
+                    <Link
+                      key={nav.key}
+                      to={`/account#${nav.key}`}
+                      className={[nav.key === here ? 'on' : '', chairs(nav.committee) ? 'lead' : ''].filter(Boolean).join(' ') || undefined}
+                      aria-current={nav.key === here ? 'page' : undefined}
+                    >
+                      <span>
+                        {nav.label}
+                        {chairs(nav.committee) && <span className="ma-lead">Chair</span>}
+                      </span>
+                      {dot(nav.key) && <span className={`ma-dot${dot(nav.key)!.urgent ? ' urgent' : ''}`} title={dot(nav.key)!.title} aria-label={dot(nav.key)!.title} />}
+                    </Link>
+                  ))}
+                </div>
+              )
+            })}
+          </nav>
+        </div>
 
         <main className="ma-main">
           {tabs.length > 1 && (
