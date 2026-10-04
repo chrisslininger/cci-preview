@@ -91,7 +91,7 @@ export const INTENSIVE_RULES: Rule[] = [
 
 export const BOOTCAMP_RULE: Rule = { id: 'bootcamp', event: 'AdvO Bootcamp', rule: 'The week of the third Monday of June', month: 5, weekday: 1, nth: 3, days: 5, where: 'Tampa Bay, FL', venue: '', page: 'bootcamp', slug: 'advo-bootcamp' }
 
-export const CONFERENCE_RULE: Rule = { id: 'conference', event: 'Annual Conference', rule: 'Third Friday–Saturday of October', month: 9, weekday: 5, nth: 3, days: 2, where: 'Tampa Bay, FL', venue: '' }
+export const CONFERENCE_RULE: Rule = { id: 'conference', event: 'Annual Conference', rule: 'Third Friday–Saturday of October', month: 9, weekday: 5, nth: 3, days: 2, where: 'Tampa Bay, FL', venue: '', page: 'conference' }
 
 /** Every weekend event, in calendar order. */
 export const WEEKEND_RULES: Rule[] = [INTENSIVE_RULES[0]!, INTENSIVE_RULES[1]!, BOOTCAMP_RULE, INTENSIVE_RULES[2]!, CONFERENCE_RULE]
