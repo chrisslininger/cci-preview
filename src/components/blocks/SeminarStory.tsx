@@ -31,12 +31,11 @@ export function StoryProblem({ story }: Props) {
         <h2 className="t">{p.h}</h2>
         <div className="goldrule" />
         <p className="lede">{p.lede}</p>
-        {p.qs.length > 0 && <div className="sqs">
-          {p.qs.map((q, i) => (
-            <div className="sq" key={q}>
-              <div className="n">{String(i + 1).padStart(2, '0')}</div>
-              <p>{q}</p>
-            </div>
+        {/* The questions read as short paragraphs, two to a paragraph: no
+            boxes, so they stay compact on a phone. */}
+        {p.qs.length > 0 && <div className="sqp">
+          {p.qs.reduce<string[][]>((rows, q, i) => (i % 2 ? rows[rows.length - 1]!.push(q) : rows.push([q]), rows), []).map((pair) => (
+            <p key={pair[0]}>{pair.join(' ')}</p>
           ))}
         </div>}
         {p.close && <p className="probclose">{p.close}</p>}
