@@ -81,11 +81,12 @@ export function eventSlug(r: Rule, o: Occurrence, withMonth: boolean): string {
 
 const PIERCE = { where: 'St. Petersburg, FL', venue: 'Pierce Clinic of Chiropractic' }
 const OREM = { where: 'Orem, UT', venue: 'Sound Corrections Chiropractic' }
+const CEREBRAL = { where: 'St. Petersburg, FL', venue: 'Cerebral' }
 
 export const INTENSIVE_RULES: Rule[] = [
   { id: 'intensive-feb', event: 'AdvO Intensive', rule: 'Third Friday–Saturday of February', month: 1, weekday: 5, nth: 3, days: 2, ...PIERCE, page: 'intensive', slug: 'advo-intensive' },
   { id: 'intensive-apr', event: 'AdvO Intensive', rule: 'Third Friday–Saturday of April', month: 3, weekday: 5, nth: 3, days: 2, ...OREM, page: 'intensive', slug: 'advo-intensive' },
-  { id: 'intensive-aug', event: 'AdvO Intensive', rule: 'Fourth Friday–Saturday of August', month: 7, weekday: 5, nth: 4, days: 2, ...PIERCE, page: 'intensive', slug: 'advo-intensive' },
+  { id: 'intensive-aug', event: 'AdvO Intensive', rule: 'Fourth Friday–Saturday of August', month: 7, weekday: 5, nth: 4, days: 2, ...CEREBRAL, page: 'intensive', slug: 'advo-intensive' },
 ]
 
 export const BOOTCAMP_RULE: Rule = { id: 'bootcamp', event: 'AdvO Bootcamp', rule: 'The week of the third Monday of June', month: 5, weekday: 1, nth: 3, days: 5, where: 'Tampa Bay, FL', venue: '', page: 'bootcamp', slug: 'advo-bootcamp' }
@@ -94,6 +95,18 @@ export const CONFERENCE_RULE: Rule = { id: 'conference', event: 'Annual Conferen
 
 /** Every weekend event, in calendar order. */
 export const WEEKEND_RULES: Rule[] = [INTENSIVE_RULES[0]!, INTENSIVE_RULES[1]!, BOOTCAMP_RULE, INTENSIVE_RULES[2]!, CONFERENCE_RULE]
+
+/** The last day of the 2026 conference, which kept its November date. */
+const CONFERENCE_2026_END = new Date(2026, 10, 7)
+
+/** The year of the next in-person event, for labels such as "Explore 2027
+ *  Seminars". It moves on by itself the day after the year's last weekend
+ *  event ends. */
+export function seminarYear(today = new Date()): number {
+  const day = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  if (day <= CONFERENCE_2026_END) return 2026
+  return Math.min(...WEEKEND_RULES.map((r) => nextOccurrence(r, day).start.getFullYear()))
+}
 
 /* -------------------------------------------------------- member Zoom call */
 

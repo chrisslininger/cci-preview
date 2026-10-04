@@ -5,6 +5,7 @@ import TestimonialReel from '@/components/blocks/TestimonialReel'
 import HeroVideo from '@/components/blocks/HeroVideo'
 import { SEMINARS } from '@/content/seminars'
 import ConferenceHero from '@/components/blocks/ConferenceHero'
+import { seminarYear } from '@/content/calendar'
 
 /* The morning after the conference's last day, Eastern. Until then the hero
  * announces the conference; from then on the standing hero comes back on its
@@ -16,6 +17,10 @@ export default function HomePage() {
    * browser opening the page after the conference swaps it back on mount. */
   const [over, setOver] = useState(Date.now() >= CONFERENCE_ENDS.getTime())
   useEffect(() => setOver(Date.now() >= CONFERENCE_ENDS.getTime()), [])
+  /* "Explore 2026 Seminars" moves to the next year once this year's last
+   * in-person event is over, the same way. */
+  const [year, setYear] = useState(seminarYear())
+  useEffect(() => setYear(seminarYear()), [])
 
   return (
     <div className="page-home">
@@ -103,7 +108,7 @@ export default function HomePage() {
                 <div className="n">STEP 02</div>
                 <h3>Train Hands-On</h3>
                 <p>Build your skills through seminars, Intensives, and Bootcamp.</p>
-                <Link to="/seminars" className="b sm s-btn on-light">Explore 2026 Seminars</Link>
+                <Link to="/seminars" className="b sm s-btn on-light">Explore {year} Seminars</Link>
               </div>
               <div className="step">
                 <div className="n">STEP 03</div>
@@ -178,7 +183,7 @@ export default function HomePage() {
                 </div>
               </Link>
               <Link to="/seminars/annual-conference-2026" className="card">
-                <div className="imgwrap"><div className="img ph-c"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">NOV 6&ndash;7</span><span className="loc">TAMPA BAY <span>&middot; FL</span></span></div>
+                <div className="imgwrap"><div className="img ph-c"><div className="duo"></div><div className="duo2"></div></div><div className="scrim"></div><span className="datechip">NOV 6&ndash;7</span><span className="loc">ST. PETERSBURG <span>&middot; FL</span></span></div>
                 <div className="bd">
                   <h3>AOI Annual Conference</h3>
                   <div className="meta">2 DAYS &middot; <b>ALL LEVELS</b></div>
@@ -187,7 +192,7 @@ export default function HomePage() {
                 </div>
               </Link>
             </div>
-            <div style={{"marginTop": "30px"}}><Link to="/seminars" className="t-link">View every 2026 event, including the Fundamentals Series<span className="a">&rarr;</span></Link></div>
+            <div style={{"marginTop": "30px"}}><Link to="/seminars" className="t-link">View every {year} event, including the Fundamentals Series<span className="a">&rarr;</span></Link></div>
           </div>
         </section>
 
@@ -205,7 +210,7 @@ export default function HomePage() {
               <details className="faqi"><summary>Does the technique use manual adjusting?</summary><div className="ans"><p>Advanced Orthogonal uses a percussive sound-wave instrument to deliver a patient-specific correction.</p></div></details>
               <details className="faqi"><summary>What equipment is needed?</summary><div className="ans"><p>You do not need to own equipment to begin. The free Intro course requires nothing but your time, and hands-on seminars provide the instruments and imaging you train on.</p><p>Clinical use of Advanced Orthogonal requires a percussive sound-wave instrument and access to the imaging the analysis depends on. Contact the Institute for current equipment details before you invest.</p></div></details>
               <details className="faqi"><summary>How is Advanced Orthogonal different from other upper cervical methods?</summary><div className="ans"><p>Advanced Orthogonal combines detailed digital measurements, patient-specific correction vectors, instrument-based adjusting, and a reproducible clinical process.</p></div></details>
-              <details className="faqi"><summary>Can students attend seminars?</summary><div className="ans"><p>Yes. Chiropractic students are welcome at Institute training, and students are part of who this work is built for. Where a student rate is offered it is published on the event page — the 2026 Annual Conference student rate is $347. Bring proof of current enrollment.</p></div></details>
+              <details className="faqi"><summary>Can students attend seminars?</summary><div className="ans"><p>Yes. Chiropractic students are welcome at Institute training, and students are part of who this work is built for. Where a student rate is offered it is published on the event page — the Annual Conference student rate is $347. Bring proof of current enrollment.</p></div></details>
               <details className="faqi"><summary>How long does certification take?</summary><div className="ans"><p>The time needed depends on your previous training, seminar attendance, clinical experience, and completion of the Institute's requirements.</p></div></details>
               <details className="faqi"><summary>Do I need to become a member?</summary><div className="ans"><p>Membership is not required to begin with the free course.</p></div></details>
             </div>
@@ -223,7 +228,7 @@ export default function HomePage() {
             <div style={{"textAlign": "right"}}>
               <Link to="/seminars/intro-to-advo" className="b lg p-btn" style={{"background": "var(--color-surface-base)", "color": "var(--color-brand-primary-deep)"}}>Start the Free Intro Course</Link>
               <div style={{"marginTop": "12px", "fontFamily": "var(--font-label)", "fontWeight": "600", "fontSize": "11px", "letterSpacing": ".14em", "textTransform": "uppercase", "color": "color-mix(in oklab, var(--color-surface-base) 85.0%, transparent)"}}>No prerequisites &middot; Self-paced &middot; Free</div>
-              <div style={{"marginTop": "16px"}}><Link to="/seminars" className="t-link" style={{"color": "var(--color-surface-base)"}}>Explore 2026 Seminars<span className="a">&rarr;</span></Link></div>
+              <div style={{"marginTop": "16px"}}><Link to="/seminars" className="t-link" style={{"color": "var(--color-surface-base)"}}>Explore {year} Seminars<span className="a">&rarr;</span></Link></div>
             </div>
           </div>
         </section>

@@ -24,7 +24,7 @@ type Reply = {
 
 const BENEFITS = [
   'Annual Conference registration included — a $797 value',
-  '$600 off AdvO Bootcamp, $200 off every seminar',
+  '$600 off AdvO Bootcamp, $200 off every Intensive',
   'Voting rights and board eligibility',
   'Doctor Directory listing once you are Level 1 certified',
   'Exclusive partner discounts',

@@ -94,7 +94,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
         ? `renews ${new Date(person.membership_expires).toLocaleDateString()}`
         : access.tier === 'member'
           ? 'active'
-          : 'Members save $200 on every seminar and attend the conference free',
+          : 'Members save $200 on every Intensive and $600 on Bootcamp, and the Monthly Huddle and the Annual Conference are included',
     go: access.tier === 'member' ? 'Manage membership →' : 'Become a member →',
     tab: 'membership',
   })
