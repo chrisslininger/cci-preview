@@ -114,7 +114,7 @@ export const NAV: NavItem[] = [
   { key: 'c-seminar', label: 'Seminar', committee: 'seminar', group: 'committees', when: committeeOnly('seminar') },
   { key: 'colleges', label: 'College Outreach', committee: 'college', group: 'committees', any: ['manage_colleges', 'manage_internships', 'board', 'full_admin'] },
   { key: 'internships', label: 'Internship', committee: 'internship', group: 'committees', any: ['manage_internships', 'manage_certifications', 'board', 'full_admin'] },
-  { key: 'certification', label: 'Certification', committee: 'certification', group: 'committees', any: ['manage_certifications'] },
+  { key: 'certification', label: 'Certification', committee: 'certification', group: 'committees', any: ['manage_certifications', 'board', 'full_admin'] },
   { key: 'research', label: 'Research', committee: 'research', group: 'committees', any: ['manage_research', 'board', 'full_admin'] },
   { key: 'c-marketing', label: 'Marketing', committee: 'marketing', group: 'committees', when: committeeOnly('marketing') },
   { key: 'c-nominations', label: 'Nominations & Elections', committee: 'nominat', group: 'committees', when: committeeOnly('nominat') },
