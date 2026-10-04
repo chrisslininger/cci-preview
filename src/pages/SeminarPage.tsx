@@ -733,12 +733,14 @@ export default function SeminarPage({ param }: { param?: string }) {
 
       <section className="mist">
         <div className="wrap">
+          <div className="learn-center">
           <div className="kick">Curriculum</div>
           <h2 className="t" style={{ fontSize: '26px' }}>
             What you&apos;ll learn
           </h2>
           <div className="goldrule" />
-          <div className="learn">
+          </div>
+          <div className="learn learn-centered">
             {s.learn.map((item) => (
               <div className="li" key={item}>
                 <svg
