@@ -53,6 +53,7 @@ export default function MemberShell() {
   useEffect(() => { if (hereGroup) setOpened((o) => (o.has(hereGroup) ? o : new Set(o).add(hereGroup))) }, [hereGroup])
   // Committees this person chairs or co-chairs stand out in the rail.
   const chairs = (stem?: string) => Boolean(stem) && access.committees.some((c) => c.leads && isCommittee(c, stem!))
+  const hasMine = groups.some((g) => g.group === 'mycommittees')
   const toggle = (g: NavGroup) => setOpened((o) => { const n = new Set(o); if (n.has(g)) n.delete(g); else n.add(g); return n })
 
   // Red dots: what needs this person right now — a report they owe, a task due, new registrations.
@@ -95,20 +96,17 @@ export default function MemberShell() {
               <div key={group.group} className={open ? undefined : 'shut'}>
                 {folds ? (
                   <button type="button" className="grp" aria-expanded={open} onClick={() => toggle(group.group)}>
-                    {GROUP_LABEL[group.group]}
+                    {group.group === 'committees' && hasMine ? 'Other Committees' : GROUP_LABEL[group.group]}
                     {!open && dots && <span className="ma-dot" aria-hidden="true" />}
                   </button>
                 ) : (
                   <span className="grp">{GROUP_LABEL[group.group]}</span>
                 )}
-                {/* Committees you chair or co-chair come first, each half still in the Institute's order. */}
-                {[...group.items.filter((nav) => !nav.under)]
-                  .sort((a, b) => Number(chairs(b.committee)) - Number(chairs(a.committee)))
-                  .map((nav, i, list) => (
+                {group.items.filter((nav) => !nav.under).map((nav) => (
                   <Link
                     key={nav.key}
                     to={`/account#${nav.key}`}
-                    className={[nav.key === here ? 'on' : '', chairs(nav.committee) ? 'lead' : '', chairs(nav.committee) && list[i + 1] && !chairs(list[i + 1]!.committee) ? 'lead-end' : ''].filter(Boolean).join(' ') || undefined}
+                    className={[nav.key === here ? 'on' : '', chairs(nav.committee) ? 'lead' : ''].filter(Boolean).join(' ') || undefined}
                     aria-current={nav.key === here ? 'page' : undefined}
                   >
                     <span>
