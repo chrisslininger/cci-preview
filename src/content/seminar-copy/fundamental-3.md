@@ -33,7 +33,7 @@ Photo: instrument
 
 Fundamental 3 is taught live on Zoom in the Monthly Huddle, on the second Tuesday of each month from June through September at 9:00 pm Eastern.
 
-We work through the corrective setup the way you’ll use it in practice: five-step table placement, mastoid support that keeps the head from rocking or rotating without tensing the patient, measuring the head height angle, precise Y-vector alignment, and leading the stylus to the transverse process. Then we cover how to evaluate the patient before and after the adjustment. When the exam findings don’t clear, you’ll know how to check the setup instead of changing the numbers from your analysis.
+We work through the corrective setup the way you’ll use it in practice: five-step table placement, mastoid support that **keeps the head from rocking or rotating** without tensing the patient, measuring the head height angle, precise Y-vector alignment, and leading the stylus to the transverse process. Then we cover how to evaluate the patient before and after the adjustment. When the exam findings don’t clear, you’ll know how to **check the setup instead of changing the numbers** from your analysis.
 
 ## Benefits
 Heading: Why doctors take Fundamental 3

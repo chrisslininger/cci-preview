@@ -34,9 +34,9 @@ Photo: adjust
 
 Bootcamp is our immersive, fast-paced program, designed to take doctors from zero to fully equipped in one week in Tampa Bay, Florida.
 
-Instead of learning in pieces, you work through the whole procedure in order: the exam, X-ray and CBCT setup and analysis, and the corrective setup, from table placement and mastoid support to the head height angle and leading the stylus. Then post-X-ray analysis and interpretation, with extensive hands-on time to practice it all start to finish, instructors at your side.
+Instead of learning in pieces, you work through **the whole procedure in order**: the exam, X-ray and CBCT setup and analysis, and the corrective setup, from table placement and mastoid support to the head height angle and leading the stylus. Then post-X-ray analysis and interpretation, with extensive hands-on time to practice it all **start to finish, instructors at your side**.
 
-You spend the week with doctors who do what you do, with craniocervical neurology and clinical topics such as concussion and headaches along the way. It ends with the Friday night awards dinner with the whole community.
+You spend the week with **doctors who do what you do**, with craniocervical neurology and clinical topics such as concussion and headaches along the way. It ends with the Friday night awards dinner with the whole community.
 
 ## Benefits
 Heading: Why doctors come to Bootcamp

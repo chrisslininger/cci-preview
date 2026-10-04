@@ -33,7 +33,7 @@ Photo: intro
 
 Fundamental 1 is taught live on Zoom in the Monthly Huddle, on the second Tuesday of each month from October through January at 9:00 pm Eastern.
 
-Our instructors lay the foundation step by step: why AdvO works the way it does, a patient history and exam you can rely on, and how to set up the sagittal, axial, frontal and horizontal views and CBCT so every image is reliable enough to measure. Every session leaves time for your own cases and questions.
+Our instructors **lay the foundation step by step**: why AdvO works the way it does, a patient history and exam you can rely on, and how to set up the sagittal, axial, frontal and horizontal views and CBCT so every image is **reliable enough to measure**. Every session leaves time for your own cases and questions.
 
 ## Benefits
 Heading: Why start with Fundamental 1

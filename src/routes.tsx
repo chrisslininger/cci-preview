@@ -300,7 +300,7 @@ const seminarRoutes: RouteEntry[] = Object.entries(SEMINARS).map(([key, seminar]
             mainEntity: seminar.story.faq.map((item) => ({
               '@type': 'Question',
               name: item.q,
-              acceptedAnswer: { '@type': 'Answer', text: item.a },
+              acceptedAnswer: { '@type': 'Answer', text: item.a.replace(/\*\*/g, '') },
             })),
           }]
         : []),

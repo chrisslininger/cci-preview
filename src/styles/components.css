@@ -518,6 +518,7 @@ footer .flink:hover{color:var(--color-surface-base)}
   .spain p.lede{max-width:none}
   .about-wide .prose{max-width:none}
   .sempage .faq{max-width:none}
+  .sempage .prose b{color:var(--color-content-primary);font-weight:700}
   .learn-center{text-align:center}
   .learn-center .goldrule{margin-left:auto;margin-right:auto}
   .learn.learn-centered{margin-left:auto;margin-right:auto}

@@ -10,6 +10,11 @@ import type { SeminarStory } from '@/content/seminars'
 
 type Props = { story: SeminarStory }
 
+/** Copy may mark a phrase **like this** to set it in bold. */
+function rich(text: string): ReactNode {
+  return text.split(/\*\*(.+?)\*\*/g).map((part, i) => (i % 2 ? <b key={i}>{part}</b> : part))
+}
+
 export function StoryGoals({ story }: Props) {
   if (!story.goals.length) return null
   return (
@@ -61,7 +66,7 @@ export function StorySolution({ story, cta }: Props & { cta: ReactNode }) {
             <h2 className="t">{s.h}</h2>
             <div className="goldrule" />
             <div className="prose">
-              {s.p.map((para) => <p key={para}>{para}</p>)}
+              {s.p.map((para) => <p key={para}>{rich(para)}</p>)}
             </div>
             {cta}
           </div>
