@@ -169,7 +169,7 @@ export default function HomePage() {
                 <div className="bd">
                   <h3>AdvO Intensive</h3>
                   <div className="meta">2 DAYS &middot; <b>HANDS-ON</b></div>
-                  <p className="desc">Two days of hands-on training: the exam, x-ray and CBCT, corrective setup and the adjustment — demonstrated, then practiced.</p>
+                  <p className="desc">Two days of hands-on training: the exam, X-ray and CBCT, corrective setup and the adjustment — demonstrated, then practiced.</p>
                   <div className="foot"><span className="t-link">View Event Details<span className="a">&rarr;</span></span></div>
                 </div>
               </Link>

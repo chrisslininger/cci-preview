@@ -43,7 +43,7 @@ export default function DifferencePage() {
                 <li>Measuring the misalignment according to the patient's gravitational and neurological normal, taking any genetic abnormalities into account</li>
                 <li>Refined correction lines of drive via digital and laser alignment of the patient</li>
                 <li>Motorized table shoulder-piece to refine patient positioning, and reduce strain on the doctor</li>
-                <li>Digital x-ray analysis to quantify misalignment precisely</li>
+                <li>Digital X-ray analysis to quantify misalignment precisely</li>
                 <li>Percussion-wave instrument adjusting based 100% on the patient's misalignment variables</li>
               </ul>
               <p>The outcomes of these refinements have eliminated as much human-error from the misalignment puzzle as possible. Through dedicated study and strict adherence to the fundamentals, these enhancements give the Advanced Orthogonal doctor a consistent clinical procedure for accurate evaluation and reduction of the atlas subluxation complex.</p>
@@ -68,7 +68,7 @@ export default function DifferencePage() {
           <div className="wrap">
             <div className="prose" style={{"maxWidth": "860px"}}>
               <h3>Accurate X-Rays for Better Results</h3>
-              <p>Advanced Orthogonal practitioners determine misalignment of the upper cervical spine using specific three-dimensional x-rays, and using digital software, are able to measure the position of the upper cervical structures with a high degree of precision. A 1998 study published in the Journal of Manipulative and Physiological Therapeutics showed that interclass correlation coefficients (ICC) for locating pathology on x-ray was only 0.4–0.75, while line drawings for x-ray displacement had ICC's in the 0.8–0.9 range. Trained Advanced Orthogonal doctors utilize clinical procedures that promote the highest degree of intra and inter examiner reliability.</p>
+              <p>Advanced Orthogonal practitioners determine misalignment of the upper cervical spine using specific three-dimensional X-rays, and using digital software, are able to measure the position of the upper cervical structures with a high degree of precision. A 1998 study published in the Journal of Manipulative and Physiological Therapeutics showed that interclass correlation coefficients (ICC) for locating pathology on X-ray was only 0.4–0.75, while line drawings for X-ray displacement had ICC's in the 0.8–0.9 range. Trained Advanced Orthogonal doctors utilize clinical procedures that promote the highest degree of intra and inter examiner reliability.</p>
               <h3>Precision Sound Wave Adjustments</h3>
               <p>The typical manual chiropractic adjustment requires moving joints to near end-ranges of motion to cause joint distraction and cavitation. This is not an option and would be contraindicated for many patient populations, including those with low bone mineral densities, certain types of disc injuries, surgical fusions, some pediatric patients and those with a variety of other conditions.</p>
               <p>The Advanced Orthogonal procedure uses a percussive sound wave to correct the upper cervical misalignment complex. The low force of this technique allows wider patient populations to be candidates for this treatment, and the correction takes place within the patient's normal range of motion, which eliminates the potential risk of ligamentous trauma to the patient.</p>

@@ -15,7 +15,7 @@ export default function ResearchPage() {
 
         <section className="tight">
           <div className="wrap">
-            <p className="lede" style={{"maxWidth": "900px"}}>Advanced Orthogonal has always been a measurement-first discipline &mdash; misalignment quantified from digital x-ray analysis, corrections delivered by instrument rather than by hand, outcomes monitored over time. That same rigor is what the Institute now brings to formal research. Our aim is straightforward: produce data of a quality that stands up outside our own profession.</p>
+            <p className="lede" style={{"maxWidth": "900px"}}>Advanced Orthogonal has always been a measurement-first discipline &mdash; misalignment quantified from digital X-ray analysis, corrections delivered by instrument rather than by hand, outcomes monitored over time. That same rigor is what the Institute now brings to formal research. Our aim is straightforward: produce data of a quality that stands up outside our own profession.</p>
           </div>
         </section>
 
@@ -47,7 +47,7 @@ export default function ResearchPage() {
             <div className="goldrule"></div>
             <div className="prose" style={{"maxWidth": "880px", "marginTop": "26px"}}>
               <h3>1 &middot; Objective, instrument-derived measurement</h3>
-              <p>Every Advanced Orthogonal correction begins with a precise digital x-ray analysis and an instrument setting derived from those numbers. This produces something most manual-technique research cannot: a quantified pre- and post-intervention variable that does not depend on the examiner's hands. Study design starts there.</p>
+              <p>Every Advanced Orthogonal correction begins with a precise digital X-ray analysis and an instrument setting derived from those numbers. This produces something most manual-technique research cannot: a quantified pre- and post-intervention variable that does not depend on the examiner's hands. Study design starts there.</p>
               <h3>2 &middot; Reproducible protocol across sites</h3>
               <p>Because the adjusting instrument delivers a consistent, pre-set force based entirely on patient-specific variables, the intervention itself is reproducible from doctor to doctor and clinic to clinic. Multi-site data collection is therefore viable in a way it rarely is for hands-on techniques &mdash; and reproducibility is the foundation of any credible trial.</p>
               <h3>3 &middot; Validated outcome instruments</h3>
