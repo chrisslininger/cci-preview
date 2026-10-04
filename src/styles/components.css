@@ -551,6 +551,10 @@ footer .flink:hover{color:var(--color-surface-base)}
   .sface:hover,.sface:focus-visible{transform:translateY(-6px);box-shadow:0 12px 26px color-mix(in oklab, var(--color-surface-inverse) 24%, transparent);z-index:1;outline:none}
   .sface .ini{font-size:20px}
   .sfaces-hint{margin-top:16px;font-size:13.5px;color:var(--color-content-muted)}
+  .agopen{display:none;margin-top:6px}
+  .totop{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom, 0px));z-index:40;width:40px;height:40px;border-radius:50%;border:1px solid color-mix(in oklab, var(--color-surface-base) 25%, transparent);background:color-mix(in oklab, var(--color-surface-inverse) 72%, transparent);color:var(--color-surface-base);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .25s ease, transform .25s ease;backdrop-filter:blur(4px)}
+  .totop.show{opacity:.85;transform:none;pointer-events:auto}
+  .totop:hover,.totop:focus-visible{opacity:1;outline:none}
   .scount{margin-top:4px;font-family:var(--font-label);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-brand-accent-bright)}
   .sfeat{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:28px}
   .sf{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -638,6 +642,8 @@ footer .flink:hover{color:var(--color-surface-base)}
     .page-home .herolead p.sub{font-size:16px}
     .probgrid{grid-template-columns:1fr}
     .spres{grid-template-columns:1fr;gap:18px}
+    .agwrap:not(.open) .agopen{display:inline-flex}
+    .agwrap:not(.open) .agbody,.agwrap:not(.open) .agenda-hint{display:none}
     .spres-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:6px;padding:4px 2px 10px;margin:0 -4px}
     .spres-face{flex:none;width:88px;scroll-snap-align:start}
     .spres-face .ph{width:68px;height:68px}

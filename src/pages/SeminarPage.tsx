@@ -80,6 +80,16 @@ export default function SeminarPage({ param }: { param?: string }) {
   const catalog = useCatalog()
   const [agendaDay, setAgendaDay] = useState(0)
   const [presenter, setPresenter] = useState<string | null>(null)
+  /* On phones the agenda folds behind a button; computers always show it. */
+  const [agendaOpen, setAgendaOpen] = useState(false)
+  /* The back-to-top button appears once the reader is well down the page. */
+  const [showTop, setShowTop] = useState(false)
+  useEffect(() => {
+    const on = () => setShowTop(window.scrollY > 900)
+    on()
+    window.addEventListener('scroll', on, { passive: true })
+    return () => window.removeEventListener('scroll', on)
+  }, [])
   const [attending, setAttending] = useState<null | { paid: boolean; ce: boolean }>(null)
   /* Worked out in the browser, so the prerendered page never shows a stale count. */
   const [daysLeft, setDaysLeft] = useState<number | null>(null)
@@ -369,8 +379,8 @@ export default function SeminarPage({ param }: { param?: string }) {
   const aboutFirst = Boolean(story && s.aboutFirst)
   const aboutSec = (
       <section className="tight" style={{ paddingTop: '20px' }}>
-          <div className="wrap grid2" style={{ gap: '56px', alignItems: 'start' }}>
-            <div>
+          <div className={story ? 'wrap' : 'wrap grid2'} style={story ? undefined : { gap: '56px', alignItems: 'start' }}>
+            <div style={story ? { maxWidth: '760px' } : undefined}>
               <div className="kick">About This Event</div>
               <h2 className="t" style={{ fontSize: '26px' }}>
                 {s.h2}
@@ -378,8 +388,9 @@ export default function SeminarPage({ param }: { param?: string }) {
               <div className="goldrule" />
               <div className="prose" dangerouslySetInnerHTML={{ __html: s.overview }} />
             </div>
+            {!story && (
             <div>
-              {!story && videoEl}
+              {videoEl}
               <div className="memberprice">
                 <div className="mp-h">Member pricing</div>
                 <p>{s.member}</p>
@@ -388,6 +399,7 @@ export default function SeminarPage({ param }: { param?: string }) {
                 </Link>
               </div>
             </div>
+            )}
           </div>
         </section>
   )
@@ -549,13 +561,18 @@ export default function SeminarPage({ param }: { param?: string }) {
                         </button>
                         <h3>{f.title}</h3>
                         <p>{f.desc}</p>
-                        <button type="button" className="go" onClick={() => { setAgendaDay(f.day); document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth' }) }}>
+                        <button type="button" className="go" onClick={() => { setAgendaDay(f.day); setAgendaOpen(true); document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth' }) }}>
                           In the agenda <span aria-hidden="true">→</span>
                         </button>
                       </div>
                     )
                   })}
                 </div>
+                {s.speakerFaces && speakers.length > 0 && (
+                  <button type="button" className="b sm s-btn on-light" style={{ marginTop: '26px' }} onClick={() => document.getElementById('presenters')?.scrollIntoView({ behavior: 'smooth' })}>
+                    Meet all {speakers.length} presenters
+                  </button>
+                )}
               </>
             )}
           </div>
@@ -578,7 +595,7 @@ export default function SeminarPage({ param }: { param?: string }) {
       {!aboutFirst && aboutSec}
 
       {speakers.length > 0 && (
-        <section className="tight" style={{ paddingTop: '8px' }}>
+        <section className="tight" style={{ paddingTop: '8px' }} id="presenters">
           <div className="wrap">
             <div className="kick">{s.speakerFaces ? 'Presenters' : 'Faculty'}</div>
             <h2 className="t" style={{ fontSize: '26px' }}>
@@ -715,13 +732,16 @@ export default function SeminarPage({ param }: { param?: string }) {
           </div>
 
           {agenda.length > 0 && (
-            <div style={{ marginTop: '44px' }} id="agenda">
+            <div style={{ marginTop: '44px' }} id="agenda" className={`agwrap${agendaOpen ? ' open' : ''}`}>
               <div className="kick">Agenda</div>
               <h2 className="t" style={{ fontSize: '26px' }}>
                 How the time is spent
               </h2>
               <div className="goldrule" />
-              <div>
+              <button type="button" className="b sm s-btn on-light agopen" onClick={() => setAgendaOpen(true)}>
+                View the full agenda
+              </button>
+              <div className="agbody">
                 {agenda.length > 1 && (
                   <div className="agtabs" role="tablist">
                     {agenda.map((day, i) => (
@@ -851,6 +871,9 @@ export default function SeminarPage({ param }: { param?: string }) {
           </div>
         </div>
       </section>
+      <button type="button" className={`totop${showTop ? ' show' : ''}`} aria-label="Back to top" tabIndex={showTop ? 0 : -1} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+      </button>
     </div>
   )
 }
