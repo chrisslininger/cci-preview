@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from '@/lib/router'
 import { SEMINARS, SLUG_TO_SEMINAR } from '@/content/seminars'
 import type { Seminar } from '@/content/seminars'
@@ -82,6 +82,23 @@ export default function SeminarPage({ param }: { param?: string }) {
   const [presenter, setPresenter] = useState<string | null>(null)
   /* On phones the agenda folds behind a button; computers always show it. */
   const [agendaOpen, setAgendaOpen] = useState(false)
+  /* The presenter row scrolls sideways on phones; arrows show which way there is more. */
+  const stripRef = useRef<HTMLDivElement>(null)
+  const [stripEnds, setStripEnds] = useState({ start: true, end: false })
+  const readStrip = () => {
+    const el = stripRef.current
+    if (!el) return
+    setStripEnds({ start: el.scrollLeft <= 4, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4 })
+  }
+  const moveStrip = (dir: number) => {
+    const el = stripRef.current
+    if (el) el.scrollBy({ left: dir * Math.max(180, el.clientWidth * 0.75), behavior: 'smooth' })
+  }
+  useEffect(() => {
+    readStrip()
+    window.addEventListener('resize', readStrip)
+    return () => window.removeEventListener('resize', readStrip)
+  }, [])
   /* The back-to-top button appears once the reader is well down the page. */
   const [showTop, setShowTop] = useState(false)
   useEffect(() => {
@@ -611,15 +628,23 @@ export default function SeminarPage({ param }: { param?: string }) {
               const talks = sel ? agenda.flatMap((day) => day.items.filter((it) => it.who?.includes(sel)).map((it) => ({ day: day.date ?? day.day, t: `${it.t} ${it.ap.split(' · ')[0]}`, title: it.title }))) : []
               return (
                 <>
-                  <p className="spres-hint">Tap a presenter to read their bio.</p>
+                  <p className="spres-hint">Tap a presenter to read their bio.<span className="swipe"> Swipe or tap the arrows to see everyone.</span></p>
                   <div className="spres">
-                    <div className="spres-grid" role="tablist" aria-label="Presenters">
+                    <div className={`spres-strip${stripEnds.start ? ' at-start' : ''}${stripEnds.end ? ' at-end' : ''}`}>
+                    <button type="button" className="spres-arrow prev" aria-label="Previous presenters" disabled={stripEnds.start} onClick={() => moveStrip(-1)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+                    </button>
+                    <div className="spres-grid" role="tablist" aria-label="Presenters" ref={stripRef} onScroll={readStrip}>
                       {speakers.map((id) => PEOPLE[id] && (
                         <button type="button" role="tab" aria-selected={id === sel} aria-controls="spres-bio" key={id} className={`spres-face${id === sel ? ' on' : ''}`} onClick={() => setPresenter(id)}>
                           <span className="ph"><Face id={id} /></span>
                           <span className="nm">{PEOPLE[id]!.name}</span>
                         </button>
                       ))}
+                    </div>
+                    <button type="button" className="spres-arrow next" aria-label="More presenters" disabled={stripEnds.end} onClick={() => moveStrip(1)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+                    </button>
                     </div>
                     {p && (
                       <div className="spres-bio" id="spres-bio" role="tabpanel" aria-live="polite">
