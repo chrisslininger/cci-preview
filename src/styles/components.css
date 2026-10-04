@@ -640,7 +640,13 @@ footer .flink:hover{color:var(--color-surface-base)}
     .facts{grid-template-columns:1fr 1fr;margin-top:-30px}
     .fact{border-bottom:1px solid var(--color-border-subtle)}
     .learn{grid-template-columns:1fr}
-    .fgrid{grid-template-columns:1fr 1fr}
+    .fgrid{grid-template-columns:1fr 1fr;gap:32px 24px}
+    /* The logo and tagline take the full width; the links sit in two columns under them. */
+    .fgrid > div:first-child,.fgrid > div:last-child{grid-column:1/-1}
+    footer .logoimg{max-width:100%;object-fit:contain}
+    footer a:not(.logo),footer .flink{overflow-wrap:anywhere}
+    footer .tag{max-width:420px}
+    .fbot{flex-direction:column}
     .srow{grid-template-columns:1fr;gap:6px}
     .page-home .hero-img{min-height:calc(100svh - var(--hdrh, 74px))}
     .page-home .hero-img .inner{padding:88px 28px 76px}
