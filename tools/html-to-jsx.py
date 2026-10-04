@@ -76,7 +76,7 @@ LEGACY_VARS = {
     '--ink':'--color-content-primary',
 }
 
-# Raw hex is not permitted outside tokens.css. Inline SVG colours map to the
+# Raw hex is not permitted outside tokens.css. Inline SVG colors map to the
 # same tokens the stylesheet uses, via var() which SVG presentation attributes
 # accept just as CSS does.
 SVG_COLOR = {

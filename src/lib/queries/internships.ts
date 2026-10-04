@@ -191,7 +191,7 @@ export async function savePreceptor(id: number | null, v: PreceptorInput, existi
     const r = a.id ? await patch('preceptor_colleges', `id=eq.${a.id}`, body) : await insert('preceptor_colleges', [{ ...body, preceptor_id: pid, created_by_id: who.id, created_by_name: who.name }])
     if (r.error) return r
   }
-  // keep the denormalised colleges list CCI OS reads
+  // keep the denormalized colleges list CCI OS reads
   const cols = [...new Map(v.approvals.map((a) => [a.college_id, { id: a.college_id }])).values()]
   const r2 = await patch('preceptors', `id=eq.${pid}`, { colleges: cols })
   if (r2.error) return r2

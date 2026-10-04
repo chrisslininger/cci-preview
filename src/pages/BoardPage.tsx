@@ -41,8 +41,9 @@ export default function BoardPage() {
                   type="button"
                   className="person"
                   key={key}
-                  onClick={() => openBio(key)}
-                  style={{ cursor: 'pointer' }}
+                  onClick={person.bio ? () => openBio(key) : undefined}
+                  disabled={!person.bio}
+                  style={{ cursor: person.bio ? 'pointer' : 'default' }}
                 >
                   <div className="photo">
                     {HEADSHOTS.has(key) ? (
@@ -73,9 +74,11 @@ export default function BoardPage() {
                       {person.name}, {person.cred}
                     </h3>
                     <div className="role">{person.role}</div>
-                    <div className="t-link" style={{ marginTop: '10px', fontSize: '11px' }}>
-                      Read bio<span className="a">→</span>
-                    </div>
+                    {person.bio && (
+                      <div className="t-link" style={{ marginTop: '10px', fontSize: '11px' }}>
+                        Read bio<span className="a">→</span>
+                      </div>
+                    )}
                   </div>
                 </button>
               )

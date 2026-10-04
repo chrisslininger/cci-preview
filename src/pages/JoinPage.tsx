@@ -162,7 +162,7 @@ export default function JoinPage() {
                 <b>$799</b><i>/ year</i>
               </div>
               <p className="joinwhen">
-                Joining or renewing before 31 December 2026 is $799. From 1 January 2027 annual
+                Joining or renewing before December 31, 2026 is $799. From January 1, 2027 annual
                 membership is $999.
               </p>
               <ul className="joinlist">

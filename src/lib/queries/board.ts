@@ -19,7 +19,7 @@ export const SEATS_PER_TERM = 3
 export const ELIGIBILITY: { key: EligKey; label: string; auto: boolean }[] = [
   { key: 'is_member', label: 'Current AOI member (dues paid in full)', auto: true },
   { key: 'level1_cert', label: 'Level 1 Certification (minimum)', auto: true },
-  { key: 'good_standing', label: 'Good professional standing (licence, no disciplinary)', auto: false },
+  { key: 'good_standing', label: 'Good professional standing (license, no disciplinary)', auto: false },
   { key: 'active_involvement', label: 'Attended an Advanced Seminar within 12 months', auto: false },
   { key: 'coi_disclosed', label: 'Conflict-of-interest disclosure submitted', auto: false },
 ]

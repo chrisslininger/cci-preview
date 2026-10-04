@@ -99,7 +99,7 @@ export const PROBLEMS = {
     bul:['The correction is delivered by a table-mounted instrument',
          'No forceful manual contact is required to produce the correction',
          'A repeatable setup that does not depend on your leverage or positioning',
-         'A realistic path to practising at full capacity for longer'],
+         'A realistic path to practicing at full capacity for longer'],
     step2:{h:'See It for a Full Week', p:'AdvO Bootcamp is five days of hands-on training with the instrument and the full protocol, alongside the doctors who already practice this way.', btn:'View AdvO Bootcamp', go:['sem','bootcamp']}}
 } as unknown as Record<string, Problem>
 
