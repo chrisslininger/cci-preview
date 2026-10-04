@@ -764,8 +764,13 @@ export default function SeminarPage({ param }: { param?: string }) {
             ))}
           </div>
 
-          {agenda.length > 0 && (
-            <div style={{ marginTop: '44px' }} id="agenda" className={`agwrap${agendaOpen ? ' open' : ''}`}>
+        </div>
+      </section>
+
+      {agenda.length > 0 && (
+        <section className="tight">
+          <div className="wrap">
+            <div id="agenda" className={`agwrap${agendaOpen ? ' open' : ''}`}>
               <div className="kick">Agenda</div>
               <h2 className="t" style={{ fontSize: '26px' }}>
                 How the time is spent
@@ -823,9 +828,10 @@ export default function SeminarPage({ param }: { param?: string }) {
                 <p className="agenda-hint">TAP ANY INSTRUCTOR PILL FOR THEIR BIO</p>
               )}
             </div>
-          )}
-        </div>
-      </section>
+
+          </div>
+        </section>
+      )}
 
       {s.ce && (
         <section className="tight" id="sd-ce">
