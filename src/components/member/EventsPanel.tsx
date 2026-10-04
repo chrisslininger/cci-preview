@@ -156,7 +156,7 @@ export default function EventsPanel() {
         <div className="cert-actions">{canManage && <button type="button" className="b p-btn sm" onClick={() => setEdit('new')}>+ Create event</button>}<button type="button" className="b s-btn on-light sm" onClick={exportCsv}>↓ Export CSV</button></div>
       </div>
       {error && <div className="cert-err" role="alert">{error}</div>}
-      <div className="cert-tiles">{TABS.map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b>{split[k] && <i>{split[k]}</i>}</button>)}</div>
+      <div className="cert-tiles">{TABS.map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b><i>{split[k] ?? ' '}</i></button>)}</div>
       <div className="cert-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input type="text" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setQ('')} autoComplete="off" placeholder="Search by title, venue, category, speaker…" aria-label="Search events" />
