@@ -177,7 +177,7 @@ export const SEMINARS = {
     agenda:[{day:null,items:[
       {...huddleDay('fund1', 0),title:'Introduction — Why AdvO',desc:'What the technique is built on, the outcomes it measures, and the atlas subluxation.',who:['cs']},
       {...huddleDay('fund1', 1),title:'History & Exam',desc:'The patient history and the exam: supine leg check, muscle balance, arm strength, head rotation and palpation.',who:['cs']},
-      {...huddleDay('fund1', 2),title:'X-Ray Setup — Sagittal & Axial',desc:'Positioning basics, then the sagittal and axial views: why each is taken and how to get a clean X-ray.',who:['jk']},
+      {...huddleDay('fund1', 2),title:'X-Ray Setup — Sagittal & Axial',desc:'Positioning basics, then the sagittal and axial views: why each is taken and how to get a reliable X-ray.',who:['jk']},
       {...huddleDay('fund1', 3),title:'X-Ray Setup — Frontal, Horizontal & CBCT',desc:'The frontal and horizontal views, controlling tilt and rotation, and CBCT setup.',who:['cs','jk']}]}]
   },
   fund2:{
@@ -272,7 +272,7 @@ export const SEMINARS = {
         {t:'1.1',ap:'MODULE',title:'Introduction & History',desc:'Why the upper cervical spine, the lineage from B.J. Palmer to today, the four-view X-ray series, and craniocervical anatomy.',who:[]},
         {t:'1.2',ap:'MODULE',title:'Craniocervical Neurology & Hydrodynamics',desc:'What an upper cervical misalignment can affect, from spinal cord tension and blood flow to CSF dynamics and the vestibular system.',who:[]},
         {t:'1.3',ap:'MODULE',title:'Exam Procedures',desc:'The history and the exam, practiced hands-on.',who:[]},
-        {t:'1.4',ap:'MODULE',title:'X-Ray & CBCT Positioning',desc:'Setting up each view and getting a clean, measurable image.',who:[]}]},
+        {t:'1.4',ap:'MODULE',title:'X-Ray & CBCT Positioning',desc:'Setting up each view and getting a reliable, measurable image.',who:[]}]},
       {day:'Day 2',date:'TUESDAY',items:[
         {t:'2.1',ap:'MODULE',title:'X-Ray & CBCT Analysis',desc:'Measuring the misalignment and turning it into the correction vector.',who:[]}]},
       {day:'Day 3',date:'WEDNESDAY',items:[

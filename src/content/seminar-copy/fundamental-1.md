@@ -20,11 +20,11 @@ Subtitle: Your foundation in Advanced Orthogonal begins here: the history, the e
 Button: RSVP for the Monthly Huddle
 - Build the foundation every correction rests on
 - Take a history and run an exam you can trust
-- Set up a clean, specific X-ray series
+- Set up a reliable, specific X-ray series
 
 ## Problem
 Heading: Every correction is only as good as what comes before it
-Intro: You want to know your exam is telling you the truth and your X-rays are clean enough to measure. Maybe you learned the basics once, filled in the gaps on your own, and now you’re eyeing CBCT without knowing where to start.
+Intro: You want to know your exam is telling you the truth and your X-rays are reliable enough to measure. Maybe you learned the basics once, filled in the gaps on your own, and now you’re eyeing CBCT without knowing where to start.
 Closing: The problem usually isn’t skill. It’s that the foundation was never laid out step by step, and when the exam or the images are off, everything after them is a guess.
 
 ## Solution
@@ -33,7 +33,7 @@ Photo: intro
 
 Fundamental 1 is taught live on Zoom in the Monthly Huddle, on the second Tuesday of each month from October through January at 9:00 pm Eastern.
 
-Our instructors lay the foundation step by step: why AdvO works the way it does, a patient history and exam you can rely on, and how to set up the sagittal, axial, frontal and horizontal views and CBCT so every image is clean enough to measure. Every session leaves time for your own cases and questions.
+Our instructors lay the foundation step by step: why AdvO works the way it does, a patient history and exam you can rely on, and how to set up the sagittal, axial, frontal and horizontal views and CBCT so every image is reliable enough to measure. Every session leaves time for your own cases and questions.
 
 ## Benefits
 Heading: Why start with Fundamental 1
