@@ -898,6 +898,19 @@ export default function SeminarPage({ param }: { param?: string }) {
           {sponsorsSec}
           {regSec}
         </>
+      ) : aboutFirst && story ? (
+        /* The conference: presenters, then doctors' own words when there are
+         * any, fit, sponsors, then the detail. */
+        <>
+          {facultySec}
+          <StoryVoices story={story} video={s.mux || s.video ? videoEl : undefined} />
+          <StoryFit story={story} />
+          {sponsorsSec}
+          {curriculumSec}
+          {agendaSec}
+          {ceSec}
+          <StoryFaq story={story} />
+        </>
       ) : (
         <>
           {facultySec}
