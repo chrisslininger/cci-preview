@@ -23,11 +23,11 @@ export const ELIGIBILITY: { key: EligKey; label: string; auto: boolean }[] = [
   { key: 'active_involvement', label: 'Attended an Advanced Seminar within 12 months', auto: false },
   { key: 'coi_disclosed', label: 'Conflict-of-interest disclosure submitted', auto: false },
 ]
-export const PROCESS: { key: ProcKey; label: string; date: ProcDate }[] = [
-  { key: 'nominated', label: 'Nominated', date: 'nominated_date' },
-  { key: 'accepted_nomination', label: 'Accepted nomination', date: 'accepted_nomination_date' },
-  { key: 'elected', label: 'Elected by board vote', date: 'elected_date' },
-  { key: 'accepted_role', label: 'Accepted the role', date: 'accepted_role_date' },
+export const PROCESS: { key: ProcKey; label: string; help: string; date: ProcDate }[] = [
+  { key: 'nominated', label: 'Nominated', help: 'A member put this person forward for the Board.', date: 'nominated_date' },
+  { key: 'accepted_nomination', label: 'Accepted nomination', help: 'The nominee agreed to stand for election.', date: 'accepted_nomination_date' },
+  { key: 'elected', label: 'Elected by member vote', help: 'Won a seat in the members’ election.', date: 'elected_date' },
+  { key: 'accepted_role', label: 'Accepted the role', help: 'Agreed to serve the term. With every eligibility item checked, they can be seated.', date: 'accepted_role_date' },
 ]
 export type EligKey = 'is_member' | 'level1_cert' | 'good_standing' | 'active_involvement' | 'coi_disclosed'
 export type ProcKey = 'nominated' | 'accepted_nomination' | 'elected' | 'accepted_role'

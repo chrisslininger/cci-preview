@@ -91,7 +91,7 @@ export default function BoardPanel() {
           <div className="bchk one"><label className="flabel" style={{ margin: 0 }}>Nominated by</label><input className="fi" style={{ margin: 0 }} defaultValue={t.nominated_by ?? ''} disabled={!canManage} placeholder="Board of Directors / name" onBlur={(ev) => { if (ev.target.value !== (t.nominated_by ?? '')) void run(setNominatedBy(t, ev.target.value)) }} /></div>
           {PROCESS.map((s) => <div key={s.key} className={`bchk${t[s.key] ? ' done' : ''}`}>
             <input type="checkbox" id={`${t.id}_${s.key}`} checked={!!t[s.key]} disabled={!canManage} onChange={(ev) => { optimistic(t.id, { [s.key]: ev.target.checked, [s.date]: ev.target.checked ? (t[s.date] ?? new Date().toISOString().slice(0, 10)) : null }); void run(tick(t, s.key, ev.target.checked, who)) }} />
-            <label htmlFor={`${t.id}_${s.key}`}>{s.label}<Verified a={a[s.key]} /></label>
+            <label htmlFor={`${t.id}_${s.key}`}>{s.label}<small>{s.help}</small><Verified a={a[s.key]} /></label>
             <input type="date" value={t[s.date] ?? ''} disabled={!canManage} onChange={(ev) => { optimistic(t.id, { [s.date]: ev.target.value || null }); void run(setProcDate(t, s.date, ev.target.value || null)) }} />
           </div>)}
           {canManage && <div className="acts">
