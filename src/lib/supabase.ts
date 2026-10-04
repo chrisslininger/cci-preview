@@ -295,7 +295,7 @@ export function signOut(): void {
 /** Filter for a people search: every word typed has to appear in one of the
  *  fields, so "Nor J" finds Nor Jobarah. Returns '' when nothing was typed. */
 export function wordsFilter(term: string, fields: string[]): string {
-  const words = term.replace(/[,.*()"]/g, ' ').trim().split(/s+/).filter(Boolean)
+  const words = term.replace(/[,.*()"]/g, ' ').trim().split(/\s+/).filter(Boolean)
   if (!words.length) return ''
   const one = (w: string) => `or(${fields.map((f) => `${f}.ilike.*${encodeURIComponent(w)}*`).join(',')})`
   return `and=(${words.map(one).join(',')})`
