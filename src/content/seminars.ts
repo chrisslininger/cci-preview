@@ -235,7 +235,7 @@ export const SEMINARS = {
     overview:'<p>The AdvO Intensive is where the technique becomes hands-on. Day one walks through the whole procedure — history and exam, X-ray and CBCT setup and analysis, pattern understanding, corrective setup and the adjustment — with instructors demonstrating each step. Day two is supervised practice of every step, from the exam through simple and advanced corrective setups, finishing with case studies and your questions.</p><p>Its hands-on training covers all three Fundamentals, so it is the in-person companion to the monthly Fundamentals Zoom sessions. It runs three weekends a year, in St. Petersburg, Florida, and Orem, Utah.</p>',
     learn:['The history and exam, demonstrated and practiced','X-ray and CBCT setup','X-ray and CBCT analysis','Pattern understanding and corrective setup, simple and advanced','The adjustment','Review and case studies with instructors'],
     sched:[['DAY 1','Instruction and demonstration: the exam, X-ray and CBCT, corrective setup and the adjustment.'],['DAY 2','Supervised practice of every step, then case studies and Q&A.']],
-    ctaH:'Two days. Hands-on, start to finish.', ctaP:'Offered three times a year · each registration is one weekend · St. Petersburg, FL or Orem, UT · members save $200.', ctaBtn:'Choose Your Intensive Weekend',
+    ctaH:'Two days. Hands-on, start to finish.', ctaP:'Offered three times a year · each registration is one weekend', ctaBtn:'Choose Your Intensive Weekend',
     spk:['cs','jk'], keynote:null,
     agenda:[
       {day:'Day 1',date:'FRIDAY',items:[
