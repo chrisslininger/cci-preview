@@ -13,7 +13,7 @@
  * RLS: is_board_manager() — board, the executive director and the
  * Nominations & Elections chair — for every write.
  * -------------------------------------------------------------------------- */
-import { select, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, wordsFilter, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export const SEATS_PER_TERM = 3
 export const ELIGIBILITY: { key: EligKey; label: string; auto: boolean }[] = [
@@ -70,7 +70,7 @@ export type Hit = Person & { practice_name: string | null }
 export async function searchPeople(q: string): Promise<Hit[]> {
   const t = q.trim().replace(/[,.*()]/g, '')
   if (t.length < 2) return []
-  const r = await select<Hit>('people', `select=id,first_name,last_name,credentials,membership_status,membership_expires,cert_level,photo_url,deceased_on,practice_name,person_certifications(technique,level)&deceased_on=is.null&or=(first_name.ilike.*${t}*,last_name.ilike.*${t}*)&order=last_name.asc&limit=8`)
+  const r = await select<Hit>('people', `select=id,first_name,last_name,credentials,membership_status,membership_expires,cert_level,photo_url,deceased_on,practice_name,person_certifications(technique,level)&deceased_on=is.null&${wordsFilter(t, ['first_name', 'last_name'])}&order=last_name.asc&limit=8`)
   return r.data ?? []
 }
 

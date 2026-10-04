@@ -7,7 +7,7 @@
  * never renames. Checklists are stored the way CCI OS stores them:
  *   progress[key] = { completed: true, date, name }   (who locked it in)
  * -------------------------------------------------------------------------- */
-import { select, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, wordsFilter, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
 import { markRequirement, requirements as loadRequirements } from './certifications'
 import type { Requirement } from './certifications'
 
@@ -98,7 +98,7 @@ export async function notesFor(personId: string): Promise<Note[]> {
 export async function searchPeople(term: string, doctorsOnly = false): Promise<PersonLite[]> {
   const t = encodeURIComponent(term.trim())
   if (!t) return []
-  const q = await select<PersonLite>('people', `select=${PERSON}&or=(first_name.ilike.*${t}*,last_name.ilike.*${t}*,practice_name.ilike.*${t}*)${doctorsOnly ? '&contact_type=eq.doctor' : ''}&order=last_name&limit=12`)
+  const q = await select<PersonLite>('people', `select=${PERSON}&${wordsFilter(term, ['first_name', 'last_name', 'practice_name'])}${doctorsOnly ? '&contact_type=eq.doctor' : ''}&order=last_name&limit=12`)
   return q.data ?? []
 }
 export async function practiceOffices(personId: string): Promise<{ id: number; name: string | null; address: string | null; city: string | null; state: string | null; phone: string | null }[]> {
