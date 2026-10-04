@@ -75,6 +75,10 @@ export default function AccountMenu() {
         ) : (
           <span className="acctav">{initials(access)}</span>
         )}
+        <span className="acctname">
+          <b>{name}</b>
+          <span>{primaryRole(access)}</span>
+        </span>
       </button>
 
       {open && (
