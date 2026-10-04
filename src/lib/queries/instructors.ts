@@ -8,7 +8,7 @@
  * Certify / end service also keep the site's instructor role and the legacy
  * people.instructor_status in step, so there is one source of truth.
  * -------------------------------------------------------------------------- */
-import { select, wordsFilter, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, searchSelect, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export type Who = { name: string; id: string | null }
 export type Stamp = { completed: true; date: string; name: string }
@@ -74,9 +74,9 @@ export async function notesFor(personId: string): Promise<Note[]> {
 }
 export async function searchPeople(term: string): Promise<PersonLite[]> {
   const t = encodeURIComponent(term.trim()); if (!t) return []
-  const q = await select<PersonLite>('people', `select=${PERSON}&${wordsFilter(term, ['first_name', 'last_name', 'practice_name'])}&order=last_name&limit=12`)
+  const q = await searchSelect<PersonLite>('people', term, ['first_name', 'last_name', 'practice_name'], 12, (f, n) => `select=${PERSON}&${f}&order=last_name&limit=${n}`)
   if (q.data) return q.data
-  const q2 = await select<PersonLite>('people', `select=${PERSON.replace(',person_roles(id,role_key,instructor_level)', '')}&${wordsFilter(term, ['first_name', 'last_name', 'practice_name'])}&order=last_name&limit=12`)
+  const q2 = await searchSelect<PersonLite>('people', term, ['first_name', 'last_name', 'practice_name'], 12, (f, n) => `select=${PERSON.replace(',person_roles(id,role_key,instructor_level)', '')}&${f}&order=last_name&limit=${n}`)
   return q2.data ?? []
 }
 

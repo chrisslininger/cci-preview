@@ -292,13 +292,67 @@ export function signOut(): void {
   }
 }
 
+const searchWords = (term: string) => term.replace(/[,.*()"]/g, ' ').trim().split(/\s+/).filter(Boolean)
+
 /** Filter for a people search: every word typed has to appear in one of the
- *  fields, so "Nor J" finds Nor Jobarah. Returns '' when nothing was typed. */
-export function wordsFilter(term: string, fields: string[]): string {
-  const words = term.replace(/[,.*()"]/g, ' ').trim().split(/\s+/).filter(Boolean)
+ *  fields, so "Nor J" finds Nor Jobarah. Returns '' when nothing was typed.
+ *  With `prefix`, each word is cut to that many letters first. */
+export function wordsFilter(term: string, fields: string[], prefix?: number): string {
+  const words = searchWords(term).map((w) => (prefix ? w.slice(0, prefix) : w))
   if (!words.length) return ''
   const one = (w: string) => `or(${fields.map((f) => `${f}.ilike.*${encodeURIComponent(w)}*`).join(',')})`
   return `and=(${words.map(one).join(',')})`
+}
+
+/** Letters to change, add or drop to turn one string into the other. */
+function editDistance(a: string, b: string): number {
+  const d = Array.from({ length: b.length + 1 }, (_, j) => j)
+  for (let i = 1; i <= a.length; i++) {
+    let diag = d[0]!
+    d[0] = i
+    for (let j = 1; j <= b.length; j++) {
+      const up = d[j]!
+      d[j] = Math.min(up + 1, d[j - 1]! + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1))
+      diag = up
+    }
+  }
+  return d[b.length]!
+}
+
+/** How close a row is to what was typed, 0 to 1. Each typed word is compared
+ *  with every word in the fields, whole and as a prefix, so "Jobara" and
+ *  "Jobbarah" both come out close to "Jobarah". */
+function closeness(term: string, row: Record<string, unknown>, fields: string[]): number {
+  const words = searchWords(term).map((w) => w.toLowerCase())
+  const names = fields.flatMap((f) => String(row[f] ?? '').toLowerCase().split(/[\s'-]+/)).filter(Boolean)
+  if (!words.length || !names.length) return 0
+  const best = (w: string) => Math.max(...names.map((n) => 1 - Math.min(editDistance(w, n), editDistance(w, n.slice(0, w.length))) / w.length))
+  return words.reduce((sum, w) => sum + best(w), 0) / words.length
+}
+
+/** A people search that forgives typos. It runs the exact search first; if
+ *  that finds nobody, it searches again on the first three letters of each
+ *  word and keeps the closest names. `build` turns a filter and a row limit
+ *  into the query string. */
+export async function searchSelect<T>(
+  table: string,
+  term: string,
+  fields: string[],
+  limit: number,
+  build: (filter: string, limit: number) => string,
+): Promise<{ data: T[] | null; error?: string }> {
+  const exact = wordsFilter(term, fields)
+  const first = await select<T>(table, build(exact, limit))
+  if (first.error || (first.data ?? []).length) return first
+  const loose = wordsFilter(term, fields, 3)
+  if (!loose || loose === exact) return first
+  const wide = await select<T>(table, build(loose, 100))
+  if (!wide.data) return wide
+  const ranked = wide.data
+    .map((row) => ({ row, score: closeness(term, row as Record<string, unknown>, fields) }))
+    .filter((x) => x.score >= 0.6)
+    .sort((a, b) => b.score - a.score)
+  return { data: ranked.slice(0, limit).map((x) => x.row) }
 }
 
 export async function select<T = unknown>(

@@ -5,7 +5,7 @@
  * pi_id / pi_name / co_investigators on research_projects are kept filled
  * from the team so CCI OS keeps reading them.
  * -------------------------------------------------------------------------- */
-import { select, wordsFilter, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, searchSelect, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export type Who = { name: string; id: string | null }
 export type Role = 'pi' | 'co_investigator' | 'project_manager' | 'researcher' | 'student' | 'external_partner' | 'assistant_director'
@@ -38,7 +38,7 @@ export async function researchFor(personId: string): Promise<{ project: Pick<Pro
 }
 export async function searchPeople(term: string): Promise<PersonLite[]> {
   const t = encodeURIComponent(term.trim()); if (!t) return []
-  const q = await select<PersonLite>('people', `select=${PERSON}&${wordsFilter(term, ['first_name', 'last_name', 'practice_name'])}&order=last_name&limit=10`)
+  const q = await searchSelect<PersonLite>('people', term, ['first_name', 'last_name', 'practice_name'], 10, (f, n) => `select=${PERSON}&${f}&order=last_name&limit=${n}`)
   return q.data ?? []
 }
 export async function notesFor(personId: string): Promise<Note[]> {
