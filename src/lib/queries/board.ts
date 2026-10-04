@@ -80,7 +80,10 @@ export const initials = (p: Pick<Person, 'first_name' | 'last_name'> | null, fal
 export const isCurrentMember = (p: Person | null, now = new Date()) => !!p && /(current|active|good|member)/i.test(p.membership_status ?? '') && (!p.membership_expires || new Date(p.membership_expires + 'T12:00:00Z') >= now)
 export const hasLevel1 = (p: Person | null) => !!p && ((p.person_certifications ?? []).some((c) => c.technique === 'Advanced Orthogonal' && /level_1|level_2/.test(c.level)) || /level_1|level_2/.test(p.cert_level ?? ''))
 export const eligDone = (t: Term) => ELIGIBILITY.filter((e) => t[e.key]).length
-export const procDone = (t: Term) => PROCESS.filter((s) => t[s.key]).length
+/** board_service has no `nominated` column, only `nominated_date`, so a
+ *  nomination date is what marks the step done. */
+export const stepDone = (t: Term, key: ProcKey) => key === 'nominated' ? !!(t.nominated ?? t.nominated_date) : !!t[key]
+export const procDone = (t: Term) => PROCESS.filter((s) => stepDone(t, s.key)).length
 export const isReady = (t: Term) => eligDone(t) === ELIGIBILITY.length && procDone(t) === PROCESS.length
 /** The term a new class is seated into: Oct 1 of this year if before Oct 1, else next year. */
 export function nextTermLabel(now = new Date()): string {
@@ -99,6 +102,7 @@ export async function tick(t: Term, key: EligKey | ProcKey, on: boolean, who: { 
   const body: Record<string, unknown> = { [key]: on, eligibility_audit: on ? stamp(t, key, who) : unstamp(t, key) }
   const step = PROCESS.find((s) => s.key === key)
   if (step) body[step.date] = on ? (date ?? t[step.date] ?? new Date().toISOString().slice(0, 10)) : null
+  if (key === 'nominated') delete body.nominated
   return patch('board_service', `id=eq.${t.id}`, body)
 }
 export const setProcDate = (t: Term, dateKey: ProcDate, value: string | null) => patch('board_service', `id=eq.${t.id}`, { [dateKey]: value })
@@ -111,7 +115,7 @@ export async function addNominee(p: Person, label: string, nominatedBy: string, 
   const member = isCurrentMember(p), l1 = hasLevel1(p)
   if (member) audit.is_member = { by: 'system', by_id: null, at: new Date().toISOString() }
   if (l1) audit.level1_cert = { by: 'system', by_id: null, at: new Date().toISOString() }
-  return insert('board_service', [{ person_id: p.id, person_name: `Dr. ${p.first_name} ${p.last_name}`, term_label: label, term_start: d.start, term_end: d.end, status: 'nominee', nominated_by: nominatedBy || null, nominated: true, nominated_date: date, is_member: member, level1_cert: l1, eligibility_audit: audit }])
+  return insert('board_service', [{ person_id: p.id, person_name: `Dr. ${p.first_name} ${p.last_name}`, term_label: label, term_start: d.start, term_end: d.end, status: 'nominee', nominated_by: nominatedBy || null, nominated_date: date, is_member: member, level1_cert: l1, eligibility_audit: audit }])
 }
 export const withdraw = (t: Term, who: { name: string; id: string | null }) => patch('board_service', `id=eq.${t.id}`, { status: 'withdrawn', eligibility_audit: stamp(t, 'withdrawn', who) })
 
