@@ -26,7 +26,7 @@ export const session: SessionState = { token: null, refresh: null, expires: 0, u
 const STORAGE_KEY = 'aoi.session'
 
 /* Supabase access tokens last an hour. Without the refresh token the member
- * area simply stopped working after that — every call came back unauthorised
+ * area simply stopped working after that — every call came back unauthorized
  * and the shell read it as "signed out", which is what made sign-in feel
  * unreliable. We keep the refresh token and renew before expiry. */
 const RENEW_MARGIN_MS = 60_000

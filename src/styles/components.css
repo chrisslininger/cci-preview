@@ -2,7 +2,7 @@
  * Component layer — the board-approved v4.8 visual design.
  *
  * Ported from the single-file build so the rebuild is pixel-identical to what
- * the Board signed off on. Every colour here resolves to a token in
+ * the Board signed off on. Every color here resolves to a token in
  * tokens.css; no raw hex is permitted in this file.
  * -------------------------------------------------------------------------- */
 
@@ -1510,7 +1510,7 @@ a.othercard {
 
 /* ---------------------------------------------------------------------------
  * Full CCI OS — the executive surface.
- * Built from the same tokens as everything else; no raw colour values.
+ * Built from the same tokens as everything else; no raw color values.
  * ------------------------------------------------------------------------- */
 
 .os-note {

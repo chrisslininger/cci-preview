@@ -14,18 +14,13 @@ export default function AboutPage() {
         </div>
 
         <section className="tight">
-          <div className="wrap grid2" style={{"alignItems": "center", "gap": "56px"}}>
+          <div className="wrap">
             <div>
               <h2 className="t" style={{"fontSize": "28px"}}>An Institute built for you.</h2>
               <div className="prose">
                 <p>The Advanced Orthogonal Institute exists for one reason: to help you become the best upper cervical doctor you can be.</p>
                 <p>Whether you're a student just discovering precision-based chiropractic, a practicing doctor looking to refine your skills, or an experienced clinician ready to master the most advanced applications of the technique—this is your home.</p>
               </div>
-            </div>
-            <div className="video">
-              <div className="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="var(--color-surface-inverse)"><path d="M8 5v14l11-7z" /></svg></div>
-              <span className="lbl">VIDEO — INSIDE THE INSTITUTE</span>
-              <span className="dur">3:05</span>
             </div>
           </div>
         </section>

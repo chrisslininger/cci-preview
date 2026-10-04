@@ -22,7 +22,7 @@ export const PEOPLE = {
       bio:'Dr. David Miranda is a chiropractic physician practicing at Sound Correction Chiropractic in Orem, Utah, dedicated to advancing precision in upper cervical analysis and correction. He is trained in Grostic, Advanced Orthogonal, EPIC, Activator Methods, and Webster Technique. During his final year of chiropractic school he completed his internship at the Pierce Clinic, an experience that sparked his pursuit to understand why these procedures work as consistently as they do. His current research focuses on challenging existing orthogonal models and developing true three-dimensional analytic frameworks to substantiate and evolve upper cervical analysis. He served as a district leader before joining the executive board of the Utah Chiropractic Physicians Association, and remains committed to pursuing truth through measurement and analysis.'},
   damico:{name:'Dr. Dutch D\'Amico', ini:'DD', img:'ph-b', cred:'D.C., BCAO', role:'BOARD MEMBER',
       bio:'Dr. Dutch D\'Amico is a fifth-generation Doctor of Chiropractic and grandson of Dr. G. Stanford Pierce Sr., founder of the Advanced Orthogonal technique. A U.S. Army veteran and Director of Research and Development for SpinalLight, Inc., Dr. D\'Amico is deeply committed to advancing instrument technology and precision in upper cervical care. As both a clinician at the Pierce Clinic of Chiropractic and an instructor for the Advanced Orthogonal Institute, he brings passion, technical mastery, and a legacy of innovation to every aspect of his work.'},
-  jobarah:{name:'Dr. Nor Jobarah', ini:'NJ', img:'ph-a', cred:'D.C.', role:'SPEAKER',
+  jobarah:{name:'Dr. Nor Jobarah', ini:'NJ', img:'ph-a', cred:'D.C.', role:'BOARD MEMBER',
       bio:'Dr. Nor Jobarah practices in Arvada, Colorado, where she specializes in complex neurological cases. She earned her bachelor\'s degree in Exercise Physiology in Central Florida and attended Palmer Florida, where she discovered upper cervical care in her third semester and went on to lead and revamp the school\'s Upper Cervical Club, teaching the work to her peers and driving growth in the student clinic. Alongside patient care she mentors chiropractic students and doctors on building purpose-driven upper cervical practices.'},
   pavlovic:{name:'Dr. Debra Pavlovic', ini:'DP', img:'ph-c', cred:'D.C.', role:'SPEAKER',
       bio:'Dr. Debra Pavlovic is an upper cervical chiropractor and owner of Atlas Wellness of Lakeland, Florida. A Sherman College graduate who trained at the Sweat Institute in Atlanta, she became Certified Advanced Orthogonal in 2008 and EPIC certified in 2016. Her practice centers on three-dimensional X-ray analysis and degree-specific, calibrated percussive sound-wave corrections, and her current interest is the lineage of orthogonal work from B.J. Palmer to the present day.'},
@@ -49,19 +49,27 @@ export const PEOPLE = {
   mr:{name:'Dr. Maria Reyes', ini:'MR', img:'ph-c', cred:'D.C., PH.D. · NEUROLOGY RESEARCH', role:'GUEST EXPERT',
       bio:'Research faculty presenting the latest findings on functional and neurological change following specific upper cervical correction.'},
   lyter:{name:'Dr. Kevin Lyter', ini:'KL', img:'ph-b', cred:'D.C., DCCJP', role:'BOARD MEMBER · SECRETARY',
-      bio:'Dr. Kevin Lyter is the owner of Simmons Chiropractic Clinic in Tacoma, Washington, a large and well-established upper cervical practice that has served the region since 1946 and is recognized as a longstanding hub for orthogonal-based care and training. He earned his Doctor of Chiropractic degree from Life Chiropractic College West in 2000 and began practicing in Washington shortly thereafter. After being introduced to the Atlas Orthogonal instrument adjustment, Dr. Lyter joined Simmons Chiropractic Clinic in 2005, where he has remained committed to upper cervical-specific chiropractic care. He has served on the Board of Directors of the Advanced Orthogonal Institute for nearly a decade, is a Senior Instructor, and regularly hosts Advanced Orthogonal hands-on seminars at Simmons Chiropractic Clinic, supporting doctors throughout the western United States.'}
+      bio:'Dr. Kevin Lyter is the owner of Simmons Chiropractic Clinic in Tacoma, Washington, a large and well-established upper cervical practice that has served the region since 1946 and is recognized as a longstanding hub for orthogonal-based care and training. He earned his Doctor of Chiropractic degree from Life Chiropractic College West in 2000 and began practicing in Washington shortly thereafter. After being introduced to the Atlas Orthogonal instrument adjustment, Dr. Lyter joined Simmons Chiropractic Clinic in 2005, where he has remained committed to upper cervical-specific chiropractic care. He has served on the Board of Directors of the Advanced Orthogonal Institute for nearly a decade, is a Senior Instructor, and regularly hosts Advanced Orthogonal hands-on seminars at Simmons Chiropractic Clinic, supporting doctors throughout the western United States.'},
+  orris:{name:'Dr. Max Orris', ini:'MO', img:'ph-c', cred:'D.C.', role:'BOARD MEMBER',
+      bio:'Dr. Max Orris is the founder of Gateway Upper Cervical Institute in Pacific, Missouri, a practice dedicated exclusively to precision upper cervical care for patients with complex neurological and musculoskeletal conditions. A 2016 graduate of Logan College of Chiropractic, he trained in several upper cervical techniques before clinical exposure at the Pierce Clinic led him to make Advanced Orthogonal the foundation of his practice, and he completed the AdvO Bootcamp in 2025. His clinical focus includes dizziness and vertigo, post-concussion recovery, headaches and migraines, cervical instability, and dysautonomia, and he has built referral relationships with physicians and therapists across the St. Louis region. He is president of the MVR-III Bridge Foundation, serves on the board of the Pacific Area Chamber of Commerce, and is committed to expanding the research behind Advanced Orthogonal.'},
+  miller:{name:'Dr. Jeremy Miller', ini:'JM', img:'ph-b', cred:'D.C., M.S.', role:'BOARD MEMBER',
+      bio:'Dr. Jeremy Miller is Director of Doctors at the Pierce Clinic of Chiropractic in St. Petersburg, Florida, where he has treated patients since 2016. He earned his Doctor of Chiropractic and a master\'s degree in Sports Health Science from Life University. He has served the Institute as Director of Research and Development and as Executive Director, co-taught the Fundamentals Series, and was lead instructor for the AdvO Bootcamp. His research on posturography and upper cervical care has been published in the Journal of Upper Cervical Chiropractic Research and presented at the ACC-RAC conference and the ICA Council on Upper Cervical Care symposium. He is adjunct faculty at Palmer College of Chiropractic and Life University.'}
 } as unknown as Record<string, Person>
 
 /** The seated Board, in the order it is displayed.
- *  Dr. Nick Schar was removed and Dr. Angelo Colavita seated in his place. */
+ *  Dr. Nick Schar was removed and Dr. Angelo Colavita seated in his place.
+ *  Dr. Kevin Lyter then stepped down, and Dr. Nor Jobarah, Dr. Max Orris and
+ *  Dr. Jeremy Miller were elected. */
 export const BOARD_ROSTER = [
   'cs',
   'fowler',
-  'lyter',
   'colavita',
   'beadle',
   'miranda',
   'damico',
+  'jobarah',
+  'orris',
+  'miller',
 ] as const
 
 /** People whose headshot was extracted from the v4.8 build to a real image
@@ -82,4 +90,6 @@ export const HEADSHOTS = new Set([
   'corsello',
   'jobarah',
   'pavlovic',
+  'orris',
+  'miller',
 ])

@@ -14,12 +14,7 @@ export default function DifferencePage() {
         </div>
 
         <section className="tight">
-          <div className="wrap grid2" style={{"alignItems": "center", "gap": "56px"}}>
-            <div className="video">
-              <div className="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="var(--color-surface-inverse)"><path d="M8 5v14l11-7z" /></svg></div>
-              <span className="lbl">VIDEO — THE TECHNIQUE IN ACTION</span>
-              <span className="dur">4:32</span>
-            </div>
+          <div className="wrap">
             <div>
               <h2 className="t" style={{"fontSize": "28px"}}>A specific approach for specific results.</h2>
               <div className="prose">

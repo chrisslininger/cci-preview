@@ -272,9 +272,9 @@ export default function OperatingSystem() {
           )}
         </Section>
 
-        <Section title="Enquiries" lede="Submitted through the public contact form.">
+        <Section title="Inquiries" lede="Submitted through the public contact form.">
           {mail.length === 0 ? (
-            <p className="ma-empty">No enquiries yet.</p>
+            <p className="ma-empty">No inquiries yet.</p>
           ) : (
             mail.map((m) => (
               <div className="ma-row" key={m.id}>
