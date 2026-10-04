@@ -31,9 +31,9 @@ Closing: That’s a reasonable place to be. Most techniques ask for a commitment
 Heading: Two hours, free, on your schedule
 Photo: xray
 
-The Intro to AdvO course is **free** and online. In about two hours you’ll see the upper cervical principles behind the technique, how the analysis and the instrument-based correction work, and what the path from your first seminar to certification looks like.
+The Intro to AdvO course is free and online. In about two hours you’ll see the upper cervical principles behind the technique, how the analysis and the instrument-based correction work, and what the path from your first seminar to certification looks like.
 
-There’s nothing to schedule and **no membership required**. Start any time, watch at your own pace, and decide from there.
+There’s nothing to schedule and no membership required. Start any time, watch at your own pace, and decide from there.
 
 ## Benefits
 Heading: Why start with the Intro

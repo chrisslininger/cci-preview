@@ -33,7 +33,7 @@ Photo: setup
 
 The AdvO Intensive is built for exactly this. On day one, our instructors demonstrate every step of the procedure: the history and exam, X-ray and CBCT setup and analysis, pattern understanding, the corrective setup, and the adjustment.
 
-On day two, it’s your turn. You **run the exam and set up patients yourself**, from simple to advanced setups, while **instructors watch and correct your habits on the spot**. You finish with case studies and your own questions, so you leave knowing your setup is right.
+On day two, it’s your turn. You run the exam and set up patients yourself, from simple to advanced setups, while instructors watch and correct your habits on the spot. You finish with case studies and your own questions, so you leave knowing your setup is right.
 
 ## Benefits
 Heading: Why doctors come to the Intensive
