@@ -41,9 +41,10 @@ export default function MemberShell() {
   const here = railKey(tab)
   const tabs = groups.flatMap((g) => g.items).filter((i) => i.key === here || i.under === here)
 
-  // Folded groups: shut until opened, and the one you are in is always open.
+  // Folded groups: shut until opened. Arriving on a tab opens its group; any group can be shut again.
   const [opened, setOpened] = useState<Set<NavGroup>>(new Set())
   const hereGroup = groups.find((g) => g.items.some((i) => i.key === here))?.group
+  useEffect(() => { if (hereGroup) setOpened((o) => (o.has(hereGroup) ? o : new Set(o).add(hereGroup))) }, [hereGroup])
   const toggle = (g: NavGroup) => setOpened((o) => { const n = new Set(o); if (n.has(g)) n.delete(g); else n.add(g); return n })
 
   // Red dots: what needs this person right now — a report they owe, a task due, new registrations.
@@ -80,12 +81,12 @@ export default function MemberShell() {
         <nav className="ma-rail" aria-label="Member area">
           {groups.map((group) => {
             const folds = FOLDS.includes(group.group)
-            const open = !folds || group.group === hereGroup || opened.has(group.group)
+            const open = !folds || opened.has(group.group)
             const dots = group.items.some((i) => dot(i.key))
             return (
               <div key={group.group} className={open ? undefined : 'shut'}>
                 {folds ? (
-                  <button type="button" className="grp" aria-expanded={open} onClick={() => toggle(group.group)} disabled={group.group === hereGroup}>
+                  <button type="button" className="grp" aria-expanded={open} onClick={() => toggle(group.group)}>
                     {GROUP_LABEL[group.group]}
                     {!open && dots && <span className="ma-dot" aria-hidden="true" />}
                   </button>

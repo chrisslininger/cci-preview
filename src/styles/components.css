@@ -1256,7 +1256,6 @@ a.othercard {
 }
 /* A folding heading: a chevron that turns when the group opens. */
 .ma-rail button.grp { cursor: pointer; }
-.ma-rail button.grp:disabled { cursor: default; }
 .ma-rail button.grp::after {
   content: '';
   width: 5px;
@@ -1268,7 +1267,7 @@ a.othercard {
   transition: transform var(--duration-fast) var(--ease-standard);
 }
 .ma-rail .shut button.grp::after { transform: rotate(-45deg); }
-.ma-rail button.grp:hover:not(:disabled) { color: var(--color-content-on-inverse); }
+.ma-rail button.grp:hover { color: var(--color-content-on-inverse); }
 .ma-rail button.grp .ma-dot { margin-left: 0; }
 .ma-rail a {
   display: flex;
@@ -1276,7 +1275,8 @@ a.othercard {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 18px;
+  /* Pages sit indented under their group heading. */
+  padding: 6px 18px 6px 32px;
   color: var(--color-rail-item);
   font-family: var(--font-sans);
   font-size: 13px;
