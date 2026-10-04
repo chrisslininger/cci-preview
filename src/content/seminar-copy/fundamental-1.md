@@ -19,8 +19,8 @@ Label: Fundamentals Series · Part 1 of 3
 Subtitle: Your foundation in Advanced Orthogonal begins here: the history, the exam and the X-ray series.
 Button: RSVP for the Monthly Huddle
 - Build the foundation every correction rests on
-- Take a history and run an exam you can trust
-- Set up a reliable, specific X-ray series
+- Take a history and perform an exam you can trust
+- Get consistent & reliable X-rays
 
 ## Problem
 Heading: Every correction is only as good as what comes before it
