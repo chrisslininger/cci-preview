@@ -609,7 +609,9 @@ export default function SeminarPage({ param }: { param?: string }) {
         </>
       )}
 
-      {!aboutFirst && aboutSec}
+      {/* Pages with a story say all of this in How We Help; the About text
+       * still feeds the page's search description. */}
+      {!story && aboutSec}
 
       {speakers.length > 0 && (
         <section className="tight" style={{ paddingTop: '8px' }} id="presenters">
