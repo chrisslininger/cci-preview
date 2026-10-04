@@ -7,7 +7,7 @@
  * row, Postgres does not return it. The capability check in the UI decides
  * whether to ask; RLS decides whether to answer.
  * -------------------------------------------------------------------------- */
-import { select, session } from '@/lib/supabase'
+import { select, searchSelect, session } from '@/lib/supabase'
 
 export type Registration = {
   payment_status?: string
@@ -146,13 +146,10 @@ export type RosterRow = {
 
 export async function roster(search: string): Promise<RosterRow[]> {
   const term = search.trim()
-  const filter = term
-    ? `&or=(last_name.ilike.*${encodeURIComponent(term)}*,first_name.ilike.*${encodeURIComponent(term)}*,email.ilike.*${encodeURIComponent(term)}*)`
-    : '&person_roles=not.is.null'
-  const q = await select<RosterRow>(
-    'people',
-    `select=id,first_name,last_name,email,person_roles(role_key,committee_id)&order=last_name&limit=40${filter}`,
-  )
+  const cols = 'select=id,first_name,last_name,email,person_roles(role_key,committee_id)&order=last_name'
+  const q = term
+    ? await searchSelect<RosterRow>('people', term, ['last_name', 'first_name', 'email'], 40, (f, n) => `${cols}&limit=${n}&${f}`)
+    : await select<RosterRow>('people', `${cols}&limit=40&person_roles=not.is.null`)
   return q.data ?? []
 }
 

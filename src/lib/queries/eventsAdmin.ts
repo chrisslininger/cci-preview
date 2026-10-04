@@ -11,7 +11,7 @@
  * what may change: everyone sees published events; board, the executive
  * director and the seminar committee see drafts and can edit.
  * -------------------------------------------------------------------------- */
-import { select, patch, insert, remove, rpc, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, searchSelect, patch, insert, remove, rpc, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export const CATEGORIES: [string, string][] = [
   ['free', 'Intro Course (free)'], ['fundamentals', 'Fundamentals'], ['intensive', 'AdvO Intensive'],
@@ -119,7 +119,7 @@ export type PersonHit = { id: string; first_name: string | null; last_name: stri
 export async function searchPeople(q: string): Promise<PersonHit[]> {
   const t = q.trim().replace(/[,.*()]/g, '')
   if (t.length < 2) return []
-  const r = await select<PersonHit>('people', `select=id,first_name,last_name,credentials,photo_url&or=(first_name.ilike.*${t}*,last_name.ilike.*${t}*)&order=last_name.asc&limit=8`)
+  const r = await searchSelect<PersonHit>('people', t, ['first_name', 'last_name'], 8, (f, n) => `select=id,first_name,last_name,credentials,photo_url&${f}&order=last_name.asc&limit=${n}`)
   return r.data ?? []
 }
 
