@@ -20,8 +20,8 @@ import {
 } from '@/lib/queries/eventsAdmin'
 import type { RsvpCandidate, EventRow, EventInput, Venue, Committee, Speaker, Session, Reg, PersonHit } from '@/lib/queries/eventsAdmin'
 
-type Tab = 'all' | 'upcoming' | 'seminars' | 'gov' | 'drafts'
-const TABS: [Tab, string][] = [['all', 'All events'], ['upcoming', 'Upcoming'], ['seminars', 'Seminars & courses'], ['gov', 'Board & committee'], ['drafts', 'Drafts']]
+type Tab = 'all' | 'upcoming' | 'past' | 'seminars' | 'gov' | 'drafts'
+const TABS: [Tab, string][] = [['all', 'All events'], ['upcoming', 'Upcoming'], ['past', 'Past'], ['seminars', 'Seminars & courses'], ['gov', 'Board & committee'], ['drafts', 'Drafts']]
 
 const initials = (n: string) => n.replace(/^Dr\.?\s*/i, '').split(/\s+/).map((w) => w[0] ?? '').join('').slice(0, 2).toUpperCase()
 
@@ -73,14 +73,20 @@ export default function EventsPanel() {
   useEffect(() => { if (canManage) { void loadVenues().then(setVenues); void loadCommittees().then(setCommittees) } }, [canManage])
 
   const counts = useMemo(() => ({
-    all: rows.length, upcoming: rows.filter((e) => !isPast(e)).length, seminars: rows.filter((e) => !isGov(e)).length,
+    all: rows.length, upcoming: rows.filter((e) => !isPast(e)).length, past: rows.filter((e) => isPast(e)).length, seminars: rows.filter((e) => !isGov(e)).length,
     gov: rows.filter(isGov).length, drafts: rows.filter((e) => e.status !== 'published').length,
   }), [rows])
+  /* Under the mixed tiles, how many of their events are still ahead and how many are over. */
+  const split = useMemo(() => {
+    const of = (pick: (e: EventRow) => boolean) => { const r = rows.filter(pick); const up = r.filter((e) => !isPast(e)).length; return `${up} upcoming · ${r.length - up} past` }
+    return { all: of(() => true), seminars: of((e) => !isGov(e)), gov: of(isGov), drafts: of((e) => e.status !== 'published') } as Partial<Record<Tab, string>>
+  }, [rows])
 
   const list = useMemo(() => {
     const t = q.trim().toLowerCase()
     return rows.filter((e) => {
       if (tab === 'upcoming' && isPast(e)) return false
+      if (tab === 'past' && !isPast(e)) return false
       if (tab === 'seminars' && isGov(e)) return false
       if (tab === 'gov' && !isGov(e)) return false
       if (tab === 'drafts' && e.status === 'published') return false
@@ -148,7 +154,7 @@ export default function EventsPanel() {
         <div className="cert-actions">{canManage && <button type="button" className="b p-btn sm" onClick={() => setEdit('new')}>+ Create event</button>}<button type="button" className="b s-btn on-light sm" onClick={exportCsv}>↓ Export CSV</button></div>
       </div>
       {error && <div className="cert-err" role="alert">{error}</div>}
-      <div className="cert-tiles">{TABS.map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b></button>)}</div>
+      <div className="cert-tiles six">{TABS.map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b>{split[k] && <i>{split[k]}</i>}</button>)}</div>
       <div className="cert-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input type="text" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setQ('')} autoComplete="off" placeholder="Search by title, venue, category, speaker…" aria-label="Search events" />
