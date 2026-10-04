@@ -15,7 +15,7 @@ import { useToast } from '@/components/ui/Toast'
 import {
   listEvents, venues as loadVenues, committees as loadCommittees, registrations, searchPeople,
   createEvent, updateEvent, setStatus, deleteEvent, saveSpeakers, saveSessions, duplicateEvent, checkIn,
-  CATEGORIES, TYPES, TIMEZONES, catLabel, typeLabel, isGov, isPast, activeRegs, confirmedRegs, pendingRegs, recentRegs, unverifiedRegs, setVerification, slugify, rsvpCandidates, manualRsvp, canManageRsvps,
+  CATEGORIES, TYPES, TIMEZONES, catLabel, typeLabel, isGov, isPast, isOngoing, activeRegs, confirmedRegs, pendingRegs, recentRegs, unverifiedRegs, setVerification, slugify, rsvpCandidates, manualRsvp, canManageRsvps,
   dateBlock, whenText, money, zoned, MON, MONL,
 } from '@/lib/queries/eventsAdmin'
 import type { RsvpCandidate, EventRow, EventInput, Venue, Committee, Speaker, Session, Reg, PersonHit } from '@/lib/queries/eventsAdmin'
@@ -27,6 +27,17 @@ const initials = (n: string) => n.replace(/^Dr\.?\s*/i, '').split(/\s+/).map((w)
 
 function Pill({ kind = '', children }: { kind?: string; children: React.ReactNode }) {
   return <span className={`cpill ${kind}`}>{children}</span>
+}
+
+type View = 'list' | 'compact' | 'cal'
+const VIEW_KEY = 'aoi.events.view'
+const titleCase = (s: string) => s.toLowerCase().replace(/(^|–)([a-z])/g, (_, p: string, c: string) => p + c.toUpperCase())
+/** True on phone-width screens; follows the window as it is resized. */
+function useNarrow(): boolean {
+  const q = '(max-width: 860px)'
+  const [n, setN] = useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches)
+  useEffect(() => { const m = window.matchMedia(q); const f = () => setN(m.matches); m.addEventListener('change', f); return () => m.removeEventListener('change', f) }, [])
+  return n
 }
 
 function Chips({ e }: { e: EventRow }) {
@@ -55,7 +66,15 @@ export default function EventsPanel() {
   const [error, setError] = useState<string | null>(null)
   const [tab, setTab] = useState<Tab>('upcoming')
   const [q, setQ] = useState('')
-  const [view, setView] = useState<'list' | 'cal'>('list')
+  /* Compact (one row per event) on computers, the roomier cards on phones.
+   * The choice is remembered on this device. */
+  const narrow = useNarrow()
+  const [view, setViewState] = useState<View>(() => {
+    try { const v = localStorage.getItem(VIEW_KEY); if (v === 'list' || v === 'compact' || v === 'cal') return v } catch { /* no storage */ }
+    return 'compact'
+  })
+  const setView = (v: View) => { setViewState(v); try { localStorage.setItem(VIEW_KEY, v) } catch { /* no storage */ } }
+  const shown: View = view === 'compact' && narrow ? 'list' : view
   const [open, setOpen] = useState<number | null>(null)
   const [edit, setEdit] = useState<EventRow | 'new' | null>(null)
   const [confirm, setConfirm] = useState<EventRow | null>(null)
@@ -145,8 +164,32 @@ export default function EventsPanel() {
       </article>
     )
   }
+  const row = (e: EventRow) => {
+    const d = dateBlock(e)
+    const where = e.venue ? `${e.venue.name}${e.venue.city ? ` · ${e.venue.city}, ${e.venue.state ?? ''}` : ''}` : e.location
+    const unv = unverifiedRegs(e).length
+    const date = isOngoing(e) ? 'Ongoing' : `${titleCase(d.mo)} ${d.dy}${d.yr ? `, ${d.yr}` : ''}`
+    return (
+      <article key={e.id} className={`evt-row${isPast(e) ? ' past' : ''}${e.status !== 'published' ? ' draft' : ''}`} tabIndex={0} role="button" aria-label={`Open ${e.title}`}
+        onClick={() => setOpen(e.id)} onKeyDown={(k) => { if ((k.key === 'Enter' || k.key === ' ') && k.target === k.currentTarget) { k.preventDefault(); setOpen(e.id) } }}>
+        <span className="d">{date}</span>
+        <span className="t">{d.tm || '—'}</span>
+        <span className="n" title={e.title}>{e.title}</span>
+        <span className="w" title={where ?? ''}>{where || '—'}</span>
+        <span className="g">{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</span>
+        <span className="ac" onClick={(k) => k.stopPropagation()}>
+          {canManage && <>
+            <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(e)}>Edit</button>
+            <button type="button" className="b s-btn on-light xs" onClick={() => void onDuplicate(e)}>Duplicate</button>
+            <button type="button" className="b dgr xs" onClick={() => setConfirm(e)}>Remove</button>
+          </>}
+        </span>
+      </article>
+    )
+  }
+  const table = (items: EventRow[]) => <div className="evt-table"><div className="evt-row head"><span>Date</span><span>Time</span><span>Title</span><span>Location</span><span>Tags</span><span /></div>{items.map(row)}</div>
   const months: Record<string, { y: number; m: number; items: EventRow[] }> = {}
-  if (view === 'cal') for (const e of list) { const z = zoned(e.starts_at, e.timezone); if (!z) continue; const k = `${z.y}-${String(z.m).padStart(2, '0')}`; (months[k] ??= { y: z.y, m: z.m, items: [] }).items.push(e) }
+  if (shown === 'cal') for (const e of list) { const z = zoned(e.starts_at, e.timezone); if (!z) continue; const k = `${z.y}-${String(z.m).padStart(2, '0')}`; (months[k] ??= { y: z.y, m: z.m, items: [] }).items.push(e) }
   const current = open ? rows.find((x) => x.id === open) ?? null : null
 
   return (
@@ -163,9 +206,11 @@ export default function EventsPanel() {
         {q && <button type="button" className="clr" aria-label="Clear search" onClick={() => setQ('')}>×</button>}
       </div>
       <div className="evt-bar"><span className="cnt">{list.length} {list.length === 1 ? 'event' : 'events'}{q ? ` matching “${q}”` : ''} · sorted by date</span>
-        <div className="evt-seg"><button type="button" className={view === 'list' ? 'on' : ''} onClick={() => setView('list')}>List</button><button type="button" className={view === 'cal' ? 'on' : ''} onClick={() => setView('cal')}>Calendar</button></div></div>
+        <div className="evt-seg">{!narrow && <button type="button" className={shown === 'compact' ? 'on' : ''} onClick={() => setView('compact')}>Compact</button>}<button type="button" className={shown === 'list' ? 'on' : ''} onClick={() => setView('list')}>{narrow ? 'List' : 'Comfortable'}</button><button type="button" className={shown === 'cal' ? 'on' : ''} onClick={() => setView('cal')}>Calendar</button></div></div>
       {list.length === 0 && <div className="cert-card" style={{ textAlign: 'center', color: 'var(--color-content-muted)', padding: 30 }}>{q ? `Nothing matches “${q}”.` : 'No events in this list.'}</div>}
-      {view === 'list'
+      {shown === 'compact'
+        ? <>{upcoming.length > 0 && <><div className="evt-grp">Upcoming</div>{table(upcoming)}</>}{past.length > 0 && <><div className="evt-grp">Past</div>{table(past)}</>}</>
+        : shown === 'list'
         ? <>{upcoming.length > 0 && <div className="evt-grp">Upcoming</div>}{upcoming.map(card)}{past.length > 0 && <div className="evt-grp">Past</div>}{past.map(card)}</>
         : Object.keys(months).sort().map((k) => <div key={k}><div className="evt-grp">{MONL[months[k]!.m]} {months[k]!.y}</div>{months[k]!.items.map(card)}</div>)}
 
