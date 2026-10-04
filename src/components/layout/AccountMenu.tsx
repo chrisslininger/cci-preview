@@ -24,7 +24,7 @@ const ITEMS = [
 ]
 
 export default function AccountMenu() {
-  const { access, signedIn, refresh } = useAccess()
+  const { access, signedIn, refresh, canViewAsMember, viewingAsMember, setViewingAsMember } = useAccess()
   const navigate = useNavigate()
   const { pathname, hash } = useLocation()
   const [mounted, setMounted] = useState(false)
@@ -62,6 +62,12 @@ export default function AccountMenu() {
 
   return (
     <div className="acctmenu" ref={wrap}>
+      {viewingAsMember && (
+        <div className="viewas" role="status">
+          You're seeing the site as a member sees it.
+          <button type="button" onClick={() => setViewingAsMember(false)}>Back to my view</button>
+        </div>
+      )}
       <button
         type="button"
         className="acctbtn"
@@ -93,6 +99,20 @@ export default function AccountMenu() {
             </Link>
           ))}
           <div className="acctsep" />
+          {canViewAsMember && (
+            <button
+              type="button"
+              role="menuitemcheckbox"
+              aria-checked={viewingAsMember}
+              className="acctout acctview"
+              onClick={() => {
+                setViewingAsMember(!viewingAsMember)
+                setOpen(false)
+              }}
+            >
+              {viewingAsMember ? 'Back to my view' : 'View as a member'}
+            </button>
+          )}
           <Link to="/account#overview" role="menuitem" onClick={() => setOpen(false)}>
             Member Area
           </Link>
@@ -102,6 +122,7 @@ export default function AccountMenu() {
             className="acctout"
             onClick={() => {
               signOut()
+              setViewingAsMember(false)
               setOpen(false)
               void refresh()
               navigate('/account')

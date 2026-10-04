@@ -8,11 +8,13 @@
  * person actually holds. Seat someone on a committee and their tab appears;
  * remove them and it goes. Nothing is hard-coded per person.
  *
- * `group` is what the rail prints as a section heading.
+ * `group` is what the rail prints as a section heading. An item with `under`
+ * is not in the rail at all: it is a tab on its parent's page, which keeps the
+ * rail short enough to see whole.
  * -------------------------------------------------------------------------- */
 import type { Access, Capability } from './access'
 
-export type NavGroup = 'home' | 'mine' | 'events' | 'work' | 'people' | 'committees' | 'admin'
+export type NavGroup = 'home' | 'events' | 'work' | 'people' | 'committees' | 'admin'
 
 export type NavItem = {
   key: string
@@ -24,6 +26,10 @@ export type NavItem = {
   always?: boolean
   /** A last gate for things a capability alone cannot express. */
   when?: (access: Access) => boolean
+  /** Not in the rail: a tab inside the page of the item with this key. */
+  under?: string
+  /** The item's name on its own page's tab row, when it differs from the rail. */
+  tabLabel?: string
 }
 
 /** Every management surface — used where a tab opens to anyone who runs anything. */
@@ -47,17 +53,19 @@ const LEADERSHIP: Capability[] = ['board', 'full_admin', ...MANAGES]
 export const NAV: NavItem[] = [
   { key: 'overview', label: 'Overview', group: 'home', always: true },
 
-  /* ----------------------------------------------------------------- mine --
+  /* ----------------------------------------------------------- my account --
    * A member owns this data and there is nowhere else to reach it. CCI OS gave
    * the member role only Events and Calendar, which left certification, CE and
-   * the directory listing with no home. */
-  { key: 'membership', label: 'Membership', group: 'mine', always: true },
-  { key: 'mycert', label: 'My Certification', group: 'mine', always: true },
-  { key: 'myce', label: 'My CE', group: 'mine', always: true },
+   * the directory listing with no home. One rail item; the four are its tabs. */
+  { key: 'membership', label: 'My Account', tabLabel: 'Membership', group: 'home', always: true },
+  { key: 'mycert', label: 'My Certification', tabLabel: 'Certification', group: 'home', under: 'membership', always: true },
+  { key: 'myce', label: 'My CE', tabLabel: 'CE', group: 'home', under: 'membership', always: true },
   {
     key: 'mylisting',
     label: 'My Listing',
-    group: 'mine',
+    tabLabel: 'Listing',
+    group: 'home',
+    under: 'membership',
     always: true,
     // The directory is reserved to certified doctors at Level 1 or above.
     when: (a) => ['level_1', 'level_2'].includes(a.person?.cert_level ?? ''),
@@ -103,7 +111,6 @@ export const NAV: NavItem[] = [
 
 export const GROUP_LABEL: Record<NavGroup, string> = {
   home: 'Home',
-  mine: 'My Account',
   events: 'Events',
   work: 'Work',
   people: 'People',
@@ -120,9 +127,12 @@ export function canSee(item: NavItem, access: Access): boolean {
   return Boolean(item.when)
 }
 
-/** The rail, grouped, with empty groups dropped. */
+/** Groups that fold shut in the rail until opened, or until you are in one. */
+export const FOLDS: NavGroup[] = ['work', 'people', 'committees', 'admin']
+
+/** Every tab this person may open, grouped, with empty groups dropped. The rail skips `under` items. */
 export function navFor(access: Access): { group: NavGroup; items: NavItem[] }[] {
-  const order: NavGroup[] = ['home', 'mine', 'events', 'work', 'people', 'committees', 'admin']
+  const order: NavGroup[] = ['home', 'events', 'work', 'people', 'committees', 'admin']
   return order
     .map((group) => ({
       group,
@@ -133,4 +143,9 @@ export function navFor(access: Access): { group: NavGroup; items: NavItem[] }[] 
 
 export function findNav(key: string): NavItem | undefined {
   return NAV.find((i) => i.key === key)
+}
+
+/** The rail item a tab lives under — itself, unless it is a tab on another page. */
+export function railKey(key: string): string {
+  return findNav(key)?.under ?? key
 }

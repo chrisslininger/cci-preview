@@ -10,7 +10,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
-import { navFor, findNav, GROUP_LABEL } from '@/lib/nav'
+import { navFor, findNav, railKey, FOLDS, GROUP_LABEL } from '@/lib/nav'
+import type { NavGroup } from '@/lib/nav'
 import { roleLabel } from '@/lib/access'
 import { session } from '@/lib/supabase'
 import { attention, EMPTY, markEventsSeen, logSignInOnce, logActivity } from '@/lib/queries/attention'
@@ -37,6 +38,13 @@ export default function MemberShell() {
   }, [hash, access])
 
   const item = findNav(tab)
+  const here = railKey(tab)
+  const tabs = groups.flatMap((g) => g.items).filter((i) => i.key === here || i.under === here)
+
+  // Folded groups: shut until opened, and the one you are in is always open.
+  const [opened, setOpened] = useState<Set<NavGroup>>(new Set())
+  const hereGroup = groups.find((g) => g.items.some((i) => i.key === here))?.group
+  const toggle = (g: NavGroup) => setOpened((o) => { const n = new Set(o); if (n.has(g)) n.delete(g); else n.add(g); return n })
 
   // Red dots: what needs this person right now — a report they owe, a task due, new registrations.
   const [att, setAtt] = useState<Attention>(EMPTY)
@@ -70,25 +78,46 @@ export default function MemberShell() {
     <>
       <div className="ma">
         <nav className="ma-rail" aria-label="Member area">
-          {groups.map((group) => (
-            <div key={group.group}>
-              <span className="grp">{GROUP_LABEL[group.group]}</span>
-              {group.items.map((nav) => (
-                <Link
-                  key={nav.key}
-                  to={`/account#${nav.key}`}
-                  className={nav.key === tab ? 'on' : undefined}
-                  aria-current={nav.key === tab ? 'page' : undefined}
-                >
-                  {nav.label}
-                  {dot(nav.key) && <span className={`ma-dot${dot(nav.key)!.urgent ? ' urgent' : ''}`} title={dot(nav.key)!.title} aria-label={dot(nav.key)!.title} />}
-                </Link>
-              ))}
-            </div>
-          ))}
+          {groups.map((group) => {
+            const folds = FOLDS.includes(group.group)
+            const open = !folds || group.group === hereGroup || opened.has(group.group)
+            const dots = group.items.some((i) => dot(i.key))
+            return (
+              <div key={group.group} className={open ? undefined : 'shut'}>
+                {folds ? (
+                  <button type="button" className="grp" aria-expanded={open} onClick={() => toggle(group.group)} disabled={group.group === hereGroup}>
+                    {GROUP_LABEL[group.group]}
+                    {!open && dots && <span className="ma-dot" aria-hidden="true" />}
+                  </button>
+                ) : (
+                  <span className="grp">{GROUP_LABEL[group.group]}</span>
+                )}
+                {group.items.filter((nav) => !nav.under).map((nav) => (
+                  <Link
+                    key={nav.key}
+                    to={`/account#${nav.key}`}
+                    className={nav.key === here ? 'on' : undefined}
+                    aria-current={nav.key === here ? 'page' : undefined}
+                  >
+                    {nav.label}
+                    {dot(nav.key) && <span className={`ma-dot${dot(nav.key)!.urgent ? ' urgent' : ''}`} title={dot(nav.key)!.title} aria-label={dot(nav.key)!.title} />}
+                  </Link>
+                ))}
+              </div>
+            )
+          })}
         </nav>
 
         <main className="ma-main">
+          {tabs.length > 1 && (
+            <nav className="ma-tabs" aria-label={findNav(here)?.label}>
+              {tabs.map((t) => (
+                <Link key={t.key} to={`/account#${t.key}`} className={t.key === tab ? 'on' : undefined} aria-current={t.key === tab ? 'page' : undefined}>
+                  {t.tabLabel ?? t.label}
+                </Link>
+              ))}
+            </nav>
+          )}
           {tab === 'overview' ? (
             <Overview onOpen={(key) => navigate(`/account#${key}`)} />
           ) : (
