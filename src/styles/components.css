@@ -325,7 +325,7 @@
   .keynote::before{content:'';position:absolute;right:186px;top:-40px;bottom:-40px;width:3px;background:linear-gradient(180deg,var(--color-brand-accent),var(--color-brand-accent-strong));transform:rotate(11deg);z-index:3}
   @media(max-width:700px){.keynote{flex-direction:column-reverse}.keynote .pho{width:100%;clip-path:none}.keynote::before{display:none}}
   /* speaker pill */
-  .spk-pill{display:inline-flex;align-items:center;gap:8px;background:var(--color-surface-raised);border:1px solid var(--color-border-subtle);border-radius:100px;padding:4px 14px 4px 4px;cursor:pointer;transition:all .25s ease;margin:8px 8px 0 0}
+  .spk-pill{display:inline-flex;align-items:center;gap:8px;background:var(--color-surface-raised);border:1px solid var(--color-border-subtle);border-radius:100px;padding:4px 14px 4px 4px;cursor:pointer;transition:all .25s ease;margin:8px 8px 0 0;vertical-align:middle}
   .spk-pill:hover{border-color:var(--color-brand-accent);background:var(--color-surface-base);transform:translateY(-2px);box-shadow:0 8px 18px color-mix(in oklab, var(--color-surface-inverse) 14%, transparent)}
   .spk-pill .avx{width:26px;height:26px}
   .spk-pill .avx .ini{font-size:9px}
