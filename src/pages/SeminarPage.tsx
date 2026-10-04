@@ -184,8 +184,12 @@ export default function SeminarPage({ param }: { param?: string }) {
 
   /* The bottom button does what the session's own button does when there is
    * only one session to choose; with several (or none open) it scrolls up. */
+  /* Every registration button: open the sign-up window when there is one
+   * choice and it is open to this visitor; otherwise go to the dates (pick a
+   * weekend, join first, or see that it opens soon). */
   const onBottom = () => {
     if (!sessions.length && s.noSess?.act) { onRegister(); return }
+    if (s.regBand && (overlay?.open ?? true)) { onRegister(); return }
     const only = sessions.length === 1 ? sessions[0]! : null
     if (only) {
       const open = only.reg ? catalog.byKey[only.reg]?.open === true : !only.soon && !only.apply
@@ -211,7 +215,7 @@ export default function SeminarPage({ param }: { param?: string }) {
    * wording runs through the whole page and leads to the dates. */
   const story = s.story
   const cta = (
-    <button type="button" className="b lg p-btn" onClick={!sessions.length && s.noSess?.act ? onRegister : scrollToRegistration}>
+    <button type="button" className="b lg p-btn" onClick={onBottom}>
       {regLabel(s.ctaBtn ?? 'Register Now')}
     </button>
   )
