@@ -273,7 +273,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       if (data.requires_login_for_discount) {
         setInterstitial(
           data.free_with_membership
-            ? 'This event is FREE with your membership. Sign in to claim it — or continue as a guest at full price.'
+            ? 'This event is included with your membership. Sign in to claim your seat, or continue as a guest at full price.'
             : 'Sign in to apply your $200 member discount — or continue as a guest at full price.',
         )
       } else if (data.free && data.rsvp) {

@@ -2742,8 +2742,8 @@ a.othercard {
   .cfh-tiers span{font-size:14.5px;color:var(--color-content-on-inverse-subtle)}
   .cfh-tiers b{font-family:var(--font-display);font-size:16px;font-weight:500;color:var(--color-surface-base);font-variant-numeric:tabular-nums}
   .cfh-tiers li.hi{padding:13px 12px;margin:6px -12px;background:color-mix(in oklab, var(--color-brand-accent) 16%, transparent);border-bottom:none;border-left:3px solid var(--color-brand-accent);border-radius:2px}
-  .cfh-tiers li.hi span{color:var(--color-surface-base);font-weight:600}
-  .cfh-tiers li.hi b{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--color-brand-accent-bright)}
+  .cfh-tiers li.hi span{font-family:var(--font-display);font-size:19px;color:var(--color-surface-base);font-weight:600}
+  .cfh-tiers li.hi b{font-size:17px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--color-brand-accent-bright)}
 
   .cfh-act{padding:6px 28px 26px}
   .cfh-reg{display:flex;justify-content:center;width:100%;font-size:13.5px;padding:18px 20px}
