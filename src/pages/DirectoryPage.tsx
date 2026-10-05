@@ -17,8 +17,8 @@ function ClinicCard({ c }: { c: Clinic }) {
   const maps = `https://maps.google.com/?q=${encodeURIComponent([c.name, c.address, place].filter(Boolean).join(', '))}`
   return (
     <article className={`dir-card ${c.level === 'level_2' ? 'l2' : c.level === 'level_1' ? 'l1' : ''}`}>
+      <h3 className="dir-banner">{c.name}</h3>
       <div className="dir-clinic">
-        <h3>{c.name}</h3>
         <p className="dir-addr">
           {c.address && <>{c.address}<br /></>}
           {place}
