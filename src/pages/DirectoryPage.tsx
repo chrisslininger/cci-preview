@@ -116,7 +116,7 @@ export default function DirectoryPage() {
             </div>
           </div>
 
-          {data?.sample && <p className="dir-note">Local preview: these are made-up sample clinics, not real members.</p>}
+          {data?.sample && <p className="dir-note">Preview: these are made-up sample clinics, not real members.</p>}
 
           {!data && <p className="dir-note">Loading the directory…</p>}
 

@@ -7,8 +7,9 @@
  * lives in Supabase and decides who is listed; this file groups the rows into
  * clinics and searches them.
  *
- * Until the view exists, a local preview (localhost) shows SAMPLE clinics so
- * the page can be judged; the live site shows the phone fallback instead.
+ * Until the view exists, a local or test preview (localhost, *.pages.dev)
+ * shows SAMPLE clinics so the page can be judged; the live site shows the
+ * phone fallback instead.
  * -------------------------------------------------------------------------- */
 import { SB_URL, SB_KEY } from '@/lib/supabase'
 
@@ -59,7 +60,7 @@ export async function fetchDirectory(): Promise<DirectoryResult> {
   }
 }
 
-const isLocal = () => typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)
+const isLocal = () => typeof window !== 'undefined' && (['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.endsWith('.pages.dev'))
 
 /* ---------------------------------------------------------------- grouping */
 
@@ -171,7 +172,7 @@ export const STATES: Record<string, string> = {
 }
 
 /* ------------------------------------------------------------------ sample
- * Made-up clinics and doctors for the local preview only. Never shown on the
+ * Made-up clinics and doctors for local and test previews only. Never shown on the
  * live site. */
 
 const s = (person_id: string, first_name: string, last_name: string, cert_level: string | null, clinic_name: string, address: string, city: string, state: string, zip: string, phone: string): DirectoryRow =>
