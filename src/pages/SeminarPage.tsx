@@ -154,7 +154,7 @@ export default function SeminarPage({ param }: { param?: string }) {
       : s.cat === 'internship'
         ? 'MEMBER PRIORITY'
         : s.memPrice === 0 && s.fullPrice > 0
-          ? 'FREE FOR MEMBERS'
+          ? 'INCLUDED IN MEMBERSHIP'
           : save > 0
             ? `MEMBERS: $${money(s.memPrice ?? 0)}`
             : ''
