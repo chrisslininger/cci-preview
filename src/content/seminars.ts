@@ -83,7 +83,7 @@ export type SeminarStory = {
   data?: { h: string; lede?: string; items: { n: string; t: string; k?: string }[]; note: string }
   steps?: { h: string; items: { h: string; p: string }[] }
   voices?: { h: string; lede?: string; quotes: { q: string; who: string; cred?: string }[] }
-  fit?: { h: string; yes: string[]; no: string[] }
+  fit?: { h: string; yes: string[]; no: string[]; expect?: string[] }
   faq?: { q: string; a: string }[]
 }
 
@@ -299,25 +299,25 @@ export const SEMINARS = {
     sub:'Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward — November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.',
     dates:'November 6–7, 2026', ruleNote:'From 2027, the Annual Conference is held the third Friday–Saturday of October every year. Subject to change.', loc:'St. Petersburg, FL', level:'All Levels', format:'2 Days · 8 AM–6 PM', price:'$797',
     fullPrice:797, memPrice:0, studentPrice:347, facultyFree:true,
-    mbSub:'Membership is $799 a year and includes the Annual Conference, a $797 value.', mbText:'Conference registration is INCLUDED with AOI membership — a $797 value. Sign in when you register and the fee is waived.',
+    mbSub:'Membership is $799 a year and includes the Annual Conference, a $797 value.', mbText:'Conference registration is INCLUDED with AOI membership, a $797 value. Sign in when you register and the fee is waived.',
     sessions:[], hideSess:true,
     regBand:{
       h:'Register for the Annual Conference',
       sub:'November 6–7, 2026 · 8:00 AM–6:00 PM both days · Pierce Clinic of Chiropractic, St. Petersburg, FL · 14 CE hours through Sherman College of Chiropractic.',
       btn:'Register for the Conference',
       tiers:[
-        {k:'Doctor',p:'$797',n:'Practicing chiropractors and everyone outside the tiers below.'},
+        {k:'AOI Member',p:'INCLUDED',n:'Part of your membership. Sign in when you register and the fee is waived. Add CE credit for $50.',hi:true},
+        {k:'Doctor',p:'$797',n:'Practicing chiropractors and everyone outside the other tiers.'},
         {k:'Student',p:'$347',n:'Currently enrolled chiropractic students.'},
-        {k:'AOI Member',p:'FREE',n:'Included with your membership — sign in when you register and the fee is waived. Add CE credit for $50.',hi:true,flag:'INCLUDED'},
         {k:'College Faculty',p:'FREE',n:'Faculty of chiropractic colleges. Register as faculty and the Institute confirms your seat.',hi:true}
       ],
-      note:'Members and chiropractic college faculty still register — the fee comes off at checkout. Members: sign in first so we can see your membership.'
+      note:'Members and chiropractic college faculty still register; the fee comes off at checkout. Members: sign in first so we can see your membership.'
     },
     member:'Registration is INCLUDED with AOI membership. Members add the 14 hours of CE credit for $50.',
     h2:'This year’s theme: Inflection Point.',
-    overview:'<p>An inflection point is the place on a curve where its direction changes. The Institute and the technique are at one: modernizing the work while building on the foundation that brought us here. Across two days at the Pierce Clinic of Chiropractic — the home of Advanced Orthogonal — the program takes that on directly: cone-beam CT and three-dimensional reference frames, updated terminology and corrective positioning, Sonus: Blueprint, the practice-based research project, and the clinical questions that decide whether a correction holds.</p><p>Thirteen presenters, fourteen instructional hours, and the case studies that only this community can share. It is also the Institute’s working weekend — the research initiative, the instructor pathway, and the announcements for 2027 — where the membership’s voice shapes the year ahead.</p>',
-    learn:['Cervical-vestibular-ocular rehabilitation after the correction','Sorting the dizzy patient at the bedside — lecture and hands-on lab','Operator Syndrome in combat veterans, with a full case study','Why the correction doesn’t hold: suboccipital analysis and soft-tissue reactivation','Updated AdvO terminology, corrective positioning, and Sonus worksheets','Cone-beam CT: three-dimensional analysis, case selection, and reference frames','Finding and clearing fibrous adhesion in the cervical spine','Upper cervical case studies from three practices','Teaching as a clinical skill — protecting procedural fidelity','The Institute’s practice-based research project and how to take part'],
-    sched:[['FRIDAY','Vestibular-ocular rehab, the dizzy patient, Operator Syndrome, suboccipital muscle analysis, and the updated AdvO protocol with a supervised lab.'],['SATURDAY','CBCT and 3D reference frames, scar tissue and the atlas, case studies, teaching as a clinical skill, and the practice-based research project.']],
+    overview:'<p>An inflection point is the place on a curve where its direction changes. The Institute and the technique are at one: modernizing the work while building on the foundation that brought us here. Across two days at the Pierce Clinic of Chiropractic, the home of Advanced Orthogonal, the program takes that on directly: cone-beam CT and three-dimensional analysis of anatomical position and spatial relationships; updated terminology and corrective positioning; Sonus: Blueprint; the practice-based research project; and the clinical questions that decide whether a correction holds.</p><p>Thirteen presenters, fourteen instructional hours, and the case studies that only this community can share. It is also the Institute’s working weekend, where the membership’s voice shapes the year ahead: the research initiative, the instructor pathway, and the announcements for 2027.</p>',
+    learn:['Cervical-vestibular-ocular rehabilitation after the correction','Sorting the dizzy patient at the bedside: lecture and hands-on lab','Operator Syndrome in combat veterans, with a full case study','Why the correction doesn’t hold: suboccipital analysis and soft-tissue reactivation','Updated AdvO terminology, corrective positioning, and Sonus worksheets','Cone-beam CT: three-dimensional analysis of anatomical position and spatial relationships, and case selection','Finding and clearing fibrous adhesion in the cervical spine','Upper cervical case studies from three practices','Teaching as a clinical skill: protecting procedural fidelity','The Institute’s practice-based research project and how to take part'],
+    sched:[['FRIDAY','Vestibular-ocular rehab, the dizzy patient, Operator Syndrome, suboccipital muscle analysis, and the updated AdvO protocol with a supervised lab.'],['SATURDAY','CBCT and 3D analysis, scar tissue and the atlas, case studies, teaching as a clinical skill, and the practice-based research project.']],
     ce:{
       hours:'14.0', sponsor:'Sherman College of Chiropractic, Office of Continuing Education',
       note:'Live, in-person instruction only. Sixty minutes of instruction counts as one CE hour; sign in and out of every session, with photo ID, to receive credit. No partial credit within a block.',
@@ -329,7 +329,7 @@ export const SEMINARS = {
       special:[['Mississippi','Sherman does not apply to Mississippi; attendees may apply to the Mississippi Board directly as a licensed DC.'],['Tennessee','Sherman does not apply to Tennessee; the hosting organization applies to the TN board directly.'],['Alberta','Attendees are responsible for confirming the activity meets provincial requirements.'],['New Brunswick','The NBCA no longer pre-approves courses; eligibility rests with the member.']],
       disclaimer:'Sherman College is a CCE-accredited college, so applications are not made to states listed as Auto Approval or DC Self; check with your board that the content falls within its scope requirements. Missouri: approval of this course is not a ruling by the Board that the methods taught are the appropriate practice of chiropractic as defined in Section 331.010, RSMo. The opinions and statements of the speakers do not necessarily reflect those of Sherman College.'
     },
-    ctaH:'Be in the room in St. Petersburg.', ctaP:'Free with AOI membership · two days at the home of Advanced Orthogonal', ctaBtn:'Reserve Your Seat',
+    ctaH:'Be in the room in St. Petersburg.', ctaP:'Included with AOI membership · two days at the home of Advanced Orthogonal', ctaBtn:'Reserve Your Seat',
     spk:['silver','billiris','hulsey','wooden','beadle','colavita','miranda','bollen','jobarah','pavlovic','corsello','fowler','cs'], keynote:null,
     sponsors:[{name:'Anode Imaging',logo:'sponsor-anode',url:'https://anodeimaging.com/'},{name:'Sonus: Blueprint',logo:'sponsor-sonus',url:'https://sonusblueprint.com/'},{name:'Spinalight',logo:'sponsor-spinalight',url:'https://www.spinalight.com/',light:true}],
     agenda:[
