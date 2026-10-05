@@ -72,11 +72,21 @@ function norm(s: string | null | undefined): string {
   return (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
 
+/** Many records carry the whole address on the street line ("251 E 1200 S,
+ *  Orem, UT 84058"). Fill city, state and ZIP from it where those are empty,
+ *  and keep just the street, so the clinic lands under the right state. */
+function splitAddress(r: DirectoryRow): DirectoryRow {
+  const m = r.address?.match(/^(.*?),\s*([^,]+?),\s*([A-Za-z]{2})\.?\s*([A-Za-z0-9]{3}\s?[A-Za-z0-9]{3}|\d{5}(?:-\d{4})?)?\s*$/)
+  if (!m || !STATES[m[3]!.toUpperCase()]) return r
+  return { ...r, address: m[1]!.trim(), city: r.city || m[2]!.trim(), state: r.state || m[3]!.toUpperCase(), zip: r.zip || m[4] || null }
+}
+
 /** Doctors who share a clinic name and street number are one clinic — so one
  *  record missing the city doesn't split a clinic in two. */
 export function groupClinics(rows: DirectoryRow[]): Clinic[] {
   const map = new Map<string, Clinic>()
-  for (const r of rows) {
+  for (const row of rows) {
+    const r = splitAddress(row)
     const name = r.clinic_name?.trim() || null
     if (!name && !r.address && !r.city) continue // nowhere to send a patient
     const key = `${norm(name ?? r.address)}|${r.address?.match(/^\s*(\d+)/)?.[1] ?? norm(r.city)}`
