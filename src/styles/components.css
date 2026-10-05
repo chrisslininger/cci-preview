@@ -2841,6 +2841,20 @@ a.othercard {
 @media (max-width: 760px) { .dir-card { grid-template-columns: 1fr; } .dir-docs { border-left: 0; border-top: 1px solid var(--color-border-subtle); } .dir-banner, .dir-clinic, .dir-docs { padding-left: 16px; padding-right: 16px; } }
 /* My Listing (members area) */
 .ml-form { margin-top: 4px; }
+.mi-emails { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.mi-email { width: 100%; padding: 12px 14px; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-card); background: var(--color-surface-raised); }
+.mi-email-top { display: flex; align-items: center; gap: 10px; }
+.mi-email-top .fi { margin: 0; }
+.mi-login { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 15px; font-weight: 600; color: var(--color-content-primary); }
+.mi-x { flex: none; width: 32px; height: 32px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-control); background: var(--color-surface-base); color: var(--color-content-secondary); font-size: 18px; line-height: 1; cursor: pointer; }
+.mi-share { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 8px; font-size: 14px; color: var(--color-content-secondary); }
+.mi-share label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.mi-change { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 10px; }
+.mi-change .fi { flex: 1 1 240px; margin: 0; }
+.mi-msg { margin: 10px 0 0; }
+.mi-emails .flink { background: none; border: 0; padding: 0; font: inherit; font-size: 14px; font-weight: 600; color: var(--color-brand-primary-deep); text-decoration: underline; cursor: pointer; }
+.dir-mail { display: block; font-size: 13.5px; font-weight: 500; color: var(--color-brand-primary-deep); text-decoration: none; }
+.dir-mail:hover { text-decoration: underline; }
 .mi-name { display: grid; grid-template-columns: 1fr 1fr 140px; gap: 0 12px; }
 @media (max-width: 620px) { .mi-name { grid-template-columns: 1fr 1fr; } }
 .ml-place { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0 12px; }

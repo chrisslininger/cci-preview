@@ -27,9 +27,11 @@ export type DirectoryRow = {
   zip: string | null
   phone: string | null
   website: string | null
+  /** The email the doctor chose to show on Find a Doctor, if any. */
+  email?: string | null
 }
 
-export type Doctor = { id: string; name: string; credentials: string | null; level: 'level_2' | 'level_1' | 'member' }
+export type Doctor = { id: string; name: string; credentials: string | null; level: 'level_2' | 'level_1' | 'member'; email: string | null }
 
 export type Clinic = {
   key: string
@@ -99,7 +101,7 @@ export function groupClinics(rows: DirectoryRow[]): Clinic[] {
     c.address ??= r.address; c.zip ??= r.zip; c.phone ??= r.phone; c.website ??= r.website
     if (!c.doctors.some((d) => d.id === r.person_id)) {
       const level = r.cert_level === 'level_2' || r.cert_level === 'level_1' ? r.cert_level : 'member'
-      c.doctors.push({ id: r.person_id, name: `${r.first_name} ${r.last_name}`.trim(), credentials: r.credentials, level })
+      c.doctors.push({ id: r.person_id, name: `${r.first_name} ${r.last_name}`.trim(), credentials: r.credentials, level, email: r.email ?? null })
     }
   }
   const out = [...map.values()]
@@ -194,7 +196,7 @@ const s = (person_id: string, first_name: string, last_name: string, cert_level:
   ({ person_id, first_name, last_name, credentials: 'DC', cert_level, clinic_name, address, city, state, zip, phone, website: 'https://example.com' })
 
 const SAMPLE: DirectoryRow[] = [
-  s('s1', 'Sample', 'Avery', 'level_2', 'Sample Upper Cervical Center', '100 Example Ave N', 'St. Petersburg', 'FL', '33701', '(555) 010-0101'),
+  { ...s('s1', 'Sample', 'Avery', 'level_2', 'Sample Upper Cervical Center', '100 Example Ave N', 'St. Petersburg', 'FL', '33701', '(555) 010-0101'), email: 'avery@example.com' },
   s('s2', 'Sample', 'Brooks', 'level_1', 'Sample Upper Cervical Center', '100 Example Ave N', 'St. Petersburg', 'FL', '33701', '(555) 010-0101'),
   s('s3', 'Sample', 'Castillo', null, 'Sample Upper Cervical Center', '100 Example Ave N', 'St. Petersburg', 'FL', '33701', '(555) 010-0101'),
   s('s4', 'Sample', 'Dunn', 'level_1', 'Example Family Chiropractic', '22 Placeholder Rd', 'Orlando', 'FL', '32801', '(555) 010-0102'),

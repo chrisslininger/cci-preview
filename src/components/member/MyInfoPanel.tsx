@@ -5,7 +5,11 @@
  * through `update_my_info`, a database function that changes only these
  * fields on the signed-in member's row. The home address columns are new; until
  * they and the function exist, saving says so and offers the contact form.
- * Email is the address they sign in with, so it is shown but not edited here.
+ *
+ * Emails: the sign-in address changes through Supabase Auth, which mails a
+ * confirmation link first. Extra addresses, and who may see each one (Find a
+ * Doctor and/or other members), live in `person_emails` and save through
+ * `save_my_emails`.
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { Link } from '@/lib/router'
@@ -20,6 +24,34 @@ const EMPTY: Form = { first: '', last: '', credentials: '', mobile: '', personal
 
 type Own = { first_name: string | null; last_name: string | null; credentials: string | null; email: string | null; mobile_phone: string | null; personal_phone: string | null }
 type Home = { home_address: string | null; home_city: string | null; home_state: string | null; home_zip: string | null }
+type Email = { email: string; show_public: boolean; show_members: boolean }
+
+const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim())
+const missingFn = (status: number, text: string) => status === 404 || text.includes('PGRST202') || text.includes('PGRST205')
+
+async function saveEmails(rows: Email[]): Promise<{ ok?: true; missing?: true; error?: string }> {
+  await ensureSession()
+  const res = await fetch(`${SB_URL}/rest/v1/rpc/save_my_emails`, {
+    method: 'POST',
+    headers: headers(true),
+    body: JSON.stringify({ p_emails: rows.map((r) => ({ ...r, email: r.email.trim().toLowerCase() })) }),
+  })
+  if (res.ok) return { ok: true }
+  const text = await res.text()
+  return missingFn(res.status, text) ? { missing: true } : { error: text }
+}
+
+/** Supabase Auth mails a confirmation link to the new address; the sign-in changes when it is clicked. */
+async function changeSignInEmail(email: string): Promise<{ ok?: true; error?: string }> {
+  await ensureSession()
+  const res = await fetch(`${SB_URL}/auth/v1/user?redirect_to=${encodeURIComponent(`${window.location.origin}/account`)}`, {
+    method: 'PUT',
+    headers: headers(true),
+    body: JSON.stringify({ email: email.trim() }),
+  })
+  if (res.ok) return { ok: true }
+  try { const j = await res.json(); return { error: String(j.msg ?? j.message ?? j.error_description ?? res.status) } } catch { return { error: String(res.status) } }
+}
 
 async function saveInfo(v: Form): Promise<{ ok?: true; missing?: true; error?: string }> {
   await ensureSession()
@@ -33,27 +65,31 @@ async function saveInfo(v: Form): Promise<{ ok?: true; missing?: true; error?: s
   })
   if (res.ok) return { ok: true }
   const text = await res.text()
-  if (res.status === 404 || text.includes('PGRST202')) return { missing: true }
+  if (missingFn(res.status, text)) return { missing: true }
   return { error: text }
 }
 
 export default function MyInfoPanel() {
-  const access = useAccess()
-  const signedIn = !!access.person
+  const { access } = useAccess()
+  const id = access.person?.id
   const [v, setV] = useState<Form>(EMPTY)
   const [email, setEmail] = useState('')
+  const [emails, setEmails] = useState<Email[]>([])
+  const [newLogin, setNewLogin] = useState<string | null>(null)
+  const [loginMsg, setLoginMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'saving' | 'saved' | 'missing' | 'error'>('loading')
   const [err, setErr] = useState('')
 
   useEffect(() => {
-    if (!signedIn) return
+    if (!id) return
     void (async () => {
       await ensureSession()
-      const me = `auth_user_id=eq.${session.user?.id ?? ''}`
-      const [r, h] = await Promise.all([
+      const me = `id=eq.${id}`
+      const [r, h, e] = await Promise.all([
         select<Own>('people', `select=first_name,last_name,credentials,email,mobile_phone,personal_phone&${me}`),
-        // The home address columns may not exist yet; an error here just leaves those boxes empty.
+        // The home address columns and person_emails may not exist yet; an error just leaves those empty.
         select<Home>('people', `select=home_address,home_city,home_state,home_zip&${me}`),
+        select<Email>('person_emails', `select=email,show_public,show_members&person_id=eq.${id}&order=created_at`),
       ])
       const p = r.data?.[0]
       const home = h.data?.[0]
@@ -63,10 +99,15 @@ export default function MyInfoPanel() {
         mobile: p?.mobile_phone ?? '', personal: p?.personal_phone ?? '',
         address: home?.home_address ?? '', city: home?.home_city ?? '', state: home?.home_state ?? '', zip: home?.home_zip ?? '',
       })
-      setEmail(p?.email ?? a?.email ?? session.user?.email ?? '')
+      const login = session.user?.email ?? p?.email ?? a?.email ?? ''
+      setEmail(login)
+      // The sign-in address is always first; its sharing choices are stored like any other.
+      const stored = e.data ?? []
+      const first = stored.find((x) => x.email.toLowerCase() === login.toLowerCase()) ?? { email: login, show_public: false, show_members: false }
+      setEmails([first, ...stored.filter((x) => x !== first)])
       setState('ready')
     })()
-  }, [signedIn])
+  }, [id])
 
   const busy = state === 'loading' || state === 'saving'
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => { setV({ ...v, [k]: e.target.value }); if (!busy) setState('ready') }
@@ -77,13 +118,27 @@ export default function MyInfoPanel() {
     </div>
   )
 
+  const setEmailRow = (i: number, patch: Partial<Email>) => { setEmails((s) => s.map((x, j) => (j === i ? { ...x, ...patch } : x))); if (!busy) setState('ready') }
+
   async function save() {
     if (!v.first.trim() || !v.last.trim()) { setErr('First and last name are needed.'); setState('error'); return }
+    const extra = emails.slice(1).filter((x) => x.email.trim())
+    const bad = extra.find((x) => !looksLikeEmail(x.email))
+    if (bad) { setErr(`"${bad.email}" doesn't look like an email address.`); setState('error'); return }
     setState('saving'); setErr('')
-    const r = await saveInfo(v)
-    if (r.ok) setState('saved')
-    else if (r.missing) setState('missing')
-    else { setErr(r.error ?? 'Could not save.'); setState('error') }
+    const [r, m] = await Promise.all([saveInfo(v), saveEmails([emails[0]!, ...extra].filter((x) => x.email))])
+    if (r.error || m.error) { setErr(r.error ?? m.error ?? 'Could not save.'); setState('error') }
+    else if (r.missing || m.missing) setState('missing')
+    else setState('saved')
+  }
+
+  async function sendLoginChange() {
+    const next = (newLogin ?? '').trim()
+    if (!looksLikeEmail(next)) { setLoginMsg({ ok: false, text: 'Enter a full email address.' }); return }
+    if (next.toLowerCase() === email.toLowerCase()) { setLoginMsg({ ok: false, text: 'That is already your sign-in email.' }); return }
+    const r = await changeSignInEmail(next)
+    if (r.ok) { setLoginMsg({ ok: true, text: `We sent a confirmation link to ${next}. Your sign-in email changes once you click it.` }); setNewLogin(null) }
+    else setLoginMsg({ ok: false, text: r.error ?? 'Could not start the change.' })
   }
 
   return (
@@ -101,10 +156,37 @@ export default function MyInfoPanel() {
             {field('last', 'LAST NAME')}
             {field('credentials', 'CREDENTIALS', { placeholder: 'DC' })}
           </div>
-          <div className="full">
-            <label className="flabel" htmlFor="mi-email">EMAIL</label>
-            <input id="mi-email" className="fi" type="email" value={email} disabled />
-            <div className="evt-hint">This is the address you sign in with. To change it, <Link to="/contact">contact us</Link>.</div>
+          <div className="full mi-emails">
+            <label className="flabel">EMAIL</label>
+            {emails.map((row, i) => (
+              <div className="mi-email" key={i}>
+                <div className="mi-email-top">
+                  {i === 0 ? (
+                    <div className="mi-login">
+                      <span>{row.email || '—'}</span>
+                      <span className="cpill">Sign-in</span>
+                      {newLogin === null && <button type="button" className="flink" onClick={() => { setNewLogin(''); setLoginMsg(null) }} disabled={busy}>Change</button>}
+                    </div>
+                  ) : (
+                    <input className="fi" type="email" value={row.email} onChange={(e) => setEmailRow(i, { email: e.target.value })} placeholder="another@example.com" disabled={busy} aria-label={`Email ${i + 1}`} />
+                  )}
+                  {i > 0 && <button type="button" className="mi-x" aria-label="Remove this email" onClick={() => setEmails((s) => s.filter((_, j) => j !== i))} disabled={busy}>×</button>}
+                </div>
+                <div className="mi-share">
+                  <label><input type="checkbox" checked={row.show_public} onChange={(e) => setEmailRow(i, { show_public: e.target.checked })} disabled={busy} /> Show on Find a Doctor</label>
+                  <label><input type="checkbox" checked={row.show_members} onChange={(e) => setEmailRow(i, { show_members: e.target.checked })} disabled={busy} /> Show to members</label>
+                </div>
+                {i === 0 && newLogin !== null && (
+                  <div className="mi-change">
+                    <input className="fi" type="email" value={newLogin} onChange={(e) => setNewLogin(e.target.value)} placeholder="New sign-in email" aria-label="New sign-in email" />
+                    <button type="button" className="b sm s-btn on-light" onClick={() => void sendLoginChange()}>Send confirmation</button>
+                    <button type="button" className="flink" onClick={() => { setNewLogin(null); setLoginMsg(null) }}>Cancel</button>
+                  </div>
+                )}
+                {i === 0 && loginMsg && <div className={loginMsg.ok ? 'ml-ok mi-msg' : 'cert-err mi-msg'}>{loginMsg.text}</div>}
+              </div>
+            ))}
+            <button type="button" className="b xs s-btn on-light" onClick={() => setEmails((s) => [...s, { email: '', show_public: false, show_members: false }])} disabled={busy}>+ Add another email</button>
           </div>
           {field('mobile', 'MOBILE PHONE', { type: 'tel' })}
           {field('personal', 'HOME PHONE', { type: 'tel' })}
