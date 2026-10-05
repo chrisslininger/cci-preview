@@ -2841,6 +2841,14 @@ a.othercard {
 @media (max-width: 760px) { .dir-card { grid-template-columns: 1fr; } .dir-docs { border-left: 0; border-top: 1px solid var(--color-border-subtle); } .dir-banner, .dir-clinic, .dir-docs { padding-left: 16px; padding-right: 16px; } }
 /* My Listing (members area) */
 .ml-form { margin-top: 4px; }
+.ml-level { font-size: 14px; color: var(--color-content-secondary); margin-bottom: 4px; }
+.ml-level b { color: var(--color-content-primary); }
+.ml-row { display: grid; gap: 0 12px; }
+.ml-r1 { grid-template-columns: 1fr 1.3fr; }
+.ml-r2 { grid-template-columns: 2fr 1fr 1fr; }
+.ml-r3 { grid-template-columns: 1fr 1.2fr 1fr; }
+.ml-addr { grid-template-columns: 2fr 1.2fr 0.6fr 0.8fr; }
+@media (max-width: 760px) { .ml-r1, .ml-r3 { grid-template-columns: 1fr; } .ml-addr { grid-template-columns: 1fr 1fr; } .ml-addr > div:first-child { grid-column: 1 / -1; } }
 .mi-emails { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
 .mi-email { width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
 .mi-email-wrap { width: 100%; }

@@ -170,8 +170,8 @@ export default function MyInfoPanel() {
           </div>
           {field('mobile', 'MOBILE PHONE', { type: 'tel' })}
           {field('personal', 'HOME PHONE', { type: 'tel' })}
-          {field('address', 'HOME ADDRESS', { full: true, placeholder: 'Street' })}
-          <div className="full ml-place">
+          <div className="full ml-row ml-addr">
+            {field('address', 'HOME ADDRESS', { placeholder: 'Street' })}
             {field('city', 'CITY')}
             {field('state', 'STATE')}
             {field('zip', 'ZIP')}

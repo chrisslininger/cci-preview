@@ -20,6 +20,14 @@ type Form = { name: string; address: string; city: string; state: string; zip: s
 
 const EMPTY: Form = { name: '', address: '', city: '', state: '', zip: '', phone: '', email: '', website: '' }
 
+/** Many records repeat ", City, ST 12345" on the street line; show just the street when the city and state boxes already hold it. */
+function streetOnly(address: string | null, city: string | null, state: string | null): string {
+  const a = (address ?? '').trim()
+  if (!a || !city || !state) return a
+  const tail = new RegExp(`,\\s*${city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')},?\\s*${state}\\.?(\\s+[A-Za-z0-9 -]{3,10})?\\s*$`, 'i')
+  return a.replace(tail, '').trim()
+}
+
 async function saveListing(v: Form): Promise<{ ok?: true; missing?: true; error?: string }> {
   await ensureSession()
   const res = await fetch(`${SB_URL}/rest/v1/rpc/update_my_listing`, {
@@ -52,7 +60,7 @@ export default function MyListingPanel() {
       ])
       const p = r.data?.[0]
       if (p) {
-        setV({ name: p.practice_name ?? '', address: p.practice_address ?? '', city: p.practice_city ?? '', state: p.practice_state ?? '', zip: p.practice_zip ?? '', phone: p.office_phone ?? p.practice_phone ?? '', email: m.data?.[0]?.practice_email ?? '', website: p.practice_website ?? '' })
+        setV({ name: p.practice_name ?? '', address: streetOnly(p.practice_address, p.practice_city, p.practice_state), city: p.practice_city ?? '', state: p.practice_state ?? '', zip: p.practice_zip ?? '', phone: p.office_phone ?? p.practice_phone ?? '', email: m.data?.[0]?.practice_email ?? '', website: p.practice_website ?? '' })
         setLevel(p.cert_level)
       } else {
         // Fall back to what the members area already knows.
@@ -91,21 +99,23 @@ export default function MyListingPanel() {
         Your clinic as patients see it in <Link to="/find-a-doctor">Find a Doctor</Link>. Every current member is listed; certified doctors show their level.
       </div>
       <div className="ma-panel">
-        <div className="ma-row">
-          <div><b>Shown as</b><span>{levelText} · your certification level is kept by the Institute</span></div>
-        </div>
+        <p className="ml-level">Listed as <b>{levelText}</b> · your certification level is kept by the Institute.</p>
         {state === 'error' && err && <div className="cert-err">{err}</div>}
-        <div className="cert-grid mform ml-form">
-          {field('name', 'CLINIC NAME', { full: true })}
-          {field('address', 'STREET ADDRESS', { full: true, placeholder: '123 Main St, Suite 4' })}
-          <div className="full ml-place">
+        <div className="mform ml-rows">
+          <div className="ml-row ml-r1">
+            {field('name', 'CLINIC NAME')}
+            {field('address', 'STREET ADDRESS', { placeholder: '123 Main St, Suite 4' })}
+          </div>
+          <div className="ml-row ml-r2">
             {field('city', 'CITY')}
             {field('state', 'STATE', { placeholder: 'FL' })}
             {field('zip', 'ZIP')}
           </div>
-          {field('phone', 'CLINIC PHONE', { type: 'tel' })}
-          {field('email', 'CLINIC EMAIL', { type: 'email', placeholder: 'Shown to patients' })}
-          {field('website', 'WEBSITE', { full: true, placeholder: 'yourclinic.com' })}
+          <div className="ml-row ml-r3">
+            {field('phone', 'CLINIC PHONE', { type: 'tel' })}
+            {field('email', 'CLINIC EMAIL', { type: 'email', placeholder: 'Shown to patients' })}
+            {field('website', 'WEBSITE', { placeholder: 'yourclinic.com' })}
+          </div>
         </div>
         <div className="ml-actions">
           <button type="button" className="b sm p-btn" onClick={() => void save()} disabled={state === 'loading' || state === 'saving'}>
