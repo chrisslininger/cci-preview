@@ -179,7 +179,11 @@ export default function EventsPanel() {
     const d = dateBlock(e)
     const where = e.venue ? `${e.venue.name}${e.venue.city ? ` · ${e.venue.city}, ${e.venue.state ?? ''}` : ''}` : e.location
     const unv = unverifiedRegs(e).length
-    const date = isOngoing(e) ? 'Ongoing' : `${titleCase(d.mo)} ${d.dy}${d.yr ? `, ${d.yr}` : ''}`
+    const za = zoned(e.starts_at, e.timezone), zb = zoned(e.ends_at, e.timezone)
+    // Across months or years, spell both ends out: "Oct 13, 2026 – Sep 14, 2027".
+    const date = isOngoing(e) ? 'Ongoing'
+      : za && zb && (zb.m !== za.m || zb.y !== za.y) ? `${MON[za.m]} ${za.d}${zb.y !== za.y ? `, ${za.y}` : ''} – ${MON[zb.m]} ${zb.d}, ${zb.y}`
+      : `${titleCase(d.mo)} ${d.dy}${d.yr ? `, ${d.yr}` : ''}`
     return (
       <article key={e.id} className={`evt-row${isPast(e) ? ' past' : ''}${e.status !== 'published' ? ' draft' : ''}`} tabIndex={0} role="button" aria-label={`Open ${e.title}`}
         onClick={() => setOpen(e.id)} onKeyDown={(k) => { if ((k.key === 'Enter' || k.key === ' ') && k.target === k.currentTarget) { k.preventDefault(); setOpen(e.id) } }}>
