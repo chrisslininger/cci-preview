@@ -74,10 +74,10 @@ export default function MyListingPanel() {
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => { setV({ ...v, [k]: e.target.value }); if (state !== 'loading') setState('ready') }
   const field = (k: keyof Form, label: string, opts: { full?: boolean; type?: string; placeholder?: string } = {}) => (
-    <div className={opts.full ? 'full' : ''}>
-      <label className="flabel" htmlFor={`ml-${k}`}>{label}</label>
-      <input id={`ml-${k}`} className="fi" type={opts.type ?? 'text'} value={v[k]} onChange={set(k)} placeholder={opts.placeholder} disabled={state === 'loading' || state === 'saving'} />
-    </div>
+    <label className="ml-cell" htmlFor={`ml-${k}`}>
+      <span className="ml-lbl">{label}</span>
+      <input id={`ml-${k}`} className="ml-in" type={opts.type ?? 'text'} value={v[k]} onChange={set(k)} placeholder={opts.placeholder} disabled={state === 'loading' || state === 'saving'} />
+    </label>
   )
 
   async function save() {
@@ -99,23 +99,20 @@ export default function MyListingPanel() {
         Your clinic as patients see it in <Link to="/find-a-doctor">Find a Doctor</Link>. Every current member is listed; certified doctors show their level.
       </div>
       <div className="ma-panel">
-        <p className="ml-level">Listed as <b>{levelText}</b> · your certification level is kept by the Institute.</p>
         {state === 'error' && err && <div className="cert-err">{err}</div>}
-        <div className="mform ml-rows">
-          <div className="ml-row ml-r1">
-            {field('name', 'CLINIC NAME')}
-            {field('address', 'STREET ADDRESS', { placeholder: '123 Main St, Suite 4' })}
+        <div className="ml-table">
+          {field('name', 'Clinic name')}
+          {field('website', 'Website', { placeholder: 'yourclinic.com' })}
+          <div className="ml-cell ml-ro" title="Your certification level is set by the Institute">
+            <span className="ml-lbl">Listed as · set by the Institute</span>
+            <span className="ml-val">{levelText}</span>
           </div>
-          <div className="ml-row ml-r2">
-            {field('city', 'CITY')}
-            {field('state', 'STATE', { placeholder: 'FL' })}
-            {field('zip', 'ZIP')}
-          </div>
-          <div className="ml-row ml-r3">
-            {field('phone', 'CLINIC PHONE', { type: 'tel' })}
-            {field('email', 'CLINIC EMAIL', { type: 'email', placeholder: 'Shown to patients' })}
-            {field('website', 'WEBSITE', { placeholder: 'yourclinic.com' })}
-          </div>
+          {field('address', 'Street address', { placeholder: '123 Main St, Suite 4' })}
+          {field('city', 'City')}
+          {field('state', 'State', { placeholder: 'FL' })}
+          {field('zip', 'ZIP')}
+          {field('phone', 'Clinic phone', { type: 'tel' })}
+          {field('email', 'Clinic email', { type: 'email', placeholder: 'Shown to patients' })}
         </div>
         <div className="ml-actions">
           <button type="button" className="b sm p-btn" onClick={() => void save()} disabled={state === 'loading' || state === 'saving'}>
