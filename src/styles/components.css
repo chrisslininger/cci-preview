@@ -2842,7 +2842,9 @@ a.othercard {
 /* My Listing (members area) */
 .ml-form { margin-top: 4px; }
 .mi-emails { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
-.mi-email { width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 6px 0; border-bottom: 1px solid var(--color-border-subtle); }
+.mi-email { width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
+.mi-email-wrap { width: 100%; }
+.mi-x-space { flex: none; width: 30px; }
 .mi-email .fi { flex: 1 1 260px; margin: 0; padding: 9px 12px; }
 .mi-login { flex: 1 1 260px; display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--color-content-primary); }
 .mi-share { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--color-content-secondary); cursor: pointer; }

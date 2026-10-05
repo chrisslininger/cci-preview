@@ -75,7 +75,6 @@ export default function MyInfoPanel() {
   const [v, setV] = useState<Form>(EMPTY)
   const [email, setEmail] = useState('')
   const [emails, setEmails] = useState<Email[]>([])
-  const [newLogin, setNewLogin] = useState<string | null>(null)
   const [loginMsg, setLoginMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'saving' | 'saved' | 'missing' | 'error'>('loading')
   const [err, setErr] = useState('')
@@ -122,23 +121,19 @@ export default function MyInfoPanel() {
 
   async function save() {
     if (!v.first.trim() || !v.last.trim()) { setErr('First and last name are needed.'); setState('error'); return }
+    const login = (emails[0]?.email ?? '').trim()
+    if (!looksLikeEmail(login)) { setErr('Your sign-in email needs to be a full email address.'); setState('error'); return }
     const extra = emails.slice(1).filter((x) => x.email.trim())
     const bad = extra.find((x) => !looksLikeEmail(x.email))
     if (bad) { setErr(`"${bad.email}" doesn't look like an email address.`); setState('error'); return }
-    setState('saving'); setErr('')
-    const [r, m] = await Promise.all([saveInfo(v), saveEmails([emails[0]!, ...extra].filter((x) => x.email))])
+    setState('saving'); setErr(''); setLoginMsg(null)
+    // A new sign-in email is not changed directly: Supabase Auth mails a confirmation link first.
+    const loginChanged = login.toLowerCase() !== email.toLowerCase()
+    const [r, m, l] = await Promise.all([saveInfo(v), saveEmails([emails[0]!, ...extra]), loginChanged ? changeSignInEmail(login) : Promise.resolve(null)])
+    if (l) setLoginMsg(l.ok ? { ok: true, text: `We sent a confirmation link to ${login}. Your sign-in email changes once you click it.` } : { ok: false, text: l.error ?? 'Could not start the sign-in email change.' })
     if (r.error || m.error) { setErr(r.error ?? m.error ?? 'Could not save.'); setState('error') }
     else if (r.missing || m.missing) setState('missing')
     else setState('saved')
-  }
-
-  async function sendLoginChange() {
-    const next = (newLogin ?? '').trim()
-    if (!looksLikeEmail(next)) { setLoginMsg({ ok: false, text: 'Enter a full email address.' }); return }
-    if (next.toLowerCase() === email.toLowerCase()) { setLoginMsg({ ok: false, text: 'That is already your sign-in email.' }); return }
-    const r = await changeSignInEmail(next)
-    if (r.ok) { setLoginMsg({ ok: true, text: `We sent a confirmation link to ${next}. Your sign-in email changes once you click it.` }); setNewLogin(null) }
-    else setLoginMsg({ ok: false, text: r.error ?? 'Could not start the change.' })
   }
 
   return (
@@ -159,25 +154,17 @@ export default function MyInfoPanel() {
           <div className="full mi-emails">
             <label className="flabel">EMAIL</label>
             {emails.map((row, i) => (
-              <div className="mi-email" key={i}>
-                {i === 0 ? (
-                  <span className="mi-login">{row.email || '—'} <span className="cpill">Sign-in</span></span>
-                ) : (
-                  <input className="fi" type="email" value={row.email} onChange={(e) => setEmailRow(i, { email: e.target.value })} placeholder="another@example.com" disabled={busy} aria-label={`Email ${i + 1}`} />
-                )}
-                <label className="mi-share"><input type="checkbox" checked={row.show_members} onChange={(e) => setEmailRow(i, { show_members: e.target.checked })} disabled={busy} /> Show to members</label>
-                {i === 0
-                  ? newLogin === null && <button type="button" className="flink" onClick={() => { setNewLogin(''); setLoginMsg(null) }} disabled={busy}>Change</button>
-                  : <button type="button" className="mi-x" aria-label="Remove this email" onClick={() => setEmails((s) => s.filter((_, j) => j !== i))} disabled={busy}>×</button>}
+              <div key={i} className="mi-email-wrap">
+                <div className="mi-email">
+                  <input className="fi" type="email" value={row.email} onChange={(e) => setEmailRow(i, { email: e.target.value })} placeholder={i === 0 ? 'you@example.com' : 'another@example.com'} disabled={busy} aria-label={i === 0 ? 'Email you sign in with' : `Email ${i + 1}`} />
+                  <label className="mi-share"><input type="checkbox" checked={row.show_members} onChange={(e) => setEmailRow(i, { show_members: e.target.checked })} disabled={busy} /> Show to members</label>
+                  {i === 0
+                    ? <span className="mi-x-space" aria-hidden="true" />
+                    : <button type="button" className="mi-x" aria-label="Remove this email" onClick={() => setEmails((s) => s.filter((_, j) => j !== i))} disabled={busy}>×</button>}
+                </div>
+                {i === 0 && <div className="evt-hint">You sign in to the members area with this email. If you change it, we send a confirmation link to the new address first.</div>}
               </div>
             ))}
-            {newLogin !== null && (
-              <div className="mi-change">
-                <input className="fi" type="email" value={newLogin} onChange={(e) => setNewLogin(e.target.value)} placeholder="New sign-in email" aria-label="New sign-in email" />
-                <button type="button" className="b sm s-btn on-light" onClick={() => void sendLoginChange()}>Send confirmation</button>
-                <button type="button" className="flink" onClick={() => { setNewLogin(null); setLoginMsg(null) }}>Cancel</button>
-              </div>
-            )}
             {loginMsg && <div className={loginMsg.ok ? 'ml-ok mi-msg' : 'cert-err mi-msg'}>{loginMsg.text}</div>}
             <button type="button" className="flink" onClick={() => setEmails((s) => [...s, { email: '', show_members: false }])} disabled={busy}>+ Add another email</button>
           </div>
