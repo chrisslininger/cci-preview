@@ -2841,34 +2841,24 @@ a.othercard {
 @media (max-width: 760px) { .dir-card { grid-template-columns: 1fr; } .dir-docs { border-left: 0; border-top: 1px solid var(--color-border-subtle); } .dir-banner, .dir-clinic, .dir-docs { padding-left: 16px; padding-right: 16px; } }
 /* My Listing (members area) */
 .ml-form { margin-top: 4px; }
-/* Business Information: one table, three equal columns, read left to right. */
-.ml-table { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--color-border-subtle); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-card); overflow: hidden; }
-.ml-cell { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px 10px; background: var(--color-surface-base); cursor: text; transition: background var(--duration-fast) var(--ease-standard); }
-.ml-cell:focus-within { background: var(--color-status-info-surface); box-shadow: inset 3px 0 0 var(--color-brand-primary); }
-.ml-lbl { font-family: var(--font-label); font-size: 10.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--color-content-muted); }
-.ml-in { border: 0; background: transparent; padding: 2px 0; font-family: var(--font-sans); font-size: 15.5px; color: var(--color-content-primary); width: 100%; outline: none; }
+/* My Account forms (Business and Personal Information): labeled boxes on a grid. */
+.ml-table { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 14px; }
+.ml-cell { display: flex; flex-direction: column; min-width: 0; }
+.ml-lbl { font-family: var(--font-label); font-weight: 600; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-content-muted); margin: 14px 0 6px; }
+.ml-in { font-family: var(--font-sans); font-size: 14px; padding: 13px 15px; border: 1.5px solid var(--color-border-subtle); border-radius: var(--radius-control); outline-color: var(--color-brand-primary); width: 100%; background: var(--color-surface-base); color: var(--color-content-primary); }
 .ml-in::placeholder { color: var(--color-content-muted); }
-.ml-ro { background: var(--color-surface-raised); cursor: default; }
-.ml-val { font-size: 15.5px; font-weight: 600; color: var(--color-content-primary); padding: 2px 0; }
-.ml-note { font-size: 12px; color: var(--color-content-muted); }
+.ml-ro .ml-val { font-size: 14px; font-weight: 600; padding: 13px 15px; border: 1.5px solid var(--color-border-subtle); border-radius: var(--radius-control); background: var(--color-surface-raised); color: var(--color-content-primary); }
+.ml-note { font-size: 12px; color: var(--color-content-muted); margin-top: 6px; }
 @media (max-width: 760px) { .ml-table { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 480px) { .ml-table { grid-template-columns: 1fr; } }
-.ml-addr { grid-template-columns: 2fr 1.2fr 0.6fr 0.8fr; }
-@media (max-width: 760px) { .ml-addr { grid-template-columns: 1fr 1fr; } .ml-addr > div:first-child { grid-column: 1 / -1; } }
-.mi-emails { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
-.mi-email { width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
-.mi-email-wrap { width: 100%; }
-.mi-x-space { flex: none; width: 30px; }
-.mi-email .fi { flex: 1 1 260px; margin: 0; padding: 9px 12px; }
-.mi-login { flex: 1 1 260px; display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: var(--color-content-primary); }
-.mi-share { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--color-content-secondary); cursor: pointer; }
-.mi-x { flex: none; width: 30px; height: 30px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-control); background: var(--color-surface-base); color: var(--color-content-secondary); font-size: 17px; line-height: 1; cursor: pointer; }
-.mi-change { width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 4px; }
-.mi-change .fi { flex: 1 1 240px; margin: 0; padding: 9px 12px; }
-.mi-msg { margin: 4px 0 0; }
-.mi-emails .flink { background: none; border: 0; padding: 0; font: inherit; font-size: 14px; font-weight: 600; color: var(--color-brand-primary-deep); text-decoration: underline; cursor: pointer; }
-.mi-name { display: grid; grid-template-columns: 1fr 1fr 140px; gap: 0 12px; }
-@media (max-width: 620px) { .mi-name { grid-template-columns: 1fr 1fr; } }
+/* Personal Information: the same boxes, on a 12-column grid. */
+.mi-table { grid-template-columns: repeat(12, minmax(0, 1fr)); margin-top: 4px; }
+.mi-c1 { grid-column: span 1; } .mi-c2 { grid-column: span 2; } .mi-c3 { grid-column: span 3; }
+.mi-c4 { grid-column: span 4; } .mi-c6 { grid-column: span 6; }
+.mi-share { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13.5px; color: var(--color-content-secondary); cursor: pointer; }
+.mi-share input { accent-color: var(--color-brand-primary); }
+.mi-msg { margin: 12px 0 0; }
+@media (max-width: 760px) { .mi-table { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mi-c1, .mi-c2, .mi-c3, .mi-c4 { grid-column: span 1; } .mi-c6 { grid-column: span 2; } }
 .ml-place { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0 12px; }
 .ml-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 20px; }
 .ml-ok { font-size: 14px; color: var(--color-status-success); font-weight: 600; }
