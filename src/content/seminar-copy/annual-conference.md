@@ -18,7 +18,7 @@ this file.
 Label: Inflection Point · The Homecoming of the AOI Community
 Subtitle: Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward, November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.
 Button: Reserve Your Seat
-- Explore what’s new in CBCT, 3D analysis, research, and the AO protocol
+- Explore what’s new in CBCT, 3D analysis, research, and the AdvO protocol
 - Put updated analysis and clinical concepts into practice in two supervised labs
 - Earn 14 CE hours through Sherman College of Chiropractic
 - Spend two days with the doctors researching, refining, and advancing the work
@@ -35,7 +35,7 @@ Heading: Who is this conference for?
 
 Good fit:
 - Advanced Orthogonal doctors looking to sharpen their skills and stay current
-- Upper cervical doctors interested in CBCT, 3D analysis, and the evolving AO approach
+- Upper cervical doctors interested in CBCT, 3D analysis, and the evolving AdvO approach
 - Chiropractic students and faculty interested in upper cervical analysis and research
 - Doctors seeking continuing education from a CCE-accredited sponsor
 
