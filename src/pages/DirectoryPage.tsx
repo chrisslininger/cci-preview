@@ -16,7 +16,7 @@ function ClinicCard({ c }: { c: Clinic }) {
   const place = [c.city, [c.state, c.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')
   const maps = `https://maps.google.com/?q=${encodeURIComponent([c.name, c.address, place].filter(Boolean).join(', '))}`
   return (
-    <article className="dir-card">
+    <article className={`dir-card ${c.level === 'level_2' ? 'l2' : c.level === 'level_1' ? 'l1' : ''}`}>
       <div className="dir-clinic">
         <h3>{c.name}</h3>
         <p className="dir-addr">

@@ -41,6 +41,8 @@ export type Clinic = {
   phone: string | null
   website: string | null
   doctors: Doctor[]
+  /** The highest level among its doctors; sets the card's color and its place in the state. */
+  level: Doctor['level']
   /** Lowercased words a search can match, built once. */
   words: string[]
   zipText: string
@@ -79,7 +81,7 @@ export function groupClinics(rows: DirectoryRow[]): Clinic[] {
     const key = `${norm(name ?? r.address)}|${norm(r.city)}|${norm(r.state)}`
     let c = map.get(key)
     if (!c) {
-      c = { key, name: name ?? 'Private practice', address: r.address, city: r.city, state: r.state?.toUpperCase() ?? null, zip: r.zip, phone: r.phone, website: r.website, doctors: [], words: [], zipText: '' }
+      c = { key, name: name ?? 'Private practice', address: r.address, city: r.city, state: r.state?.toUpperCase() ?? null, zip: r.zip, phone: r.phone, website: r.website, doctors: [], level: 'member', words: [], zipText: '' }
       map.set(key, c)
     }
     // Fill gaps from a colleague's record at the same clinic.
@@ -92,6 +94,7 @@ export function groupClinics(rows: DirectoryRow[]): Clinic[] {
   const out = [...map.values()]
   for (const c of out) {
     c.doctors.sort((a, b) => LEVEL_RANK[b.level] - LEVEL_RANK[a.level] || a.name.localeCompare(b.name))
+    c.level = c.doctors[0]?.level ?? 'member'
     const stateName = c.state ? STATES[c.state] ?? '' : ''
     c.words = norm([c.name, c.address, c.city, c.state, stateName, ...c.doctors.flatMap((d) => [d.name, d.credentials])].join(' ')).split(' ').filter(Boolean)
     c.zipText = norm(c.zip).replace(/ /g, '')
@@ -99,8 +102,9 @@ export function groupClinics(rows: DirectoryRow[]): Clinic[] {
   return out.sort(byPlace)
 }
 
+/** By state, then Level 2 clinics first, then Level 1, then the rest. */
 export function byPlace(a: Clinic, b: Clinic): number {
-  return stateLabel(a.state).localeCompare(stateLabel(b.state)) || (a.city ?? '').localeCompare(b.city ?? '') || a.name.localeCompare(b.name)
+  return stateLabel(a.state).localeCompare(stateLabel(b.state)) || LEVEL_RANK[b.level] - LEVEL_RANK[a.level] || (a.city ?? '').localeCompare(b.city ?? '') || a.name.localeCompare(b.name)
 }
 
 export const stateLabel = (code: string | null) => (code ? STATES[code] ?? code : 'Other')
