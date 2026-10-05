@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
-import { select, ensureSession, headers, SB_URL } from '@/lib/supabase'
+import { select, ensureSession, headers, session, SB_URL } from '@/lib/supabase'
 import { CERT_LABEL } from '@/lib/chips'
 
 type Own = {
@@ -35,23 +35,31 @@ async function saveListing(v: Form): Promise<{ ok?: true; missing?: true; error?
 
 export default function MyListingPanel() {
   const access = useAccess()
-  const id = access.person?.id
+  const signedIn = !!access.person
   const [v, setV] = useState<Form>(EMPTY)
   const [level, setLevel] = useState<string | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'saving' | 'saved' | 'missing' | 'error'>('loading')
   const [err, setErr] = useState('')
 
   useEffect(() => {
-    if (!id) return
-    void select<Own>('people', `select=practice_name,practice_address,practice_city,practice_state,practice_zip,practice_phone,office_phone,practice_website,cert_level&id=eq.${id}`).then((r) => {
+    if (!signedIn) return
+    void (async () => {
+      // Matched by the sign-in, not by the access payload, so it is always the member's own row.
+      await ensureSession()
+      const r = await select<Own>('people', `select=practice_name,practice_address,practice_city,practice_state,practice_zip,practice_phone,office_phone,practice_website,cert_level&auth_user_id=eq.${session.user?.id ?? ''}`)
       const p = r.data?.[0]
       if (p) {
         setV({ name: p.practice_name ?? '', address: p.practice_address ?? '', city: p.practice_city ?? '', state: p.practice_state ?? '', zip: p.practice_zip ?? '', phone: p.office_phone ?? p.practice_phone ?? '', website: p.practice_website ?? '' })
         setLevel(p.cert_level)
+      } else {
+        // Fall back to what the members area already knows.
+        const a = access.person
+        setV({ ...EMPTY, name: a?.practice_name ?? '', city: a?.practice_city ?? '', state: a?.practice_state ?? '' })
+        setLevel(a?.cert_level ?? null)
       }
       setState('ready')
-    })
-  }, [id])
+    })()
+  }, [signedIn])
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => { setV({ ...v, [k]: e.target.value }); if (state !== 'loading') setState('ready') }
   const field = (k: keyof Form, label: string, opts: { full?: boolean; type?: string; placeholder?: string } = {}) => (
