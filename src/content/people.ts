@@ -90,5 +90,6 @@ export const HEADSHOTS = new Set([
   'corsello',
   'jobarah',
   'pavlovic',
+  'orris',
   'miller',
 ])
