@@ -27,7 +27,7 @@ export const CERT_SHORT: Record<string, string> = {
 }
 /** Technique names as they read on a chip. */
 export const TECH_SHORT: Record<string, string> = {
-  'Advanced Orthogonal': 'AO', 'Atlas Orthogonal': 'Atlas Orthogonal', 'Atlas Orthometrics': 'Atlas Orthometrics',
+  'Advanced Orthogonal': 'AdvO', 'Atlas Orthogonal': 'Atlas Orthogonal', 'Atlas Orthometrics': 'Atlas Orthometrics',
   Orthospinology: 'Orthospinology', EPIC: 'Epic', NUCCA: 'NUCCA', Blair: 'Blair',
 }
 const RANK: Record<string, number> = { student: 1, level_1: 2, level_2: 3, certified: 2, board_certification: 3 }
@@ -63,7 +63,7 @@ export function certChips(advo: string, others: CertLike[]): Chip[] {
   }
   // gold = the single highest
   let best = -1, bi = -1
-  const rank = (label: string, lvl: string) => (RANK[lvl] ?? 0) + (label.startsWith('Certified') || label.startsWith('Student') ? 0.5 : 0) // AO wins ties
+  const rank = (label: string, lvl: string) => (RANK[lvl] ?? 0) + (label.startsWith('Certified') || label.startsWith('Student') ? 0.5 : 0) // AdvO wins ties
   out.forEach((c, i) => {
     const lvl = c.key === 'advo' ? advo : (others.find((o) => `c${o.id ?? o.technique}` === c.key)?.level ?? '')
     const r = rank(c.label, lvl)
