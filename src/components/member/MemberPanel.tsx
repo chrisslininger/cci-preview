@@ -33,6 +33,7 @@ import CalendarPanel from './CalendarPanel'
 import StatsPanel from './StatsPanel'
 import RecordsPanel from './RecordsPanel'
 import ControlPanel from './ControlPanel'
+import MyListingPanel from './MyListingPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -214,30 +215,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   }
 
   /* ----------------------------------------------------------- my listing -- */
-  if (tab === 'mylisting') {
-    const p = access.person
-    return (
-      <Panel
-        title="My Listing"
-        lede="Your clinic as it appears in the public directory, Find a Doctor. Every current member is listed; certified doctors show their level."
-      >
-        <Row title="Practice" detail={p?.practice_name ?? 'Not set'} />
-        <Row
-          title="Location"
-          detail={[p?.practice_city, p?.practice_state].filter(Boolean).join(', ') || 'Not set'}
-        />
-        <Row
-          title="Edit your details"
-          detail="Changes update the Institute database and your listing"
-          right={
-            <Link className="b sm s-btn on-light" to="/contact">
-              Request a change
-            </Link>
-          }
-        />
-      </Panel>
-    )
-  }
+  if (tab === 'mylisting') return <MyListingPanel />
 
   /* -------------------------------------------------------------- reports -- */
   /* ---------------------------------------------------------------- board -- */
