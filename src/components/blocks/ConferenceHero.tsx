@@ -94,9 +94,9 @@ export default function ConferenceHero() {
             </div>
 
             <ul className="cfh-tiers">
+              <li className="hi"><span>AOI member</span><b>Included</b></li>
               <li><span>Doctor</span><b>{money(C.fullPrice)}</b></li>
               <li><span>Student</span><b>{money(C.studentPrice)}</b></li>
-              <li className="hi"><span>AOI member</span><b>Included</b></li>
               {C.facultyFree && <li><span>Chiropractic college faculty</span><b>Free</b></li>}
             </ul>
 
