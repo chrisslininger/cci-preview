@@ -1235,23 +1235,63 @@ a.othercard {
   align-self: start;
   height: 100vh;
   overflow-y: auto;
+  /* Still scrolls on a short window; the bar itself is hidden. */
+  scrollbar-width: none;
 }
+.ma-rail::-webkit-scrollbar { display: none; }
 .ma-rail .grp {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
   font-family: var(--font-label); font-weight: 600;
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-rail-label);
-  padding: 15px 18px 6px;
+  padding: 12px 18px 5px;
 }
+/* A committee this person chairs or co-chairs. */
+.ma-rail a.lead { color: var(--color-content-on-inverse); font-weight: 600; }
+.ma-lead {
+  margin-left: 8px;
+  padding: 1px 6px;
+  border: 1px solid var(--color-brand-accent);
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-brand-accent-bright);
+  vertical-align: 1px;
+}
+/* A folding heading: a chevron that turns when the group opens. */
+.ma-rail button.grp { cursor: pointer; }
+.ma-rail button.grp::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  margin-left: auto;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.ma-rail .shut button.grp::after { transform: rotate(-45deg); }
+.ma-rail button.grp:hover { color: var(--color-content-on-inverse); }
+.ma-rail button.grp .ma-dot { margin-left: 0; }
 .ma-rail a {
   display: flex;
   width: 100%;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 18px;
+  /* Pages sit indented under their group heading. */
+  padding: 6px 18px 6px 32px;
   color: var(--color-rail-item);
   font-family: var(--font-sans);
   font-size: 13px;
@@ -1292,55 +1332,6 @@ a.othercard {
   font-size: 14px;
   color: var(--color-content-muted);
   margin-bottom: 22px;
-}
-
-/* ---------------------------------------------------------------- person -- */
-.ma-top {
-  background: var(--color-surface-inverse);
-}
-.ma-top .in {
-  max-width: var(--container-page);
-  margin: 0 auto;
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.ma-who {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-.ma-av {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(142deg, var(--color-brand-primary), var(--color-surface-inverse));
-  color: var(--color-content-on-inverse);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 11.5px;
-  flex-shrink: 0;
-}
-.ma-who b {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 13px;
-  color: var(--color-content-on-inverse);
-  font-weight: 600;
-  line-height: 1.25;
-}
-.ma-who span {
-  font-family: var(--font-label); font-weight: 600;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-brand-accent-bright);
 }
 
 /* --------------------------------------------------------------- chips --- */
@@ -1486,25 +1477,54 @@ a.othercard {
   padding: 8px 0;
 }
 
+/* The tabs on a page that holds several (My Account). */
+.ma-tabs { display: flex; gap: 4px; margin: -8px 0 22px; border-bottom: 1px solid var(--color-border-subtle); overflow-x: auto; scrollbar-width: none; }
+.ma-tabs::-webkit-scrollbar { display: none; }
+.ma-tabs a { padding: 10px 12px; font-family: var(--font-label); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--color-content-muted); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }
+.ma-tabs a:hover { color: var(--color-content-primary); }
+.ma-tabs a.on { color: var(--color-brand-primary-deep); border-bottom-color: var(--color-brand-accent); }
+
+/* A shut group shows only its heading. */
+.ma-rail .shut a { display: none; }
+
+/* The phone's menu button; hidden on a computer, where the rail is always there. */
+.ma-railbtn { display: none; }
+/* On a computer the wrapper steps aside and the rail is the grid's first column. */
+.ma-railwrap { display: contents; }
+
 @media (max-width: 760px) {
   /* auto 1fr: the rail row takes only its content; min-height goes to main. */
   .ma { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-  /* On a phone the rail is a sticky strip you swipe sideways — one thumb
-   * gesture, the current tab scrolled into view, content on the first screen. */
+  /* On a phone the rail folds away behind one button that names the page you
+   * are on; tapping it drops the same grouped list down over the page. */
+  .ma-railwrap { display: block; position: sticky; top: 0; z-index: 21; }
+  .ma-railbtn {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 12px 16px; border: 0; border-bottom: 1px solid var(--color-border-on-inverse);
+    background: var(--color-surface-rail); color: var(--color-content-on-inverse);
+    text-align: left; cursor: pointer;
+  }
+  .ma-railbtn .lbl {
+    font-family: var(--font-label); font-weight: 600; font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--color-rail-label);
+  }
+  .ma-railbtn b { font-family: var(--font-sans); font-weight: 600; font-size: 14px; }
+  .ma-railbtn .ma-dot { margin-left: 0; }
+  .ma-railbtn::after {
+    content: ''; width: 7px; height: 7px; margin-left: auto;
+    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg) translateY(-2px); transition: transform var(--duration-fast) var(--ease-standard);
+  }
+  .ma-railbtn[aria-expanded="true"]::after { transform: rotate(-135deg) translateY(-2px); }
   .ma-rail {
-    position: sticky; top: 0; z-index: 20; height: auto; align-self: auto;
-    padding: 8px 10px; display: flex; flex-wrap: nowrap; gap: 6px;
-    overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; box-shadow: 0 6px 18px oklch(20.85% 0.0346 238.78 / 25%);
+    display: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
+    height: auto; max-height: 75vh; padding: 6px 0 14px; overscroll-behavior: contain;
+    box-shadow: 0 14px 30px oklch(20.85% 0.0346 238.78 / 35%);
   }
-  .ma-rail::-webkit-scrollbar { display: none; }
-  .ma-rail > div { display: contents; }
-  .ma-rail .grp { display: none; }
-  .ma-rail a {
-    width: auto; flex: 0 0 auto; padding: 8px 13px; min-height: 38px;
-    border: 1px solid var(--color-border-on-inverse); border-radius: 999px; border-left-width: 1px;
-  }
-  .ma-rail a.on { border-color: var(--color-brand-accent); background: var(--color-surface-rail-active); }
+  .ma-rail.open { display: block; }
+  /* Bigger targets for a thumb. */
+  .ma-rail a { padding: 10px 18px 10px 32px; }
+  .ma-rail .grp { padding: 14px 18px 7px; }
   .ma-main { padding: 20px 16px 50px; }
 }
 
@@ -1675,6 +1695,8 @@ a.othercard {
  * ------------------------------------------------------------------------- */
 
 .acctmenu { position: relative; }
+/* Signed in, the name and circle sit at the window's right edge, not the page column's. */
+.lr-r:has(.acctmenu) { margin-right: calc(min(0px, (1180px - 100vw) / 2)); }
 
 .acctbtn {
   padding: 0;
@@ -1684,6 +1706,27 @@ a.othercard {
   line-height: 0;
   border-radius: 999px;
 }
+.acctbtn { display: flex; flex-direction: row-reverse; align-items: center; gap: 11px; text-align: right; }
+.acctname { line-height: 1.25; }
+.acctname b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-content-on-inverse);
+  white-space: nowrap;
+}
+.acctname span {
+  font-family: var(--font-label); font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brand-accent-bright);
+  white-space: nowrap;
+}
+.acctbtn:hover .acctname b { color: var(--color-brand-accent-bright); }
+/* On a phone the circle alone; the name is in the menu it opens. */
+@media (max-width: 620px) { .acctname { display: none; } }
 .acctbtn:focus-visible { outline: 2px solid var(--color-brand-accent); outline-offset: 3px; }
 
 .acctav {
@@ -1753,6 +1796,42 @@ a.othercard {
 
 .acctsep { height: 1px; margin: 6px 0; background: var(--color-border-subtle); }
 .acctout { color: var(--color-content-muted); }
+.acctdrop .acctview { color: var(--color-brand-primary-deep); font-weight: 600; }
+
+/* "View as a member" is on: a strip pinned to the foot of every page, with the way back. */
+.viewas {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 12px 10px 18px;
+  border-radius: 999px;
+  background: var(--color-surface-inverse);
+  color: var(--color-content-on-inverse);
+  border: 1.5px solid var(--color-brand-accent);
+  box-shadow: 0 10px 30px oklch(20.85% 0.0346 238.78 / 30%);
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+.viewas button {
+  flex: none;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-brand-accent);
+  color: var(--color-surface-inverse);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
 
 /* The reset control sits under the sign-in buttons as a quiet third option. */
 .acct-reset {
