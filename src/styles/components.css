@@ -2836,4 +2836,6 @@ a.othercard {
 .dir-empty { margin-top: 26px; padding: 26px; border: 1px dashed var(--color-border-strong); border-radius: var(--radius-card); background: var(--color-surface-raised); }
 .dir-empty h3 { font-size: 19px; margin-bottom: 6px; }
 .dir-empty a { color: var(--color-brand-primary-deep); font-weight: 600; }
+.dir-member { margin-top: 32px; padding: 16px 20px; border-radius: var(--radius-card); background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); font-size: 15px; color: var(--color-content-secondary); }
+.dir-member a { color: var(--color-brand-primary-deep); font-weight: 600; }
 @media (max-width: 760px) { .dir-card { grid-template-columns: 1fr; } .dir-docs { border-left: 0; border-top: 1px solid var(--color-border-subtle); } .dir-banner, .dir-clinic, .dir-docs { padding-left: 16px; padding-right: 16px; } }

@@ -78,8 +78,7 @@ export const NAV: NavItem[] = [
     group: 'home',
     under: 'membership',
     always: true,
-    // The directory is reserved to certified doctors at Level 1 or above.
-    when: (a) => ['level_1', 'level_2'].includes(a.person?.cert_level ?? ''),
+    // Every current member is listed in the public directory (Find a Doctor).
   },
 
   /* --------------------------------------------------------------- events -- */

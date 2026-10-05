@@ -219,7 +219,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
     return (
       <Panel
         title="My Listing"
-        lede="Your entry in the doctor directory. Reserved to certified doctors at Level 1 or above."
+        lede="Your clinic as it appears in the public directory, Find a Doctor. Every current member is listed; certified doctors show their level."
       >
         <Row title="Practice" detail={p?.practice_name ?? 'Not set'} />
         <Row
