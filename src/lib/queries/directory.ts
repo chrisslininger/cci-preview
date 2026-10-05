@@ -72,13 +72,14 @@ function norm(s: string | null | undefined): string {
   return (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
 
-/** Doctors who share a clinic name in the same city are one clinic. */
+/** Doctors who share a clinic name and street number are one clinic — so one
+ *  record missing the city doesn't split a clinic in two. */
 export function groupClinics(rows: DirectoryRow[]): Clinic[] {
   const map = new Map<string, Clinic>()
   for (const r of rows) {
     const name = r.clinic_name?.trim() || null
     if (!name && !r.address && !r.city) continue // nowhere to send a patient
-    const key = `${norm(name ?? r.address)}|${norm(r.city)}|${norm(r.state)}`
+    const key = `${norm(name ?? r.address)}|${r.address?.match(/^\s*(\d+)/)?.[1] ?? norm(r.city)}`
     let c = map.get(key)
     if (!c) {
       c = { key, name: name ?? 'Private practice', address: r.address, city: r.city, state: r.state?.toUpperCase() ?? null, zip: r.zip, phone: r.phone, website: r.website, doctors: [], level: 'member', words: [], zipText: '' }
