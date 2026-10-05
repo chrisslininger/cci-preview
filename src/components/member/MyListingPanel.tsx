@@ -60,7 +60,7 @@ export default function MyListingPanel() {
       ])
       const p = r.data?.[0]
       if (p) {
-        setV({ name: p.practice_name ?? '', address: streetOnly(p.practice_address, p.practice_city, p.practice_state), city: p.practice_city ?? '', state: p.practice_state ?? '', zip: p.practice_zip ?? '', phone: p.office_phone ?? p.practice_phone ?? '', email: m.data?.[0]?.practice_email ?? '', website: p.practice_website ?? '' })
+        setV({ name: p.practice_name ?? '', address: streetOnly(p.practice_address, p.practice_city, p.practice_state), city: p.practice_city ?? '', state: p.practice_state ?? '', zip: p.practice_zip ?? '', phone: p.practice_phone ?? p.office_phone ?? '', email: m.data?.[0]?.practice_email ?? '', website: p.practice_website ?? '' })
         setLevel(p.cert_level)
       } else {
         // Fall back to what the members area already knows.
