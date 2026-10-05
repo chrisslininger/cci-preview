@@ -1318,7 +1318,7 @@ a.othercard {
 .ma-main {
   padding: 26px 26px 60px;
   min-width: 0;
-  max-width: 1180px;
+  max-width: 1440px;
   background: var(--color-surface-base);
 }
 .ma-main h1 {
@@ -1990,7 +1990,7 @@ a.othercard {
 .evt.past { opacity: .72; }
 .evt.draft { border-style: dashed; }
 /* Compact view: one row per event, computers only (phones get the cards). */
-.evt-table { display: grid; grid-template-columns: 128px 72px minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1.1fr) auto; border: 1px solid var(--color-border-strong); border-radius: 6px; background: var(--color-surface-base); overflow: hidden; margin-bottom: 10px; }
+.evt-table { display: grid; grid-template-columns: max-content max-content minmax(0, 2fr) minmax(0, 1.3fr) max-content auto; border: 1px solid var(--color-border-strong); border-radius: 6px; background: var(--color-surface-base); overflow: hidden; margin-bottom: 10px; }
 /* Every row shares the table's columns, so the header lines up with the rows. */
 .evt-row { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; column-gap: 12px; align-items: center; padding: 7px 14px; border-top: 1px solid var(--color-border-subtle); font-size: 13.5px; cursor: pointer; }
 .evt-row:first-child { border-top: 0; }
