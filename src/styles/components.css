@@ -2841,6 +2841,8 @@ a.othercard {
 @media (max-width: 760px) { .dir-card { grid-template-columns: 1fr; } .dir-docs { border-left: 0; border-top: 1px solid var(--color-border-subtle); } .dir-banner, .dir-clinic, .dir-docs { padding-left: 16px; padding-right: 16px; } }
 /* My Listing (members area) */
 .ml-form { margin-top: 4px; }
+.mi-name { display: grid; grid-template-columns: 1fr 1fr 140px; gap: 0 12px; }
+@media (max-width: 620px) { .mi-name { grid-template-columns: 1fr 1fr; } }
 .ml-place { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0 12px; }
 .ml-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 20px; }
 .ml-ok { font-size: 14px; color: var(--color-status-success); font-weight: 600; }

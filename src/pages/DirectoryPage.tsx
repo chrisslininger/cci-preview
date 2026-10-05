@@ -152,7 +152,7 @@ export default function DirectoryPage() {
           )}
           <div className="dir-member">
             <b>Institute members:</b> your listing comes from your member record. Sign in and open{' '}
-            <Link to="/account">My Account → Listing</Link> to check that your clinic name, address,
+            <Link to="/account">My Account → Business</Link> to check that your clinic name, address,
             phone and website are up to date.
           </div>
         </div>

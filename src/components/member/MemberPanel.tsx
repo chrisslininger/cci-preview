@@ -34,6 +34,7 @@ import StatsPanel from './StatsPanel'
 import RecordsPanel from './RecordsPanel'
 import ControlPanel from './ControlPanel'
 import MyListingPanel from './MyListingPanel'
+import MyInfoPanel from './MyInfoPanel'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -216,6 +217,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
 
   /* ----------------------------------------------------------- my listing -- */
   if (tab === 'mylisting') return <MyListingPanel />
+  if (tab === 'myinfo') return <MyInfoPanel />
 
   /* -------------------------------------------------------------- reports -- */
   /* ---------------------------------------------------------------- board -- */

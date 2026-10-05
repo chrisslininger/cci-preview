@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * My Listing — a member's own entry in the public directory (Find a Doctor).
+ * Business Information — a member's own entry in the public directory (Find a Doctor).
  *
  * Reads the member's own `people` row and saves through `update_my_listing`,
  * a database function that changes only the clinic fields of the signed-in
@@ -82,7 +82,7 @@ export default function MyListingPanel() {
 
   return (
     <>
-      <h1>My Listing</h1>
+      <h1>Business Information</h1>
       <div className="ma-sub">
         Your clinic as patients see it in <Link to="/find-a-doctor">Find a Doctor</Link>. Every current member is listed; certified doctors show their level.
       </div>
@@ -104,7 +104,7 @@ export default function MyListingPanel() {
         </div>
         <div className="ml-actions">
           <button type="button" className="b sm p-btn" onClick={() => void save()} disabled={state === 'loading' || state === 'saving'}>
-            {state === 'saving' ? 'Saving…' : 'Save my listing'}
+            {state === 'saving' ? 'Saving…' : 'Save business information'}
           </button>
           {state === 'saved' && <span className="ml-ok">Saved. Find a Doctor shows the change right away.</span>}
           {state === 'missing' && (
