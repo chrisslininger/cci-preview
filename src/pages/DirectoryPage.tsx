@@ -47,6 +47,7 @@ function ClinicCard({ c }: { c: Clinic }) {
 export default function DirectoryPage() {
   const [data, setData] = useState<DirectoryResult | null>(null)
   const [q, setQ] = useState('')
+  const [look, setLook] = useState('s-a') // TEMPORARY style trial
 
   useEffect(() => {
     let cancelled = false
@@ -117,6 +118,14 @@ export default function DirectoryPage() {
           </div>
 
           {data?.sample && <p className="dir-note">Preview: these are made-up sample clinics, not real members.</p>}
+          {data?.sample && (
+            <div className="dir-try">
+              <b>Try a style:</b>
+              {[['s-a', 'A · Navy'], ['s-b', 'B · Bright gold'], ['s-c', 'C · Side stripe'], ['s-d', 'D · Dark gold']].map(([k, label]) => (
+                <button type="button" key={k} className={look === k ? 'on' : ''} onClick={() => setLook(k!)}>{label}</button>
+              ))}
+            </div>
+          )}
 
           {!data && <p className="dir-note">Loading the directory…</p>}
 
@@ -143,7 +152,7 @@ export default function DirectoryPage() {
               {groups.map((g) => (
                 <div key={g.label || 'results'} className="dir-group">
                   {g.label && <h2 className="dir-state">{g.label}</h2>}
-                  <div className="dir-grid">
+                  <div className={`dir-grid ${look}`}>
                     {g.clinics.map((c) => <ClinicCard c={c} key={c.key} />)}
                   </div>
                 </div>

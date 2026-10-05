@@ -2822,8 +2822,7 @@ a.othercard {
 .dir-card { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); background: var(--color-surface-base); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-card); box-shadow: var(--shadow-card); overflow: hidden; }
 .dir-banner { grid-column: 1 / -1; font-size: 18px; line-height: 1.3; color: var(--color-content-primary); padding: 11px 22px; background: var(--color-surface-raised); border-bottom: 1px solid var(--color-border-subtle); }
 .dir-clinic { padding: 12px 22px 14px; }
-.dir-card.l2 { border-color: var(--color-brand-accent); box-shadow: var(--shadow-raised); }
-.dir-card.l2 { border-color: var(--color-brand-accent-strong); }
+.dir-card.l2 { border-color: var(--color-brand-accent-strong); box-shadow: var(--shadow-raised); }
 .dir-card.l2 .dir-banner { background: color-mix(in oklab, var(--color-brand-accent-strong) 85%, var(--color-surface-inverse)); border-bottom-color: transparent; color: var(--color-content-on-inverse); }
 .dir-card.l1 { border-color: var(--color-brand-primary); }
 .dir-card.l1 .dir-banner { background: color-mix(in oklab, var(--color-brand-primary) 16%, var(--color-surface-base)); border-bottom-color: var(--color-brand-primary); }
@@ -2838,4 +2837,17 @@ a.othercard {
 .dir-empty { margin-top: 26px; padding: 26px; border: 1px dashed var(--color-border-strong); border-radius: var(--radius-card); background: var(--color-surface-raised); }
 .dir-empty h3 { font-size: 19px; margin-bottom: 6px; }
 .dir-empty a { color: var(--color-brand-primary-deep); font-weight: 600; }
+/* TEMPORARY style trial on test previews — remove once James picks one. */
+.dir-try { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; padding: 12px 14px; border: 1px dashed var(--color-brand-accent); border-radius: var(--radius-card); font-size: 14px; }
+.dir-try button { font: inherit; font-weight: 700; padding: 6px 12px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-control); background: var(--color-surface-base); color: var(--color-content-primary); cursor: pointer; }
+.dir-try button.on { background: var(--color-surface-inverse); color: var(--color-content-on-inverse); border-color: var(--color-surface-inverse); }
+.dir-grid.s-a .dir-card.l2 { border-color: var(--color-surface-inverse); }
+.dir-grid.s-a .dir-card.l2 .dir-banner { background: var(--color-surface-inverse); color: var(--color-brand-accent-bright); }
+.dir-grid.s-b .dir-card.l2 { border-color: var(--color-brand-accent); }
+.dir-grid.s-b .dir-card.l2 .dir-banner { background: var(--color-brand-accent); color: var(--color-surface-inverse); }
+.dir-grid.s-c .dir-card { border-left-width: 6px; }
+.dir-grid.s-c .dir-card .dir-banner { background: var(--color-surface-base); color: var(--color-content-primary); border-bottom-color: var(--color-border-subtle); }
+.dir-grid.s-c .dir-card.l2 { border-color: var(--color-border-subtle); border-left-color: var(--color-brand-accent); }
+.dir-grid.s-c .dir-card.l2 .dir-banner { color: var(--color-brand-accent-strong); }
+.dir-grid.s-c .dir-card.l1 { border-color: var(--color-border-subtle); border-left-color: var(--color-brand-primary); }
 @media (max-width: 760px) { .dir-card { grid-template-columns: 1fr; } .dir-docs { border-left: 0; border-top: 1px solid var(--color-border-subtle); } .dir-banner, .dir-clinic, .dir-docs { padding-left: 16px; padding-right: 16px; } }
