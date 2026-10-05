@@ -16,16 +16,16 @@ type Own = {
   practice_name: string | null; practice_address: string | null; practice_city: string | null; practice_state: string | null
   practice_zip: string | null; practice_phone: string | null; office_phone: string | null; practice_website: string | null; cert_level: string | null
 }
-type Form = { name: string; address: string; city: string; state: string; zip: string; phone: string; website: string }
+type Form = { name: string; address: string; city: string; state: string; zip: string; phone: string; email: string; website: string }
 
-const EMPTY: Form = { name: '', address: '', city: '', state: '', zip: '', phone: '', website: '' }
+const EMPTY: Form = { name: '', address: '', city: '', state: '', zip: '', phone: '', email: '', website: '' }
 
 async function saveListing(v: Form): Promise<{ ok?: true; missing?: true; error?: string }> {
   await ensureSession()
   const res = await fetch(`${SB_URL}/rest/v1/rpc/update_my_listing`, {
     method: 'POST',
     headers: headers(true),
-    body: JSON.stringify({ p_name: v.name, p_address: v.address, p_city: v.city, p_state: v.state.toUpperCase(), p_zip: v.zip, p_phone: v.phone, p_website: v.website }),
+    body: JSON.stringify({ p_name: v.name, p_address: v.address, p_city: v.city, p_state: v.state.toUpperCase(), p_zip: v.zip, p_phone: v.phone, p_email: v.email.trim().toLowerCase(), p_website: v.website }),
   })
   if (res.ok) return { ok: true }
   const text = await res.text()
@@ -45,10 +45,14 @@ export default function MyListingPanel() {
     if (!id) return
     void (async () => {
       await ensureSession()
-      const r = await select<Own>('people', `select=practice_name,practice_address,practice_city,practice_state,practice_zip,practice_phone,office_phone,practice_website,cert_level&id=eq.${id}`)
+      const [r, m] = await Promise.all([
+        select<Own>('people', `select=practice_name,practice_address,practice_city,practice_state,practice_zip,practice_phone,office_phone,practice_website,cert_level&id=eq.${id}`),
+        // practice_email is new; until it exists this just leaves the box empty.
+        select<{ practice_email: string | null }>('people', `select=practice_email&id=eq.${id}`),
+      ])
       const p = r.data?.[0]
       if (p) {
-        setV({ name: p.practice_name ?? '', address: p.practice_address ?? '', city: p.practice_city ?? '', state: p.practice_state ?? '', zip: p.practice_zip ?? '', phone: p.office_phone ?? p.practice_phone ?? '', website: p.practice_website ?? '' })
+        setV({ name: p.practice_name ?? '', address: p.practice_address ?? '', city: p.practice_city ?? '', state: p.practice_state ?? '', zip: p.practice_zip ?? '', phone: p.office_phone ?? p.practice_phone ?? '', email: m.data?.[0]?.practice_email ?? '', website: p.practice_website ?? '' })
         setLevel(p.cert_level)
       } else {
         // Fall back to what the members area already knows.
@@ -69,6 +73,7 @@ export default function MyListingPanel() {
   )
 
   async function save() {
+    if (v.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email.trim())) { setErr('The clinic email does not look like an email address.'); setState('error'); return }
     if (!v.name.trim() || !v.address.trim() || !v.city.trim() || !v.state.trim()) { setErr('Clinic name, street, city and state are needed for the directory.'); setState('error'); return }
     setState('saving'); setErr('')
     const r = await saveListing(v)
@@ -99,7 +104,8 @@ export default function MyListingPanel() {
             {field('zip', 'ZIP')}
           </div>
           {field('phone', 'CLINIC PHONE', { type: 'tel' })}
-          {field('website', 'WEBSITE', { placeholder: 'yourclinic.com' })}
+          {field('email', 'CLINIC EMAIL', { type: 'email', placeholder: 'Shown to patients' })}
+          {field('website', 'WEBSITE', { full: true, placeholder: 'yourclinic.com' })}
         </div>
         <div className="ml-actions">
           <button type="button" className="b sm p-btn" onClick={() => void save()} disabled={state === 'loading' || state === 'saving'}>

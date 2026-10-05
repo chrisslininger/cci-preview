@@ -7,9 +7,9 @@
  * they and the function exist, saving says so and offers the contact form.
  *
  * Emails: the sign-in address changes through Supabase Auth, which mails a
- * confirmation link first. Extra addresses, and who may see each one (Find a
- * Doctor and/or other members), live in `person_emails` and save through
- * `save_my_emails`.
+ * confirmation link first. Extra addresses, and whether other members may see
+ * each one, live in `person_emails` and save through `save_my_emails`. The
+ * public email is the clinic's, under Business Information.
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { Link } from '@/lib/router'
@@ -24,7 +24,7 @@ const EMPTY: Form = { first: '', last: '', credentials: '', mobile: '', personal
 
 type Own = { first_name: string | null; last_name: string | null; credentials: string | null; email: string | null; mobile_phone: string | null; personal_phone: string | null }
 type Home = { home_address: string | null; home_city: string | null; home_state: string | null; home_zip: string | null }
-type Email = { email: string; show_public: boolean; show_members: boolean }
+type Email = { email: string; show_members: boolean }
 
 const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim())
 const missingFn = (status: number, text: string) => status === 404 || text.includes('PGRST202') || text.includes('PGRST205')
@@ -89,7 +89,7 @@ export default function MyInfoPanel() {
         select<Own>('people', `select=first_name,last_name,credentials,email,mobile_phone,personal_phone&${me}`),
         // The home address columns and person_emails may not exist yet; an error just leaves those empty.
         select<Home>('people', `select=home_address,home_city,home_state,home_zip&${me}`),
-        select<Email>('person_emails', `select=email,show_public,show_members&person_id=eq.${id}&order=created_at`),
+        select<Email>('person_emails', `select=email,show_members&person_id=eq.${id}&order=created_at`),
       ])
       const p = r.data?.[0]
       const home = h.data?.[0]
@@ -103,7 +103,7 @@ export default function MyInfoPanel() {
       setEmail(login)
       // The sign-in address is always first; its sharing choices are stored like any other.
       const stored = e.data ?? []
-      const first = stored.find((x) => x.email.toLowerCase() === login.toLowerCase()) ?? { email: login, show_public: false, show_members: false }
+      const first = stored.find((x) => x.email.toLowerCase() === login.toLowerCase()) ?? { email: login, show_members: false }
       setEmails([first, ...stored.filter((x) => x !== first)])
       setState('ready')
     })()
@@ -160,33 +160,26 @@ export default function MyInfoPanel() {
             <label className="flabel">EMAIL</label>
             {emails.map((row, i) => (
               <div className="mi-email" key={i}>
-                <div className="mi-email-top">
-                  {i === 0 ? (
-                    <div className="mi-login">
-                      <span>{row.email || '—'}</span>
-                      <span className="cpill">Sign-in</span>
-                      {newLogin === null && <button type="button" className="flink" onClick={() => { setNewLogin(''); setLoginMsg(null) }} disabled={busy}>Change</button>}
-                    </div>
-                  ) : (
-                    <input className="fi" type="email" value={row.email} onChange={(e) => setEmailRow(i, { email: e.target.value })} placeholder="another@example.com" disabled={busy} aria-label={`Email ${i + 1}`} />
-                  )}
-                  {i > 0 && <button type="button" className="mi-x" aria-label="Remove this email" onClick={() => setEmails((s) => s.filter((_, j) => j !== i))} disabled={busy}>×</button>}
-                </div>
-                <div className="mi-share">
-                  <label><input type="checkbox" checked={row.show_public} onChange={(e) => setEmailRow(i, { show_public: e.target.checked })} disabled={busy} /> Show on Find a Doctor</label>
-                  <label><input type="checkbox" checked={row.show_members} onChange={(e) => setEmailRow(i, { show_members: e.target.checked })} disabled={busy} /> Show to members</label>
-                </div>
-                {i === 0 && newLogin !== null && (
-                  <div className="mi-change">
-                    <input className="fi" type="email" value={newLogin} onChange={(e) => setNewLogin(e.target.value)} placeholder="New sign-in email" aria-label="New sign-in email" />
-                    <button type="button" className="b sm s-btn on-light" onClick={() => void sendLoginChange()}>Send confirmation</button>
-                    <button type="button" className="flink" onClick={() => { setNewLogin(null); setLoginMsg(null) }}>Cancel</button>
-                  </div>
+                {i === 0 ? (
+                  <span className="mi-login">{row.email || '—'} <span className="cpill">Sign-in</span></span>
+                ) : (
+                  <input className="fi" type="email" value={row.email} onChange={(e) => setEmailRow(i, { email: e.target.value })} placeholder="another@example.com" disabled={busy} aria-label={`Email ${i + 1}`} />
                 )}
-                {i === 0 && loginMsg && <div className={loginMsg.ok ? 'ml-ok mi-msg' : 'cert-err mi-msg'}>{loginMsg.text}</div>}
+                <label className="mi-share"><input type="checkbox" checked={row.show_members} onChange={(e) => setEmailRow(i, { show_members: e.target.checked })} disabled={busy} /> Show to members</label>
+                {i === 0
+                  ? newLogin === null && <button type="button" className="flink" onClick={() => { setNewLogin(''); setLoginMsg(null) }} disabled={busy}>Change</button>
+                  : <button type="button" className="mi-x" aria-label="Remove this email" onClick={() => setEmails((s) => s.filter((_, j) => j !== i))} disabled={busy}>×</button>}
               </div>
             ))}
-            <button type="button" className="b xs s-btn on-light" onClick={() => setEmails((s) => [...s, { email: '', show_public: false, show_members: false }])} disabled={busy}>+ Add another email</button>
+            {newLogin !== null && (
+              <div className="mi-change">
+                <input className="fi" type="email" value={newLogin} onChange={(e) => setNewLogin(e.target.value)} placeholder="New sign-in email" aria-label="New sign-in email" />
+                <button type="button" className="b sm s-btn on-light" onClick={() => void sendLoginChange()}>Send confirmation</button>
+                <button type="button" className="flink" onClick={() => { setNewLogin(null); setLoginMsg(null) }}>Cancel</button>
+              </div>
+            )}
+            {loginMsg && <div className={loginMsg.ok ? 'ml-ok mi-msg' : 'cert-err mi-msg'}>{loginMsg.text}</div>}
+            <button type="button" className="flink" onClick={() => setEmails((s) => [...s, { email: '', show_members: false }])} disabled={busy}>+ Add another email</button>
           </div>
           {field('mobile', 'MOBILE PHONE', { type: 'tel' })}
           {field('personal', 'HOME PHONE', { type: 'tel' })}

@@ -25,6 +25,7 @@ function ClinicCard({ c }: { c: Clinic }) {
         </p>
         <div className="dir-links">
           {c.phone && <a href={`tel:${c.phone.replace(/[^\d+]/g, '')}`}>{c.phone}</a>}
+          {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
           {c.website && <a href={href(c.website)} target="_blank" rel="noopener noreferrer">{webHost(c.website)}</a>}
           <a href={maps} target="_blank" rel="noopener noreferrer">Directions</a>
         </div>
@@ -34,10 +35,7 @@ function ClinicCard({ c }: { c: Clinic }) {
           const chip = LEVEL_CHIP[d.level]
           return (
             <li key={d.id}>
-              <span className="dir-doc">
-                Dr. {d.name}{d.credentials ? `, ${d.credentials}` : ''}
-                {d.email && <a className="dir-mail" href={`mailto:${d.email}`}>{d.email}</a>}
-              </span>
+              <span className="dir-doc">Dr. {d.name}{d.credentials ? `, ${d.credentials}` : ''}</span>
               <span className={`cpill ${chip.kind}`}>{chip.label}</span>
             </li>
           )

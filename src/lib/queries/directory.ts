@@ -27,11 +27,11 @@ export type DirectoryRow = {
   zip: string | null
   phone: string | null
   website: string | null
-  /** The email the doctor chose to show on Find a Doctor, if any. */
+  /** The clinic's public email, from Business Information. */
   email?: string | null
 }
 
-export type Doctor = { id: string; name: string; credentials: string | null; level: 'level_2' | 'level_1' | 'member'; email: string | null }
+export type Doctor = { id: string; name: string; credentials: string | null; level: 'level_2' | 'level_1' | 'member' }
 
 export type Clinic = {
   key: string
@@ -42,6 +42,7 @@ export type Clinic = {
   zip: string | null
   phone: string | null
   website: string | null
+  email: string | null
   doctors: Doctor[]
   /** The highest level among its doctors; sets the card's color and its place in the state. */
   level: Doctor['level']
@@ -94,14 +95,14 @@ export function groupClinics(rows: DirectoryRow[]): Clinic[] {
     const key = `${norm(name ?? r.address)}|${r.address?.match(/^\s*(\d+)/)?.[1] ?? norm(r.city)}`
     let c = map.get(key)
     if (!c) {
-      c = { key, name: name ?? 'Private practice', address: r.address, city: r.city, state: r.state?.toUpperCase() ?? null, zip: r.zip, phone: r.phone, website: r.website, doctors: [], level: 'member', words: [], zipText: '' }
+      c = { key, name: name ?? 'Private practice', address: r.address, city: r.city, state: r.state?.toUpperCase() ?? null, zip: r.zip, phone: r.phone, website: r.website, email: r.email ?? null, doctors: [], level: 'member', words: [], zipText: '' }
       map.set(key, c)
     }
     // Fill gaps from a colleague's record at the same clinic.
-    c.address ??= r.address; c.zip ??= r.zip; c.phone ??= r.phone; c.website ??= r.website
+    c.address ??= r.address; c.zip ??= r.zip; c.phone ??= r.phone; c.website ??= r.website; c.email ??= r.email ?? null
     if (!c.doctors.some((d) => d.id === r.person_id)) {
       const level = r.cert_level === 'level_2' || r.cert_level === 'level_1' ? r.cert_level : 'member'
-      c.doctors.push({ id: r.person_id, name: `${r.first_name} ${r.last_name}`.trim(), credentials: r.credentials, level, email: r.email ?? null })
+      c.doctors.push({ id: r.person_id, name: `${r.first_name} ${r.last_name}`.trim(), credentials: r.credentials, level })
     }
   }
   const out = [...map.values()]
