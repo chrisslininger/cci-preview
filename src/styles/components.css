@@ -2818,23 +2818,23 @@ a.othercard {
 .dir-note, .dir-count { font-size: 14px; color: var(--color-content-tertiary); margin: 10px 0 0; }
 .dir-group { margin-top: 30px; }
 .dir-state { font-size: var(--text-h4); line-height: var(--text-h4--line-height); color: var(--color-content-primary); padding-bottom: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--color-border-subtle); }
-.dir-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
-.dir-card { background: var(--color-surface-base); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-card); box-shadow: var(--shadow-card); display: flex; flex-direction: column; }
-.dir-clinic { padding: 20px 22px 16px; flex: 1 1 auto; }
-.dir-card.l2 { border: 2px solid var(--color-brand-accent); box-shadow: var(--shadow-raised); }
-.dir-card.l2 .dir-clinic { background: color-mix(in oklab, var(--color-brand-accent) 10%, var(--color-surface-base)); border-radius: var(--radius-card) var(--radius-card) 0 0; }
-.dir-card.l1 { border: 2px solid var(--color-brand-primary); }
-.dir-card.l1 .dir-clinic { background: var(--color-status-info-surface); border-radius: var(--radius-card) var(--radius-card) 0 0; }
-.dir-clinic h3 { font-size: 19px; line-height: 1.3; color: var(--color-content-primary); }
-.dir-addr { font-size: 14.5px; color: var(--color-content-secondary); margin-top: 6px; }
-.dir-links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 14px; }
+.dir-grid { display: flex; flex-direction: column; gap: 12px; }
+.dir-card { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); background: var(--color-surface-base); border: 1px solid var(--color-border-subtle); border-left-width: 5px; border-left-color: var(--color-border-strong); border-radius: var(--radius-card); box-shadow: var(--shadow-card); }
+.dir-clinic { padding: 16px 22px; border-radius: var(--radius-card) 0 0 var(--radius-card); }
+.dir-card.l2 { border-color: var(--color-brand-accent); box-shadow: var(--shadow-raised); }
+.dir-card.l2 .dir-clinic { background: color-mix(in oklab, var(--color-brand-accent) 10%, var(--color-surface-base)); }
+.dir-card.l1 { border-color: var(--color-brand-primary); }
+.dir-card.l1 .dir-clinic { background: var(--color-status-info-surface); }
+.dir-clinic h3 { font-size: 18px; line-height: 1.3; color: var(--color-content-primary); }
+.dir-addr { font-size: 14.5px; color: var(--color-content-secondary); margin-top: 4px; }
+.dir-links { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 14px; }
 .dir-links a { color: var(--color-brand-primary-deep); font-weight: 600; text-decoration: none; }
 .dir-links a:hover { text-decoration: underline; }
-.dir-docs { list-style: none; margin-top: auto; padding: 12px 22px 16px; background: var(--color-surface-raised); border-top: 1px solid var(--color-border-subtle); border-radius: 0 0 var(--radius-card) var(--radius-card); }
+.dir-docs { list-style: none; display: flex; flex-direction: column; justify-content: center; padding: 10px 22px; border-left: 1px solid var(--color-border-subtle); }
 .dir-docs li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; }
 .dir-docs li + li { border-top: 1px solid var(--color-border-subtle); }
 .dir-doc { font-size: 15px; font-weight: 600; color: var(--color-content-primary); }
 .dir-empty { margin-top: 26px; padding: 26px; border: 1px dashed var(--color-border-strong); border-radius: var(--radius-card); background: var(--color-surface-raised); }
 .dir-empty h3 { font-size: 19px; margin-bottom: 6px; }
 .dir-empty a { color: var(--color-brand-primary-deep); font-weight: 600; }
-@media (max-width: 620px) { .dir-grid { grid-template-columns: 1fr; } .dir-clinic, .dir-docs { padding-left: 16px; padding-right: 16px; } }
+@media (max-width: 760px) { .dir-card { grid-template-columns: 1fr; } .dir-clinic { border-radius: var(--radius-card) var(--radius-card) 0 0; } .dir-docs { border-left: 0; border-top: 1px solid var(--color-border-subtle); } .dir-clinic, .dir-docs { padding-left: 16px; padding-right: 16px; } }
