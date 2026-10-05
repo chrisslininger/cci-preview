@@ -1,8 +1,6 @@
 import { Link } from '@/lib/router'
-import { useToast } from '@/components/ui/Toast'
 
 export default function SiteFooter() {
-  const toast = useToast()
   return (
     <footer>
       <div className="wrap">
@@ -41,17 +39,7 @@ export default function SiteFooter() {
           <div>
             <h5>Connect</h5>
             <Link to="/membership">Membership</Link>
-            <button
-              type="button"
-              className="flink"
-              onClick={() =>
-                toast(
-                  'The Doctor Directory is coming soon. Call (727) 677-0001 and we will connect you with a certified doctor near you.',
-                )
-              }
-            >
-              Doctor Directory
-            </button>
+            <Link to="/find-a-doctor">Doctor Directory</Link>
             <a href="tel:+17276770001">(727) 677-0001</a>
             <a href="mailto:Info@AdvancedOrthogonal.com">Info@AdvancedOrthogonal.com</a>
           </div>
