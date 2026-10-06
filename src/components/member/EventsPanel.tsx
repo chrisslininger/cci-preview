@@ -10,6 +10,9 @@
  * -------------------------------------------------------------------------- */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
+import { useRegKey } from '@/lib/queries/CatalogProvider'
+import { useRegistration } from '@/components/blocks/RegistrationDialog'
+import { myRegistrations } from '@/lib/queries/member'
 import CheckinRoom from './CheckinRoom'
 import { useToast } from '@/components/ui/Toast'
 import {
@@ -67,7 +70,7 @@ function Chips({ e }: { e: EventRow }) {
 
 export default function EventsPanel() {
   const toast = useToast()
-  const { access, can } = useAccess()
+  const { access, can, viewingAsMember } = useAccess()
   const canManage = can('full_admin') || can('board') || can('manage_seminars')
   const meId = access.person?.id ?? null
   const [rows, setRows] = useState<EventRow[]>([])
@@ -92,7 +95,11 @@ export default function EventsPanel() {
   const [regsFor, setRegsFor] = useState<EventRow | null>(null)
   const [room, setRoom] = useState<number | null>(null)
   const [canCheckin, setCanCheckin] = useState(false)
-  useEffect(() => { void canManageRsvps().then(setCanCheckin) }, [])
+  const [mine, setMine] = useState<Set<string>>(new Set())
+  useEffect(() => { void myRegistrations().then((r) => setMine(new Set(r.filter((x) => x.registration_status !== 'cancelled').map((x) => x.events?.slug ?? '').filter(Boolean)))) }, [])
+  /* The database still knows an admin who is viewing as a member, so the
+   * check-in desk is hidden here rather than by its own permission check. */
+  useEffect(() => { if (viewingAsMember) { setCanCheckin(false); return } void canManageRsvps().then(setCanCheckin) }, [viewingAsMember])
 
   const load = useCallback(async () => {
     const r = await listEvents()
@@ -227,7 +234,7 @@ export default function EventsPanel() {
         ? <>{upcoming.length > 0 && <><div className="evt-grp">Upcoming</div>{compact ? table(upcoming) : upcoming.map(card)}</>}{past.length > 0 && <><div className="evt-grp">Past</div>{compact ? table(past) : past.map(card)}</>}</>
         : Object.keys(months).sort().map((k) => <div key={k}><div className="evt-grp">{MONL[months[k]!.m]} {months[k]!.y}</div>{compact ? table(months[k]!.items) : months[k]!.items.map(card)}</div>)}
 
-      {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} onCheckin={canCheckin ? () => { setOpen(null); setRoom(current.id) } : undefined} />}
+      {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} onCheckin={canCheckin ? () => { setOpen(null); setRoom(current.id) } : undefined} attending={mine.has(current.slug ?? '')} />}
       {edit && <FormDialog e={edit === 'new' ? null : edit} venues={venues} committees={committees} meId={meId} onClose={() => setEdit(null)} onSaved={async (m) => { setEdit(null); await load(); toast(m) }} onRemove={(e) => { setEdit(null); setConfirm(e) }} />}
       {confirm && (
         <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setConfirm(null)}>
@@ -245,7 +252,11 @@ export default function EventsPanel() {
 
 /* --------------------------------------------------------------- detail -- */
 
-function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCheckin }: { e: EventRow; canManage: boolean; onClose: () => void; onEdit: () => void; onDuplicate: () => void; onRegs: () => void; onCheckin?: () => void }) {
+function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCheckin, attending }: { e: EventRow; canManage: boolean; onClose: () => void; onEdit: () => void; onDuplicate: () => void; onRegs: () => void; onCheckin?: () => void; attending: boolean }) {
+  const { access } = useAccess()
+  const register = useRegistration()
+  const regKey = useRegKey()(e.status === 'published' ? e.slug : null)
+  const rsvp = access.tier === 'member' && e.free_with_membership
   useEffect(() => { const k = (ev: KeyboardEvent) => ev.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const gov = isGov(e)
   const regs = activeRegs(e)
@@ -291,7 +302,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
           <div className="kv">{kv('URL', e.status === 'published' ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div>
         </div>
         <div className="mf evt-foot">
-          <div className="r">{!gov && onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations ({regs.length})</button>}</div>
+          <div className="r">{attending ? <span className="muted">✓ You’re attending</span> : regKey && <button type="button" className="b p-btn sm" onClick={() => { onClose(); register(regKey) }}>{rsvp ? 'RSVP — Free with Membership' : 'Register'}</button>}{!gov && onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations ({regs.length})</button>}</div>
           <div className="r">{canManage && <><button type="button" className="b s-btn on-light sm" onClick={onEdit}>Edit</button><button type="button" className="b s-btn on-light sm" onClick={onDuplicate}>Duplicate</button></>}<button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
         </div>
       </div>
