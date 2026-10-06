@@ -67,7 +67,7 @@ function Chips({ e }: { e: EventRow }) {
 
 export default function EventsPanel() {
   const toast = useToast()
-  const { access, can } = useAccess()
+  const { access, can, viewingAsMember } = useAccess()
   const canManage = can('full_admin') || can('board') || can('manage_seminars')
   const meId = access.person?.id ?? null
   const [rows, setRows] = useState<EventRow[]>([])
@@ -92,7 +92,9 @@ export default function EventsPanel() {
   const [regsFor, setRegsFor] = useState<EventRow | null>(null)
   const [room, setRoom] = useState<number | null>(null)
   const [canCheckin, setCanCheckin] = useState(false)
-  useEffect(() => { void canManageRsvps().then(setCanCheckin) }, [])
+  /* The database still knows an admin who is viewing as a member, so the
+   * check-in desk is hidden here rather than by its own permission check. */
+  useEffect(() => { if (viewingAsMember) { setCanCheckin(false); return } void canManageRsvps().then(setCanCheckin) }, [viewingAsMember])
 
   const load = useCallback(async () => {
     const r = await listEvents()
