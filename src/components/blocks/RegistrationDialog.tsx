@@ -303,7 +303,10 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
           fields: [],
         })
       } else {
-        setError({ message: data.detail ?? data.error ?? 'Something went wrong — please try again.', fields: [] })
+        /* Anything unexpected (a database error, say) arrives as raw technical
+         * text; keep it in the console and show the visitor a plain message. */
+        console.error('create-checkout', data.error, data.detail)
+        setError({ message: 'Something went wrong and your registration was not saved. Please try again later, or contact the Institute and we will sign you up.', fields: [] })
       }
     } catch {
       setError({ message: 'Connection problem — please check your internet and try again.', fields: [] })
