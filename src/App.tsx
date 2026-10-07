@@ -7,6 +7,7 @@ import { RegistrationProvider } from '@/components/blocks/RegistrationDialog'
 import { CatalogProvider } from '@/lib/queries/CatalogProvider'
 import { AccessProvider } from '@/lib/queries/AccessProvider'
 import { routes, notFoundRoute, routeByPath } from '@/routes'
+import { ORIGIN } from '@/lib/seo'
 import type { PageMeta } from '@/lib/seo'
 import PayPage from '@/pages/PayPage'
 
@@ -30,7 +31,7 @@ function DocumentMeta() {
       el.setAttribute(attr, value)
     }
     set('meta[name="description"]', 'content', meta.description)
-    set('link[rel="canonical"]', 'href', `${window.location.origin}${meta.canonical ?? pathname}`)
+    set('link[rel="canonical"]', 'href', `${ORIGIN}${meta.canonical ?? pathname}`)
     set(
       'meta[name="robots"]',
       'content',

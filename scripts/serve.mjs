@@ -25,7 +25,13 @@ const TYPES = {
 
 createServer(async (req, res) => {
   const url = decodeURIComponent((req.url ?? '/').split('?')[0])
-  const candidates = [join(root, url), join(root, url, 'index.html')]
+  // Same lookup order as Pages: the file itself, `<path>.html`, then `<path>/index.html`.
+  // (Pages also redirects between `/about` and `/about/`; this preview does not.)
+  const candidates = [
+    join(root, url),
+    join(root, `${url.replace(/\/+$/, '')}.html`),
+    join(root, url, 'index.html'),
+  ]
   for (const file of candidates) {
     try {
       const info = await stat(file)
