@@ -3,6 +3,8 @@
  *
  * Four steps, in order:
  *   1. bundle the client                  -> dist/client/assets/client-[hash].js
+ *      plus chunk-[hash].js for code loaded on demand (the members area,
+ *      which only /account imports)
  *   2. bundle the server renderer         -> dist/server/entry-server.js
  *   3. render every public route to disk  -> dist/client/<route>.html
  *      (`/` alone is index.html). Cloudflare Pages serves `about.html` at
@@ -19,7 +21,7 @@ import { build } from 'esbuild'
 import { createHash } from 'node:crypto'
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { existsSync, statSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
@@ -54,6 +56,8 @@ await mkdir(clientDir, { recursive: true })
 
 console.log('▸ stylesheet')
 const css =
+  (await readFile(join(root, 'src/styles/fonts.css'), 'utf-8')) +
+  '\n' +
   (await readFile(join(root, 'src/styles/tokens.css'), 'utf-8')) +
   '\n' +
   (await readFile(join(root, 'src/styles/components.css'), 'utf-8'))
@@ -62,6 +66,8 @@ const cssMin = await build({
   bundle: true,
   minify: true,
   write: false,
+  // The font files are copied from public/ as-is; leave their URLs alone.
+  external: ['/fonts/*'],
 })
 const cssOut = cssMin.outputFiles[0].text
 const cssHash = createHash('sha256').update(cssOut).digest('hex').slice(0, 8)
@@ -85,21 +91,30 @@ const clientBuild = await build({
   // next to the bundle and double the size of dist/client/assets.
   sourcemap: false,
   write: false,
-  outfile: join(clientDir, 'assets', 'client.js'),
+  // Code splitting: every `import()` becomes its own chunk, fetched only when
+  // that code runs. The entry keeps the `client-` prefix the HTML shell
+  // references; chunks import each other by relative path, which resolves
+  // against /assets/ whatever page URL they were loaded from.
+  splitting: true,
+  outdir: join(clientDir, 'assets'),
+  entryNames: 'client-[hash]',
+  chunkNames: 'chunk-[hash]',
   define: { 'process.env.NODE_ENV': '"production"' },
   plugins: [alias],
   loader: { '.md': 'text' },
 })
-const jsFile = clientBuild.outputFiles.find((f) => !f.path.endsWith('.map'))
-if (!jsFile) {
+const jsOutputs = clientBuild.outputFiles.filter((f) => f.path.endsWith('.js'))
+const jsEntry = jsOutputs.find((f) => basename(f.path).startsWith('client-'))
+if (!jsEntry) {
   throw new Error(
-    `esbuild produced no JS output. Files: ${clientBuild.outputFiles.map((f) => f.path).join(', ')}`,
+    `esbuild produced no client entry. Files: ${clientBuild.outputFiles.map((f) => f.path).join(', ')}`,
   )
 }
-const jsHash = createHash('sha256').update(jsFile.text).digest('hex').slice(0, 8)
-const jsName = `assets/client-${jsHash}.js`
-await writeFile(join(clientDir, jsName), jsFile.text, 'utf-8')
-console.log(`  ${jsName}  ${(jsFile.text.length / 1024).toFixed(1)} kB`)
+const jsName = `assets/${basename(jsEntry.path)}`
+for (const f of jsOutputs) {
+  await writeFile(join(clientDir, 'assets', basename(f.path)), f.text, 'utf-8')
+  console.log(`  assets/${basename(f.path)}  ${(f.text.length / 1024).toFixed(1)} kB`)
+}
 
 /* ---------------------------------------------------------------- server */
 
@@ -135,12 +150,8 @@ const shell = (head, html) => `<!DOCTYPE html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700;800&display=swap"
-    />
+    <link rel="preload" href="/fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/figtree-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/${cssName}" />
     ${head}
   </head>
