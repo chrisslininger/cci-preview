@@ -8,6 +8,7 @@ import { webHref } from '@/lib/safeHref'
 import { SafeLink } from './opsUi'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
+import { uploadPhotoFor } from '@/lib/queries/photo'
 import { useToast } from '@/components/ui/Toast'
 import { displayName } from '@/lib/access'
 import {
@@ -205,6 +206,19 @@ function EditDialog({ p, comms, canRoles, me, meId, onClose, onSaved }: { p: Con
   const bodyRef = useRef<HTMLDivElement>(null)
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setV((s) => ({ ...s, [k]: e.target.value }))
+  /* A manager's upload lands in the headshot bucket; the address is saved with the rest of the form. */
+  const photoRef = useRef<HTMLInputElement>(null)
+  const [photoBusy, setPhotoBusy] = useState(false)
+  const pickPhoto = async (file: File | undefined) => {
+    if (!file || !p) return
+    setPhotoBusy(true)
+    const r = await uploadPhotoFor(p.id, file)
+    setPhotoBusy(false)
+    if (photoRef.current) photoRef.current.value = ''
+    if (r.missing) return setErr('Photo uploads are being switched on — paste a link for now.')
+    if (r.error) return setErr('The photo could not be uploaded. Try a JPG or PNG under 10 MB.')
+    setV((s) => ({ ...s, photo_url: r.url ?? '' }))
+  }
   const I = (k: string, type = 'text', ph = '') => <input className="fi" type={type} value={v[k] ?? ''} onChange={set(k)} placeholder={ph} />
   const setOffice = (i: number, patch: Partial<Office>) => setOffices((o) => o.map((x, j) => (j === i ? { ...x, ...patch } : x)))
   const hasSeat = (k: string) => seats.some((s) => s.role_key === k)
@@ -270,7 +284,13 @@ function EditDialog({ p, comms, canRoles, me, meId, onClose, onSaved }: { p: Con
             {step === 'bg' && <>
               <F l="CHIROPRACTIC COLLEGE">{I('alma_mater', 'text', 'e.g. Life University')}</F><F l="GRADUATION YEAR">{I('grad_year', 'number', '2012')}</F>
               <F l="NPI NUMBER">{I('npi', 'text', '10 digits')}</F>
-              <F l="HEADSHOT URL" hint="Members upload their own from their profile; paste a link here if you have one.">{I('photo_url', 'url')}</F>
+              <F l="HEADSHOT" full hint={p ? 'Members can add their own under My Account. Upload one here, or paste a link.' : 'Save the contact first, then upload a photo.'}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  {v.photo_url && <span className="ctc-top" style={{ display: 'contents' }}><span className="av" style={{ width: 40, height: 40, fontSize: 13 }}><img src={v.photo_url} alt="" onError={(e) => (e.currentTarget.style.display = 'none')} /></span></span>}
+                  {I('photo_url', 'url', 'https://…')}
+                  {p && <><input ref={photoRef} type="file" accept="image/*" hidden onChange={(e) => void pickPhoto(e.target.files?.[0])} /><button type="button" className="b s-btn on-light xs" disabled={photoBusy} onClick={() => photoRef.current?.click()}>{photoBusy ? 'Uploading…' : 'Upload'}</button></>}
+                </div>
+              </F>
               <F l="BIO" full><textarea className="fi" rows={4} value={v.bio} onChange={set('bio')} placeholder="Shown on the public directory once they are a member." /></F>
             </>}
             {step === 'member' && <>

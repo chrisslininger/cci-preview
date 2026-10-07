@@ -7,7 +7,8 @@
  * and searchable. Names open the full contact card with a running notes log.
  * -------------------------------------------------------------------------- */
 import { friendlyError } from '@/lib/friendlyError'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { uploadPhotoFor } from '@/lib/queries/photo'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
 import { displayName } from '@/lib/access'
@@ -146,14 +147,28 @@ function EditDialog({ p, onClose, onSaved }: { p: Member | null; onClose: () => 
     email: p?.email ?? '', mobile_phone: p?.mobile_phone ?? '', office_phone: p?.office_phone ?? '', practice_website: p?.practice_website ?? '',
     practice_name: p?.practice_name ?? '', practice_address: p?.practice_address ?? '', techniques: (p?.techniques ?? []).join(', '),
     status: p?.deceased_on ? 'deceased' : (p?.membership_status ?? 'active'), deceased_on: p?.deceased_on ?? '', member_since: p?.member_since ?? '', membership_expires: p?.membership_expires ?? '',
+    photo_url: p?.photo_url ?? '',
   })
   const [err, setErr] = useState<string | null>(null); const [saving, setSaving] = useState(false)
+  /* A manager's upload lands in the headshot bucket; the address is saved with the rest of the form. */
+  const photoRef = useRef<HTMLInputElement>(null)
+  const [photoBusy, setPhotoBusy] = useState(false)
+  const pickPhoto = async (file: File | undefined) => {
+    if (!file || !p) return
+    setPhotoBusy(true)
+    const r = await uploadPhotoFor(p.id, file)
+    setPhotoBusy(false)
+    if (photoRef.current) photoRef.current.value = ''
+    if (r.missing) return setErr('Photo uploads are being switched on — paste a link for now.')
+    if (r.error) return setErr('The photo could not be uploaded. Try a JPG or PNG under 10 MB.')
+    setV((s) => ({ ...s, photo_url: r.url ?? '' }))
+  }
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setV((s) => ({ ...s, [k]: e.target.value }))
   async function save() {
     setErr(null); if (!v.first_name?.trim() || !v.last_name?.trim()) { setErr('First and last name are required.'); return }
     const dead = v.status === 'deceased'
-    const prof: Profile = { first_name: v.first_name!.trim(), last_name: v.last_name!.trim(), credentials: v.credentials || null, contact_type: v.contact_type, email: v.email || null, mobile_phone: v.mobile_phone || null, office_phone: v.office_phone || null, practice_website: v.practice_website || null, practice_name: v.practice_name || null, practice_address: v.practice_address || null, techniques: (v.techniques ?? '').split(',').map((s) => s.trim()).filter(Boolean), member_since: v.member_since || null, membership_expires: v.membership_expires || null, deceased_on: dead ? (v.deceased_on || new Date().toISOString().slice(0, 10)) : null }
+    const prof: Profile = { photo_url: v.photo_url || null, first_name: v.first_name!.trim(), last_name: v.last_name!.trim(), credentials: v.credentials || null, contact_type: v.contact_type, email: v.email || null, mobile_phone: v.mobile_phone || null, office_phone: v.office_phone || null, practice_website: v.practice_website || null, practice_name: v.practice_name || null, practice_address: v.practice_address || null, techniques: (v.techniques ?? '').split(',').map((s) => s.trim()).filter(Boolean), member_since: v.member_since || null, membership_expires: v.membership_expires || null, deceased_on: dead ? (v.deceased_on || new Date().toISOString().slice(0, 10)) : null }
     if (!dead) prof.membership_status = v.status
     setSaving(true); const r = p ? await saveProfile(p.id, prof) : await createMember(prof); setSaving(false)
     if (r.error) { setErr(friendlyError(r.error)); return }
@@ -168,6 +183,15 @@ function EditDialog({ p, onClose, onSaved }: { p: Member | null; onClose: () => 
             <div className="cert-fh full" style={{ borderTop: 0, paddingTop: 0 }}>Identity</div><MF k="first_name" l="FIRST NAME" type="text" full={false} v={v} set={set} /><MF k="last_name" l="LAST NAME" type="text" full={false} v={v} set={set} /><MF k="credentials" l="CREDENTIALS" type="text" full={false} v={v} set={set} /><div><label className="flabel" htmlFor="m_type">TYPE</label><select className="fi" id="m_type" value={v.contact_type} onChange={set('contact_type')}><option value="doctor">Doctor</option><option value="student">Student</option></select></div>
             <div className="cert-fh full">Contact</div><MF k="email" l="EMAIL" type="email" full={false} v={v} set={set} /><MF k="mobile_phone" l="MOBILE" type="text" full={false} v={v} set={set} /><MF k="office_phone" l="OFFICE PHONE" type="text" full={false} v={v} set={set} /><MF k="practice_website" l="WEBSITE" type="text" full={false} v={v} set={set} />
             <div className="cert-fh full">Practice</div><MF k="practice_name" l="PRACTICE NAME" type="text" full={false} v={v} set={set} /><MF k="practice_address" l="ADDRESS" type="text" full={false} v={v} set={set} /><MF k="techniques" l="TECHNIQUES (COMMA SEPARATED)" type="text" full={true} v={v} set={set} />
+            <div className="cert-fh full">Photo</div>
+            <div className="full"><label className="flabel">HEADSHOT</label>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                {v.photo_url && <span className="ctc-top" style={{ display: 'contents' }}><span className="av" style={{ width: 40, height: 40, fontSize: 13 }}><img src={v.photo_url} alt="" onError={(e) => (e.currentTarget.style.display = 'none')} /></span></span>}
+                <input className="fi" type="url" value={v.photo_url ?? ''} onChange={set('photo_url')} placeholder="https://…" />
+                {p && <><input ref={photoRef} type="file" accept="image/*" hidden onChange={(e) => void pickPhoto(e.target.files?.[0])} /><button type="button" className="b s-btn on-light xs" disabled={photoBusy} onClick={() => photoRef.current?.click()}>{photoBusy ? 'Uploading…' : 'Upload'}</button></>}
+              </div>
+              <div className="evt-hint">{p ? 'Members can add their own under My Account. Upload one here, or paste a link.' : 'Save the member first, then upload a photo.'}</div>
+            </div>
             <div className="cert-fh full">Membership</div><div><label className="flabel" htmlFor="m_status">STATUS</label><select className="fi" id="m_status" value={v.status} onChange={set('status')}><option value="active">Active</option><option value="expired">Expired</option><option value="never">Never a member</option><option value="deceased">Deceased</option></select></div><MF k="deceased_on" l="DATE OF PASSING (IF DECEASED)" type="date" full={false} v={v} set={set} /><MF k="member_since" l="MEMBER SINCE" type="date" full={false} v={v} set={set} /><MF k="membership_expires" l="EXPIRES" type="date" full={false} v={v} set={set} />
           </div>
         </div>

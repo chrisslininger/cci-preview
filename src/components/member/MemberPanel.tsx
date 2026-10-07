@@ -33,6 +33,7 @@ import CalendarPanel from './CalendarPanel'
 import StatsPanel from './StatsPanel'
 import RecordsPanel from './RecordsPanel'
 import ControlPanel from './ControlPanel'
+import PhotoCard from './PhotoCard'
 
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
@@ -142,6 +143,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
     const p = access.person
     return (
       <Panel title="Membership" lede={TIER_LABEL[access.tier]}>
+        <PhotoCard />
         <Row title="Status" detail={p?.membership_status ?? 'Not a member yet'} />
         <Row title="Member since" detail={date(p?.member_since)} />
         <Row title="Renews" detail={date(p?.membership_expires)} />
