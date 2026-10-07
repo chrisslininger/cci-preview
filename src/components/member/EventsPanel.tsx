@@ -13,6 +13,7 @@ import { useAccess } from '@/lib/queries/AccessProvider'
 import { useRegKey } from '@/lib/queries/CatalogProvider'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { myRegistrations } from '@/lib/queries/member'
+import { SLUG_TO_SEMINAR } from '@/content/seminars'
 import CheckinRoom from './CheckinRoom'
 import { useToast } from '@/components/ui/Toast'
 import {
@@ -54,6 +55,22 @@ function useNarrow(): boolean {
   return n
 }
 
+/** Full when there is a cap and the confirmed list has reached it. */
+const soldOut = (e: EventRow) => Boolean(e.capacity) && activeRegs(e).length >= Number(e.capacity)
+
+/** What a member needs to know about an event, in their words: are they
+ *  going, can they, and what does it cost them. Managers get the rest below. */
+function MemberChips({ e, registered }: { e: EventRow; registered: boolean }) {
+  const gov = isGov(e)
+  return (
+    <div className="cert-chips" style={{ marginBottom: 0, marginTop: 9 }}>
+      {registered ? <Pill kind="ok">Registered</Pill> : !gov && soldOut(e) ? <Pill kind="bad">Sold out</Pill> : !gov && e.free_with_membership ? <Pill kind="ok">Included with membership</Pill> : null}
+      {e.zoom_url && <Pill kind="link">Zoom</Pill>}
+      <small className="muted evt-facts">{[gov ? typeLabel(e.event_type) : (e.category ? catLabel(e.category) : typeLabel(e.event_type)), e.ce_credits ? 'CE credits' : null, isPast(e) ? 'Past' : null, !gov && !e.free_with_membership && money(e.price) ? `${money(e.price)}${e.member_price != null ? ` · members ${money(e.member_price)}` : ''}` : null].filter(Boolean).join(' · ')}</small>
+    </div>
+  )
+}
+
 function Chips({ e }: { e: EventRow }) {
   const gov = isGov(e)
   const n = confirmedRegs(e).length; const pend = pendingRegs(e).length; const fresh = recentRegs(e).length; const unv = unverifiedRegs(e).length
@@ -88,7 +105,7 @@ export default function EventsPanel() {
   const [density, setDensityState] = useState<Density>(() => stored(DENSITY_KEY, ['compact', 'comfortable'] as const, 'compact'))
   const setLayout = (v: Layout) => { setLayoutState(v); store(LAYOUT_KEY, v) }
   const setDensity = (v: Density) => { setDensityState(v); store(DENSITY_KEY, v) }
-  const compact = density === 'compact' && !narrow
+  const compact = density === 'compact' && !narrow && canManage
   const [open, setOpen] = useState<number | null>(null)
   const [edit, setEdit] = useState<EventRow | 'new' | null>(null)
   const [confirm, setConfirm] = useState<EventRow | null>(null)
@@ -173,7 +190,7 @@ export default function EventsPanel() {
       <article key={e.id} className={`evt${isPast(e) ? ' past' : ''}${e.status !== 'published' ? ' draft' : ''}`} tabIndex={0} role="button" aria-label={`Open ${e.title}`}
         onClick={() => setOpen(e.id)} onKeyDown={(k) => { if ((k.key === 'Enter' || k.key === ' ') && k.target === k.currentTarget) { k.preventDefault(); setOpen(e.id) } }}>
         <div className="dt"><span className="mo">{d.mo}</span><span className="dy">{d.dy}</span><span className="yr">{d.yr}</span>{d.tm && <span className="tm">{d.tm}</span>}</div>
-        <div className="ti"><h4>{e.title}</h4>{e.subtitle && <div className="st">{e.subtitle}</div>}{where && <div className="lc">{where}</div>}<Chips e={e} /></div>
+        <div className="ti"><h4>{e.title}</h4>{e.subtitle && <div className="st">{e.subtitle}</div>}{where && <div className="lc">{where}</div>}{canManage ? <Chips e={e} /> : <MemberChips e={e} registered={mine.has(e.slug ?? '')} />}</div>
         <div className="ac" onClick={(k) => k.stopPropagation()}>
           {canManage && <>
             <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(e)}>Edit</button>
@@ -200,7 +217,7 @@ export default function EventsPanel() {
         <span className="t">{d.tm || '—'}</span>
         <span className="n" title={e.title}>{e.title}</span>
         <span className="w" title={where ?? ''}>{where || '—'}</span>
-        <span className="g">{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</span>
+        <span className="g">{canManage ? <>{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</> : mine.has(e.slug ?? '') ? <Pill kind="ok">Registered</Pill> : !isGov(e) && soldOut(e) ? <Pill kind="bad">Sold out</Pill> : null}</span>
         <span className="ac" onClick={(k) => k.stopPropagation()}>
           {canManage && <>
             <button type="button" className="evt-ic" title="Edit" aria-label={`Edit ${e.title}`} onClick={() => setEdit(e)}>{IC.edit}</button>
@@ -219,18 +236,18 @@ export default function EventsPanel() {
   return (
     <>
       <div className="cert-head">
-        <div><h1>Events</h1><div className="ma-sub" style={{ marginBottom: 0, maxWidth: '80ch' }}>Every seminar, course, conference, board meeting, committee sync and deadline — one list, in date order. Click a card for the full details.</div></div>
-        <div className="cert-actions">{canManage && <button type="button" className="b p-btn sm" onClick={() => setEdit('new')}>+ Create event</button>}<button type="button" className="b s-btn on-light sm" onClick={exportCsv}>↓ Export CSV</button></div>
+        <div><h1>Events</h1><div className="ma-sub" style={{ marginBottom: 0, maxWidth: '80ch' }}>{canManage ? 'Every seminar, course, conference, board meeting, committee sync and deadline — one list, in date order. Click a card for the full details.' : 'Your events — RSVP, register, and see what’s coming. Click one for the details.'}</div></div>
+        {canManage && <div className="cert-actions"><button type="button" className="b p-btn sm" onClick={() => setEdit('new')}>+ Create event</button><button type="button" className="b s-btn on-light sm" onClick={exportCsv}>↓ Export CSV</button></div>}
       </div>
       {error && <div className="cert-err" role="alert">{error}</div>}
-      <div className="cert-tiles">{TABS.map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b><i>{split[k] ?? ' '}</i></button>)}</div>
+      <div className={`cert-tiles${canManage ? '' : ' two'}`}>{(canManage ? TABS : TABS.filter(([k]) => k === 'upcoming' || k === 'past')).map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b><i>{split[k] ?? ' '}</i></button>)}</div>
       <div className="cert-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input type="text" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setQ('')} autoComplete="off" placeholder="Search by title, venue, category, speaker…" aria-label="Search events" />
         {q && <button type="button" className="clr" aria-label="Clear search" onClick={() => setQ('')}>×</button>}
       </div>
       <div className="evt-bar"><span className="cnt">{list.length} {list.length === 1 ? 'event' : 'events'}{q ? ` matching “${q}”` : ''} · sorted by date</span>
-        <div className="evt-segs">{!narrow && <div className="evt-seg"><button type="button" className={compact ? 'on' : ''} onClick={() => setDensity('compact')}>Compact</button><button type="button" className={!compact ? 'on' : ''} onClick={() => setDensity('comfortable')}>Comfortable</button></div>}<div className="evt-seg"><button type="button" className={layout === 'list' ? 'on' : ''} onClick={() => setLayout('list')}>List</button><button type="button" className={layout === 'cal' ? 'on' : ''} onClick={() => setLayout('cal')}>Calendar</button></div></div></div>
+        <div className="evt-segs">{!narrow && canManage && <div className="evt-seg"><button type="button" className={compact ? 'on' : ''} onClick={() => setDensity('compact')}>Compact</button><button type="button" className={!compact ? 'on' : ''} onClick={() => setDensity('comfortable')}>Comfortable</button></div>}<div className="evt-seg"><button type="button" className={layout === 'list' ? 'on' : ''} onClick={() => setLayout('list')}>List</button><button type="button" className={layout === 'cal' ? 'on' : ''} onClick={() => setLayout('cal')}>Calendar</button></div></div></div>
       {list.length === 0 && <div className="cert-card" style={{ textAlign: 'center', color: 'var(--color-content-muted)', padding: 30 }}>{q ? `Nothing matches “${q}”.` : 'No events in this list.'}</div>}
       {layout === 'list'
         ? <>{upcoming.length > 0 && <><div className="evt-grp">Upcoming</div>{compact ? table(upcoming) : upcoming.map(card)}</>}{past.length > 0 && <><div className="evt-grp">Past</div>{compact ? table(past) : past.map(card)}</>}</>
@@ -259,6 +276,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
   const register = useRegistration()
   const regKey = useRegKey()(e.status === 'published' ? e.slug : null)
   const rsvp = access.tier === 'member' && e.free_with_membership
+  const hasPage = Boolean(e.slug && SLUG_TO_SEMINAR[e.slug])
   useEffect(() => { const k = (ev: KeyboardEvent) => ev.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const gov = isGov(e)
   const regs = activeRegs(e)
@@ -272,11 +290,11 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
   return (
     <div className="cert-veil" onClick={(ev) => ev.target === ev.currentTarget && onClose()}>
       <div className="cert-modal evt-detail cc" role="dialog" aria-modal="true">
-        <div className="evt-hero">{e.primary_image ? <img src={e.primary_image} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} /> : null}<div className="ph">{gov ? typeLabel(e.event_type) : catLabel(e.category)}{!e.primary_image && ' · no hero image yet'}</div><button type="button" className="xh" aria-label="Close" onClick={onClose}>×</button></div>
+        <div className="evt-hero">{e.primary_image ? <img src={e.primary_image} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} /> : null}<div className="ph">{gov ? typeLabel(e.event_type) : catLabel(e.category)}{!e.primary_image && canManage && ' · no hero image yet'}</div><button type="button" className="xh" aria-label="Close" onClick={onClose}>×</button></div>
         <div className="evt-dh"><Chips e={e} /><h3>{e.title}</h3>{e.subtitle && <div className="st">{e.subtitle}</div>}</div>
         <div className="evt-dsec">
           <div className="sec">When</div>
-          <div className="kv">{kv('Dates', whenText(e))}{e.audience && kv('Audience', e.audience)}{rw && kv('Registration', rw)}{!gov && kv('Seats', e.capacity ? `${Math.max(0, e.capacity - regs.length)} of ${e.capacity} seats remaining` : 'No cap set')}</div>
+          <div className="kv">{kv('Dates', whenText(e))}{e.audience && kv('Audience', e.audience)}{rw && kv('Registration', rw)}{!gov && canManage && kv('Seats', e.capacity ? `${Math.max(0, e.capacity - regs.length)} of ${e.capacity} seats remaining` : 'No cap set')}{!gov && !canManage && soldOut(e) && kv('Seats', 'Sold out')}</div>
           <div className="sec">Where</div>
           {v ? <div className="kv">{kv('Venue', <><b>{v.name}</b><br />{[v.address, [v.city, v.state].filter(Boolean).join(', ')].filter(Boolean).join(', ')}{(v.address || v.city) && <><br /><a href={`https://maps.google.com/?q=${encodeURIComponent([v.name, v.address, v.city, v.state].filter(Boolean).join(', '))}`} target="_blank" rel="noreferrer">Open in maps</a></>}</>)}{e.location && e.location !== v.name && kv('Notes', e.location)}</div>
             : <div className="kv">{kv('Location', e.location || 'To be announced')}</div>}
@@ -300,8 +318,9 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
           {e.refund_policy && <><div className="sec">Refund policy</div><p>{e.refund_policy}</p></>}
           {e.video_url && <div className="kv" style={{ marginTop: 6 }}>{kv('Video', <a href={e.video_url} target="_blank" rel="noreferrer">{e.video_url}</a>)}</div>}
           {(e.gallery_images?.length ?? 0) > 0 && <><div className="sec">Gallery</div><div className="evt-gal">{e.gallery_images!.map((u, i) => <img key={i} src={u} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} />)}</div></>}
-          <div className="sec">Public page</div>
-          <div className="kv">{kv('URL', e.status === 'published' ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div>
+          {(canManage || hasPage) && <><div className="sec">Public page</div>
+          <div className="kv">{kv('URL', e.status === 'published' && hasPage ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : e.status === 'published' ? <span className="muted" style={{ margin: 0 }}>No page on the site for this slug yet · /seminars/{e.slug}</span> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div></>}
+          {!gov && !attending && !regKey && e.status === 'published' && !isPast(e) && <><div className="sec">How to register</div><p className="muted">Registration for this event is handled by the Institute. <a href="/contact">Contact us</a> and we’ll sign you up.</p></>}
         </div>
         <div className="mf evt-foot">
           <div className="r">{attending ? (e.zoom_url ? <a className="b p-btn sm" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a> : <span className="muted">✓ You’re attending</span>) : regKey && <button type="button" className="b p-btn sm" onClick={() => { onClose(); register(regKey) }}>{rsvp ? 'RSVP — Free with Membership' : 'Register'}</button>}{!gov && onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations ({regs.length})</button>}</div>
