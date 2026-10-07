@@ -2710,6 +2710,11 @@ a.othercard {
 .paygo { width: 100%; justify-content: center; min-height: 52px; font-size: 16px; }
 .paysmall { text-align: center; font-size: 12.5px; color: var(--color-content-tertiary) !important; margin: 12px 0 0 !important; }
 
+/* ------------------------------------------------- member account set-up */
+.acct-setup { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--color-border-subtle); }
+.acct-setup .fi { width: 100%; box-sizing: border-box; }
+.acct-setup .flink { font-size: inherit; }
+
   /* ---------------------------------------------------------- conference hero
    * The Annual Conference hero on the homepage: the announcement on the left,
    * a credential card on the right carrying the dates and every price tier.
