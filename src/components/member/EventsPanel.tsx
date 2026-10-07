@@ -12,7 +12,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useRegKey } from '@/lib/queries/CatalogProvider'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
-import { myRegistrations } from '@/lib/queries/member'
+import { myRegistrations, cancelMyRegistration, requestCancellation } from '@/lib/queries/member'
+import type { Registration } from '@/lib/queries/member'
+import { SLUG_TO_SEMINAR } from '@/content/seminars'
 import CheckinRoom from './CheckinRoom'
 import { useToast } from '@/components/ui/Toast'
 import {
@@ -23,8 +25,10 @@ import {
 } from '@/lib/queries/eventsAdmin'
 import type { RsvpCandidate, EventRow, EventInput, Venue, Committee, Speaker, Session, Reg, PersonHit } from '@/lib/queries/eventsAdmin'
 
-type Tab = 'upcoming' | 'past' | 'seminars' | 'gov' | 'drafts'
+type Tab = 'upcoming' | 'registered' | 'past' | 'seminars' | 'gov' | 'drafts'
 const TABS: [Tab, string][] = [['upcoming', 'Upcoming'], ['past', 'Past'], ['seminars', 'Seminars & courses'], ['gov', 'Board & committee'], ['drafts', 'Drafts']]
+/* A member's three tiles: what's coming, what they've signed up for, what's over. */
+const MEMBER_TABS: [Tab, string][] = [['upcoming', 'Upcoming'], ['registered', 'Registered'], ['past', 'Past']]
 
 const initials = (n: string) => n.replace(/^Dr\.?\s*/i, '').split(/\s+/).map((w) => w[0] ?? '').join('').slice(0, 2).toUpperCase()
 
@@ -52,6 +56,22 @@ function useNarrow(): boolean {
   const [n, setN] = useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches)
   useEffect(() => { const m = window.matchMedia(q); const f = () => setN(m.matches); m.addEventListener('change', f); return () => m.removeEventListener('change', f) }, [])
   return n
+}
+
+/** Full when there is a cap and the confirmed list has reached it. */
+const soldOut = (e: EventRow) => Boolean(e.capacity) && activeRegs(e).length >= Number(e.capacity)
+
+/** What a member needs to know about an event, in their words: are they
+ *  going, can they, and what does it cost them. Managers get the rest below. */
+function MemberChips({ e, registered }: { e: EventRow; registered: boolean }) {
+  const gov = isGov(e)
+  return (
+    <div className="cert-chips" style={{ marginBottom: 0, marginTop: 9 }}>
+      {registered ? <Pill kind="ok">Registered</Pill> : !gov && soldOut(e) ? <Pill kind="bad">Sold out</Pill> : !gov && e.free_with_membership ? <Pill kind="ok">Included with membership</Pill> : null}
+      {e.zoom_url && <Pill kind="link">Zoom</Pill>}
+      <small className="muted evt-facts">{[gov ? typeLabel(e.event_type) : (e.category ? catLabel(e.category) : typeLabel(e.event_type)), e.ce_credits ? 'CE credits' : null, isPast(e) ? 'Past' : null, !gov && !e.free_with_membership && money(e.price) ? `${money(e.price)}${e.member_price != null ? ` · members ${money(e.member_price)}` : ''}` : null].filter(Boolean).join(' · ')}</small>
+    </div>
+  )
 }
 
 function Chips({ e }: { e: EventRow }) {
@@ -85,7 +105,7 @@ export default function EventsPanel() {
    * the cards. */
   const narrow = useNarrow()
   const [layout, setLayoutState] = useState<Layout>(() => stored(LAYOUT_KEY, ['list', 'cal'] as const, 'list'))
-  const [density, setDensityState] = useState<Density>(() => stored(DENSITY_KEY, ['compact', 'comfortable'] as const, 'compact'))
+  const [density, setDensityState] = useState<Density>(() => stored(DENSITY_KEY, ['compact', 'comfortable'] as const, canManage ? 'compact' : 'comfortable'))
   const setLayout = (v: Layout) => { setLayoutState(v); store(LAYOUT_KEY, v) }
   const setDensity = (v: Density) => { setDensityState(v); store(DENSITY_KEY, v) }
   const compact = density === 'compact' && !narrow
@@ -95,8 +115,34 @@ export default function EventsPanel() {
   const [regsFor, setRegsFor] = useState<EventRow | null>(null)
   const [room, setRoom] = useState<number | null>(null)
   const [canCheckin, setCanCheckin] = useState(false)
-  const [mine, setMine] = useState<Set<string>>(new Set())
-  useEffect(() => { void myRegistrations().then((r) => setMine(new Set(r.filter((x) => x.registration_status !== 'cancelled').map((x) => x.events?.slug ?? '').filter(Boolean)))) }, [])
+  /* The member's own live registrations, by event slug. */
+  const [mine, setMine] = useState<Map<string, Registration>>(new Map())
+  const loadMine = useCallback(async () => { const r = await myRegistrations(); setMine(new Map(r.filter((x) => x.registration_status !== 'cancelled' && x.events?.slug).map((x) => [x.events!.slug!, x]))) }, [])
+  useEffect(() => { void loadMine() }, [loadMine])
+  const [cancelFor, setCancelFor] = useState<EventRow | null>(null)
+  const [requestFor, setRequestFor] = useState<EventRow | null>(null)
+  const [reason, setReason] = useState('')
+  const [sending, setSending] = useState(false)
+  /* Free if the Institute took no money for it: an RSVP, a comped seat, a free intro. */
+  const freeReg = (r: Registration | undefined) => !!r && (r.payment_status === 'free' || !r.price_paid_cents)
+  const onCancelRsvp = async (e: EventRow) => {
+    const r = mine.get(e.slug ?? ''); if (!r?.id) return
+    setSending(true)
+    const x = await cancelMyRegistration(r.id)
+    setSending(false); setCancelFor(null)
+    if (x.error) return toast('Your RSVP could not be canceled just now. Please try again, or contact us.')
+    setOpen(null); await Promise.all([loadMine(), load()]); toast('Your RSVP is canceled.')
+  }
+  const onRequestCancel = async (e: EventRow) => {
+    const p = access.person
+    const name = [p?.first_name, p?.last_name].filter(Boolean).join(' ') || 'A member'
+    const email = p?.email ?? ''
+    setSending(true)
+    const x = await requestCancellation({ name, email, eventTitle: e.title, reason: reason.trim() })
+    setSending(false)
+    if (x.error) return toast('Your request could not be sent just now. Please try again, or contact us.')
+    setRequestFor(null); setReason(''); setOpen(null); toast('Request sent. The Institute will be in touch.')
+  }
   /* The database still knows an admin who is viewing as a member, so the
    * check-in desk is hidden here rather than by its own permission check. */
   useEffect(() => { if (viewingAsMember) { setCanCheckin(false); return } void canManageRsvps().then(setCanCheckin) }, [viewingAsMember])
@@ -104,10 +150,11 @@ export default function EventsPanel() {
   const load = useCallback(async () => {
     const r = await listEvents()
     setError(r.error ? `The events could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
-    /* The database still shows an admin viewing as a member every draft;
-     * a member only ever sees published events. */
-    setRows(viewingAsMember ? r.rows.filter((e) => e.status === 'published') : r.rows); setLoading(false)
-  }, [viewingAsMember])
+    /* The database still shows an admin viewing as a member every draft; a
+     * member only ever sees published events, and never a leadership- or
+     * board-only meeting (those marked for all members show date only). */
+    setRows(canManage ? r.rows : r.rows.filter((e) => e.status === 'published' && e.visibility !== 'leadership' && e.visibility !== 'board')); setLoading(false)
+  }, [canManage])
   useEffect(() => { void load() }, [load])
   useEffect(() => { if (canManage) { void loadVenues().then(setVenues); void loadCommittees().then(setCommittees) } }, [canManage])
 
@@ -117,17 +164,19 @@ export default function EventsPanel() {
     const up = (pick: (e: EventRow) => boolean) => rows.filter((e) => pick(e) && !isPast(e)).length
     const gone = (pick: (e: EventRow) => boolean) => `${rows.filter((e) => pick(e) && isPast(e)).length} past`
     const draft = (e: EventRow) => e.status !== 'published'
+    const reg = (e: EventRow) => mine.has(e.slug ?? '')
     return {
-      counts: { upcoming: up(() => true), past: rows.filter((e) => isPast(e)).length, seminars: up((e) => !isGov(e)), gov: up(isGov), drafts: up(draft) } as Record<Tab, number>,
-      split: { seminars: gone((e) => !isGov(e)), gov: gone(isGov), drafts: gone(draft) } as Partial<Record<Tab, string>>,
+      counts: { upcoming: up(() => true), registered: up(reg), past: rows.filter((e) => isPast(e)).length, seminars: up((e) => !isGov(e)), gov: up(isGov), drafts: up(draft) } as Record<Tab, number>,
+      split: { registered: gone(reg), seminars: gone((e) => !isGov(e)), gov: gone(isGov), drafts: gone(draft) } as Partial<Record<Tab, string>>,
     }
-  }, [rows])
+  }, [rows, mine])
 
   const list = useMemo(() => {
     const t = q.trim().toLowerCase()
     return rows.filter((e) => {
       if (tab === 'upcoming' && isPast(e)) return false
       if (tab === 'past' && !isPast(e)) return false
+      if (tab === 'registered' && !mine.has(e.slug ?? '')) return false
       if (tab === 'seminars' && isGov(e)) return false
       if (tab === 'gov' && !isGov(e)) return false
       if (tab === 'drafts' && e.status === 'published') return false
@@ -173,8 +222,9 @@ export default function EventsPanel() {
       <article key={e.id} className={`evt${isPast(e) ? ' past' : ''}${e.status !== 'published' ? ' draft' : ''}`} tabIndex={0} role="button" aria-label={`Open ${e.title}`}
         onClick={() => setOpen(e.id)} onKeyDown={(k) => { if ((k.key === 'Enter' || k.key === ' ') && k.target === k.currentTarget) { k.preventDefault(); setOpen(e.id) } }}>
         <div className="dt"><span className="mo">{d.mo}</span><span className="dy">{d.dy}</span><span className="yr">{d.yr}</span>{d.tm && <span className="tm">{d.tm}</span>}</div>
-        <div className="ti"><h4>{e.title}</h4>{e.subtitle && <div className="st">{e.subtitle}</div>}{where && <div className="lc">{where}</div>}<Chips e={e} /></div>
+        <div className="ti"><h4>{e.title}</h4>{e.subtitle && <div className="st">{e.subtitle}</div>}{d.range && <div className="lc">{d.range}</div>}{where && <div className="lc">{where}</div>}{canManage ? <Chips e={e} /> : <MemberChips e={e} registered={mine.has(e.slug ?? '')} />}</div>
         <div className="ac" onClick={(k) => k.stopPropagation()}>
+          {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <a className="b p-btn xs" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a>}
           {canManage && <>
             <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(e)}>Edit</button>
             <button type="button" className="b s-btn on-light xs" onClick={() => void onDuplicate(e)}>Duplicate</button>
@@ -200,8 +250,9 @@ export default function EventsPanel() {
         <span className="t">{d.tm || '—'}</span>
         <span className="n" title={e.title}>{e.title}</span>
         <span className="w" title={where ?? ''}>{where || '—'}</span>
-        <span className="g">{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</span>
+        <span className="g">{canManage ? <>{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</> : mine.has(e.slug ?? '') ? <Pill kind="ok">Registered</Pill> : !isGov(e) && soldOut(e) ? <Pill kind="bad">Sold out</Pill> : null}</span>
         <span className="ac" onClick={(k) => k.stopPropagation()}>
+          {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <a className="b p-btn xs" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a>}
           {canManage && <>
             <button type="button" className="evt-ic" title="Edit" aria-label={`Edit ${e.title}`} onClick={() => setEdit(e)}>{IC.edit}</button>
             <button type="button" className="evt-ic" title="Duplicate" aria-label={`Duplicate ${e.title}`} onClick={() => void onDuplicate(e)}>{IC.copy}</button>
@@ -219,11 +270,11 @@ export default function EventsPanel() {
   return (
     <>
       <div className="cert-head">
-        <div><h1>Events</h1><div className="ma-sub" style={{ marginBottom: 0, maxWidth: '80ch' }}>Every seminar, course, conference, board meeting, committee sync and deadline — one list, in date order. Click a card for the full details.</div></div>
-        <div className="cert-actions">{canManage && <button type="button" className="b p-btn sm" onClick={() => setEdit('new')}>+ Create event</button>}<button type="button" className="b s-btn on-light sm" onClick={exportCsv}>↓ Export CSV</button></div>
+        <div><h1>Events</h1><div className="ma-sub" style={{ marginBottom: 0, maxWidth: '80ch' }}>{canManage ? 'Every seminar, course, conference, board meeting, committee sync and deadline — one list, in date order. Click a card for the full details.' : 'Your events — RSVP, register, and see what’s coming. Click one for the details.'}</div></div>
+        {canManage && <div className="cert-actions"><button type="button" className="b p-btn sm" onClick={() => setEdit('new')}>+ Create event</button><button type="button" className="b s-btn on-light sm" onClick={exportCsv}>↓ Export CSV</button></div>}
       </div>
       {error && <div className="cert-err" role="alert">{error}</div>}
-      <div className="cert-tiles">{TABS.map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b><i>{split[k] ?? ' '}</i></button>)}</div>
+      <div className={`cert-tiles${canManage ? '' : ' three'}`}>{(canManage ? TABS : MEMBER_TABS).map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b><i>{split[k] ?? ' '}</i></button>)}</div>
       <div className="cert-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input type="text" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setQ('')} autoComplete="off" placeholder="Search by title, venue, category, speaker…" aria-label="Search events" />
@@ -236,13 +287,30 @@ export default function EventsPanel() {
         ? <>{upcoming.length > 0 && <><div className="evt-grp">Upcoming</div>{compact ? table(upcoming) : upcoming.map(card)}</>}{past.length > 0 && <><div className="evt-grp">Past</div>{compact ? table(past) : past.map(card)}</>}</>
         : Object.keys(months).sort().map((k) => <div key={k}><div className="evt-grp">{MONL[months[k]!.m]} {months[k]!.y}</div>{compact ? table(months[k]!.items) : months[k]!.items.map(card)}</div>)}
 
-      {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} onCheckin={canCheckin ? () => { setOpen(null); setRoom(current.id) } : undefined} attending={mine.has(current.slug ?? '')} />}
+      {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} onCheckin={canCheckin ? () => { setOpen(null); setRoom(current.id) } : undefined} attending={mine.has(current.slug ?? '')} onCancelRsvp={!canManage && !isPast(current) && freeReg(mine.get(current.slug ?? '')) ? () => setCancelFor(current) : undefined} onRequestCancel={!canManage && !isPast(current) && mine.has(current.slug ?? '') && !freeReg(mine.get(current.slug ?? '')) ? () => setRequestFor(current) : undefined} />}
       {edit && <FormDialog e={edit === 'new' ? null : edit} venues={venues} committees={committees} meId={meId} onClose={() => setEdit(null)} onSaved={async (m) => { setEdit(null); await load(); toast(m) }} onRemove={(e) => { setEdit(null); setConfirm(e) }} />}
       {confirm && (
         <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setConfirm(null)}>
           <div className="cert-modal" role="dialog" aria-modal="true">
             <div className="mh"><div><h3>Remove “{confirm.title}”?</h3><p>{activeRegs(confirm).length > 0 ? `${activeRegs(confirm).length} registration${activeRegs(confirm).length > 1 ? 's' : ''} will be deleted with it. Consider unpublishing instead.` : 'This deletes the event with its speakers and sessions.'}</p></div><button type="button" className="x" aria-label="Close" onClick={() => setConfirm(null)}>×</button></div>
             <div className="mf">{confirm.status === 'published' && <button type="button" className="b s-btn on-light sm" onClick={() => void onUnpublish(confirm)}>Unpublish instead</button>}<button type="button" className="b s-btn on-light sm" onClick={() => setConfirm(null)}>Keep</button><button type="button" className="b dgr sm" onClick={() => void onRemove(confirm)}>Remove</button></div>
+          </div>
+        </div>
+      )}
+      {cancelFor && (
+        <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setCancelFor(null)}>
+          <div className="cert-modal" role="dialog" aria-modal="true">
+            <div className="mh"><div><h3>Cancel your RSVP for “{cancelFor.title}”?</h3><p>Your seat opens up for another member. You can RSVP again any time before it starts.</p></div><button type="button" className="x" aria-label="Close" onClick={() => setCancelFor(null)}>×</button></div>
+            <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={() => setCancelFor(null)}>Keep my RSVP</button><button type="button" className="b dgr sm" disabled={sending} onClick={() => void onCancelRsvp(cancelFor)}>{sending ? 'Canceling…' : 'Cancel RSVP'}</button></div>
+          </div>
+        </div>
+      )}
+      {requestFor && (
+        <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setRequestFor(null)}>
+          <div className="cert-modal" role="dialog" aria-modal="true">
+            <div className="mh"><div><h3>Request a cancellation</h3><p>Paid registrations are canceled by the Institute, which will reply about any refund. Tell us anything that helps (optional).</p></div><button type="button" className="x" aria-label="Close" onClick={() => setRequestFor(null)}>×</button></div>
+            <div className="mb"><textarea className="fi" rows={4} value={reason} onChange={(ev) => setReason(ev.target.value)} placeholder={`Why you’re canceling ${requestFor.title}, or a seminar you’d rather attend instead`} style={{ width: '100%', resize: 'vertical' }} /></div>
+            <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={() => setRequestFor(null)}>Never mind</button><button type="button" className="b p-btn sm" disabled={sending} onClick={() => void onRequestCancel(requestFor)}>{sending ? 'Sending…' : 'Send request'}</button></div>
           </div>
         </div>
       )}
@@ -254,11 +322,12 @@ export default function EventsPanel() {
 
 /* --------------------------------------------------------------- detail -- */
 
-function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCheckin, attending }: { e: EventRow; canManage: boolean; onClose: () => void; onEdit: () => void; onDuplicate: () => void; onRegs: () => void; onCheckin?: () => void; attending: boolean }) {
+function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCheckin, attending, onCancelRsvp, onRequestCancel }: { e: EventRow; canManage: boolean; onClose: () => void; onEdit: () => void; onDuplicate: () => void; onRegs: () => void; onCheckin?: () => void; attending: boolean; onCancelRsvp?: () => void; onRequestCancel?: () => void }) {
   const { access } = useAccess()
   const register = useRegistration()
   const regKey = useRegKey()(e.status === 'published' ? e.slug : null)
   const rsvp = access.tier === 'member' && e.free_with_membership
+  const hasPage = Boolean(e.slug && SLUG_TO_SEMINAR[e.slug])
   useEffect(() => { const k = (ev: KeyboardEvent) => ev.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const gov = isGov(e)
   const regs = activeRegs(e)
@@ -272,11 +341,11 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
   return (
     <div className="cert-veil" onClick={(ev) => ev.target === ev.currentTarget && onClose()}>
       <div className="cert-modal evt-detail cc" role="dialog" aria-modal="true">
-        <div className="evt-hero">{e.primary_image ? <img src={e.primary_image} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} /> : null}<div className="ph">{gov ? typeLabel(e.event_type) : catLabel(e.category)}{!e.primary_image && ' · no hero image yet'}</div><button type="button" className="xh" aria-label="Close" onClick={onClose}>×</button></div>
+        <div className="evt-hero">{e.primary_image ? <img src={e.primary_image} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} /> : null}<div className="ph">{gov ? typeLabel(e.event_type) : catLabel(e.category)}{!e.primary_image && canManage && ' · no hero image yet'}</div><button type="button" className="xh" aria-label="Close" onClick={onClose}>×</button></div>
         <div className="evt-dh"><Chips e={e} /><h3>{e.title}</h3>{e.subtitle && <div className="st">{e.subtitle}</div>}</div>
         <div className="evt-dsec">
           <div className="sec">When</div>
-          <div className="kv">{kv('Dates', whenText(e))}{e.audience && kv('Audience', e.audience)}{rw && kv('Registration', rw)}{!gov && kv('Seats', e.capacity ? `${Math.max(0, e.capacity - regs.length)} of ${e.capacity} seats remaining` : 'No cap set')}</div>
+          <div className="kv">{kv('Dates', whenText(e))}{e.audience && kv('Audience', e.audience)}{rw && kv('Registration', rw)}{!gov && canManage && kv('Seats', e.capacity ? `${Math.max(0, e.capacity - regs.length)} of ${e.capacity} seats remaining` : 'No cap set')}{!gov && !canManage && soldOut(e) && kv('Seats', 'Sold out')}</div>
           <div className="sec">Where</div>
           {v ? <div className="kv">{kv('Venue', <><b>{v.name}</b><br />{[v.address, [v.city, v.state].filter(Boolean).join(', ')].filter(Boolean).join(', ')}{(v.address || v.city) && <><br /><a href={`https://maps.google.com/?q=${encodeURIComponent([v.name, v.address, v.city, v.state].filter(Boolean).join(', '))}`} target="_blank" rel="noreferrer">Open in maps</a></>}</>)}{e.location && e.location !== v.name && kv('Notes', e.location)}</div>
             : <div className="kv">{kv('Location', e.location || 'To be announced')}</div>}
@@ -300,12 +369,13 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
           {e.refund_policy && <><div className="sec">Refund policy</div><p>{e.refund_policy}</p></>}
           {e.video_url && <div className="kv" style={{ marginTop: 6 }}>{kv('Video', <a href={e.video_url} target="_blank" rel="noreferrer">{e.video_url}</a>)}</div>}
           {(e.gallery_images?.length ?? 0) > 0 && <><div className="sec">Gallery</div><div className="evt-gal">{e.gallery_images!.map((u, i) => <img key={i} src={u} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} />)}</div></>}
-          <div className="sec">Public page</div>
-          <div className="kv">{kv('URL', e.status === 'published' ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div>
+          {(canManage || hasPage) && <><div className="sec">Public page</div>
+          <div className="kv">{kv('URL', e.status === 'published' && hasPage ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : e.status === 'published' ? <span className="muted" style={{ margin: 0 }}>No page on the site for this slug yet · /seminars/{e.slug}</span> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div></>}
+          {!gov && !attending && !regKey && e.status === 'published' && !isPast(e) && <><div className="sec">How to register</div><p className="muted">Registration for this event is handled by the Institute. <a href="/contact">Contact us</a> and we’ll sign you up.</p></>}
         </div>
         <div className="mf evt-foot">
           <div className="r">{attending ? (e.zoom_url ? <a className="b p-btn sm" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a> : <span className="muted">✓ You’re attending</span>) : regKey && <button type="button" className="b p-btn sm" onClick={() => { onClose(); register(regKey) }}>{rsvp ? 'RSVP — Free with Membership' : 'Register'}</button>}{!gov && onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations ({regs.length})</button>}</div>
-          <div className="r">{canManage && <><button type="button" className="b s-btn on-light sm" onClick={onEdit}>Edit</button><button type="button" className="b s-btn on-light sm" onClick={onDuplicate}>Duplicate</button></>}<button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
+          <div className="r">{canManage && <><button type="button" className="b s-btn on-light sm" onClick={onEdit}>Edit</button><button type="button" className="b s-btn on-light sm" onClick={onDuplicate}>Duplicate</button></>}{attending && onCancelRsvp && <button type="button" className="b s-btn on-light sm" onClick={onCancelRsvp}>Cancel my RSVP</button>}{attending && onRequestCancel && <button type="button" className="b s-btn on-light sm" onClick={onRequestCancel}>Request a cancellation</button>}<button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
         </div>
       </div>
     </div>
