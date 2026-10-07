@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from '@/lib/router'
+import { refundLine } from '@/lib/refund'
 import { SEMINARS, SLUG_TO_SEMINAR } from '@/content/seminars'
 import type { Seminar } from '@/content/seminars'
 import { PEOPLE, HEADSHOTS } from '@/content/people'
@@ -797,6 +798,7 @@ export default function SeminarPage({ param }: { param?: string }) {
           </div>
         </div>
         {s.ruleNote && <p className="rulenote">{s.ruleNote}</p>}
+        {s.cat !== 'free' && s.cat !== 'internship' && s.fullPrice > 0 && <p className="rulenote">{refundLine(overlay?.event?.starts_at)}</p>}
 
         <div className="memberbar">
           <div>

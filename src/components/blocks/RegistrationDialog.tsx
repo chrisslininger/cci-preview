@@ -21,6 +21,7 @@ import {
 } from 'react'
 import type { ReactNode } from 'react'
 import { useNavigate } from '@/lib/router'
+import { refundLine } from '@/lib/refund'
 import { SEMINARS } from '@/content/seminars'
 import { session, select, invoke } from '@/lib/supabase'
 import { useCatalog } from '@/lib/queries/CatalogProvider'
@@ -548,6 +549,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                   {(!rsvpMode || wantCE) && (
                     <p className="reg-fineprint">
                       Payments are processed by Stripe. Card details never touch this site.
+                      {!rsvpMode && <> {refundLine(overlay?.event?.starts_at)}</>}
                     </p>
                   )}
                 </form>

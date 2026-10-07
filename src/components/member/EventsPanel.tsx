@@ -15,6 +15,7 @@ import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { myRegistrations, cancelMyRegistration, requestCancellation } from '@/lib/queries/member'
 import type { Registration } from '@/lib/queries/member'
 import { SLUG_TO_SEMINAR } from '@/content/seminars'
+import { refundable, refundLine } from '@/lib/refund'
 import CheckinRoom from './CheckinRoom'
 import { useToast } from '@/components/ui/Toast'
 import {
@@ -308,7 +309,7 @@ export default function EventsPanel() {
       {requestFor && (
         <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setRequestFor(null)}>
           <div className="cert-modal" role="dialog" aria-modal="true">
-            <div className="mh"><div><h3>Request a cancellation</h3><p>Paid registrations are canceled by the Institute, which will reply about any refund. Tell us anything that helps (optional).</p></div><button type="button" className="x" aria-label="Close" onClick={() => setRequestFor(null)}>×</button></div>
+            <div className="mh"><div><h3>Request a cancellation</h3><p>{refundable(requestFor.starts_at) === true ? 'You are more than 30 days out, so your registration is refunded in full. ' : refundable(requestFor.starts_at) === false ? `The seminar is less than 30 days away, so a refund is at the Institute’s discretion. ` : ''}The Institute will cancel the seat and reply about the refund. Tell us anything that helps (optional).</p></div><button type="button" className="x" aria-label="Close" onClick={() => setRequestFor(null)}>×</button></div>
             <div className="mb"><textarea className="fi" rows={4} value={reason} onChange={(ev) => setReason(ev.target.value)} placeholder={`Why you’re canceling ${requestFor.title}, or a seminar you’d rather attend instead`} style={{ width: '100%', resize: 'vertical' }} /></div>
             <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={() => setRequestFor(null)}>Never mind</button><button type="button" className="b p-btn sm" disabled={sending} onClick={() => void onRequestCancel(requestFor)}>{sending ? 'Sending…' : 'Send request'}</button></div>
           </div>
@@ -366,7 +367,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
             {e.faculty_free && <div className="p"><small>Faculty</small><b>FREE</b><i>college faculty attend free</i></div>}
           </div></>}
           {!gov && <><div className="sec">CE credits</div>{e.ce_credits ? <div className="kv">{kv('CE credits', `Yes${e.ce_mode ? ` · ${e.ce_mode === 'addon' ? 'paid add-on' : e.ce_mode}` : ''}${e.ce_price != null ? ` · ${money(e.ce_price)}` : ''}`)}{e.ce_school && kv('Sponsoring school', e.ce_school)}</div> : <p className="muted">No CE credits offered.</p>}</>}
-          {e.refund_policy && <><div className="sec">Refund policy</div><p>{e.refund_policy}</p></>}
+          {!gov && (e.refund_policy || (!e.free_with_membership && money(e.price))) && <><div className="sec">Refund policy</div><p>{refundLine(e.starts_at, e.refund_policy)}</p></>}
           {e.video_url && <div className="kv" style={{ marginTop: 6 }}>{kv('Video', <a href={e.video_url} target="_blank" rel="noreferrer">{e.video_url}</a>)}</div>}
           {(e.gallery_images?.length ?? 0) > 0 && <><div className="sec">Gallery</div><div className="evt-gal">{e.gallery_images!.map((u, i) => <img key={i} src={u} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} />)}</div></>}
           {(canManage || hasPage) && <><div className="sec">Public page</div>
