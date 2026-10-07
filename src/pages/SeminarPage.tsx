@@ -77,8 +77,12 @@ export default function SeminarPage({ param }: { param?: string }) {
   const openBio = useBio()
   const register = useRegistration()
   const toast = useToast()
-  const { access, signedIn } = useAccess()
+  const { access, signedIn, loading } = useAccess()
   const catalog = useCatalog()
+  /* The page is prerendered signed out, so the first client render has to match
+   * it; `mounted` flips after that frame (the same guard the header uses). */
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   const [agendaDay, setAgendaDay] = useState(0)
   const [presenter, setPresenter] = useState<string | null>(null)
   /* On phones the agenda folds behind a button; computers always show it. */
@@ -122,6 +126,10 @@ export default function SeminarPage({ param }: { param?: string }) {
   const overlay = key ? catalog.byKey[key] : undefined
   const freeWithMembership = overlay?.event?.free_with_membership === true || (!catalog.synced && seminar?.memPrice === 0 && (seminar?.fullPrice ?? 0) > 0)
   const rsvpMode = signedIn && access.tier === 'member' && freeWithMembership
+  /* A signed-in visitor whose membership has not come back yet: hold the
+   * non-member prices out of sight so a member never sees them flip to RSVP. */
+  const checking = mounted && signedIn && loading
+  const soldOut = overlay?.soldOut === true
   useEffect(() => {
     if (!signedIn || !overlay?.event?.slug) { setAttending(null); return }
     let cancelled = false
@@ -276,9 +284,10 @@ export default function SeminarPage({ param }: { param?: string }) {
                   const soon = x.reg ? live?.open !== true : x.soon
                   const membersOnly = x.members === true && !(signedIn && access.tier === 'member')
                   const flag = live?.seatFlag ?? x.flag
+                  const full = live?.soldOut === true
                   return (
                   <div className={`sess${soon ? ' soon' : ''}`} key={`${x.city}-${i}`}>
-                    {flag && <span className="flag">{flag}</span>}
+                    {flag && <span className={`flag${full ? ' sold' : ''}`}>{flag}</span>}
                     <div className="top">
                       <div className="cal">
                         <div className="mo">{x.mo}</div>
@@ -347,6 +356,10 @@ export default function SeminarPage({ param }: { param?: string }) {
                       ) : x.apply ? (
                         <Link className="b sm p-btn" to="/contact">
                           Apply Now
+                        </Link>
+                      ) : full && !attending ? (
+                        <Link className="b sm s-btn on-light" to="/contact">
+                          Sold out — join the waiting list
                         </Link>
                       ) : membersOnly ? (
                         <Link className="b sm s-btn on-light" to="/membership">
@@ -448,8 +461,10 @@ export default function SeminarPage({ param }: { param?: string }) {
                   <span>{attending ? 'Your RSVP is confirmed. Details and reminders will follow as the date approaches.' : 'RSVP for yourself below. The only optional charge is the CE credit certificate.'}</span>
                 </div>
               )}
-              <div className="rb-tiers" style={rsvpMode ? { opacity: .55 } : undefined}>
-                {s.regBand.tiers.map((tier) => (
+              {/* A member sees only their own card; while membership is still
+               * being checked the cards keep their space but stay out of sight. */}
+              <div className={`rb-tiers${checking ? ' checking' : ''}`}>
+                {(rsvpMode ? s.regBand.tiers.filter((tier) => tier.member) : s.regBand.tiers).map((tier) => (
                   <div className={`rt${tier.hi ? ' hi' : ''}`} key={tier.k}>
                     {tier.flag && <span className="rt-flag">{tier.flag}</span>}
                     <div className="rt-k">{tier.k}</div>
@@ -459,10 +474,16 @@ export default function SeminarPage({ param }: { param?: string }) {
                 ))}
               </div>
               <div className="rb-go">
-                <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending)}>
-                  {regLabel(s.regBand.btn ?? 'Register Now')}
-                </button>
-                {!rsvpMode && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
+                {soldOut && !attending ? (
+                  <Link className="b lg s-btn on-dark" to="/contact">
+                    Sold out — join the waiting list
+                  </Link>
+                ) : (
+                  <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending)}>
+                    {regLabel(s.regBand.btn ?? 'Register Now')}
+                  </button>
+                )}
+                {!rsvpMode && !checking && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
               </div>
             </div>
           </div>

@@ -41,6 +41,8 @@ export type SeminarTier = {
   n: string
   hi?: boolean
   flag?: string
+  /** The tier a signed-in member is in; the only card shown once they RSVP. */
+  member?: boolean
 }
 
 export type RegBand = {
@@ -309,7 +311,7 @@ export const SEMINARS = {
       sub:'November 6–7, 2026 · 8:00 AM–6:00 PM both days · Pierce Clinic of Chiropractic, St. Petersburg, FL · 14 CE hours through Sherman College of Chiropractic.',
       btn:'Register for the Conference',
       tiers:[
-        {k:'AOI Member',p:'INCLUDED',n:'Part of your membership. Sign in when you register and the fee is waived. Add CE credit for $50.',hi:true},
+        {k:'AOI Member',p:'INCLUDED',n:'Part of your membership. Sign in when you register and the fee is waived. Add CE credit for $50.',hi:true,member:true},
         {k:'Doctor',p:'$797',n:'Practicing chiropractors and everyone outside the other tiers.'},
         {k:'Student',p:'$347',n:'Currently enrolled chiropractic students.'},
         {k:'College Faculty',p:'FREE',n:'Faculty of chiropractic colleges. Register as faculty and the Institute confirms your seat.',hi:true}
