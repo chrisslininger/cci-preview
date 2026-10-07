@@ -150,9 +150,9 @@ function EditDialog({ p, onClose, onSaved }: { p: Member | null; onClose: () => 
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setV((s) => ({ ...s, [k]: e.target.value }))
   async function save() {
-    setErr(null); if (!v.first_name.trim() || !v.last_name.trim()) { setErr('First and last name are required.'); return }
+    setErr(null); if (!v.first_name?.trim() || !v.last_name?.trim()) { setErr('First and last name are required.'); return }
     const dead = v.status === 'deceased'
-    const prof: Profile = { first_name: v.first_name.trim(), last_name: v.last_name.trim(), credentials: v.credentials || null, contact_type: v.contact_type, email: v.email || null, mobile_phone: v.mobile_phone || null, office_phone: v.office_phone || null, practice_website: v.practice_website || null, practice_name: v.practice_name || null, practice_address: v.practice_address || null, techniques: v.techniques.split(',').map((s) => s.trim()).filter(Boolean), member_since: v.member_since || null, membership_expires: v.membership_expires || null, deceased_on: dead ? (v.deceased_on || new Date().toISOString().slice(0, 10)) : null }
+    const prof: Profile = { first_name: v.first_name!.trim(), last_name: v.last_name!.trim(), credentials: v.credentials || null, contact_type: v.contact_type, email: v.email || null, mobile_phone: v.mobile_phone || null, office_phone: v.office_phone || null, practice_website: v.practice_website || null, practice_name: v.practice_name || null, practice_address: v.practice_address || null, techniques: (v.techniques ?? '').split(',').map((s) => s.trim()).filter(Boolean), member_since: v.member_since || null, membership_expires: v.membership_expires || null, deceased_on: dead ? (v.deceased_on || new Date().toISOString().slice(0, 10)) : null }
     if (!dead) prof.membership_status = v.status
     setSaving(true); const r = p ? await saveProfile(p.id, prof) : await createMember(prof); setSaving(false)
     if (r.error) { setErr('The database refused the change: ' + r.error.slice(0, 160)); return }

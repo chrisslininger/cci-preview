@@ -37,9 +37,6 @@ import ControlPanel from './ControlPanel'
 const date = (iso?: string | null) =>
   iso ? new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
 
-const money = (cents?: number) =>
-  cents === undefined || cents === null ? '—' : `$${(Math.round(cents) / 100).toLocaleString()}`
-
 function Row({ title, detail, right }: { title: string; detail: string; right?: React.ReactNode }) {
   return (
     <div className="ma-row">
