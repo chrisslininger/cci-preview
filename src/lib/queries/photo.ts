@@ -36,21 +36,35 @@ async function setMyPhoto(url: string | null): Promise<{ ok?: true; missing?: tr
   return missingFn(res.status, text) ? { missing: true } : { error: text }
 }
 
-export async function uploadMyPhoto(file: File): Promise<{ url?: string; missing?: true; error?: string }> {
-  await ensureSession()
-  const uid = session.user?.id
-  if (!uid) return { error: 'signed out' }
+/** Squares, shrinks and stores a picture under `folder/avatar.jpg`; returns its public address. */
+async function putPhoto(folder: string, file: File): Promise<{ url?: string; missing?: true; error?: string }> {
   let blob: Blob
   try { blob = await squareJpeg(file) } catch { return { error: 'That file could not be read as a picture. Try a JPG or PNG.' } }
-  const path = `${uid}/avatar.jpg`
+  const path = `${folder}/avatar.jpg`
   const res = await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
     method: 'POST', headers: { ...headers(), 'Content-Type': 'image/jpeg', 'x-upsert': 'true' }, body: blob,
   })
   if (!res.ok) { const t = await res.text(); return missingFn(res.status, t) ? { missing: true } : { error: t } }
   // A version stamp so the browser shows the new picture, not the cached old one.
-  const url = `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}?v=${Date.now()}`
-  const r = await setMyPhoto(url)
-  return r.ok ? { url } : r
+  return { url: `${SB_URL}/storage/v1/object/public/${BUCKET}/${path}?v=${Date.now()}` }
+}
+
+/** The signed-in member's own photo: stored under their auth id, saved through set_my_photo. */
+export async function uploadMyPhoto(file: File): Promise<{ url?: string; missing?: true; error?: string }> {
+  await ensureSession()
+  const uid = session.user?.id
+  if (!uid) return { error: 'signed out' }
+  const up = await putPhoto(uid, file)
+  if (!up.url) return up
+  const r = await setMyPhoto(up.url)
+  return r.ok ? { url: up.url } : r
+}
+
+/** A manager adds a photo to someone else's record: stored under that person's
+ * id; the caller writes the address into people.photo_url with its normal save. */
+export async function uploadPhotoFor(personId: string, file: File): Promise<{ url?: string; missing?: true; error?: string }> {
+  await ensureSession()
+  return putPhoto(`people/${personId}`, file)
 }
 
 export async function removeMyPhoto(): Promise<{ ok?: true; missing?: true; error?: string }> {

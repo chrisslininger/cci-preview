@@ -12,7 +12,6 @@ import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { myRegistrations, upcomingEvents, myCompletions, eventZoom } from '@/lib/queries/member'
 import type { Registration, PublicEvent, Completion } from '@/lib/queries/member'
 import { RoleChips } from './MemberShell'
-import PhotoCard from './PhotoCard'
 import { TIER_LABEL } from '@/lib/access'
 
 function daysUntil(iso?: string | null): number | null {
@@ -195,7 +194,6 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
           : 'Your account is active. Membership unlocks the rest.'}
       </div>
       <RoleChips />
-      <PhotoCard />
 
       <div className="ma-grid" style={{ marginTop: '22px' }}>
         {cards.map((card) => (
