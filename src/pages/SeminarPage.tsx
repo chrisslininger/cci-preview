@@ -3,7 +3,7 @@ import { Link, useParams } from '@/lib/router'
 import { SEMINARS, SLUG_TO_SEMINAR } from '@/content/seminars'
 import type { Seminar } from '@/content/seminars'
 import { PEOPLE, HEADSHOTS } from '@/content/people'
-import { Avatar, SpeakerPill, useBio } from '@/components/blocks/BioDialog'
+import { SpeakerPill, useBio } from '@/components/blocks/BioDialog'
 import SeminarCard from '@/components/blocks/SeminarCard'
 import { StoryGoals, StoryProblem, StorySolution, StoryWhy, StoryBenefits, StoryData, StorySteps, StoryVoices, StoryFit, StoryFaq } from '@/components/blocks/SeminarStory'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
@@ -327,7 +327,7 @@ export default function SeminarPage({ param }: { param?: string }) {
                       </div>
                       <div className="seats">
                         <b>{soon ? x.seats : (live?.seats ?? x.seats)}</b>
-                        <span>{soon ? 'OPENING SOON' : 'UPDATED WEEKLY'}</span>
+                        <span>{soon ? 'OPENING SOON' : catalog.synced && live?.seats ? 'LIVE SEAT COUNT' : 'UPDATED WEEKLY'}</span>
                       </div>
                     </div>
                     <div className="bot">
@@ -577,7 +577,7 @@ export default function SeminarPage({ param }: { param?: string }) {
             <div className="spons">
               {s.sponsors.map((x) => (
                 <a className={`spon${x.light ? ' light' : ''}`} key={x.name} href={x.url} target="_blank" rel="noopener noreferrer">
-                  <img src={`/images/${x.logo}.webp`} alt={x.name} loading="lazy" decoding="async" />
+                  <img src={`/images/${x.logo}.webp`} alt={x.name} width={x.w} height={x.h} loading="lazy" decoding="async" />
                 </a>
               ))}
             </div>

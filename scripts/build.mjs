@@ -81,7 +81,9 @@ const clientBuild = await build({
   target: ['es2022'],
   jsx: 'automatic',
   minify: true,
-  sourcemap: true,
+  // No source map in production: it would publish the full members-area source
+  // next to the bundle and double the size of dist/client/assets.
+  sourcemap: false,
   write: false,
   outfile: join(clientDir, 'assets', 'client.js'),
   define: { 'process.env.NODE_ENV': '"production"' },
@@ -89,7 +91,6 @@ const clientBuild = await build({
   loader: { '.md': 'text' },
 })
 const jsFile = clientBuild.outputFiles.find((f) => !f.path.endsWith('.map'))
-const mapFile = clientBuild.outputFiles.find((f) => f.path.endsWith('.map'))
 if (!jsFile) {
   throw new Error(
     `esbuild produced no JS output. Files: ${clientBuild.outputFiles.map((f) => f.path).join(', ')}`,
@@ -98,7 +99,6 @@ if (!jsFile) {
 const jsHash = createHash('sha256').update(jsFile.text).digest('hex').slice(0, 8)
 const jsName = `assets/client-${jsHash}.js`
 await writeFile(join(clientDir, jsName), jsFile.text, 'utf-8')
-if (mapFile) await writeFile(join(clientDir, `${jsName}.map`), mapFile.text, 'utf-8')
 console.log(`  ${jsName}  ${(jsFile.text.length / 1024).toFixed(1)} kB`)
 
 /* ---------------------------------------------------------------- server */

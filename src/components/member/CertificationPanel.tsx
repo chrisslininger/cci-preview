@@ -230,7 +230,7 @@ function ManageDialog({ person, me, onClose, onSaved }: { person: Person | null;
     setErr(null)
     if (!chosen) { setErr('Choose a member first.'); return }
     if (level !== 'none' && !date) { setErr('An award date is required for an achieved level.'); return }
-    if (target && RANK[target] <= RANK[level]) { setErr('“Working toward” must be above the achieved level.'); return }
+    if (target && RANK[target]! <= RANK[level]!) { setErr('“Working toward” must be above the achieved level.'); return }
     setSaving(true)
     const r = await overrideCertification(chosen, level, date || null, num || null, me, (target || null) as Level | null, interest)
     setSaving(false)
@@ -306,7 +306,7 @@ function ContactCard({ person: p, reqs, me, meId, canNote, onClose, onChanged }:
           <div className="sec">Certifications</div>
           <div className="kv">
             {advo(p).length === 0 && otherCerts(p).length === 0 && <KV k="—" v="None on file" />}
-            {advo(p).sort((a, b) => RANK[b.level] - RANK[a.level]).map((c) => <KV key={c.id ?? c.level} k="Advanced Orthogonal" v={`${LEVEL_LABEL[c.level]}${c.grandfathered ? ' · Grandfathered on ' + fmt(c.cert_date) : c.cert_date ? ' · Awarded ' + fmt(c.cert_date) : ''}${c.certificate_number ? ' · Certificate #' + c.certificate_number : ''}${c.certified_by && !c.grandfathered ? ' · ' + c.certified_by : ''}`} />)}
+            {advo(p).sort((a, b) => RANK[b.level]! - RANK[a.level]!).map((c) => <KV key={c.id ?? c.level} k="Advanced Orthogonal" v={`${LEVEL_LABEL[c.level]}${c.grandfathered ? ' · Grandfathered on ' + fmt(c.cert_date) : c.cert_date ? ' · Awarded ' + fmt(c.cert_date) : ''}${c.certificate_number ? ' · Certificate #' + c.certificate_number : ''}${c.certified_by && !c.grandfathered ? ' · ' + c.certified_by : ''}`} />)}
             {otherCerts(p).map((o) => <KV key={o.technique} k={o.technique} v={o.level === 'board_certification' ? 'Board Certified' : 'Certified'} />)}
             {prog && <KV k="In progress" v={`Working toward ${LEVEL_LABEL[p.target_cert_level!]} · ${prog.done.size}/${prog.list.length} criteria`} />}
           </div>
