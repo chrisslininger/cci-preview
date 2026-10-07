@@ -4,7 +4,11 @@
  * Four steps, in order:
  *   1. bundle the client                  -> dist/client/assets/client-[hash].js
  *   2. bundle the server renderer         -> dist/server/entry-server.js
- *   3. render every public route to disk  -> dist/client/<route>/index.html
+ *   3. render every public route to disk  -> dist/client/<route>.html
+ *      (`/` alone is index.html). Cloudflare Pages serves `about.html` at
+ *      `/about` and redirects `/about/` back to it, so the served URL is the
+ *      canonical one. The old `<route>/index.html` layout did the opposite:
+ *      every canonical, sitemap entry and link was a 308 to the slash form.
  *   4. generate sitemap.xml / llms.txt / robots.txt
  *
  * Step 3 is the one that decides whether this site exists to ChatGPT, Claude
@@ -147,14 +151,15 @@ const shell = (head, html) => `<!DOCTYPE html>
 </html>
 `
 
+/** `/` -> index.html; every other route -> `<route>.html` (see the header). */
+const fileFor = (path) =>
+  path === '/' ? join(clientDir, 'index.html') : join(clientDir, `${path.replace(/^\//, '')}.html`)
+
 let written = 0
 for (const path of manifest.paths) {
   const { html, head } = render(path)
   const page = shell(head, html)
-  const outFile =
-    path === '/'
-      ? join(clientDir, 'index.html')
-      : join(clientDir, path.replace(/^\//, ''), 'index.html')
+  const outFile = fileFor(path)
   await mkdir(dirname(outFile), { recursive: true })
   await writeFile(outFile, page, 'utf-8')
   console.log(`  ${path.padEnd(52)} ${(Buffer.byteLength(page) / 1024).toFixed(1)} kB`)
@@ -164,7 +169,7 @@ for (const path of manifest.paths) {
 // Client-only routes still need a shell so a direct hit does not 404.
 for (const entry of manifest.entries.filter((e) => !e.prerender)) {
   const { head } = render(entry.path)
-  const outFile = join(clientDir, entry.path.replace(/^\//, ''), 'index.html')
+  const outFile = fileFor(entry.path)
   await mkdir(dirname(outFile), { recursive: true })
   await writeFile(outFile, shell(head, ''), 'utf-8')
   console.log(`  ${entry.path.padEnd(52)} (client-only shell)`)
