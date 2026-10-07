@@ -28,6 +28,10 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const clientDir = join(root, 'dist', 'client')
 const serverDir = join(root, 'dist', 'server')
 
+/** Today, as `YYYY-MM-DD`. Injected into both bundles as `__BUILD_DATE__`, so
+ *  `dateModified` and the sitemap's `lastmod` say when the site was built. */
+const BUILD_DATE = new Date().toISOString().slice(0, 10)
+
 /** Resolves the `@/` alias the way tsconfig paths does, trying each extension. */
 const alias = {
   name: 'alias-@',
@@ -99,7 +103,7 @@ const clientBuild = await build({
   outdir: join(clientDir, 'assets'),
   entryNames: 'client-[hash]',
   chunkNames: 'chunk-[hash]',
-  define: { 'process.env.NODE_ENV': '"production"' },
+  define: { 'process.env.NODE_ENV': '"production"', __BUILD_DATE__: JSON.stringify(BUILD_DATE) },
   plugins: [alias],
   loader: { '.md': 'text' },
 })
@@ -128,7 +132,7 @@ await build({
   target: ['node20'],
   jsx: 'automatic',
   outfile: join(serverDir, 'entry-server.js'),
-  define: { 'process.env.NODE_ENV': '"production"' },
+  define: { 'process.env.NODE_ENV': '"production"', __BUILD_DATE__: JSON.stringify(BUILD_DATE) },
   plugins: [alias],
   loader: { '.md': 'text' },
   packages: 'external',
@@ -195,7 +199,7 @@ console.log(`\n✓ ${written} routes prerendered`)
 /* ------------------------------------------------------------- SEO files */
 
 const origin = String(manifest.origin).replace(/\/$/, '')
-const today = new Date().toISOString().slice(0, 10)
+const today = BUILD_DATE
 const indexable = manifest.entries.filter((e) => e.prerender && !e.meta.noindex)
 
 await writeFile(
