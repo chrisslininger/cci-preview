@@ -2827,3 +2827,9 @@ a.othercard {
   @media (max-width:520px){
     .joinrow{grid-template-columns:1fr;gap:0}
   }
+
+/* Sign-in reliability (#103) */
+.ma-access-note { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 0 0 14px; font-size: 13px; line-height: 1.5; color: var(--color-content-tertiary); }
+.ma-access-note button { padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-weight: 600; color: var(--color-brand-primary); text-decoration: underline; text-underline-offset: 2px; }
+.ma-access-note button:hover { color: var(--color-brand-primary-deep); }
+.acctbtn.wait { cursor: default; }

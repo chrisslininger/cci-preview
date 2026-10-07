@@ -9,7 +9,7 @@
  *
  * Ported from `dbSync()` in the v4.8 build with the same precedence rules.
  * -------------------------------------------------------------------------- */
-import { SB_URL, SB_KEY } from '@/lib/supabase'
+import { SB_URL, SB_KEY, sbFetch } from '@/lib/supabase'
 import { DB_SLUG, DB_ID, REG_SLUG, SEMINARS } from '@/content/seminars'
 import { HUDDLE_SLUG } from '@/content/calendar'
 
@@ -130,7 +130,7 @@ export async function fetchCatalog(): Promise<EventCatalog> {
   const byKey: Record<string, EventOverlay> = {}
 
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/v_public_events?select=*`, {
+    const res = await sbFetch(`${SB_URL}/rest/v1/v_public_events?select=*`, {
       headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
     })
     if (!res.ok) throw new Error(`sync ${res.status}`)
