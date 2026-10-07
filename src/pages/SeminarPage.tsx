@@ -10,6 +10,7 @@ import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { useToast } from '@/components/ui/Toast'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useCatalog } from '@/lib/queries/CatalogProvider'
+import { formatPrice } from '@/lib/queries/events'
 import { myRegistrations } from '@/lib/queries/member'
 import NotFoundPage from './NotFoundPage'
 
@@ -76,7 +77,7 @@ export default function SeminarPage({ param }: { param?: string }) {
   const openBio = useBio()
   const register = useRegistration()
   const toast = useToast()
-  const { access, signedIn } = useAccess()
+  const { access, signedIn, loading } = useAccess()
   const catalog = useCatalog()
   const [agendaDay, setAgendaDay] = useState(0)
   const [presenter, setPresenter] = useState<string | null>(null)
@@ -121,6 +122,12 @@ export default function SeminarPage({ param }: { param?: string }) {
   const overlay = key ? catalog.byKey[key] : undefined
   const freeWithMembership = overlay?.event?.free_with_membership === true || (!catalog.synced && seminar?.memPrice === 0 && (seminar?.fullPrice ?? 0) > 0)
   const rsvpMode = signedIn && access.tier === 'member' && freeWithMembership
+  /* Signed in but the membership check has not answered yet: buttons and
+   * tiers stay neutral so a member never sees a price flip to free. The
+   * prerendered page has no session, so it still shows the price. */
+  const accessPending = signedIn && loading
+  /* Every seat taken on this page's own event (the conference band). */
+  const soldOut = overlay?.soldOut === true
   useEffect(() => {
     if (!signedIn || !overlay?.event?.slug) { setAttending(null); return }
     let cancelled = false
@@ -173,7 +180,7 @@ export default function SeminarPage({ param }: { param?: string }) {
   const keynote = s.keynote
   const rest = speakers.filter((id) => id !== keynote)
 
-  const regLabel = (fallback: string) => attending ? '\u2713 You\u2019re attending' : rsvpMode ? 'RSVP \u2014 Free with Membership' : fallback
+  const regLabel = (fallback: string) => attending ? '\u2713 You\u2019re attending' : accessPending ? 'Register' : soldOut ? 'Sold Out' : rsvpMode ? 'RSVP \u2014 Free with Membership' : fallback
   const onRegister = () => { if (attending) { toast('You are already on the attendee list for this event.'); return } register(key) }
 
   const scrollToRegistration = () => {
@@ -189,6 +196,7 @@ export default function SeminarPage({ param }: { param?: string }) {
    * weekend, join first, or see that it opens soon). */
   const onBottom = () => {
     if (!sessions.length && s.noSess?.act) { onRegister(); return }
+    if (s.regBand && soldOut && !attending) { scrollToRegistration(); return }
     if (s.regBand && (overlay?.open ?? true)) { onRegister(); return }
     const only = sessions.length === 1 ? sessions[0]! : null
     if (only) {
@@ -273,11 +281,12 @@ export default function SeminarPage({ param }: { param?: string }) {
                 sessions.map((x, i) => {
                   const live = x.reg ? catalog.byKey[x.reg] : undefined
                   const soon = x.reg ? live?.open !== true : x.soon
-                  const membersOnly = x.members === true && !(signedIn && access.tier === 'member')
+                  const membersOnly = x.members === true && !accessPending && !(signedIn && access.tier === 'member')
                   const flag = live?.seatFlag ?? x.flag
+                  const full = live?.soldOut === true
                   return (
                   <div className={`sess${soon ? ' soon' : ''}`} key={`${x.city}-${i}`}>
-                    {flag && <span className="flag">{flag}</span>}
+                    {flag && <span className={`flag${full ? ' out' : ''}`}>{flag}</span>}
                     <div className="top">
                       <div className="cal">
                         <div className="mo">{x.mo}</div>
@@ -351,13 +360,22 @@ export default function SeminarPage({ param }: { param?: string }) {
                         <Link className="b sm s-btn on-light" to="/membership">
                           Members Only — Join
                         </Link>
+                      ) : full && !attending ? (
+                        <>
+                          <button type="button" className="b sm p-btn out" disabled>
+                            Sold Out
+                          </button>
+                          <Link className="waitlist" to="/contact">
+                            Join the waiting list →
+                          </Link>
+                        </>
                       ) : (
                         <button
                           type="button"
                           className="b sm p-btn"
                           onClick={x.reg && x.reg !== key ? () => register(x.reg!) : onRegister}
                         >
-                          {attending ? '\u2713 Attending' : rsvpMode ? 'RSVP' : `Register — ${x.city.split(',')[0]}`}
+                          {attending ? '\u2713 Attending' : accessPending ? 'Register' : rsvpMode ? 'RSVP' : `Register — ${x.city.split(',')[0]}`}
                         </button>
                       )}
                     </div>
@@ -447,7 +465,30 @@ export default function SeminarPage({ param }: { param?: string }) {
                   <span>{attending ? 'Your RSVP is confirmed. Details and reminders will follow as the date approaches.' : 'RSVP for yourself below. The only optional charge is the CE credit certificate.'}</span>
                 </div>
               )}
-              <div className="rb-tiers" style={rsvpMode ? { opacity: .55 } : undefined}>
+              {accessPending ? (
+                /* Neutral until the membership check answers, so no price shows and then vanishes. */
+                <div className="rb-tiers one">
+                  <div className="rt pending">
+                    <div className="rt-k">One moment</div>
+                    <div className="rt-p">…</div>
+                    <div className="rt-n">Checking your membership for your price.</div>
+                  </div>
+                </div>
+              ) : rsvpMode ? (
+                <div className="rb-tiers one">
+                  <div className="rt hi">
+                    <div className="rt-k">AOI Member</div>
+                    <div className="rt-p">INCLUDED</div>
+                    <div className="rt-n">
+                      Included with your membership — nothing to pay for your seat.
+                      {overlay?.event?.ce_credits === true && formatPrice(overlay.event.ce_price)
+                        ? ` Add the CE credit certificate for ${formatPrice(overlay.event.ce_price)}.`
+                        : ''}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+              <div className="rb-tiers">
                 {s.regBand.tiers.map((tier) => (
                   <div className={`rt${tier.hi ? ' hi' : ''}`} key={tier.k}>
                     {tier.flag && <span className="rt-flag">{tier.flag}</span>}
@@ -457,11 +498,16 @@ export default function SeminarPage({ param }: { param?: string }) {
                   </div>
                 ))}
               </div>
+              )}
               <div className="rb-go">
-                <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending)}>
+                <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending) || soldOut}>
                   {regLabel(s.regBand.btn ?? 'Register Now')}
                 </button>
-                {!rsvpMode && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
+                {soldOut && !attending ? (
+                  <Link className="rb-wait" to="/contact">Join the waiting list →</Link>
+                ) : (
+                  !rsvpMode && !accessPending && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>
+                )}
               </div>
             </div>
           </div>

@@ -182,6 +182,26 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
    * membership, RSVPs for themself. The only thing they can buy is CE. */
   const freeWithMembership = overlay?.event?.free_with_membership === true || (!catalog.synced && seminar?.memPrice === 0 && (seminar?.fullPrice ?? 0) > 0)
   const rsvpMode = Boolean(session.token) && access.tier === 'member' && freeWithMembership
+  /* Every seat taken: the form gives way to the waiting list. */
+  const soldOut = overlay?.soldOut === true
+  /* Not sellable from here (unpublished, closed, or by application). Submit
+   * refuses on this same test; once the catalog has answered, the notice
+   * replaces the form so nobody fills it in first. */
+  const notOpen = !overlay?.id || overlay?.open === false
+  const showNotOpen = catalog.synced && notOpen
+  const byApplication = seminar?.cat === 'internship'
+  /* What signing in is worth on this event, for the strip above the form. */
+  const fullPrice = overlay?.fullPrice ?? seminar?.fullPrice ?? 0
+  const memberPrice = overlay?.memPrice ?? seminar?.memPrice
+  const memberSaving =
+    !freeWithMembership && fullPrice > 0 && memberPrice !== undefined && memberPrice >= 0
+      ? fullPrice - memberPrice
+      : 0
+  const stripText = freeWithMembership
+    ? 'Included with membership — sign in to RSVP'
+    : memberSaving > 0
+      ? `Members save $${memberSaving.toLocaleString()} on this event`
+      : 'Already an AOI member?'
   const ceOffered = overlay?.event?.ce_credits === true
   const cePrice = Number(overlay?.event?.ce_price ?? 0)
   const ceHours = String(overlay?.event?.ce_mode ?? '').split('·')[0]?.trim() || ''
@@ -244,9 +264,9 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     }
 
     const eventId = overlay?.id ?? null
-    if (!eventId || overlay?.open === false) {
+    if (!eventId || notOpen) {
       setError({
-        message: seminar.cat === 'internship'
+        message: byApplication
           ? 'This program is by application — please use the contact form and we will be in touch.'
           : 'Registration for this event is not open yet. Contact the Institute and we will let you know the moment it is.',
         fields: [],
@@ -344,7 +364,51 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
               </div>
             </div>
             <div className="body">
-              {interstitial ? (
+              {soldOut || showNotOpen ? (
+                /* Nothing to fill in: say why, and point at the contact form. */
+                <div className="reg-int">
+                  <div className="reg-int-ic">
+                    <svg
+                      width="26"
+                      height="26"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="var(--color-brand-accent-strong)"
+                      strokeWidth="2"
+                    >
+                      <rect x="3" y="4.5" width="18" height="16" rx="2" />
+                      <path d="M3 9.5h18M8 2.5v4M16 2.5v4" />
+                    </svg>
+                  </div>
+                  <h3>
+                    {soldOut
+                      ? 'This event is sold out'
+                      : byApplication
+                        ? 'This program is by application'
+                        : 'Registration is not open yet'}
+                  </h3>
+                  <p>
+                    {soldOut
+                      ? 'Every seat is taken. Join the waiting list and we will contact you the moment one opens up.'
+                      : byApplication
+                        ? 'Placements are matched by the Institute. Use the contact form and we will be in touch.'
+                        : 'Contact the Institute and we will let you know the moment it opens.'}
+                  </p>
+                  <div style={{ display: 'grid', gap: '10px' }}>
+                    <button
+                      type="button"
+                      className="b p-btn"
+                      style={{ justifyContent: 'center' }}
+                      onClick={() => {
+                        close()
+                        navigate('/contact')
+                      }}
+                    >
+                      {soldOut ? 'Join the Waiting List' : byApplication ? 'Apply Now' : 'Contact the Institute'}
+                    </button>
+                  </div>
+                </div>
+              ) : interstitial ? (
                 <div className="reg-int">
                   <div className="reg-int-ic">
                     <svg
@@ -430,7 +494,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                     </div>
                   ) : (
                     <div className="reg-strip">
-                      <span>Members save $200 on every Intensive and $600 on Bootcamp</span>
+                      <span>{stripText}</span>
                       <button
                         type="button"
                         className="b sm s-btn on-light"

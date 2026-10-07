@@ -96,12 +96,12 @@ export default function ConfirmPage() {
               <div className="n">WHAT HAPPENS NEXT</div>
               <p>
                 Your seat is reserved and your registration is recorded with the Institute. You&apos;ll receive event
-                details and reminders by email as the date approaches. If you created or have a member login, this
-                event now appears under <b>My Profile → My Registrations</b>.
+                details and reminders by email as the date approaches. If you have a member login, you can see this
+                event any time under <b>Events</b> in your account.
               </p>
               <div style={{ marginTop: '18px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <Link className="b p-btn" to="/seminars">Browse More Events</Link>
-                <Link className="b s-btn on-light" to="/account">My Profile</Link>
+                <Link className="b s-btn on-light" to="/account">My Account</Link>
               </div>
             </div>
           </div>
