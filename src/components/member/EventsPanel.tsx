@@ -104,8 +104,10 @@ export default function EventsPanel() {
   const load = useCallback(async () => {
     const r = await listEvents()
     setError(r.error ? `The events could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
-    setRows(r.rows); setLoading(false)
-  }, [])
+    /* The database still shows an admin viewing as a member every draft;
+     * a member only ever sees published events. */
+    setRows(viewingAsMember ? r.rows.filter((e) => e.status === 'published') : r.rows); setLoading(false)
+  }, [viewingAsMember])
   useEffect(() => { void load() }, [load])
   useEffect(() => { if (canManage) { void loadVenues().then(setVenues); void loadCommittees().then(setCommittees) } }, [canManage])
 
