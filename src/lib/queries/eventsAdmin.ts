@@ -11,7 +11,7 @@
  * what may change: everyone sees published events; board, the executive
  * director and the seminar committee see drafts and can edit.
  * -------------------------------------------------------------------------- */
-import { select, patch, insert, remove, rpc, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, searchSelect, patch, insert, remove, rpc, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export const CATEGORIES: [string, string][] = [
   ['free', 'Intro Course (free)'], ['fundamentals', 'Fundamentals'], ['intensive', 'AdvO Intensive'],
@@ -24,7 +24,7 @@ export const TYPES: [string, string][] = [
 ]
 export const GOV = new Set(['board', 'committee', 'deadline', 'meeting'])
 export const TIMEZONES = ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles', 'America/Phoenix']
-export const catLabel = (k?: string | null) => CATEGORIES.find((c) => c[0] === k)?.[1] ?? (k || 'Uncategorised')
+export const catLabel = (k?: string | null) => CATEGORIES.find((c) => c[0] === k)?.[1] ?? (k || 'Uncategorized')
 export const typeLabel = (k?: string | null) => TYPES.find((c) => c[0] === k)?.[1] ?? (k || 'Event')
 
 export type Venue = { id: number; name: string; loc_type: string; address: string | null; city: string | null; state: string | null; website?: string | null }
@@ -119,7 +119,7 @@ export type PersonHit = { id: string; first_name: string | null; last_name: stri
 export async function searchPeople(q: string): Promise<PersonHit[]> {
   const t = q.trim().replace(/[,.*()]/g, '')
   if (t.length < 2) return []
-  const r = await select<PersonHit>('people', `select=id,first_name,last_name,credentials,photo_url&or=(first_name.ilike.*${t}*,last_name.ilike.*${t}*)&order=last_name.asc&limit=8`)
+  const r = await searchSelect<PersonHit>('people', t, ['first_name', 'last_name'], 8, (f, n) => `select=id,first_name,last_name,credentials,photo_url&${f}&order=last_name.asc&limit=${n}`)
   return r.data ?? []
 }
 
@@ -254,7 +254,7 @@ export function dateBlock(e: EventRow): { mo: string; dy: string; yr: string; tm
 }
 
 export function whenText(e: Pick<EventRow, 'starts_at' | 'ends_at' | 'timezone' | 'category'>): string {
-  if (isOngoing(e)) return 'Ongoing · enrol any time'
+  if (isOngoing(e)) return 'Ongoing · enroll any time'
   const a = zoned(e.starts_at, e.timezone)
   if (!a) return 'Date to be announced'
   const b = zoned(e.ends_at, e.timezone)

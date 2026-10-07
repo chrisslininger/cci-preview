@@ -13,21 +13,21 @@
  * RLS: is_board_manager() — board, the executive director and the
  * Nominations & Elections chair — for every write.
  * -------------------------------------------------------------------------- */
-import { select, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, searchSelect, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export const SEATS_PER_TERM = 3
 export const ELIGIBILITY: { key: EligKey; label: string; auto: boolean }[] = [
   { key: 'is_member', label: 'Current AOI member (dues paid in full)', auto: true },
   { key: 'level1_cert', label: 'Level 1 Certification (minimum)', auto: true },
-  { key: 'good_standing', label: 'Good professional standing (licence, no disciplinary)', auto: false },
+  { key: 'good_standing', label: 'Good professional standing (license, no disciplinary)', auto: false },
   { key: 'active_involvement', label: 'Attended an Advanced Seminar within 12 months', auto: false },
   { key: 'coi_disclosed', label: 'Conflict-of-interest disclosure submitted', auto: false },
 ]
-export const PROCESS: { key: ProcKey; label: string; date: ProcDate }[] = [
-  { key: 'nominated', label: 'Nominated', date: 'nominated_date' },
-  { key: 'accepted_nomination', label: 'Accepted nomination', date: 'accepted_nomination_date' },
-  { key: 'elected', label: 'Elected by board vote', date: 'elected_date' },
-  { key: 'accepted_role', label: 'Accepted the role', date: 'accepted_role_date' },
+export const PROCESS: { key: ProcKey; label: string; help: string; date: ProcDate }[] = [
+  { key: 'nominated', label: 'Nominated', help: 'A member put this person forward for the Board.', date: 'nominated_date' },
+  { key: 'accepted_nomination', label: 'Accepted nomination', help: 'The nominee agreed to stand for election.', date: 'accepted_nomination_date' },
+  { key: 'elected', label: 'Elected by member vote', help: 'Won a seat in the members’ election.', date: 'elected_date' },
+  { key: 'accepted_role', label: 'Accepted the role', help: 'Agreed to serve the term. With every eligibility item checked, they can be seated.', date: 'accepted_role_date' },
 ]
 export type EligKey = 'is_member' | 'level1_cert' | 'good_standing' | 'active_involvement' | 'coi_disclosed'
 export type ProcKey = 'nominated' | 'accepted_nomination' | 'elected' | 'accepted_role'
@@ -70,7 +70,7 @@ export type Hit = Person & { practice_name: string | null }
 export async function searchPeople(q: string): Promise<Hit[]> {
   const t = q.trim().replace(/[,.*()]/g, '')
   if (t.length < 2) return []
-  const r = await select<Hit>('people', `select=id,first_name,last_name,credentials,membership_status,membership_expires,cert_level,photo_url,deceased_on,practice_name,person_certifications(technique,level)&deceased_on=is.null&or=(first_name.ilike.*${t}*,last_name.ilike.*${t}*)&order=last_name.asc&limit=8`)
+  const r = await searchSelect<Hit>('people', t, ['first_name', 'last_name'], 8, (f, n) => `select=id,first_name,last_name,credentials,membership_status,membership_expires,cert_level,photo_url,deceased_on,practice_name,person_certifications(technique,level)&deceased_on=is.null&${f}&order=last_name.asc&limit=${n}`)
   return r.data ?? []
 }
 
@@ -80,7 +80,10 @@ export const initials = (p: Pick<Person, 'first_name' | 'last_name'> | null, fal
 export const isCurrentMember = (p: Person | null, now = new Date()) => !!p && /(current|active|good|member)/i.test(p.membership_status ?? '') && (!p.membership_expires || new Date(p.membership_expires + 'T12:00:00Z') >= now)
 export const hasLevel1 = (p: Person | null) => !!p && ((p.person_certifications ?? []).some((c) => c.technique === 'Advanced Orthogonal' && /level_1|level_2/.test(c.level)) || /level_1|level_2/.test(p.cert_level ?? ''))
 export const eligDone = (t: Term) => ELIGIBILITY.filter((e) => t[e.key]).length
-export const procDone = (t: Term) => PROCESS.filter((s) => t[s.key]).length
+/** board_service has no `nominated` column, only `nominated_date`, so a
+ *  nomination date is what marks the step done. */
+export const stepDone = (t: Term, key: ProcKey) => key === 'nominated' ? !!(t.nominated ?? t.nominated_date) : !!t[key]
+export const procDone = (t: Term) => PROCESS.filter((s) => stepDone(t, s.key)).length
 export const isReady = (t: Term) => eligDone(t) === ELIGIBILITY.length && procDone(t) === PROCESS.length
 /** The term a new class is seated into: Oct 1 of this year if before Oct 1, else next year. */
 export function nextTermLabel(now = new Date()): string {
@@ -99,6 +102,7 @@ export async function tick(t: Term, key: EligKey | ProcKey, on: boolean, who: { 
   const body: Record<string, unknown> = { [key]: on, eligibility_audit: on ? stamp(t, key, who) : unstamp(t, key) }
   const step = PROCESS.find((s) => s.key === key)
   if (step) body[step.date] = on ? (date ?? t[step.date] ?? new Date().toISOString().slice(0, 10)) : null
+  if (key === 'nominated') delete body.nominated
   return patch('board_service', `id=eq.${t.id}`, body)
 }
 export const setProcDate = (t: Term, dateKey: ProcDate, value: string | null) => patch('board_service', `id=eq.${t.id}`, { [dateKey]: value })
@@ -111,7 +115,7 @@ export async function addNominee(p: Person, label: string, nominatedBy: string, 
   const member = isCurrentMember(p), l1 = hasLevel1(p)
   if (member) audit.is_member = { by: 'system', by_id: null, at: new Date().toISOString() }
   if (l1) audit.level1_cert = { by: 'system', by_id: null, at: new Date().toISOString() }
-  return insert('board_service', [{ person_id: p.id, person_name: `Dr. ${p.first_name} ${p.last_name}`, term_label: label, term_start: d.start, term_end: d.end, status: 'nominee', nominated_by: nominatedBy || null, nominated: true, nominated_date: date, is_member: member, level1_cert: l1, eligibility_audit: audit }])
+  return insert('board_service', [{ person_id: p.id, person_name: `Dr. ${p.first_name} ${p.last_name}`, term_label: label, term_start: d.start, term_end: d.end, status: 'nominee', nominated_by: nominatedBy || null, nominated_date: date, is_member: member, level1_cert: l1, eligibility_audit: audit }])
 }
 export const withdraw = (t: Term, who: { name: string; id: string | null }) => patch('board_service', `id=eq.${t.id}`, { status: 'withdrawn', eligibility_audit: stamp(t, 'withdrawn', who) })
 

@@ -174,7 +174,8 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     }
   }, [key])
 
-  const seminar = key ? SEMINARS[key] : undefined
+  // A session key (`intensive:feb`) registers for its own event but reads the page's copy.
+  const seminar = key ? SEMINARS[key.split(':')[0]!] : undefined
   const overlay = key ? catalog.byKey[key] : undefined
 
   /* Member RSVP: a signed-in current member, on an event that is free with
@@ -272,7 +273,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       if (data.requires_login_for_discount) {
         setInterstitial(
           data.free_with_membership
-            ? 'This event is FREE with your membership. Sign in to claim it — or continue as a guest at full price.'
+            ? 'This event is included with your membership. Sign in to claim your seat, or continue as a guest at full price.'
             : 'Sign in to apply your $200 member discount — or continue as a guest at full price.',
         )
       } else if (data.free && data.rsvp) {
@@ -302,7 +303,10 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
           fields: [],
         })
       } else {
-        setError({ message: data.detail ?? data.error ?? 'Something went wrong — please try again.', fields: [] })
+        /* Anything unexpected (a database error, say) arrives as raw technical
+         * text; keep it in the console and show the visitor a plain message. */
+        console.error('create-checkout', data.error, data.detail)
+        setError({ message: 'Something went wrong and your registration was not saved. Please try again later, or contact the Institute and we will sign you up.', fields: [] })
       }
     } catch {
       setError({ message: 'Connection problem — please check your internet and try again.', fields: [] })
@@ -426,7 +430,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
                     </div>
                   ) : (
                     <div className="reg-strip">
-                      <span>Members save $200 on seminars</span>
+                      <span>Members save $200 on every Intensive and $600 on Bootcamp</span>
                       <button
                         type="button"
                         className="b sm s-btn on-light"

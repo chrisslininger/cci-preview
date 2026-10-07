@@ -103,7 +103,7 @@ export function BioProvider({ children }: { children: ReactNode }) {
         {person && openId && (
           <div className="bio-m">
             <button type="button" className="x" onClick={() => setOpenId(null)} aria-label="Close">
-              ✕
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12" /></svg>
             </button>
             <div className="top">
               <Avatar id={openId} />

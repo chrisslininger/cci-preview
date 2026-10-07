@@ -4,20 +4,25 @@
  * The rail is generated from the capability list, so what a person sees is a
  * consequence of the roles they hold. Assigning a role in the roster is the
  * only administrative act needed — no code changes, no per-person switches.
+ *
+ * Who is signed in, and Sign Out, live in the header's account menu only.
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
-import { navFor, findNav, GROUP_LABEL } from '@/lib/nav'
-import { displayName, initials, primaryRole, roleLabel } from '@/lib/access'
-import { signOut, session } from '@/lib/supabase'
+import { navFor, findNav, railKey, isCommittee, FOLDS, GROUP_LABEL } from '@/lib/nav'
+import type { NavGroup } from '@/lib/nav'
+import { roleLabel } from '@/lib/access'
+import { session } from '@/lib/supabase'
 import { attention, EMPTY, markEventsSeen, logSignInOnce, logActivity } from '@/lib/queries/attention'
 import type { Attention } from '@/lib/queries/attention'
 import MemberPanel from './MemberPanel'
 import Overview from './Overview'
 
+const RAIL_KEY = 'aoi-rail-open'
+
 export default function MemberShell() {
-  const { access, refresh } = useAccess()
+  const { access } = useAccess()
   const navigate = useNavigate()
   const { hash } = useLocation()
   const groups = navFor(access)
@@ -35,6 +40,21 @@ export default function MemberShell() {
   }, [hash, access])
 
   const item = findNav(tab)
+  const here = railKey(tab)
+  const tabs = groups.flatMap((g) => g.items).filter((i) => i.key === here || i.under === here)
+
+  // Folded groups: shut until opened. Arriving on a tab opens its group; any group can be shut again.
+  // Which groups were left open is remembered in this browser, so the rail looks the same next visit.
+  const [opened, setOpened] = useState<Set<NavGroup>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(RAIL_KEY) ?? '[]') as NavGroup[]) } catch { return new Set() }
+  })
+  useEffect(() => { try { localStorage.setItem(RAIL_KEY, JSON.stringify([...opened])) } catch { /* private window */ } }, [opened])
+  const hereGroup = groups.find((g) => g.items.some((i) => i.key === here))?.group
+  useEffect(() => { if (hereGroup) setOpened((o) => (o.has(hereGroup) ? o : new Set(o).add(hereGroup))) }, [hereGroup])
+  // Committees this person chairs or co-chairs stand out in the rail.
+  const chairs = (stem?: string) => Boolean(stem) && access.committees.some((c) => c.leads && isCommittee(c, stem!))
+  const hasMine = groups.some((g) => g.group === 'mycommittees')
+  const toggle = (g: NavGroup) => setOpened((o) => { const n = new Set(o); if (n.has(g)) n.delete(g); else n.add(g); return n })
 
   // Red dots: what needs this person right now — a report they owe, a task due, new registrations.
   const [att, setAtt] = useState<Attention>(EMPTY)
@@ -58,58 +78,74 @@ export default function MemberShell() {
     return null
   }
 
-  // On a phone the rail is a horizontal strip; keep the current tab in view.
+  // On a phone the rail folds away behind one button; picking a page closes it again.
+  const [railOpen, setRailOpen] = useState(false)
+  useEffect(() => setRailOpen(false), [tab])
+  // While it is open the page behind stays put, and a tap outside the menu closes it.
   useEffect(() => {
-    if (typeof window === 'undefined' || window.innerWidth > 760) return
-    document.querySelector('.ma-rail a.on')?.scrollIntoView({ inline: 'center', block: 'nearest' })
-  }, [tab])
+    if (!railOpen) return
+    const was = document.documentElement.style.overflow
+    document.documentElement.style.overflow = 'hidden'
+    const onDown = (e: PointerEvent) => { if (!(e.target as Element).closest?.('.ma-railwrap')) setRailOpen(false) }
+    document.addEventListener('pointerdown', onDown)
+    return () => { document.documentElement.style.overflow = was; document.removeEventListener('pointerdown', onDown) }
+  }, [railOpen])
+  const anyDot = groups.some((g) => g.items.some((i) => dot(i.key)))
 
   return (
     <>
-      <div className="ma-top">
-        <div className="in">
-          <div className="ma-who">
-            <div className="ma-av">{initials(access)}</div>
-            <div>
-              <b>{displayName(access)}</b>
-              <span>{primaryRole(access)}</span>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="b sm s-btn on-dark"
-            onClick={() => {
-              signOut()
-              void refresh()
-              navigate('/account')
-            }}
-          >
-            Sign Out
-          </button>
-        </div>
-      </div>
-
       <div className="ma">
-        <nav className="ma-rail" aria-label="Member area">
-          {groups.map((group) => (
-            <div key={group.group}>
-              <span className="grp">{GROUP_LABEL[group.group]}</span>
-              {group.items.map((nav) => (
-                <Link
-                  key={nav.key}
-                  to={`/account#${nav.key}`}
-                  className={nav.key === tab ? 'on' : undefined}
-                  aria-current={nav.key === tab ? 'page' : undefined}
-                >
-                  {nav.label}
-                  {dot(nav.key) && <span className={`ma-dot${dot(nav.key)!.urgent ? ' urgent' : ''}`} title={dot(nav.key)!.title} aria-label={dot(nav.key)!.title} />}
-                </Link>
-              ))}
-            </div>
-          ))}
-        </nav>
+        <div className="ma-railwrap">
+          <button type="button" className="ma-railbtn" aria-expanded={railOpen} aria-controls="ma-rail" onClick={() => setRailOpen((v) => !v)}>
+            <span className="lbl">Menu</span>
+            <b>{findNav(here)?.label ?? 'Overview'}</b>
+            {!railOpen && anyDot && <span className="ma-dot" aria-hidden="true" />}
+          </button>
+          <nav id="ma-rail" className={`ma-rail${railOpen ? ' open' : ''}`} aria-label="Member area">
+            {groups.map((group) => {
+              const folds = FOLDS.includes(group.group)
+              const open = !folds || opened.has(group.group)
+              const dots = group.items.some((i) => dot(i.key))
+              return (
+                <div key={group.group} className={open ? undefined : 'shut'}>
+                  {folds ? (
+                    <button type="button" className="grp" aria-expanded={open} onClick={() => toggle(group.group)}>
+                      {group.group === 'committees' && hasMine ? 'Other Committees' : GROUP_LABEL[group.group]}
+                      {!open && dots && <span className="ma-dot" aria-hidden="true" />}
+                    </button>
+                  ) : (
+                    <span className="grp">{GROUP_LABEL[group.group]}</span>
+                  )}
+                  {group.items.filter((nav) => !nav.under).map((nav) => (
+                    <Link
+                      key={nav.key}
+                      to={`/account#${nav.key}`}
+                      className={[nav.key === here ? 'on' : '', chairs(nav.committee) ? 'lead' : ''].filter(Boolean).join(' ') || undefined}
+                      aria-current={nav.key === here ? 'page' : undefined}
+                    >
+                      <span>
+                        {nav.label}
+                        {chairs(nav.committee) && <span className="ma-lead">Chair</span>}
+                      </span>
+                      {dot(nav.key) && <span className={`ma-dot${dot(nav.key)!.urgent ? ' urgent' : ''}`} title={dot(nav.key)!.title} aria-label={dot(nav.key)!.title} />}
+                    </Link>
+                  ))}
+                </div>
+              )
+            })}
+          </nav>
+        </div>
 
         <main className="ma-main">
+          {tabs.length > 1 && (
+            <nav className="ma-tabs" aria-label={findNav(here)?.label}>
+              {tabs.map((t) => (
+                <Link key={t.key} to={`/account#${t.key}`} className={t.key === tab ? 'on' : undefined} aria-current={t.key === tab ? 'page' : undefined}>
+                  {t.tabLabel ?? t.label}
+                </Link>
+              ))}
+            </nav>
+          )}
           {tab === 'overview' ? (
             <Overview onOpen={(key) => navigate(`/account#${key}`)} />
           ) : (

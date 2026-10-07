@@ -20,8 +20,9 @@ import { boardMeetings, currentCycle, previousCycle, cycleForMonth, monthLabel, 
 import type { Meeting, Cycle } from '@/lib/queries/meetings'
 import { logActivity } from '@/lib/queries/attention'
 import { Pill, Modal, Head, Sec, friendly } from './opsUi'
+import { isCommittee } from '@/lib/nav'
 
-export default function ReportsPanel() {
+export default function ReportsPanel({ committee }: { committee?: string } = {}) {
   const toast = useToast()
   const { access, can } = useAccess()
   const who: Who = { name: displayName(access).replace(/,.*$/, ''), id: access.person?.id ?? null }
@@ -42,6 +43,8 @@ export default function ReportsPanel() {
   useEffect(() => { void load() }, [load])
   // default the dropdown to the person's own committee when they lead exactly one
   useEffect(() => { if (!oversight && leads.size === 1) setCom([...leads][0]!) }, [oversight, leads])
+  // opened from a committee in the rail: show that committee's reports
+  useEffect(() => { const c = committee ? coms.find((x) => isCommittee(x, committee)) : undefined; if (c) setCom(c.id) }, [committee, coms])
 
   const visible = oversight ? coms : coms.filter((c) => access.committees.some((a) => a.id === c.id))
   const cycle: Cycle = useMemo(() => currentCycle(meetings), [meetings])
@@ -49,6 +52,9 @@ export default function ReportsPanel() {
   const today = dayET()
 
   if (loading) return <><h1>Reports</h1><div className="ma-sub">Reading the committee reports…</div><div className="ma-panel"><p className="ma-empty">One moment.</p></div></>
+
+  // opened from a committee the database does not have yet: say so rather than show every committee
+  if (committee && !coms.some((x) => isCommittee(x, committee))) return <><h1>Reports</h1><div className="ma-sub">This committee is not set up in the database yet.</div><div className="ma-panel"><p className="ma-empty">Once the Executive Director adds it, its monthly reports will appear here.</p></div></>
 
   const inView = com === 'all' ? visible : visible.filter((c) => c.id === com)
   const status = statusFor(coms, rows, cycle.reportMonth)

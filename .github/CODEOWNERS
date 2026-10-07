@@ -1,0 +1,9 @@
+# The Executive Director reviews anything that can take money, send mail, or
+# expose member data. GitHub requests his review automatically on these paths.
+/supabase/            @chrisslininger
+/src/components/member/  @chrisslininger
+/src/lib/queries/     @chrisslininger
+/src/pages/ConfirmPage.tsx  @chrisslininger
+/src/pages/PayPage.tsx      @chrisslininger
+/CLAUDE.md            @chrisslininger
+/.github/             @chrisslininger

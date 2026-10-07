@@ -13,7 +13,7 @@ import { displayName } from '@/lib/access'
 import {
   terms as loadTerms, reviews as loadReviews, documents as loadDocs, boardNotes as loadNotes, searchPeople,
   tick, setProcDate, setNominatedBy, setServiceStart, addNominee, withdraw, seat, endService, addReview, addBoardNote, uploadDocument, documentUrl, deleteDocument,
-  SEATS_PER_TERM, ELIGIBILITY, PROCESS, fullName, initials, isCurrentMember, hasLevel1, eligDone, procDone, isReady, nextTermLabel, seatedIn, fmtD,
+  SEATS_PER_TERM, ELIGIBILITY, PROCESS, fullName, initials, isCurrentMember, hasLevel1, eligDone, procDone, stepDone, isReady, nextTermLabel, seatedIn, fmtD,
 } from '@/lib/queries/board'
 import type { Term, Review, Doc, BoardNote, Hit, AuditEntry } from '@/lib/queries/board'
 
@@ -69,7 +69,7 @@ export default function BoardPanel() {
   const nomRow = (t: Term) => {
     const isOpen = open.has(t.id)
     const p = t.people
-    const ready = isReady(t), seatOpen = seatedCount < SEATS_PER_TERM
+    const ready = isReady(t), seatOpen = seatedIn(rows, t.term_label ?? nt).length < SEATS_PER_TERM
     const a = t.eligibility_audit ?? {}
     const name = fullName(p, t.person_name)
     return (
@@ -89,9 +89,9 @@ export default function BoardPanel() {
           </div>)}
           <div className="sec">Nomination process</div>
           <div className="bchk one"><label className="flabel" style={{ margin: 0 }}>Nominated by</label><input className="fi" style={{ margin: 0 }} defaultValue={t.nominated_by ?? ''} disabled={!canManage} placeholder="Board of Directors / name" onBlur={(ev) => { if (ev.target.value !== (t.nominated_by ?? '')) void run(setNominatedBy(t, ev.target.value)) }} /></div>
-          {PROCESS.map((s) => <div key={s.key} className={`bchk${t[s.key] ? ' done' : ''}`}>
-            <input type="checkbox" id={`${t.id}_${s.key}`} checked={!!t[s.key]} disabled={!canManage} onChange={(ev) => { optimistic(t.id, { [s.key]: ev.target.checked, [s.date]: ev.target.checked ? (t[s.date] ?? new Date().toISOString().slice(0, 10)) : null }); void run(tick(t, s.key, ev.target.checked, who)) }} />
-            <label htmlFor={`${t.id}_${s.key}`}>{s.label}<Verified a={a[s.key]} /></label>
+          {PROCESS.map((s) => <div key={s.key} className={`bchk${stepDone(t, s.key) ? ' done' : ''}`}>
+            <input type="checkbox" id={`${t.id}_${s.key}`} checked={stepDone(t, s.key)} disabled={!canManage} onChange={(ev) => { optimistic(t.id, { [s.key]: ev.target.checked, [s.date]: ev.target.checked ? (t[s.date] ?? new Date().toISOString().slice(0, 10)) : null }); void run(tick(t, s.key, ev.target.checked, who)) }} />
+            <label htmlFor={`${t.id}_${s.key}`}>{s.label}<small>{s.help}</small><Verified a={a[s.key]} /></label>
             <input type="date" value={t[s.date] ?? ''} disabled={!canManage} onChange={(ev) => { optimistic(t.id, { [s.date]: ev.target.value || null }); void run(setProcDate(t, s.date, ev.target.value || null)) }} />
           </div>)}
           {canManage && <div className="acts">
@@ -178,7 +178,7 @@ function AddNominee({ rows, who, label, onClose, onSaved }: { rows: Term[]; who:
             {hits.length > 0 && !pick && <div className="list" style={{ top: '100%' }}>{hits.map((h) => <div key={h.id} onMouseDown={() => { setPick(h); setQ(`${h.first_name} ${h.last_name}${h.credentials ? ', ' + h.credentials : ''}`) }}>{h.first_name} {h.last_name}{h.credentials ? `, ${h.credentials}` : ''} <small>· {isCurrentMember(h) ? 'member' : 'not a member'}{hasLevel1(h) ? ' · AdvO Level 1+' : ''}{h.practice_name ? ` · ${h.practice_name}` : ''}</small></div>)}</div>}
             {q.trim().length >= 2 && hits.length === 0 && !pick && <div className="evt-hint">No contact matches — add them under Contacts first.</div>}
           </div>
-          <div className="cert-grid mform"><div><label className="flabel">TERM</label><select className="fi" value={term} onChange={(e) => setTerm(e.target.value)}><option>{label}</option><option>{`${y + 1}–${y + 4}`}</option></select></div><div><label className="flabel">NOMINATION DATE</label><input className="fi" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div></div>
+          <div className="cert-grid mform"><div><label className="flabel">TERM</label><select className="fi" value={term} onChange={(e) => setTerm(e.target.value)}><option>{`${y - 1}–${y + 2}`}</option><option>{label}</option><option>{`${y + 1}–${y + 4}`}</option></select></div><div><label className="flabel">NOMINATION DATE</label><input className="fi" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div></div>
           <label className="flabel">NOMINATED BY</label><input className="fi" value={by} onChange={(e) => setBy(e.target.value)} placeholder="Board of Directors / name" />
           {pick && <div className="evt-hint">Eligibility from their record: <b className={isCurrentMember(pick) ? 'ok-txt' : 'warn-txt'}>{isCurrentMember(pick) ? 'current member' : 'not a current member'}</b> · <b className={hasLevel1(pick) ? 'ok-txt' : 'warn-txt'}>{hasLevel1(pick) ? 'AdvO Level 1 or higher' : 'no AdvO certification'}</b>. The other three items are verified by hand.</div>}
         </div>
@@ -222,7 +222,7 @@ function DirectorCard({ t, all, who, canManage, onClose, onChanged }: { t: Term;
           {(mine.length ? mine.slice().reverse() : [t]).map((x) => { const a = x.eligibility_audit ?? {}; return (
             <div key={x.id} className="btrail"><div className="t1"><b>Term {x.term_label}</b><span>{status(x)}</span></div>
               <div style={{ fontSize: 12.5, color: 'var(--color-content-muted)' }}>{fmtD(x.term_start)} – {fmtD(x.term_end)}{x.resignation_date ? ` · resigned ${fmtD(x.resignation_date)}` : x.end_reason === 'term_ended' ? ' · term ended' : ''}{x.nominated_by ? ` · nominated by ${x.nominated_by}` : ''}</div>
-              <ul>{PROCESS.map((s) => <li key={s.key} className={x[s.key] ? 'ok' : ''}><i /><span>{s.label}{x[s.date] ? ` · ${fmtD(x[s.date])}` : ''}{a[s.key] ? <small>verified by {a[s.key]!.by} · {fmtD(a[s.key]!.at)}</small> : (x.status === 'past' || x.status === 'active') && !x[s.key] ? <small>not recorded (pre-dates this system)</small> : null}</span></li>)}
+              <ul>{PROCESS.map((s) => <li key={s.key} className={stepDone(x, s.key) ? 'ok' : ''}><i /><span>{s.label}{x[s.date] ? ` · ${fmtD(x[s.date])}` : ''}{a[s.key] ? <small>verified by {a[s.key]!.by} · {fmtD(a[s.key]!.at)}</small> : (x.status === 'past' || x.status === 'active') && !stepDone(x, s.key) ? <small>not recorded (pre-dates this system)</small> : null}</span></li>)}
                 {a.seated && <li className="ok"><i /><span>Seated<small>by {a.seated.by} · {fmtD(a.seated.at)}</small></span></li>}{a.ended && <li className="ok"><i /><span>Service ended<small>by {a.ended.by} · {fmtD(a.ended.at)}</small></span></li>}</ul>
               {canManage && (x.status === 'active' || x.status === 'seated') && <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}><button type="button" className="b s-btn on-light xs" onClick={() => setEnding(x)}>End board service</button>{!x.service_start && <button type="button" className="b s-btn on-light xs" onClick={() => { const y = window.prompt('Year first seated on the board', (x.term_start ?? '').slice(0, 4)); if (y) void act(setServiceStart(x, y.trim()), 'Service start recorded') }}>Add service start year</button>}</div>}
             </div>) })}

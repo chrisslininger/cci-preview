@@ -29,6 +29,8 @@ import CertificationPage from '@/pages/CertificationPage'
 import CertLevel1Page from '@/pages/CertLevel1Page'
 import CertLevel2Page from '@/pages/CertLevel2Page'
 import MembershipPage from '@/pages/MembershipPage'
+import JoinPage from '@/pages/JoinPage'
+import MembershipWelcomePage from '@/pages/MembershipWelcomePage'
 import ArticlesPage from '@/pages/ArticlesPage'
 import ArticlePage from '@/pages/ArticlePage'
 import ProblemPage from '@/pages/ProblemPage'
@@ -189,11 +191,38 @@ const staticRoutes: RouteEntry[] = [
     meta: {
       title: 'AOI Membership — Advanced Orthogonal Institute',
       description:
-        'Institute membership includes Annual Conference registration, a $200 discount on every seminar, the doctor directory listing, and member resources.',
+        'Institute membership includes Annual Conference registration, the Monthly Huddle, $200 off every Intensive and $600 off Bootcamp, the doctor directory listing, and member resources.',
       image: '/images/conference.webp',
       priority: 0.9,
       updatedAt: UPDATED,
       breadcrumbs: [{ name: 'Membership', path: '/membership' }],
+    },
+  },
+  {
+    path: '/membership/join',
+    Component: JoinPage,
+    prerender: true,
+    meta: {
+      title: 'Join the Institute — Advanced Orthogonal Institute',
+      description:
+        'Become a member of the Advanced Orthogonal Institute. Annual membership includes Annual Conference registration, the Monthly Huddle, $200 off every Intensive, $600 off Bootcamp, voting rights and the doctor directory listing.',
+      image: '/images/conference.webp',
+      priority: 0.9,
+      updatedAt: UPDATED,
+      breadcrumbs: [
+        { name: 'Membership', path: '/membership' },
+        { name: 'Join', path: '/membership/join' },
+      ],
+    },
+  },
+  {
+    path: '/membership/welcome',
+    Component: MembershipWelcomePage,
+    prerender: false,
+    meta: {
+      title: 'Welcome to the Institute — Advanced Orthogonal Institute',
+      description: 'Your Advanced Orthogonal Institute membership payment was received.',
+      noindex: true,
     },
   },
   {
@@ -265,6 +294,16 @@ const seminarRoutes: RouteEntry[] = Object.entries(SEMINARS).map(([key, seminar]
               },
             }),
       },
+      ...(seminar.story?.faq?.length
+        ? [{
+            '@type': 'FAQPage',
+            mainEntity: seminar.story.faq.map((item) => ({
+              '@type': 'Question',
+              name: item.q,
+              acceptedAnswer: { '@type': 'Answer', text: item.a.replace(/\*\*/g, '') },
+            })),
+          }]
+        : []),
     ],
   },
 }))

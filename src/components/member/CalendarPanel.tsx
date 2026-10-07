@@ -56,7 +56,7 @@ export default function CalendarPanel() {
 
   if (loading) return <><h1>Calendar</h1><div className="ma-sub">Reading the Institute calendar…</div><div className="ma-panel"><p className="ma-empty">One moment.</p></div></>
   return <>
-    <Head title="Calendar" lede="Every meeting and event in one place — seminars and conferences from the Events tab, Board and committee meetings, deadlines. Board meetings are the third Tuesday of each month at 7:00 pm Eastern."
+    <Head title="Calendar" lede="Every meeting and event in one place — seminars and conferences from the Events tab, Board and committee meetings, deadlines. Board meetings are the third Tuesday of each month at 9:00 pm Eastern."
       right={<><div className="viewsw"><button type="button" className={view === 'list' ? 'on' : ''} onClick={() => setView('list')}>List</button><button type="button" className={view === 'month' ? 'on' : ''} onClick={() => setView('month')}>Month</button></div>
         {canAdd && <button type="button" className="b p-btn sm" onClick={() => setEdit('new')}>+ Add meeting</button>}
         <a className="b s-btn on-light sm" href={ZOOM_SCHEDULE} target="_blank" rel="noopener noreferrer">Schedule Zoom meeting</a></>} />
@@ -105,7 +105,7 @@ function MeetingDialog({ e, coms, oversight, onClose, onSaved, createdBy }: { e:
   const [saving, setSaving] = useState(false)
   const [v, setV] = useState<MeetingInput & { start: string; end: string }>({
     title: e?.title ?? '', event_type: e?.event_type ?? (oversight ? 'committee' : 'committee'), committee_id: e?.committee_id ?? (coms.length === 1 ? coms[0]!.id : null), starts_at: e?.starts_at ?? '', ends_at: e?.ends_at ?? null,
-    start: e ? toLocal(e.starts_at) : `${dayET()}T19:00`, end: e?.ends_at ? toLocal(e.ends_at) : `${dayET()}T20:00`,
+    start: e ? toLocal(e.starts_at) : `${dayET()}T21:00`, end: e?.ends_at ? toLocal(e.ends_at) : `${dayET()}T22:00`,
     location: e?.location ?? 'Zoom', zoom_url: e?.zoom_url ?? '', agenda: e?.agenda ?? '', is_keystone: !!e?.is_keystone, visibility: (e?.visibility as MeetingInput['visibility']) ?? 'leadership',
   })
   async function save() {

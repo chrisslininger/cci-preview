@@ -15,7 +15,7 @@
  *
  * All of it runs as the signed-in person; RLS decides what they may touch.
  * -------------------------------------------------------------------------- */
-import { select, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, searchSelect, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export type Level = 'none' | 'student' | 'level_1' | 'level_2'
 export const LEVELS: [Level, string][] = [
@@ -81,10 +81,7 @@ export async function register(): Promise<{ rows: Person[]; error?: string }> {
 export async function searchPeople(term: string): Promise<Person[]> {
   const t = encodeURIComponent(term.trim())
   if (!t) return []
-  const q = await select<Person>(
-    'people',
-    `select=${PERSON_SELECT}&or=(first_name.ilike.*${t}*,last_name.ilike.*${t}*,practice_name.ilike.*${t}*)&order=last_name&limit=12`,
-  )
+  const q = await searchSelect<Person>('people', term, ['first_name', 'last_name', 'practice_name'], 12, (f, n) => `select=${PERSON_SELECT}&${f}&order=last_name&limit=${n}`)
   return q.data ?? []
 }
 

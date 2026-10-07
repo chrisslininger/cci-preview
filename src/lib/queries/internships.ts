@@ -7,7 +7,7 @@
  * never renames. Checklists are stored the way CCI OS stores them:
  *   progress[key] = { completed: true, date, name }   (who locked it in)
  * -------------------------------------------------------------------------- */
-import { select, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
+import { select, searchSelect, patch, insert, remove, headers, SB_URL, ensureSession } from '@/lib/supabase'
 import { markRequirement, requirements as loadRequirements } from './certifications'
 import type { Requirement } from './certifications'
 
@@ -61,7 +61,7 @@ export const PREC_APPROVAL: { key: string; label: string }[] = [
   { key: 'board_approved', label: 'Approved by the Board · added to the preceptor registry' },
 ]
 export const INT_CRITERIA: { key: string; label: string; sync?: 'exam' }[] = [
-  { key: 'int_training', label: 'Completed internship training (all AO procedure components)' },
+  { key: 'int_training', label: 'Completed internship training (all AdvO procedure components)' },
   { key: 'int_exam', label: 'Passed the Advanced Orthogonal Basic Examination', sync: 'exam' },
   { key: 'int_letter', label: 'Preceptor summary letter filed with Certification Committee' },
 ]
@@ -98,7 +98,7 @@ export async function notesFor(personId: string): Promise<Note[]> {
 export async function searchPeople(term: string, doctorsOnly = false): Promise<PersonLite[]> {
   const t = encodeURIComponent(term.trim())
   if (!t) return []
-  const q = await select<PersonLite>('people', `select=${PERSON}&or=(first_name.ilike.*${t}*,last_name.ilike.*${t}*,practice_name.ilike.*${t}*)${doctorsOnly ? '&contact_type=eq.doctor' : ''}&order=last_name&limit=12`)
+  const q = await searchSelect<PersonLite>('people', term, ['first_name', 'last_name', 'practice_name'], 12, (f, n) => `select=${PERSON}&${f}${doctorsOnly ? '&contact_type=eq.doctor' : ''}&order=last_name&limit=${n}`)
   return q.data ?? []
 }
 export async function practiceOffices(personId: string): Promise<{ id: number; name: string | null; address: string | null; city: string | null; state: string | null; phone: string | null }[]> {
@@ -191,7 +191,7 @@ export async function savePreceptor(id: number | null, v: PreceptorInput, existi
     const r = a.id ? await patch('preceptor_colleges', `id=eq.${a.id}`, body) : await insert('preceptor_colleges', [{ ...body, preceptor_id: pid, created_by_id: who.id, created_by_name: who.name }])
     if (r.error) return r
   }
-  // keep the denormalised colleges list CCI OS reads
+  // keep the denormalized colleges list CCI OS reads
   const cols = [...new Map(v.approvals.map((a) => [a.college_id, { id: a.college_id }])).values()]
   const r2 = await patch('preceptors', `id=eq.${pid}`, { colleges: cols })
   if (r2.error) return r2

@@ -201,9 +201,9 @@ async function stripeCustomerEmail(customerId: string): Promise<{ email: string 
 }
 
 /** Finds the member by email — the contact email first, then the login email on their profile. */
-async function personByEmail(email: string): Promise<{ id: string; first_name: string; last_name: string; membership_expires: string | null; member_since: string | null } | null> {
+async function personByEmail(email: string): Promise<{ id: string; first_name: string; last_name: string; membership_expires: string | null; member_since: string | null; auth_user_id: string | null; email: string | null } | null> {
   if (!email) return null;
-  const sel = "id,first_name,last_name,membership_expires,member_since";
+  const sel = "id,first_name,last_name,membership_expires,member_since,auth_user_id,email";
   let q = await sbFetch(`/rest/v1/people?email=ilike.${encodeURIComponent(likeEscape(email))}&select=${sel}&limit=1`);
   let rows = await q.json();
   if (Array.isArray(rows) && rows[0]) return rows[0];

@@ -34,16 +34,16 @@ export default function MembershipPage() {
                 <div style={{"position": "absolute", "right": "-70px", "top": "-70px", "width": "220px", "height": "220px", "border": "1.5px solid color-mix(in oklab, var(--color-brand-accent) 35.0%, transparent)", "borderRadius": "50%"}}></div>
                 <div className="kick" style={{"color": "var(--color-brand-accent)"}}>Annual Membership</div>
                 <div style={{"fontFamily": "'Outfit',sans-serif"}}><span style={{"fontSize": "50px", "fontWeight": "800"}}>$799</span><span style={{"fontSize": "14px", "color": "var(--color-content-on-inverse-muted)"}}> / year</span></div>
-                <div style={{"fontFamily": "var(--font-label)", "fontWeight": "600", "fontSize": "11px", "letterSpacing": ".14em", "color": "var(--color-brand-accent-bright)", "margin": "6px 0 8px"}}>ANNUAL MEMBERSHIP</div><div style={{"fontSize": "13px", "color": "var(--color-content-on-inverse-muted)", "margin": "0 0 22px", "lineHeight": "1.6"}}>Joining or renewing before 31 December 2026 is <b style={{"color": "var(--color-surface-base)"}}>$799</b>. From 1 January 2027 annual membership is <b style={{"color": "var(--color-surface-base)"}}>$999</b>.</div>
+                <div style={{"fontFamily": "var(--font-label)", "fontWeight": "600", "fontSize": "11px", "letterSpacing": ".14em", "color": "var(--color-brand-accent-bright)", "margin": "6px 0 8px"}}>ANNUAL MEMBERSHIP</div><div style={{"fontSize": "13px", "color": "var(--color-content-on-inverse-muted)", "margin": "0 0 22px", "lineHeight": "1.6"}}>Joining or renewing before December 31, 2026 is <b style={{"color": "var(--color-surface-base)"}}>$799</b>. From January 1, 2027 annual membership is <b style={{"color": "var(--color-surface-base)"}}>$999</b>.</div>
                 <div style={{"borderTop": "1px solid color-mix(in oklab, var(--color-surface-base) 12.0%, transparent)", "paddingTop": "20px", "fontSize": "14px", "color": "var(--color-content-on-inverse-subtle)", "lineHeight": "2"}}>
                   ✓ Annual Conference registration included ($797 value)<br />
                   ✓ $600 off AdvO Bootcamp<br />
-                  ✓ $200 off every seminar<br />
+                  ✓ $200 off every Intensive<br />
                   ✓ Voting rights &amp; board eligibility<br />
                   ✓ Doctor Directory listing (Level 1 certified)<br />
                   ✓ Exclusive partner discounts
                 </div>
-                <div style={{"marginTop": "26px"}}><span className="b lg p-btn" style={{"width": "100%", "justifyContent": "center"}}>Become a Member</span></div>
+                <div style={{"marginTop": "26px"}}><Link to="/membership/join" className="b lg p-btn" style={{"width": "100%", "justifyContent": "center"}}>Become a Member</Link></div>
                 <p style={{"fontSize": "11.5px", "color": "var(--color-content-muted)", "marginTop": "14px", "textAlign": "center"}}>Membership renews annually and automatically.</p>
               </div>
             </div>
@@ -71,7 +71,7 @@ export default function MembershipPage() {
               <div className="step">
                 <div className="n">03</div>
                 <h3>Discounts on training &amp; seminars</h3>
-                <p>Members receive $600 off the AdvO Bootcamp, $200 off every seminar, and exclusive partner discounts through UC Strategic Solutions, Synapse Continuing Education, and other collaborations that will expand as the Institute grows. These savings quickly add up, often covering the cost of membership itself.</p>
+                <p>Members receive $600 off the AdvO Bootcamp, $200 off every Intensive, and exclusive partner discounts through UC Strategic Solutions, Synapse Continuing Education, and other collaborations that will expand as the Institute grows. These savings quickly add up, often covering the cost of membership itself.</p>
                 <Link to="/seminars" className="b sm s-btn on-light">Browse Seminars</Link>
               </div>
               <div className="step">
@@ -104,7 +104,7 @@ export default function MembershipPage() {
               <h3>Invest in your practice, your profession, and the future.</h3>
               <p>With conference registration included and deep seminar discounts, membership often pays for itself in the first year.</p>
             </div>
-            <span className="b lg p-btn">Secure Your Membership</span>
+            <Link to="/membership/join" className="b lg p-btn">Secure Your Membership</Link>
           </div>
         </section>
     </>

@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from '@/lib/router'
 import { SEMINARS, SLUG_TO_SEMINAR } from '@/content/seminars'
 import type { Seminar } from '@/content/seminars'
 import { PEOPLE, HEADSHOTS } from '@/content/people'
 import { Avatar, SpeakerPill, useBio } from '@/components/blocks/BioDialog'
 import SeminarCard from '@/components/blocks/SeminarCard'
+import { StoryGoals, StoryProblem, StorySolution, StoryWhy, StoryBenefits, StoryData, StorySteps, StoryVoices, StoryFit, StoryFaq } from '@/components/blocks/SeminarStory'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { useToast } from '@/components/ui/Toast'
 import { useAccess } from '@/lib/queries/AccessProvider'
@@ -23,6 +24,10 @@ type Session = {
   soon?: boolean
   free?: boolean
   apply?: boolean
+  /** Catalog key this session registers for; it opens when that event is published. */
+  reg?: string
+  /** Only signed-in members can RSVP; everyone else is pointed to membership. */
+  members?: boolean
 }
 type AgendaItem = { t: string; ap: string; title: string; desc: string; who?: string[] }
 type AgendaDay = { day: string; date?: string; items: AgendaItem[] }
@@ -33,6 +38,8 @@ type NoSess = {
   msg?: string
   btn?: string
   primary?: boolean
+  /** Set when the button should start registration rather than go to Contact. */
+  act?: string
 }
 
 const money = (n: number) => n.toLocaleString()
@@ -72,7 +79,42 @@ export default function SeminarPage({ param }: { param?: string }) {
   const { access, signedIn } = useAccess()
   const catalog = useCatalog()
   const [agendaDay, setAgendaDay] = useState(0)
+  const [presenter, setPresenter] = useState<string | null>(null)
+  /* On phones the agenda folds behind a button; computers always show it. */
+  const [agendaOpen, setAgendaOpen] = useState(false)
+  /* The presenter row scrolls sideways on phones; arrows show which way there is more. */
+  const stripRef = useRef<HTMLDivElement>(null)
+  const [stripEnds, setStripEnds] = useState({ start: true, end: false })
+  const readStrip = () => {
+    const el = stripRef.current
+    if (!el) return
+    setStripEnds({ start: el.scrollLeft <= 4, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4 })
+  }
+  const moveStrip = (dir: number) => {
+    const el = stripRef.current
+    if (el) el.scrollBy({ left: dir * Math.max(180, el.clientWidth * 0.75), behavior: 'smooth' })
+  }
+  useEffect(() => {
+    readStrip()
+    window.addEventListener('resize', readStrip)
+    return () => window.removeEventListener('resize', readStrip)
+  }, [])
+  /* The back-to-top button appears once the reader is well down the page. */
+  const [showTop, setShowTop] = useState(false)
+  useEffect(() => {
+    const on = () => setShowTop(window.scrollY > 900)
+    on()
+    window.addEventListener('scroll', on, { passive: true })
+    return () => window.removeEventListener('scroll', on)
+  }, [])
   const [attending, setAttending] = useState<null | { paid: boolean; ce: boolean }>(null)
+  /* Worked out in the browser, so the prerendered page never shows a stale count. */
+  const [daysLeft, setDaysLeft] = useState<number | null>(null)
+  useEffect(() => {
+    const to = seminar?.countdownTo
+    const d = to ? Math.ceil((new Date(to).getTime() - Date.now()) / 86400000) : 0
+    setDaysLeft(d > 0 ? d : null)
+  }, [seminar?.countdownTo])
 
   /* A signed-in current member RSVPs instead of registering when the event is
    * free with membership; once they are on the list the buttons say so. */
@@ -112,7 +154,7 @@ export default function SeminarPage({ param }: { param?: string }) {
       : s.cat === 'internship'
         ? 'MEMBER PRIORITY'
         : s.memPrice === 0 && s.fullPrice > 0
-          ? 'FREE FOR MEMBERS'
+          ? 'INCLUDED IN MEMBERSHIP'
           : save > 0
             ? `MEMBERS: $${money(s.memPrice ?? 0)}`
             : ''
@@ -140,82 +182,45 @@ export default function SeminarPage({ param }: { param?: string }) {
     if (target) target.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const related = Object.keys(SEMINARS)
-    .filter((k) => k !== key)
-    .slice(0, 3)
+  /* The bottom button does what the session's own button does when there is
+   * only one session to choose; with several (or none open) it scrolls up. */
+  /* Every registration button: open the sign-up window when there is one
+   * choice and it is open to this visitor; otherwise go to the dates (pick a
+   * weekend, join first, or see that it opens soon). */
+  const onBottom = () => {
+    if (!sessions.length && s.noSess?.act) { onRegister(); return }
+    if (s.regBand && (overlay?.open ?? true)) { onRegister(); return }
+    const only = sessions.length === 1 ? sessions[0]! : null
+    if (only) {
+      const open = only.reg ? catalog.byKey[only.reg]?.open === true : !only.soon && !only.apply
+      const membersOnly = only.members === true && !(signedIn && access.tier === 'member')
+      if (open && !membersOnly) {
+        if (only.reg && only.reg !== key) register(only.reg)
+        else onRegister()
+        return
+      }
+    }
+    scrollToRegistration()
+  }
 
-  return (
-    <>
-      <div className="hero-img short">
-        <div
-          className={`bg ${s.img ?? ''}`}
-          id="sd-img"
-          style={
-            s.photo
-              ? {
-                  backgroundImage: `url(/images/${s.photo}.webp)`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
-              : undefined
-          }
-        />
-        <div className="duo" />
-        <div className="duo2" />
-        <div className="scrim" />
-        <div className="wrap inner">
-          <div className="crumbs">
-            <Link to="/">HOME</Link> <b>/</b> <Link to="/seminars">SEMINARS</Link> <b>/</b>{' '}
-            <span>{s.title.toUpperCase()}</span>
-          </div>
-          <div className="kick">{s.kicker}</div>
-          <h1>{s.title}</h1>
-          <p className="sub">{s.sub}</p>
-        </div>
-      </div>
+  /* Related training follows the path a doctor takes: the seminar before this
+   * one and the two after it. Near either end the window slides so there are
+   * always three. Pages off the path (Internships) show its start. */
+  const FLOW = ['intro', 'fund1', 'fund2', 'fund3', 'intensive', 'bootcamp', 'conference'].filter((k) => SEMINARS[k])
+  const at = FLOW.indexOf(key)
+  const from = at < 0 ? 0 : Math.max(0, Math.min(at - 1, FLOW.length - 4))
+  const related = FLOW.slice(from, from + 4).filter((k) => k !== key).slice(0, 3)
 
-      <div className="wrap">
-        <div className="facts">
-          <div className="fact">
-            <span>DATES</span>
-            <b>{s.dates}</b>
-          </div>
-          <div className="fact">
-            <span>LOCATION</span>
-            <b>{s.loc}</b>
-          </div>
-          <div className="fact">
-            <span>LEVEL</span>
-            <b>{s.level}</b>
-          </div>
-          <div className="fact">
-            <span>FORMAT</span>
-            <b>{s.format}</b>
-          </div>
-          <div className="fact">
-            <span>TUITION</span>
-            <b>
-              {s.price}
-              {priceNote && <em>{priceNote}</em>}
-            </b>
-          </div>
-        </div>
+  /* Pages with a story follow the homepage's marketing flow; one button
+   * wording runs through the whole page and leads to the dates. */
+  const story = s.story
+  const cta = (
+    <button type="button" className="b lg p-btn" onClick={onBottom}>
+      {regLabel(s.ctaBtn ?? 'Register Now')}
+    </button>
+  )
 
-        <div className="memberbar">
-          <div>
-            <div className="mb-t">{memberBanner}</div>
-            <div className="mb-s">
-              Every seminar, every time — conference registration alone covers most of a year of
-              membership.
-            </div>
-          </div>
-          <Link className="b sm" to="/membership">
-            Become a Member &amp; Save
-          </Link>
-        </div>
-      </div>
-
-      {!s.hideSess && (
+  const sessionsSec = !s.hideSess && (
         <section className="tight" id="sd-sessions-sec">
           <div className="wrap">
             <div className="kick">{sessions.length ? 'Dates & Locations' : (s.noSess?.kick ?? 'Dates & Locations')}</div>
@@ -249,18 +254,30 @@ export default function SeminarPage({ param }: { param?: string }) {
                     </p>
                   </div>
                   <div className="ns-cta">
+                    {s.noSess?.act ? (
+                      /* An open-enrollment course (the free Intro) starts from here. */
+                      <button type="button" className="b sm p-btn" onClick={onRegister}>
+                        {regLabel(s.noSess.btn ?? 'Start Now')}
+                      </button>
+                    ) : (
                     <Link
                       className={`b sm ${s.noSess?.primary ? 'p-btn' : 's-btn on-light'}`}
                       to="/contact"
                     >
                       {s.noSess?.btn ?? 'Notify Me When Dates Are Set'}
                     </Link>
+                    )}
                   </div>
                 </div>
               ) : (
-                sessions.map((x, i) => (
-                  <div className={`sess${x.soon ? ' soon' : ''}`} key={`${x.city}-${i}`}>
-                    {x.flag && <span className="flag">{x.flag}</span>}
+                sessions.map((x, i) => {
+                  const live = x.reg ? catalog.byKey[x.reg] : undefined
+                  const soon = x.reg ? live?.open !== true : x.soon
+                  const membersOnly = x.members === true && !(signedIn && access.tier === 'member')
+                  const flag = live?.seatFlag ?? x.flag
+                  return (
+                  <div className={`sess${soon ? ' soon' : ''}`} key={`${x.city}-${i}`}>
+                    {flag && <span className="flag">{flag}</span>}
                     <div className="top">
                       <div className="cal">
                         <div className="mo">{x.mo}</div>
@@ -292,7 +309,7 @@ export default function SeminarPage({ param }: { param?: string }) {
                           </>
                         ) : s.memPrice === 0 ? (
                           <>
-                            <span className="full">${money(s.fullPrice)}</span>{' '}
+                            {s.fullPrice > 0 && <><span className="full">${money(s.fullPrice)}</span>{' '}</>}
                             <span className="mem">FREE</span>
                             <span className="lbl">WITH AOI MEMBERSHIP</span>
                           </>
@@ -309,12 +326,12 @@ export default function SeminarPage({ param }: { param?: string }) {
                         )}
                       </div>
                       <div className="seats">
-                        <b>{x.seats}</b>
-                        <span>{x.soon ? 'OPENING SOON' : 'UPDATED WEEKLY'}</span>
+                        <b>{soon ? x.seats : (live?.seats ?? x.seats)}</b>
+                        <span>{soon ? 'OPENING SOON' : 'UPDATED WEEKLY'}</span>
                       </div>
                     </div>
                     <div className="bot">
-                      {x.soon ? (
+                      {soon ? (
                         <button
                           type="button"
                           className="b sm s-btn on-light"
@@ -330,35 +347,30 @@ export default function SeminarPage({ param }: { param?: string }) {
                         <Link className="b sm p-btn" to="/contact">
                           Apply Now
                         </Link>
+                      ) : membersOnly ? (
+                        <Link className="b sm s-btn on-light" to="/membership">
+                          Members Only — Join
+                        </Link>
                       ) : (
                         <button
                           type="button"
                           className="b sm p-btn"
-                          onClick={onRegister}
+                          onClick={x.reg && x.reg !== key ? () => register(x.reg!) : onRegister}
                         >
                           {attending ? '\u2713 Attending' : rsvpMode ? 'RSVP' : `Register — ${x.city.split(',')[0]}`}
                         </button>
                       )}
                     </div>
                   </div>
-                ))
+                  )
+                })
               )}
             </div>
           </div>
         </section>
-      )}
+  )
 
-      <section className="tight" style={{ paddingTop: '20px' }}>
-        <div className="wrap grid2" style={{ gap: '56px', alignItems: 'start' }}>
-          <div>
-            <div className="kick">About This Event</div>
-            <h2 className="t" style={{ fontSize: '26px' }}>
-              {s.h2}
-            </h2>
-            <div className="goldrule" />
-            <div className="prose" dangerouslySetInnerHTML={{ __html: s.overview }} />
-          </div>
-          <div>
+  const videoEl = (
             <div>
               {s.mux ? (
                 <>
@@ -383,41 +395,136 @@ export default function SeminarPage({ param }: { param?: string }) {
                     title={`${s.title} — preview video`}
                   />
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  className="video"
-                  onClick={() => toast('A preview film for this event is coming soon.')}
-                >
-                  <div className="play">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--color-surface-inverse)">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                  <span className="lbl">VIDEO — {s.title.toUpperCase()} PREVIEW</span>
-                  <span className="dur">1:45</span>
-                </button>
-              )}
+              ) : null}
             </div>
-            <div className="memberprice">
-              <div className="mp-h">Member pricing</div>
-              <p>{s.member}</p>
-              <Link className="t-link" to="/membership">
-                About Membership<span className="a">→</span>
-              </Link>
+  )
+
+  /* The About section normally follows the marketing story; a page can put
+   * it first instead (the conference leads with its theme). */
+  const aboutFirst = Boolean(story && s.aboutFirst)
+  const aboutSec = (
+      <section className="tight" style={{ paddingTop: '20px' }}>
+          <div className={story ? 'wrap' : 'wrap grid2'} style={story ? undefined : { gap: '56px', alignItems: 'start' }}>
+            <div className={story ? 'about-wide' : undefined}>
+              <div className="kick">About This Event</div>
+              <h2 className="t" style={{ fontSize: '26px' }}>
+                {s.h2}
+              </h2>
+              <div className="goldrule" />
+              <div className="prose" dangerouslySetInnerHTML={{ __html: s.overview }} />
+            </div>
+            {!story && (
+            <div>
+              {videoEl}
+              <div className="memberprice">
+                <div className="mp-h">Member pricing</div>
+                <p>{s.member}</p>
+                <Link className="t-link" to="/membership">
+                  About Membership<span className="a">→</span>
+                </Link>
+              </div>
+            </div>
+            )}
+          </div>
+        </section>
+  )
+
+  /* The registration band sits at the bottom, or near the top on a page that
+   * leads with its About section (the conference). */
+  const regSec = s.regBand && (
+        <section className="tight" id="sd-reg-sec" style={{ paddingTop: '8px' }}>
+          <div className="wrap">
+            <div className="regband">
+              <div className="rb-top">
+                <div className="rb-kick">Registration</div>
+                <h2>{s.regBand.h ?? `Register for ${s.title}`}</h2>
+                <div className="rb-rule" />
+                <p className="rb-sub">{s.regBand.sub ?? `${s.dates} · ${s.loc}`}</p>
+              </div>
+              {rsvpMode && (
+                <div className="rb-member">
+                  <b>{attending ? 'You\u2019re on the attendee list.' : 'You\u2019re an AOI member \u2014 your seat is included.'}</b>
+                  <span>{attending ? 'Your RSVP is confirmed. Details and reminders will follow as the date approaches.' : 'RSVP for yourself below. The only optional charge is the CE credit certificate.'}</span>
+                </div>
+              )}
+              <div className="rb-tiers" style={rsvpMode ? { opacity: .55 } : undefined}>
+                {s.regBand.tiers.map((tier) => (
+                  <div className={`rt${tier.hi ? ' hi' : ''}`} key={tier.k}>
+                    {tier.flag && <span className="rt-flag">{tier.flag}</span>}
+                    <div className="rt-k">{tier.k}</div>
+                    <div className="rt-p">{tier.p}</div>
+                    <div className="rt-n">{tier.n}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="rb-go">
+                <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending)}>
+                  {regLabel(s.regBand.btn ?? 'Register Now')}
+                </button>
+                {!rsvpMode && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+  )
 
-      {speakers.length > 0 && (
-        <section className="tight" style={{ paddingTop: '8px' }}>
+  const facultySec = (
+      speakers.length > 0 && (
+        <section className="tight" style={{ paddingTop: '8px' }} id="presenters">
           <div className="wrap">
-            <div className="kick">Faculty</div>
+            <div className="kick">{s.speakerFaces ? 'Presenters' : 'Faculty'}</div>
             <h2 className="t" style={{ fontSize: '26px' }}>
-              Your instructors
+              {s.speakerFaces ? `${speakers.length} presenters, one weekend` : 'Your instructors'}
             </h2>
             <div className="goldrule" />
+            {s.speakerFaces && (() => {
+              /* Pick a presenter on the left; their bio and sessions show on the
+               * right (below, on a phone). The first presenter shows by default,
+               * so the prerendered page carries a real bio. */
+              const sel = presenter && PEOPLE[presenter] ? presenter : speakers.find((id) => PEOPLE[id])
+              const p = sel ? PEOPLE[sel] : undefined
+              const talks = sel ? agenda.flatMap((day) => day.items.filter((it) => it.who?.includes(sel)).map((it) => ({ day: day.date ?? day.day, t: `${it.t} ${it.ap.split(' · ')[0]}`, title: it.title }))) : []
+              return (
+                <>
+                  <p className="spres-hint">Tap a presenter to read their bio.<span className="swipe"> Swipe or tap the arrows to see everyone.</span></p>
+                  <div className="spres">
+                    <div className={`spres-strip${stripEnds.start ? ' at-start' : ''}${stripEnds.end ? ' at-end' : ''}`}>
+                    <button type="button" className="spres-arrow prev" aria-label="Previous presenters" disabled={stripEnds.start} onClick={() => moveStrip(-1)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+                    </button>
+                    <div className="spres-grid" role="tablist" aria-label="Presenters" ref={stripRef} onScroll={readStrip}>
+                      {speakers.map((id) => PEOPLE[id] && (
+                        <button type="button" role="tab" aria-selected={id === sel} aria-controls="spres-bio" key={id} className={`spres-face${id === sel ? ' on' : ''}`} onClick={() => setPresenter(id)}>
+                          <span className="ph"><Face id={id} /></span>
+                          <span className="nm">{PEOPLE[id]!.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <button type="button" className="spres-arrow next" aria-label="More presenters" disabled={stripEnds.end} onClick={() => moveStrip(1)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                    </div>
+                    {p && (
+                      <div className="spres-bio" id="spres-bio" role="tabpanel" aria-live="polite">
+                        <div className="top">
+                          <span className="ph"><Face id={sel!} /></span>
+                          <div>
+                            <h3>{p.name}</h3>
+                            <div className="cred">{p.cred}</div>
+                          </div>
+                        </div>
+                        {talks.length > 0 && (
+                          <ul className="talks">
+                            {talks.map((x) => <li key={x.title}><span>{x.day} · {x.t}</span>{x.title}</li>)}
+                          </ul>
+                        )}
+                        <p>{p.bio}</p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )
+            })()}
             {keynote && PEOPLE[keynote] && (
               <button type="button" className="keynote" onClick={() => openBio(keynote)}>
                 <div className="bd">
@@ -434,7 +541,7 @@ export default function SeminarPage({ param }: { param?: string }) {
                 </div>
               </button>
             )}
-            <div className="spk-grid">
+            {!s.speakerFaces && <div className="spk-grid">
               {rest.map((id) => {
                 const person = PEOPLE[id]
                 if (!person) return null
@@ -452,46 +559,50 @@ export default function SeminarPage({ param }: { param?: string }) {
                   </button>
                 )
               })}
-            </div>
+            </div>}
           </div>
         </section>
-      )}
+      )
+  )
 
-      {s.exhibitors && s.exhibitors.length > 0 && (
-        <section className="tight" style={{ paddingTop: '8px' }}>
+  const sponsorsSec = (
+      s.sponsors && s.sponsors.length > 0 && (
+        <section className="dark tight sponsors">
           <div className="wrap">
-            <div className="kick">Exhibitors &amp; Partners</div>
+            <div className="kick">Sponsors</div>
             <h2 className="t" style={{ fontSize: '26px' }}>
-              The companies serving upper cervical
+              Thank you to this year’s sponsors
             </h2>
             <div className="goldrule" />
-            <p className="exhib-note">
-              Exhibitors from last year&apos;s conference — the 2026 floor is filling now. Interested
-              in exhibiting?{' '}
-              <Link className="t-link" style={{ fontSize: '11px' }} to="/contact">
-                Contact the Institute
-              </Link>
-              .
-            </p>
-            <div className="exhib-grid">
-              {s.exhibitors.map((name) => (
-                <div className="exhib" key={name}>
-                  {name}
-                </div>
+            <div className="spons">
+              {s.sponsors.map((x) => (
+                <a className={`spon${x.light ? ' light' : ''}`} key={x.name} href={x.url} target="_blank" rel="noopener noreferrer">
+                  <img src={`/images/${x.logo}.webp`} alt={x.name} loading="lazy" decoding="async" />
+                </a>
               ))}
             </div>
+            <p className="spon-note">
+              Interested in sponsoring?{' '}
+              <Link className="t-link" to="/contact">
+                Contact the Institute
+              </Link>
+            </p>
           </div>
         </section>
-      )}
+      )
+  )
 
+  const curriculumSec = (
       <section className="mist">
         <div className="wrap">
+          <div className="learn-center">
           <div className="kick">Curriculum</div>
           <h2 className="t" style={{ fontSize: '26px' }}>
             What you&apos;ll learn
           </h2>
           <div className="goldrule" />
-          <div className="learn">
+          </div>
+          <div className="learn learn-centered">
             {s.learn.map((item) => (
               <div className="li" key={item}>
                 <svg
@@ -509,14 +620,24 @@ export default function SeminarPage({ param }: { param?: string }) {
             ))}
           </div>
 
-          {agenda.length > 0 && (
-            <div style={{ marginTop: '44px' }}>
+        </div>
+      </section>
+  )
+
+  const agendaSec = (
+      agenda.length > 0 && (
+        <section className="tight">
+          <div className="wrap">
+            <div id="agenda" className={`agwrap${agendaOpen ? ' open' : ''}`}>
               <div className="kick">Agenda</div>
               <h2 className="t" style={{ fontSize: '26px' }}>
                 How the time is spent
               </h2>
               <div className="goldrule" />
-              <div>
+              <button type="button" className="b sm s-btn on-light agopen" onClick={() => setAgendaOpen(true)}>
+                View the full agenda
+              </button>
+              <div className="agbody">
                 {agenda.length > 1 && (
                   <div className="agtabs" role="tablist">
                     {agenda.map((day, i) => (
@@ -561,81 +682,256 @@ export default function SeminarPage({ param }: { param?: string }) {
                   </div>
                 ))}
               </div>
-              <p className="agenda-hint">TAP ANY INSTRUCTOR PILL FOR THEIR BIO</p>
+              {agenda.some((day) => day.items.some((item) => item.who && item.who.length > 0)) && (
+                <p className="agenda-hint">TAP ANY INSTRUCTOR PILL FOR THEIR BIO</p>
+              )}
             </div>
-          )}
-        </div>
-      </section>
 
-      {s.ce && (
+          </div>
+        </section>
+      )
+  )
+
+  const ceSec = (
+      s.ce && (
         <section className="tight" id="sd-ce">
           <div className="wrap">
             <div className="kick">Continuing Education</div>
             <h2 className="t" style={{ fontSize: '26px' }}>
-              {s.ce.hours} CE hours through {s.ce.sponsor.split(',')[0]}
+              {Number(s.ce.hours)} CE hours through {s.ce.sponsor.split(',')[0]}
             </h2>
             <div className="goldrule" />
-            <p className="lede" style={{ marginBottom: '22px' }}>{s.ce.note}</p>
-            <div className="cegrid">
-              <div className="cecard">
-                <div className="cek">Approved</div>
-                <ul>{s.ce.approved.map(([st, n]) => <li key={st}><b>{st}</b><span>{n}</span></li>)}</ul>
+            <p className="cesum">{s.ce.note}</p>
+            <p className="cesum">
+              <b>CE counts in</b>{' '}
+              {[...s.ce.approved.map(([st]) => st), ...s.ce.auto, ...s.ce.self].sort().join(', ')}.
+              {s.ce.pending.length > 0 && <> <b>Pending:</b> {s.ce.pending.join(', ')}.</>}
+            </p>
+            <details className="cedetails">
+              <summary>Approval numbers, states not covered and special cases</summary>
+              <div className="cegrid">
+                <div className="cecard">
+                  <div className="cek">Approved</div>
+                  <ul>{s.ce.approved.map(([st, n]) => <li key={st}><b>{st}</b><span>{n}</span></li>)}</ul>
+                </div>
+                <div className="cecard">
+                  <div className="cek">Auto-approved</div>
+                  <p>{s.ce.auto.join(' · ')}</p>
+                  <div className="cek" style={{ marginTop: '14px' }}>DC self-reporting</div>
+                  <p>{s.ce.self.join(' · ')}</p>
+                </div>
+                <div className="cecard">
+                  <div className="cek">Not applied for</div>
+                  <p>{s.ce.notApplied.join(' · ')}</p>
+                  <div className="cek" style={{ marginTop: '14px' }}>Special cases</div>
+                  <ul className="plain">{s.ce.special.map(([st, n]) => <li key={st}><b>{st}</b> {n}</li>)}</ul>
+                </div>
               </div>
-              <div className="cecard">
-                <div className="cek">Auto-approved</div>
-                <p>{s.ce.auto.join(' · ')}</p>
-                <div className="cek" style={{ marginTop: '14px' }}>DC self-reporting</div>
-                <p>{s.ce.self.join(' · ')}</p>
-                <div className="cek" style={{ marginTop: '14px' }}>Pending</div>
-                <p>{s.ce.pending.join(' · ')}</p>
+              <p className="cenote">{s.ce.disclaimer}</p>
+            </details>
+          </div>
+        </section>
+      )
+  )
+
+  return (
+    <div className="sempage">
+      <div className="hero-img short">
+        <div
+          className={`bg ${s.img ?? ''}`}
+          id="sd-img"
+          style={
+            s.photo
+              ? {
+                  backgroundImage: `url(/images/${s.photo}.webp)`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
+              : undefined
+          }
+        />
+        <div className="duo" />
+        <div className="duo2" />
+        <div className="scrim" />
+        <div className="wrap inner">
+          <div className="crumbs">
+            <Link to="/">HOME</Link> <b>/</b> <Link to="/seminars">SEMINARS</Link> <b>/</b>{' '}
+            <span>{s.title.toUpperCase()}</span>
+          </div>
+          <div className="kick">{s.kicker}</div>
+          <h1>{s.title}</h1>
+          <p className="sub">{s.sub}</p>
+          {story && (
+            <>
+              <StoryGoals story={story} />
+              <div className="sherocta">{cta}</div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="wrap">
+        <div className="facts">
+          <div className="fact">
+            <span>DATES</span>
+            <b>{s.dates}</b>
+          </div>
+          <div className="fact">
+            <span>LOCATION</span>
+            <b>{s.loc}</b>
+          </div>
+          <div className="fact">
+            <span>LEVEL</span>
+            <b>{s.level}</b>
+          </div>
+          <div className="fact">
+            <span>FORMAT</span>
+            <b>{s.format}</b>
+          </div>
+          <div className="fact">
+            <span>TUITION</span>
+            <b>
+              {s.price}
+              {priceNote && <em>{priceNote}</em>}
+            </b>
+          </div>
+        </div>
+        {s.ruleNote && <p className="rulenote">{s.ruleNote}</p>}
+
+        <div className="memberbar">
+          <div>
+            <div className="mb-t">{memberBanner}</div>
+            {s.mbSub && <div className="mb-s">{s.mbSub}</div>}
+          </div>
+          <Link className="b sm" to="/membership">
+            Become a Member &amp; Save
+          </Link>
+        </div>
+      </div>
+
+      {!story && sessionsSec}
+
+      {aboutFirst && aboutSec}
+
+      {s.stats && (
+        <section className="dark tight scd">
+          <div className="wrap">
+            {daysLeft !== null && (
+              <div className="scd-big">
+                <span className="n">{daysLeft}</span>
+                <span className="l">{daysLeft === 1 ? 'Day' : 'Days'} to go</span>
               </div>
-              <div className="cecard">
-                <div className="cek">Not applied for</div>
-                <p>{s.ce.notApplied.join(' · ')}</p>
-                <div className="cek" style={{ marginTop: '14px' }}>Special cases</div>
-                <ul className="plain">{s.ce.special.map(([st, n]) => <li key={st}><b>{st}</b> {n}</li>)}</ul>
+            )}
+            <div>
+              {s.statsH && <h3>{s.statsH}</h3>}
+              <div className="scd-pills">
+                {s.stats.map(([n, t]) => <span className="pill" key={t}><b>{n}</b> {t}</span>)}
               </div>
+              <div style={{ marginTop: '22px' }}>{cta}</div>
             </div>
-            <p className="cenote">{s.ce.disclaimer}</p>
           </div>
         </section>
       )}
 
-      {s.regBand && (
-        <section className="tight" id="sd-reg-sec" style={{ paddingTop: '8px' }}>
+      {s.featured && (
+        <section className="tight">
           <div className="wrap">
-            <div className="regband">
-              <div className="rb-top">
-                <div className="rb-kick">Registration</div>
-                <h2>{s.regBand.h ?? `Register for ${s.title}`}</h2>
-                <div className="rb-rule" />
-                <p className="rb-sub">{s.regBand.sub ?? `${s.dates} · ${s.loc}`}</p>
-              </div>
-              {rsvpMode && (
-                <div className="rb-member">
-                  <b>{attending ? 'You\u2019re on the attendee list.' : 'You\u2019re an AOI member \u2014 your seat is included.'}</b>
-                  <span>{attending ? 'Your RSVP is confirmed. Details and reminders will follow as the date approaches.' : 'RSVP for yourself below. The only optional charge is the CE credit certificate.'}</span>
+            {s.featured && (
+              <>
+                <div className="kick">Featured Sessions</div>
+                <h2 className="t">A few of the talks you won’t want to miss</h2>
+                <div className="goldrule" />
+                <div className="sfeat">
+                  {s.featured.map((f) => {
+                    const person = PEOPLE[f.who]
+                    return (
+                      <div className="sf" key={f.title}>
+                        <button type="button" className="who" onClick={() => openBio(f.who)}>
+                          <span className="ph"><Face id={f.who} /></span>
+                          <span><span className="nm">{person?.name}</span><span className="when">{f.when}</span></span>
+                        </button>
+                        <h3>{f.title}</h3>
+                        <p>{f.desc}</p>
+                        <button type="button" className="go" onClick={() => { setAgendaDay(f.day); setAgendaOpen(true); document.getElementById('agenda')?.scrollIntoView({ behavior: 'smooth' }) }}>
+                          In the agenda <span aria-hidden="true">→</span>
+                        </button>
+                      </div>
+                    )
+                  })}
                 </div>
-              )}
-              <div className="rb-tiers" style={rsvpMode ? { opacity: .55 } : undefined}>
-                {s.regBand.tiers.map((tier) => (
-                  <div className={`rt${tier.hi ? ' hi' : ''}`} key={tier.k}>
-                    {tier.flag && <span className="rt-flag">{tier.flag}</span>}
-                    <div className="rt-k">{tier.k}</div>
-                    <div className="rt-p">{tier.p}</div>
-                    <div className="rt-n">{tier.n}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="rb-go">
-                <button type="button" className="b lg p-btn" onClick={onRegister} disabled={Boolean(attending)}>
-                  {regLabel(s.regBand.btn ?? 'Register Now')}
-                </button>
-                {!rsvpMode && s.regBand.note && <p className="rb-note">{s.regBand.note}</p>}
-              </div>
-            </div>
+                {s.speakerFaces && speakers.length > 0 && (
+                  <button type="button" className="b sm s-btn on-light" style={{ marginTop: '26px' }} onClick={() => document.getElementById('presenters')?.scrollIntoView({ behavior: 'smooth' })}>
+                    Meet all {speakers.length} presenters
+                  </button>
+                )}
+              </>
+            )}
           </div>
         </section>
+      )}
+
+      {aboutFirst && regSec}
+
+      {story && (
+        <>
+          <StoryProblem story={story} />
+          <StorySolution story={story} cta={cta} />
+          <StoryBenefits story={story} />
+          <StoryWhy story={story} />
+          <StoryData story={story} />
+          <StorySteps story={story} cta={cta} />
+        </>
+      )}
+
+      {/* Pages with a story say all of this in How We Help; the About text
+       * still feeds the page's search description. */}
+      {!story && aboutSec}
+
+      {story && !aboutFirst ? (
+        /* Seminar pages: proof and fit come before the detail, then dates,
+         * the instructors and the questions. */
+        <>
+          <StoryVoices story={story} video={s.mux || s.video ? videoEl : undefined} />
+          <StoryFit story={story} />
+          {curriculumSec}
+          {agendaSec}
+          {sessionsSec}
+          {facultySec}
+          <StoryFaq story={story} />
+          {ceSec}
+          {sponsorsSec}
+          {regSec}
+        </>
+      ) : aboutFirst && story ? (
+        /* The conference: presenters, then doctors' own words when there are
+         * any, fit, sponsors, then the detail. */
+        <>
+          {facultySec}
+          <StoryVoices story={story} video={s.mux || s.video ? videoEl : undefined} />
+          <StoryFit story={story} />
+          {sponsorsSec}
+          {curriculumSec}
+          {agendaSec}
+          {ceSec}
+          <StoryFaq story={story} />
+        </>
+      ) : (
+        <>
+          {facultySec}
+          {sponsorsSec}
+          {curriculumSec}
+          {agendaSec}
+          {ceSec}
+          {story && (
+            <>
+              <StoryVoices story={story} video={s.mux || s.video ? videoEl : undefined} />
+              <StoryFit story={story} />
+              <StoryFaq story={story} />
+              {sessionsSec}
+            </>
+          )}
+          {!aboutFirst && regSec}
+        </>
       )}
 
       <section className="ctaband tight">
@@ -644,7 +940,7 @@ export default function SeminarPage({ param }: { param?: string }) {
             <h3>{s.ctaH}</h3>
             <p>{s.ctaP}</p>
           </div>
-          <button type="button" className="b lg p-btn" onClick={scrollToRegistration}>
+          <button type="button" className="b lg p-btn" onClick={onBottom}>
             {regLabel(s.ctaBtn ?? 'Register Now')}
           </button>
         </div>
@@ -664,6 +960,9 @@ export default function SeminarPage({ param }: { param?: string }) {
           </div>
         </div>
       </section>
-    </>
+      <button type="button" className={`totop${showTop ? ' show' : ''}`} aria-label="Back to top" tabIndex={showTop ? 0 : -1} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+      </button>
+    </div>
   )
 }

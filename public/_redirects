@@ -23,5 +23,20 @@
 /conference            /seminars/annual-conference-2026       301
 /annual-conference     /seminars/annual-conference-2026       301
 /intro                 /seminars/intro-to-advo                301
+/seminars/advo-intensive-west       /seminars/advo-intensive       301
+/seminars/advo-intensive-west/*     /seminars/advo-intensive/:splat 301
 /internships           /seminars/internships                  301
 /articles-research     /articles                              301
+
+# Registration emails and payment links use the event's own address, which
+# can differ from its page. Forward them (302: the targets change by year).
+# A new year's Intensive weekends need their lines here until the emails use
+# the page address (#21).
+/seminars/advo-bootcamp                 /seminars/advo-bootcamp-2027             302
+/seminars/advo-bootcamp/*               /seminars/advo-bootcamp-2027/:splat      302
+/seminars/advo-intensive-2027-feb       /seminars/advo-intensive                 302
+/seminars/advo-intensive-2027-feb/*     /seminars/advo-intensive/:splat          302
+/seminars/advo-intensive-2027-apr       /seminars/advo-intensive                 302
+/seminars/advo-intensive-2027-apr/*     /seminars/advo-intensive/:splat          302
+/seminars/advo-intensive-2027-aug       /seminars/advo-intensive                 302
+/seminars/advo-intensive-2027-aug/*     /seminars/advo-intensive/:splat          302

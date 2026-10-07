@@ -3,8 +3,10 @@ import { hydrateRoot, createRoot } from 'react-dom/client'
 import { BrowserRouter } from '@/lib/router'
 import App from './App'
 import { initSession } from './lib/supabase'
+import { guardVeils } from './lib/veil'
 
 initSession()
+guardVeils()
 
 const container = document.getElementById('root')!
 const tree = (

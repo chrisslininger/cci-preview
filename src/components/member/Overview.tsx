@@ -7,6 +7,8 @@
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
+import { useRegKey } from '@/lib/queries/CatalogProvider'
+import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { myRegistrations, upcomingEvents, myCompletions } from '@/lib/queries/member'
 import type { Registration, PublicEvent, Completion } from '@/lib/queries/member'
 import { RoleChips } from './MemberShell'
@@ -32,10 +34,14 @@ type Card = {
   detail: string
   go: string
   tab: string
+  /** Opens the sign-up window instead of a tab. */
+  reg?: string
 }
 
 export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) {
   const { access } = useAccess()
+  const regKey = useRegKey()
+  const register = useRegistration()
   const [regs, setRegs] = useState<Registration[] | null>(null)
   const [events, setEvents] = useState<PublicEvent[] | null>(null)
   const [ce, setCe] = useState<Completion[] | null>(null)
@@ -71,6 +77,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
   if (next) {
     const d = daysUntil(next.starts_at)
     const already = registeredSlugs.has(next.slug)
+    const reg = already ? null : regKey(next.slug)
     cards.push({
       key: 'next-event',
       urgency: already ? 'ok' : d !== null && d <= 30 ? 'now' : 'soon',
@@ -81,6 +88,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
         : `until ${next.title ?? 'this event'}${next.location ? ` · ${next.location}` : ''}`,
       go: already ? 'View the event →' : 'Register →',
       tab: 'events',
+      ...(reg ? { reg } : {}),
     })
   }
 
@@ -94,7 +102,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
         ? `renews ${new Date(person.membership_expires).toLocaleDateString()}`
         : access.tier === 'member'
           ? 'active'
-          : 'Members save $200 on every seminar and attend the conference free',
+          : 'Members save $200 on every Intensive and $600 on Bootcamp, and the Monthly Huddle and the Annual Conference are included',
     go: access.tier === 'member' ? 'Manage membership →' : 'Become a member →',
     tab: 'membership',
   })
@@ -181,7 +189,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
             type="button"
             className={`ma-card ${card.urgency}`}
             key={card.key}
-            onClick={() => onOpen(card.tab)}
+            onClick={() => (card.reg ? register(card.reg) : onOpen(card.tab))}
           >
             <span className="rail" />
             <span className="k">{card.label}</span>

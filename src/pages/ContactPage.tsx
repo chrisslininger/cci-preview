@@ -93,7 +93,7 @@ export default function ContactPage() {
           <div className="kick">How Can We Help You?</div>
           <h1>Contact Us</h1>
           <p className="sub">
-            For general enquiries, use the form — or call us directly. We respond within one
+            For general inquiries, use the form — or call us directly. We respond within one
             business day.
           </p>
         </div>
