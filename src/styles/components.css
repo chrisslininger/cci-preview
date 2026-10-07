@@ -70,7 +70,11 @@
   .mpanel .grp{font-family: var(--font-label); font-weight: 600;font-size: 10px;letter-spacing:.22em;color:var(--color-brand-accent);padding:16px 28px 6px}
   .mpanel .sub{padding-left:44px;font-weight:500;font-size:13.5px;color:color-mix(in oklab, var(--color-surface-base) 70%, transparent)}
   @media(max-width:1020px){.navrow{display:none}.burger{display:block}.logorow{grid-template-columns:auto 1fr auto;padding:12px 0}.logo{justify-content:flex-start}.logo .logoimg{height:52px}.lr-l{order:3;justify-content:flex-end}.hdr-btn{padding:10px 16px;font-size:10px}}
-  @media(max-width:620px){.logo .logoimg{height:42px}.hdr-btn{display:none}}
+  /* Phones: the gold button gives way to a quiet outlined "Log in" that matches the burger beside it. */
+  .hdr-login{display:none;align-items:center;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;line-height:1;white-space:nowrap;color:color-mix(in oklab, var(--color-surface-base) 85%, transparent);text-decoration:none;padding:0 12px;height:41px;border:1.5px solid color-mix(in oklab, var(--color-surface-base) 30%, transparent);border-radius:3px;transition:color .2s, border-color .2s}
+  .hdr-login:hover{color:var(--color-surface-base);border-color:color-mix(in oklab, var(--color-surface-base) 55%, transparent)}
+  .hdr-login:focus-visible{outline:2px solid var(--color-brand-accent);outline-offset:3px}
+  @media(max-width:620px){.logo .logoimg{height:42px}.hdr-btn{display:none}.hdr-login{display:inline-flex}}
 
   /* ============ PAGE MECHANICS ============ */
   .page{display:none}
@@ -246,6 +250,8 @@
   .sess.soon .cal{background:var(--color-content-muted)}
   .sess .flag{position:absolute;top:14px;right:-1px;background:var(--color-brand-primary);color:var(--color-surface-base);font-family: var(--font-label); font-weight: 600;font-size: 10px;letter-spacing:.14em;padding:4px 10px;border-radius:3px 0 0 3px}
   @media(max-width:960px){.sessions{grid-template-columns:1fr}.featintro{grid-template-columns:1fr !important}.featintro > div:first-child{min-height:180px !important}}
+  /* Phones: price and seat status stack instead of squeezing side by side. */
+  @media(max-width:480px){.sess .mid{flex-direction:column;align-items:flex-start;gap:12px}.sess .seats{text-align:left;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px}.sess .seats b{display:inline}}
   .page-home .hero-img h1{font-size:54px;max-width:760px}
   .hero-flex{display:grid;grid-template-columns:1fr;gap:60px;align-items:center;max-width:880px}
   /* When the background video is actually playing, lighten the treatment so the
@@ -569,7 +575,10 @@ footer .flink:hover{color:var(--color-surface-base)}
   .agopen{display:none;margin-top:6px}
   .totop{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom, 0px));z-index:40;width:40px;height:40px;border-radius:50%;border:1px solid color-mix(in oklab, var(--color-surface-base) 25%, transparent);background:color-mix(in oklab, var(--color-surface-inverse) 72%, transparent);color:var(--color-surface-base);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .25s ease, transform .25s ease;backdrop-filter:blur(4px)}
   .totop.show{opacity:.85;transform:none;pointer-events:auto}
-  .totop:hover,.totop:focus-visible{opacity:1;outline:none}
+  .totop:hover,.totop:focus-visible{opacity:1}
+  .totop:focus-visible{outline:2px solid var(--color-brand-accent);outline-offset:3px}
+  /* Phones: a fixed button would sit on the text and the Reserve Your Seat button. */
+  @media(max-width:700px){.totop{display:none}}
   .scount{margin-top:4px;font-family:var(--font-label);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-brand-accent-bright)}
   .sfeat{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:28px}
   .sf{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -2756,10 +2765,14 @@ a.othercard {
     .page-home .cfhero h1{max-width:none}
     .cfh-card{max-width:460px}
   }
+  /* The register button under the headline exists for phones only; on wider
+   * screens the card beside the copy carries it. */
+  .cfh-lead-cta{display:none}
   @media (max-width:760px){
     .page-home .cfhero .inner{padding:84px 28px 72px}
     .page-home .cfhero h1{font-size:42px}
     .cfh-theme{font-size:19px;margin-top:16px}
+    .cfh-lead-cta{display:block;margin-top:22px}
     .page-home .cfhero p.sub{font-size:15.5px;margin-top:14px}
     .cfh-flags{row-gap:10px;font-size:10.5px;letter-spacing:.2em}
     .cfh-line{margin-top:18px;column-gap:10px;font-size:10.5px;letter-spacing:.12em}

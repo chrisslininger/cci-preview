@@ -50,10 +50,18 @@ export default function AccountMenu() {
   }, [open])
 
   if (!mounted || !signedIn) {
+    // Two renderings of one link: the gold button on wide screens, and a quiet
+    // outlined "Log in" beside the burger on phones, where the button would
+    // crowd the logo. CSS shows one at a time, so only one is ever read out.
     return (
-      <Link className="b p-btn hdr-btn" to="/account">
-        Member Login
-      </Link>
+      <>
+        <Link className="b p-btn hdr-btn" to="/account">
+          Member Login
+        </Link>
+        <Link className="hdr-login" to="/account" aria-label="Member Login">
+          Log in
+        </Link>
+      </>
     )
   }
 
