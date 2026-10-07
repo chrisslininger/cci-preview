@@ -6,6 +6,11 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https:; media-src 'self' blob: https://*.mux.com; connect-src 'self' https://hwbvbqmunjhkpefubfhq.supabase.co https://*.mux.com; frame-src https://player.mux.com https://player.vimeo.com https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'
+
+# Self-hosted fonts never change under the same name either.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
 
 # Fingerprinted build output never changes under the same name.
 /assets/*
