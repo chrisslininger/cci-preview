@@ -108,6 +108,8 @@ export type Seminar = {
   studentPrice?: number
   facultyFree?: boolean
   mbText?: string
+  /** The second line of the membership bar under the hero. */
+  mbSub?: string
   sessions: string[][]
   hideSess?: boolean
   regBand?: RegBand

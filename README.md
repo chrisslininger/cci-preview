@@ -22,11 +22,13 @@ page by page and renders identically.
 npm install
 npm run build      # bundle, prerender every route, verify, write the SEO files
 npm run serve      # preview the built site at http://localhost:4173
-npm run typecheck  # TypeScript, strict
+npx tsc --noEmit -p tsconfig.json   # TypeScript, strict (also: npm run typecheck)
 ```
 
-`typecheck` is deliberately kept out of `build` so a type error can never block
-a deploy of working content. Run it before committing.
+The type check is deliberately kept out of `build` so a type error can never
+block a deploy of working content. It must be clean all the same: the GitHub
+Action in `.github/workflows/check.yml` runs the build and the type check on
+every pull request and on every push to `main`.
 
 `npm run build` fails if any page would reach a crawler without a title,
 description, canonical, JSON-LD, an `<h1>`, or real text. That gate is the point

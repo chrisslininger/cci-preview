@@ -149,7 +149,7 @@ export default function InternshipsPanel() {
         {PREC_APPROVAL.map((c) => <ChkRow key={c.key} id={`p${p.id}_${c.key}`} label={c.label} done={p.approval?.[c.key]} pending={pending[pk('approval', p.id, c.key)]} canEdit={canManage} onPend={() => pend(pk('approval', p.id, c.key))} onDate={(d) => setPending((s) => ({ ...s, [pk('approval', p.id, c.key)]: d }))} onLock={() => void lockPrec(p, 'approval', c.key)} onUntick={() => p.approval?.[c.key] ? void untickPrec(p, 'approval', c.key) : unpend(pk('approval', p.id, c.key))} />)}
         {canManage && <div className="acts">
           {ak in action
-            ? <LockStrip label="Certified date" date={action[ak]} onDate={(d) => act(ak, d)} onLock={async () => { if (await run(certifyPreceptor(p, action[ak], who), `${name} is now a certified preceptor · ${fmtD(action[ak])}`)) { unact(ak); setPf('certified') } }} onCancel={() => unact(ak)} lockText="Lock in & certify preceptor" />
+            ? <LockStrip label="Certified date" date={action[ak]!} onDate={(d) => act(ak, d)} onLock={async () => { if (await run(certifyPreceptor(p, action[ak]!, who), `${name} is now a certified preceptor · ${fmtD(action[ak])}`)) { unact(ak); setPf('certified') } }} onCancel={() => unact(ak)} lockText="Lock in & certify preceptor" />
             : <button type="button" className="b p-btn sm" disabled={!ready} onClick={() => act(ak)}>✓ Certify as preceptor</button>}
           {!ready && <span className="hint">Complete &amp; date all five criteria to enable certification.{!hasLevel2(p.people) ? ' Level 2 is read from the certification register — award it there.' : ''}</span>}
         </div>}
@@ -179,7 +179,7 @@ export default function InternshipsPanel() {
           <div className="sec">Paired <span className="r">the preceptor's record and this internship now travel together</span></div>
           <div className="tick ok"><i /><div>Paired with {pr ? fullName(pr.people, pr.person_name) : i.preceptor_name} at {st?.name ?? '—'}{i.paired_at && <small>✓ {fmtD(i.paired_at)} · {i.paired_by_name}</small>}</div></div>
           {canManage && <div className="acts">{ak in action
-            ? <LockStrip label="Start date" date={action[ak]} onDate={(d) => act(ak, d)} onLock={async () => { if (await run(startInternship(i, action[ak], who), `Internship started ${fmtD(action[ak])}${path ? ` · ${name} is now on the ${path === 'student' ? 'Student' : 'Level 1'} pathway` : ''}`)) { unact(ak); setInf('current') } }} onCancel={() => unact(ak)} lockText="Lock in & start internship" />
+            ? <LockStrip label="Start date" date={action[ak]!} onDate={(d) => act(ak, d)} onLock={async () => { if (await run(startInternship(i, action[ak]!, who), `Internship started ${fmtD(action[ak])}${path ? ` · ${name} is now on the ${path === 'student' ? 'Student' : 'Level 1'} pathway` : ''}`)) { unact(ak); setInf('current') } }} onCancel={() => unact(ak)} lockText="Lock in & start internship" />
             : <><button type="button" className="b p-btn sm" onClick={() => act(ak, i.start_date ?? today())}>▶ Start internship</button><button type="button" className="b s-btn on-light sm" onClick={() => setPairing(i)}>Change pairing</button><span className="hint">Starting opens the three-item checklist{path ? ` and puts ${name} on the ${path === 'student' ? 'Student' : 'Level 1'} certification pathway` : ''}.</span></>}</div>}
         </> : <>
           <div className="sec">Not yet paired <span className="r">looking for a home</span></div>
@@ -191,7 +191,7 @@ export default function InternshipsPanel() {
         <div className="iprog"><i style={{ width: `${Math.round(done / INT_CRITERIA.length * 100)}%` }} /></div>
         {INT_CRITERIA.map((c) => <ChkRow key={c.key} id={`i${i.id}_${c.key}`} label={c.label} done={i.progress?.[c.key]} pending={pending[pk('int', i.id, c.key)]} canEdit={canManage} hint={c.sync === 'exam' && path && !i.progress?.[c.key] ? 'Locking this also ticks the exam on the certification pathway' : undefined} onPend={() => pend(pk('int', i.id, c.key))} onDate={(d) => setPending((s) => ({ ...s, [pk('int', i.id, c.key)]: d }))} onLock={() => void lockInt(i, c.key)} onUntick={() => i.progress?.[c.key] ? void untickInt(i, c.key) : unpend(pk('int', i.id, c.key))} />)}
         {canManage && <div className="acts">{ak in action
-          ? <LockStrip label="Completion date" date={action[ak]} onDate={(d) => act(ak, d)} onLock={async () => { if (await run(completeInternship(i, action[ak], who, reqs), `Internship completed ${fmtD(action[ak])} · ${who.name}`)) { unact(ak); setInf('past'); if (path) setTimeout(() => toast(`⇄ Also ticked the training pathway on ${name}’s ${path === 'student' ? 'Student' : 'Level 1'} pathway`), 700) } }} onCancel={() => unact(ak)} lockText="Lock in & complete internship" />
+          ? <LockStrip label="Completion date" date={action[ak]!} onDate={(d) => act(ak, d)} onLock={async () => { if (await run(completeInternship(i, action[ak]!, who, reqs), `Internship completed ${fmtD(action[ak])} · ${who.name}`)) { unact(ak); setInf('past'); if (path) setTimeout(() => toast(`⇄ Also ticked the training pathway on ${name}’s ${path === 'student' ? 'Student' : 'Level 1'} pathway`), 700) } }} onCancel={() => unact(ak)} lockText="Lock in & complete internship" />
           : <><button type="button" className="b p-btn sm" disabled={!ready} onClick={() => act(ak)}>✓ Complete internship</button><span className="hint">{ready ? 'Completing ticks the training requirement on the certification pathway.' : 'Complete & date all three criteria.'}</span></>}</div>}
       </div>}
     </div>
@@ -385,7 +385,7 @@ function PreceptorDialog({ p, sites, cols, who, onClose, onSaved, onRemoved }: {
       if (r.error) { setSaving(false); return toast(friendly(r.error)) }
       if (r.id) { ids.push(r.id); setCreds((c) => c.map((x) => (x.location_id ? x : { ...x, location_id: r.id! }))) }
     }
-    const approvals = creds.map((c) => ({ id: c.id, college_id: c.college_id, location_id: c.location_id ?? (ids.length === 1 ? ids[0] : null), approved_on: c.approved_on, expires_on: c.expires_on, notes: c.notes ?? null }))
+    const approvals = creds.map((c) => ({ id: c.id, college_id: c.college_id, location_id: c.location_id ?? (ids.length === 1 ? ids[0]! : null), approved_on: c.approved_on, expires_on: c.expires_on, notes: c.notes ?? null }))
     const r = await savePreceptor(isNew ? null : p!.id, { person: pick, status, clean_record: clean, notes, siteIds: ids, approvals }, isNew ? null : p, who)
     setSaving(false)
     if (r.error) return toast(friendly(r.error))
