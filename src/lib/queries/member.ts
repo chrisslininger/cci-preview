@@ -101,6 +101,13 @@ export async function myCompletions(personId: string): Promise<Completion[]> {
   return q.data ?? []
 }
 
+/** An event's Zoom link, asked for on its own so a refusal never blanks the
+ *  rest of the Overview. Null when there is none or this person can't see it. */
+export async function eventZoom(slug: string): Promise<string | null> {
+  const q = await select<{ zoom_url: string | null }>('events', `select=zoom_url&slug=eq.${encodeURIComponent(slug)}&limit=1`)
+  return q.data?.[0]?.zoom_url || null
+}
+
 export async function upcomingEvents(): Promise<PublicEvent[]> {
   const q = await select<PublicEvent>(
     'v_public_events',
