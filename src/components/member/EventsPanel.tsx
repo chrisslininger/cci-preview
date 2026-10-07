@@ -12,7 +12,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useRegKey } from '@/lib/queries/CatalogProvider'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
-import { myRegistrations } from '@/lib/queries/member'
+import { myRegistrations, cancelMyRegistration, requestCancellation } from '@/lib/queries/member'
+import type { Registration } from '@/lib/queries/member'
 import { SLUG_TO_SEMINAR } from '@/content/seminars'
 import CheckinRoom from './CheckinRoom'
 import { useToast } from '@/components/ui/Toast'
@@ -114,8 +115,34 @@ export default function EventsPanel() {
   const [regsFor, setRegsFor] = useState<EventRow | null>(null)
   const [room, setRoom] = useState<number | null>(null)
   const [canCheckin, setCanCheckin] = useState(false)
-  const [mine, setMine] = useState<Set<string>>(new Set())
-  useEffect(() => { void myRegistrations().then((r) => setMine(new Set(r.filter((x) => x.registration_status !== 'cancelled').map((x) => x.events?.slug ?? '').filter(Boolean)))) }, [])
+  /* The member's own live registrations, by event slug. */
+  const [mine, setMine] = useState<Map<string, Registration>>(new Map())
+  const loadMine = useCallback(async () => { const r = await myRegistrations(); setMine(new Map(r.filter((x) => x.registration_status !== 'cancelled' && x.events?.slug).map((x) => [x.events!.slug!, x]))) }, [])
+  useEffect(() => { void loadMine() }, [loadMine])
+  const [cancelFor, setCancelFor] = useState<EventRow | null>(null)
+  const [requestFor, setRequestFor] = useState<EventRow | null>(null)
+  const [reason, setReason] = useState('')
+  const [sending, setSending] = useState(false)
+  /* Free if the Institute took no money for it: an RSVP, a comped seat, a free intro. */
+  const freeReg = (r: Registration | undefined) => !!r && (r.payment_status === 'free' || !r.price_paid_cents)
+  const onCancelRsvp = async (e: EventRow) => {
+    const r = mine.get(e.slug ?? ''); if (!r?.id) return
+    setSending(true)
+    const x = await cancelMyRegistration(r.id)
+    setSending(false); setCancelFor(null)
+    if (x.error) return toast('Your RSVP could not be canceled just now. Please try again, or contact us.')
+    setOpen(null); await Promise.all([loadMine(), load()]); toast('Your RSVP is canceled.')
+  }
+  const onRequestCancel = async (e: EventRow) => {
+    const p = access.person
+    const name = [p?.first_name, p?.last_name].filter(Boolean).join(' ') || 'A member'
+    const email = p?.email ?? ''
+    setSending(true)
+    const x = await requestCancellation({ name, email, eventTitle: e.title, reason: reason.trim() })
+    setSending(false)
+    if (x.error) return toast('Your request could not be sent just now. Please try again, or contact us.')
+    setRequestFor(null); setReason(''); setOpen(null); toast('Request sent. The Institute will be in touch.')
+  }
   /* The database still knows an admin who is viewing as a member, so the
    * check-in desk is hidden here rather than by its own permission check. */
   useEffect(() => { if (viewingAsMember) { setCanCheckin(false); return } void canManageRsvps().then(setCanCheckin) }, [viewingAsMember])
@@ -260,13 +287,30 @@ export default function EventsPanel() {
         ? <>{upcoming.length > 0 && <><div className="evt-grp">Upcoming</div>{compact ? table(upcoming) : upcoming.map(card)}</>}{past.length > 0 && <><div className="evt-grp">Past</div>{compact ? table(past) : past.map(card)}</>}</>
         : Object.keys(months).sort().map((k) => <div key={k}><div className="evt-grp">{MONL[months[k]!.m]} {months[k]!.y}</div>{compact ? table(months[k]!.items) : months[k]!.items.map(card)}</div>)}
 
-      {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} onCheckin={canCheckin ? () => { setOpen(null); setRoom(current.id) } : undefined} attending={mine.has(current.slug ?? '')} />}
+      {current && <DetailDialog e={current} canManage={canManage} onClose={() => setOpen(null)} onEdit={() => { setOpen(null); setEdit(current) }} onDuplicate={() => void onDuplicate(current)} onRegs={() => { setOpen(null); setRegsFor(current) }} onCheckin={canCheckin ? () => { setOpen(null); setRoom(current.id) } : undefined} attending={mine.has(current.slug ?? '')} onCancelRsvp={!canManage && !isPast(current) && freeReg(mine.get(current.slug ?? '')) ? () => setCancelFor(current) : undefined} onRequestCancel={!canManage && !isPast(current) && mine.has(current.slug ?? '') && !freeReg(mine.get(current.slug ?? '')) ? () => setRequestFor(current) : undefined} />}
       {edit && <FormDialog e={edit === 'new' ? null : edit} venues={venues} committees={committees} meId={meId} onClose={() => setEdit(null)} onSaved={async (m) => { setEdit(null); await load(); toast(m) }} onRemove={(e) => { setEdit(null); setConfirm(e) }} />}
       {confirm && (
         <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setConfirm(null)}>
           <div className="cert-modal" role="dialog" aria-modal="true">
             <div className="mh"><div><h3>Remove “{confirm.title}”?</h3><p>{activeRegs(confirm).length > 0 ? `${activeRegs(confirm).length} registration${activeRegs(confirm).length > 1 ? 's' : ''} will be deleted with it. Consider unpublishing instead.` : 'This deletes the event with its speakers and sessions.'}</p></div><button type="button" className="x" aria-label="Close" onClick={() => setConfirm(null)}>×</button></div>
             <div className="mf">{confirm.status === 'published' && <button type="button" className="b s-btn on-light sm" onClick={() => void onUnpublish(confirm)}>Unpublish instead</button>}<button type="button" className="b s-btn on-light sm" onClick={() => setConfirm(null)}>Keep</button><button type="button" className="b dgr sm" onClick={() => void onRemove(confirm)}>Remove</button></div>
+          </div>
+        </div>
+      )}
+      {cancelFor && (
+        <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setCancelFor(null)}>
+          <div className="cert-modal" role="dialog" aria-modal="true">
+            <div className="mh"><div><h3>Cancel your RSVP for “{cancelFor.title}”?</h3><p>Your seat opens up for another member. You can RSVP again any time before it starts.</p></div><button type="button" className="x" aria-label="Close" onClick={() => setCancelFor(null)}>×</button></div>
+            <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={() => setCancelFor(null)}>Keep my RSVP</button><button type="button" className="b dgr sm" disabled={sending} onClick={() => void onCancelRsvp(cancelFor)}>{sending ? 'Canceling…' : 'Cancel RSVP'}</button></div>
+          </div>
+        </div>
+      )}
+      {requestFor && (
+        <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setRequestFor(null)}>
+          <div className="cert-modal" role="dialog" aria-modal="true">
+            <div className="mh"><div><h3>Request a cancellation</h3><p>Paid registrations are canceled by the Institute, which will reply about any refund. Tell us anything that helps (optional).</p></div><button type="button" className="x" aria-label="Close" onClick={() => setRequestFor(null)}>×</button></div>
+            <div className="mb"><textarea className="fi" rows={4} value={reason} onChange={(ev) => setReason(ev.target.value)} placeholder={`Why you’re canceling ${requestFor.title}, or a seminar you’d rather attend instead`} style={{ width: '100%', resize: 'vertical' }} /></div>
+            <div className="mf"><button type="button" className="b s-btn on-light sm" onClick={() => setRequestFor(null)}>Never mind</button><button type="button" className="b p-btn sm" disabled={sending} onClick={() => void onRequestCancel(requestFor)}>{sending ? 'Sending…' : 'Send request'}</button></div>
           </div>
         </div>
       )}
@@ -278,7 +322,7 @@ export default function EventsPanel() {
 
 /* --------------------------------------------------------------- detail -- */
 
-function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCheckin, attending }: { e: EventRow; canManage: boolean; onClose: () => void; onEdit: () => void; onDuplicate: () => void; onRegs: () => void; onCheckin?: () => void; attending: boolean }) {
+function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCheckin, attending, onCancelRsvp, onRequestCancel }: { e: EventRow; canManage: boolean; onClose: () => void; onEdit: () => void; onDuplicate: () => void; onRegs: () => void; onCheckin?: () => void; attending: boolean; onCancelRsvp?: () => void; onRequestCancel?: () => void }) {
   const { access } = useAccess()
   const register = useRegistration()
   const regKey = useRegKey()(e.status === 'published' ? e.slug : null)
@@ -331,7 +375,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
         </div>
         <div className="mf evt-foot">
           <div className="r">{attending ? (e.zoom_url ? <a className="b p-btn sm" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a> : <span className="muted">✓ You’re attending</span>) : regKey && <button type="button" className="b p-btn sm" onClick={() => { onClose(); register(regKey) }}>{rsvp ? 'RSVP — Free with Membership' : 'Register'}</button>}{!gov && onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations ({regs.length})</button>}</div>
-          <div className="r">{canManage && <><button type="button" className="b s-btn on-light sm" onClick={onEdit}>Edit</button><button type="button" className="b s-btn on-light sm" onClick={onDuplicate}>Duplicate</button></>}<button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
+          <div className="r">{canManage && <><button type="button" className="b s-btn on-light sm" onClick={onEdit}>Edit</button><button type="button" className="b s-btn on-light sm" onClick={onDuplicate}>Duplicate</button></>}{attending && onCancelRsvp && <button type="button" className="b s-btn on-light sm" onClick={onCancelRsvp}>Cancel my RSVP</button>}{attending && onRequestCancel && <button type="button" className="b s-btn on-light sm" onClick={onRequestCancel}>Request a cancellation</button>}<button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
         </div>
       </div>
     </div>
