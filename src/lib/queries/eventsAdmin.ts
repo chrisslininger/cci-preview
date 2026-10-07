@@ -94,8 +94,16 @@ export async function committees(): Promise<Committee[]> {
   return r.data ?? []
 }
 
+/* Named columns, never `*`: a registration row also carries the pay token and
+ * the Stripe session id, which the roster has no use for. */
+const REG_SELECT = [
+  'id', 'event_id', 'full_name', 'email', 'phone', 'practice_name', 'reg_type', 'is_member_at_registration', 'price_paid_cents',
+  'payment_status', 'registration_status', 'checked_in_at', 'checkin_method', 'created_at', 'verification_status', 'discount_applied',
+  'ce_credits', 'source', 'notes',
+].join(',')
+
 export async function registrations(eventId: number): Promise<{ rows: Reg[]; error?: string }> {
-  const r = await select<Reg>('event_registrations', `select=*&event_id=eq.${eventId}&order=created_at.asc`)
+  const r = await select<Reg>('event_registrations', `select=${REG_SELECT}&event_id=eq.${eventId}&order=created_at.asc`)
   return { rows: r.data ?? [], error: r.error }
 }
 

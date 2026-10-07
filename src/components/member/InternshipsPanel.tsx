@@ -6,6 +6,7 @@
  * exam or completing the internship ticks the person's certification
  * pathway with the same date and verifier.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -24,7 +25,7 @@ const statusPill = (st: ReturnType<typeof approvalStatus>) => <Pill kind={st ===
 function friendly(err: string): string {
   if (/row-level security/.test(err)) return 'The database did not allow that — only the executive director and the Internship Committee chair can change internship records.'
   if (/preceptor_colleges_approval_unique/.test(err)) return 'That school approval (same school, site and start date) is already on this preceptor.'
-  return 'The database refused the change: ' + err.slice(0, 160)
+  return friendlyError(err)
 }
 function F({ l, children, full = false, hint }: { l: string; children: React.ReactNode; full?: boolean; hint?: string }) {
   return <div className={full ? 'full' : ''}><label className="flabel">{l}</label>{children}{hint && <div className="evt-hint">{hint}</div>}</div>
@@ -66,7 +67,7 @@ export default function InternshipsPanel() {
   const load = useCallback(async () => {
     const [p, i, s] = await Promise.all([loadPreceptors(), loadInterns(), loadSites()])
     const err = p.error || i.error || s.error
-    setError(err ? `The internship records could not be read — the database answered: ${err.slice(0, 200)}` : null)
+    setError(err ? `The internship records could not be read. ${friendlyError(err)}` : null)
     setPrecs(p.rows); setInts(i.rows); setSiteRows(s.rows); setLoading(false)
   }, [])
   useEffect(() => { void load(); void loadColleges().then(setCols); void loadReqs().then((r) => setReqs(r.rows)) }, [load])

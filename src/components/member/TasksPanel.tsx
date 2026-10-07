@@ -3,6 +3,7 @@
  * each stamped with name, role and time. The ED and Board manage; a chair
  * sees their committee's tasks; an assignee sees and can complete their own.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
 import { useCallback, useEffect, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -25,7 +26,7 @@ export default function TasksPanel() {
 
   const load = useCallback(async () => {
     const [r, c] = await Promise.all([loadTasks(), loadCommittees()])
-    setError(r.error ? `The tasks could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
+    setError(r.error ? `The tasks could not be read. ${friendlyError(r.error)}` : null)
     setRows(r.rows); setComs(c); setLoading(false)
   }, [])
   useEffect(() => { void load() }, [load])

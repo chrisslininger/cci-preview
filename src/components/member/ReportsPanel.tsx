@@ -7,6 +7,7 @@
  * Records. Board members see every submitted report; a chair sees their own
  * committees; the reporting-status strip is what Oversight reads.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -37,7 +38,7 @@ export default function ReportsPanel({ committee }: { committee?: string } = {})
 
   const load = useCallback(async () => {
     const [c, r, m, d] = await Promise.all([loadCommittees(), loadReports(), boardMeetings(), reportDocs()])
-    setError(r.error ? `The reports could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
+    setError(r.error ? `The reports could not be read. ${friendlyError(r.error)}` : null)
     setComs(c); setRows(r.rows); setMeetings(m); setDocs(d); setLoading(false)
   }, [])
   useEffect(() => { void load() }, [load])
@@ -176,7 +177,7 @@ function ReportForm({ committee, ym, report, meetings, docs, who, oversight, onC
     }
     const u = await uploadReportDoc(rep, committee, kind, title, file, who)
     setUploading(null)
-    if (u.error) return toast('Upload failed: ' + u.error.slice(0, 160))
+    if (u.error) return toast('The upload failed. ' + friendlyError(u.error))
     await onReload(); toast(`${title} attached`)
   }
   const cyc = meetings.length ? cycleForMonth(ym, meetings).meetingDate : null

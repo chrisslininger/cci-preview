@@ -6,6 +6,7 @@
  * short section beneath the living. Every list is alphabetical by first name
  * and searchable. Names open the full contact card with a running notes log.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -51,7 +52,7 @@ export default function MembersPanel() {
 
   const load = useCallback(async () => {
     const r = await roster()
-    setError(r.error ? `The roster could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
+    setError(r.error ? `The roster could not be read. ${friendlyError(r.error)}` : null)
     setRows(r.rows); setLoading(false)
   }, [])
   useEffect(() => { void load() }, [load])
@@ -109,7 +110,7 @@ function ContactCard({ p, me, meId, canEdit, onClose, onEdit, onChanged }: { p: 
   const s = state(p), instr = currentInstructor(p), boards = p.board_service ?? [], active = boards.find((b) => b.status === 'active')
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose])
   const KV = ({ k, v }: { k: string; v: React.ReactNode }) => <><span>{k}</span><div>{v ?? '—'}</div></>
-  const fail = (r: { error?: string }) => { if (r.error) { toast('The database refused that change: ' + r.error.slice(0, 140)); return true } return false }
+  const fail = (r: { error?: string }) => { if (r.error) { toast(friendlyError(r.error)); return true } return false }
   const locs = (p.practice_locations ?? []).slice().sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
   return (
     <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -155,7 +156,7 @@ function EditDialog({ p, onClose, onSaved }: { p: Member | null; onClose: () => 
     const prof: Profile = { first_name: v.first_name!.trim(), last_name: v.last_name!.trim(), credentials: v.credentials || null, contact_type: v.contact_type, email: v.email || null, mobile_phone: v.mobile_phone || null, office_phone: v.office_phone || null, practice_website: v.practice_website || null, practice_name: v.practice_name || null, practice_address: v.practice_address || null, techniques: (v.techniques ?? '').split(',').map((s) => s.trim()).filter(Boolean), member_since: v.member_since || null, membership_expires: v.membership_expires || null, deceased_on: dead ? (v.deceased_on || new Date().toISOString().slice(0, 10)) : null }
     if (!dead) prof.membership_status = v.status
     setSaving(true); const r = p ? await saveProfile(p.id, prof) : await createMember(prof); setSaving(false)
-    if (r.error) { setErr('The database refused the change: ' + r.error.slice(0, 160)); return }
+    if (r.error) { setErr(friendlyError(r.error)); return }
     onSaved(p ? 'Saved.' : `${prof.first_name} ${prof.last_name} added.`)
   }
   return (
