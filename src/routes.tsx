@@ -10,10 +10,12 @@
  * a real URL that can be linked, shared, indexed and cited.
  * -------------------------------------------------------------------------- */
 import type { ComponentType } from 'react'
-import type { PageMeta } from '@/lib/seo'
-import { summarize } from '@/lib/seo'
+import type { JsonLdNode, PageMeta } from '@/lib/seo'
+import { BUILD_DATE, ORIGIN, pageTitle, summarize } from '@/lib/seo'
 
+import type { Seminar } from '@/content/seminars'
 import { SEMINARS, SEMINAR_SLUG } from '@/content/seminars'
+import { CONFERENCE_RULE } from '@/content/calendar'
 import { ARTICLES, articleSlug } from '@/content/articles'
 import { PROBLEMS, PROBLEM_ORDER, PROBLEM_SLUG } from '@/content/problems'
 import { faqGraph } from '@/content/faq'
@@ -51,7 +53,76 @@ export type RouteEntry = {
   param?: string
 }
 
-const UPDATED = '2026-09-16'
+/** Every page's `dateModified` and sitemap `lastmod`: the day the site was
+ *  built, since content ships with each build. */
+const UPDATED = BUILD_DATE
+
+/** Photos too small for a share card (under 1200×630), and the larger photo of
+ *  the same subject that stands in for them on social previews. */
+const SHARE_STAND_IN: Record<string, string> = { intro: 'conference', instrument: 'adjust' }
+
+function shareImage(photo?: string): string {
+  return `/images/${SHARE_STAND_IN[photo ?? ''] ?? photo ?? 'conference'}.webp`
+}
+
+const MONTHS = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
+
+/** 'JULY 2026' -> '2026-07'. Articles are dated to the month, which ISO 8601 allows. */
+function isoMonth(date: string): string | undefined {
+  const [month, year] = date.toUpperCase().split(' ')
+  const i = MONTHS.indexOf(month ?? '')
+  return i >= 0 && year ? `${year}-${String(i + 1).padStart(2, '0')}` : undefined
+}
+
+/** The Annual Conference as a schema.org Event, which is what event rich
+ *  results read. The start is the hero countdown's moment; the conference runs
+ *  its standing length (`CONFERENCE_RULE.days`) and closes at 6 PM, per
+ *  `format`. The 2026 venue is the one named in `sub` and the registration
+ *  band; from 2027 the conference follows the calendar rule. */
+function conferenceEvent(key: string, seminar: Seminar, path: string): JsonLdNode[] {
+  if (key !== 'conference' || !seminar.countdownTo) return []
+  const m = seminar.countdownTo.match(/^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2})$/)
+  if (!m) return []
+  const [, y, mo, d, offset] = m
+  const lastDay = new Date(Date.UTC(Number(y), Number(mo) - 1, Number(d) + CONFERENCE_RULE.days - 1))
+  const url = `${ORIGIN}${path}`
+  const offer = (name: string, price: number) => ({
+    '@type': 'Offer',
+    name,
+    price: String(price),
+    priceCurrency: 'USD',
+    url,
+    availability: 'https://schema.org/InStock',
+  })
+  return [
+    {
+      '@type': 'Event',
+      '@id': `${url}#event`,
+      name: `Advanced Orthogonal Institute ${seminar.title} ${y}`,
+      description: summarize(seminar.sub, 300),
+      startDate: seminar.countdownTo,
+      endDate: `${lastDay.toISOString().slice(0, 10)}T18:00:00${offset}`,
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      eventStatus: 'https://schema.org/EventScheduled',
+      location: {
+        '@type': 'Place',
+        name: 'Pierce Clinic of Chiropractic',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'St. Petersburg',
+          addressRegion: 'FL',
+          addressCountry: 'US',
+        },
+      },
+      image: [`${ORIGIN}${shareImage(seminar.photo)}`],
+      organizer: { '@id': `${ORIGIN}/#organization` },
+      offers: [
+        offer('Doctor', seminar.fullPrice),
+        ...(seminar.studentPrice ? [offer('Student', seminar.studentPrice)] : []),
+      ],
+    },
+  ]
+}
 
 /* ------------------------------------------------------------ static pages */
 
@@ -61,7 +132,7 @@ const staticRoutes: RouteEntry[] = [
     Component: HomePage,
     prerender: true,
     meta: {
-      title: 'Advanced Orthogonal Institute — Precision Upper Cervical Education',
+      title: 'Advanced Orthogonal Institute — Upper Cervical Training',
       description:
         'Training and certification in Advanced Orthogonal: a precise, instrument-based upper cervical procedure for chiropractors handling complex cases.',
       image: '/images/adjust.webp',
@@ -90,10 +161,10 @@ const staticRoutes: RouteEntry[] = [
     Component: DifferencePage,
     prerender: true,
     meta: {
-      title: 'The Advanced Orthogonal Difference — What Makes AdvO Specific',
+      title: 'The Advanced Orthogonal Difference — What Makes It Specific',
       description:
-        'Detailed digital measurement, patient-specific correction vectors, and a percussive sound-wave instrument — how Advanced Orthogonal differs from other upper cervical methods.',
-      image: '/images/instrument.webp',
+        'Digital measurement, patient-specific vectors and a percussive sound-wave instrument: how Advanced Orthogonal differs from other upper cervical methods.',
+      image: '/images/adjust.webp',
       priority: 0.8,
       updatedAt: UPDATED,
       breadcrumbs: [{ name: 'About', path: '/about' }],
@@ -107,7 +178,7 @@ const staticRoutes: RouteEntry[] = [
       title: 'Board of Directors — Advanced Orthogonal Institute',
       description:
         'The doctors who govern the Advanced Orthogonal Institute, set its certification standards, and direct its research and instruction.',
-      image: '/images/cs.webp',
+      image: '/images/conference.webp',
       priority: 0.7,
       updatedAt: UPDATED,
       breadcrumbs: [{ name: 'About', path: '/about' }],
@@ -191,7 +262,7 @@ const staticRoutes: RouteEntry[] = [
     meta: {
       title: 'AOI Membership — Advanced Orthogonal Institute',
       description:
-        'Institute membership includes Annual Conference registration, the Monthly Huddle, $200 off every Intensive and $600 off Bootcamp, the doctor directory listing, and member resources.',
+        'Membership includes Annual Conference registration, the Monthly Huddle, $200 off every Intensive, $600 off Bootcamp, a directory listing and resources.',
       image: '/images/conference.webp',
       priority: 0.9,
       updatedAt: UPDATED,
@@ -205,7 +276,7 @@ const staticRoutes: RouteEntry[] = [
     meta: {
       title: 'Join the Institute — Advanced Orthogonal Institute',
       description:
-        'Become a member of the Advanced Orthogonal Institute. Annual membership includes Annual Conference registration, the Monthly Huddle, $200 off every Intensive, $600 off Bootcamp, voting rights and the doctor directory listing.',
+        'Join the Institute: Annual Conference registration, the Monthly Huddle, $200 off every Intensive, $600 off Bootcamp, voting rights and a directory listing.',
       image: '/images/conference.webp',
       priority: 0.9,
       updatedAt: UPDATED,
@@ -263,9 +334,9 @@ const seminarRoutes: RouteEntry[] = Object.entries(SEMINARS).map(([key, seminar]
   param: key,
   prerender: true,
   meta: {
-    title: `${seminar.title} — Advanced Orthogonal Institute`,
+    title: pageTitle(seminar.title),
     description: summarize(seminar.sub),
-    image: seminar.photo ? `/images/${seminar.photo}.webp` : '/images/conference.webp',
+    image: shareImage(seminar.photo),
     priority: 0.8,
     changefreq: 'weekly',
     updatedAt: UPDATED,
@@ -304,6 +375,7 @@ const seminarRoutes: RouteEntry[] = Object.entries(SEMINARS).map(([key, seminar]
             })),
           }]
         : []),
+      ...conferenceEvent(key, seminar, `/seminars/${SEMINAR_SLUG[key]}`),
     ],
   },
 }))
@@ -314,10 +386,12 @@ const articleRoutes: RouteEntry[] = ARTICLES.map((article) => ({
   param: article.id,
   prerender: true,
   meta: {
-    title: `${article.title} — Advanced Orthogonal Institute`,
+    title: pageTitle(article.seoTitle ?? article.title),
     description: summarize(article.ex),
     priority: 0.6,
     updatedAt: UPDATED,
+    type: 'article',
+    publishedAt: isoMonth(article.date),
     breadcrumbs: [{ name: 'Articles', path: '/articles' }],
     graph: [
       {
@@ -325,7 +399,7 @@ const articleRoutes: RouteEntry[] = ARTICLES.map((article) => ({
         headline: article.title,
         description: summarize(article.ex),
         articleSection: article.cat,
-        datePublished: article.date,
+        datePublished: isoMonth(article.date) ?? article.date,
         dateModified: UPDATED,
         author: { '@id': 'https://www.advancedorthogonal.com/#organization' },
         publisher: { '@id': 'https://www.advancedorthogonal.com/#organization' },
@@ -342,7 +416,7 @@ const problemRoutes: RouteEntry[] = PROBLEM_ORDER.map((key) => {
     param: key,
     prerender: true,
     meta: {
-      title: `${problem.h1} — Advanced Orthogonal Institute`,
+      title: pageTitle(problem.h1),
       description: summarize(problem.sub),
       priority: 0.7,
       updatedAt: UPDATED,
