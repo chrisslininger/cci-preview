@@ -43,7 +43,7 @@ import NotFoundPage from '@/pages/NotFoundPage'
 
 export type RouteEntry = {
   path: string
-  Component: ComponentType
+  Component: ComponentType<{ param?: string }>
   meta: PageMeta
   /** Rendered to static HTML at build time. Authenticated routes are not. */
   prerender: boolean
