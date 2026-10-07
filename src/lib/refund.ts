@@ -3,9 +3,9 @@
  * says the same thing: the registration dialog before Pay, the seminar page
  * under the price, the confirmation page, and the cancel-request box in the
  * members area. Decided 2026-10-07 (#126): a seminar registration is refunded
- * in full when canceled 30 or more days before it starts. Inside 30 days there
- * is no stated rule yet, so the copy below promises nothing there. An event's
- * own refund-policy text, when the Institute has written one, wins.
+ * in full when canceled 30 or more days before it starts; inside 30 days the
+ * payment becomes a credit toward another seminar. An event's own
+ * refund-policy text, when the Institute has written one, wins.
  */
 export const REFUND_DAYS = 30
 
@@ -20,17 +20,18 @@ export function refundDeadline(startsAt?: string | null): Date | null {
 
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' })
 
-/** One sentence for the reader. With a date: "Full refund if you cancel by
- * March 14, 2027 — 30 days before the seminar." Without: the general rule. */
+/** The rule for the reader. With a date: "Full refund if you cancel by March 14,
+ * 2027 (30 days before the seminar); after that, credit toward another seminar."
+ * Without one: the general rule. */
 export function refundLine(startsAt?: string | null, own?: string | null): string {
   if (own && own.trim()) return own.trim()
   const by = refundDeadline(startsAt)
   return by && by.getTime() > Date.now()
-    ? `Full refund if you cancel by ${fmt(by)} — ${REFUND_DAYS} days before the seminar.`
-    : `Full refund if you cancel ${REFUND_DAYS} or more days before the seminar starts.`
+    ? `Full refund if you cancel by ${fmt(by)} (${REFUND_DAYS} days before the seminar); after that, credit toward another seminar.`
+    : `Full refund if you cancel ${REFUND_DAYS} or more days before the seminar; inside ${REFUND_DAYS} days, credit toward another seminar.`
 }
 
-/** true = a cancellation today is refunded in full; false = inside the window; null = no date. */
+/** true = a cancellation today is refunded in full; false = inside 30 days (credit instead); null = no date. */
 export function refundable(startsAt?: string | null, now = Date.now()): boolean | null {
   const by = refundDeadline(startsAt)
   return by ? now <= by.getTime() : null
