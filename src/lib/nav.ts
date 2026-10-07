@@ -67,20 +67,13 @@ export const NAV: NavItem[] = [
   /* ----------------------------------------------------------- my account --
    * A member owns this data and there is nowhere else to reach it. CCI OS gave
    * the member role only Events and Calendar, which left certification, CE and
-   * the directory listing with no home. One rail item; the four are its tabs. */
+   * the directory listing with no home. One rail item; these are its tabs. */
   { key: 'membership', label: 'My Account', tabLabel: 'Membership', group: 'home', always: true },
+  { key: 'myinfo', label: 'Personal Information', tabLabel: 'Personal', group: 'home', under: 'membership', always: true },
+  // The clinic shown in the public directory (Find a Doctor); every current member is listed.
+  { key: 'mylisting', label: 'Business Information', tabLabel: 'Business', group: 'home', under: 'membership', always: true },
   { key: 'mycert', label: 'My Certification', tabLabel: 'Certification', group: 'home', under: 'membership', always: true },
   { key: 'myce', label: 'My CE', tabLabel: 'CE', group: 'home', under: 'membership', always: true },
-  {
-    key: 'mylisting',
-    label: 'My Listing',
-    tabLabel: 'Listing',
-    group: 'home',
-    under: 'membership',
-    always: true,
-    // The directory is reserved to certified doctors at Level 1 or above.
-    when: (a) => ['level_1', 'level_2'].includes(a.person?.cert_level ?? ''),
-  },
 
   /* --------------------------------------------------------------- events -- */
   { key: 'events', label: 'Events', group: 'events', always: true },
