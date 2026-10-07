@@ -113,6 +113,7 @@
   .regband .rb-rule{width:54px;height:3px;background:var(--color-brand-accent);margin:18px 0 16px}
   .regband .rb-sub{font-size:14.5px;color:color-mix(in oklab, var(--color-surface-base) 78%, transparent);max-width:640px}
   .regband .rb-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+  .regband .rb-tiers.checking{visibility:hidden}
   .regband .rt{background:color-mix(in oklab, var(--color-surface-base) 5.5%, transparent);border:1px solid color-mix(in oklab, var(--color-surface-base) 14%, transparent);border-radius:4px;padding:22px 20px 20px;position:relative}
   .regband .rt.hi{background:color-mix(in oklab, var(--color-brand-accent) 13%, transparent);border-color:color-mix(in oklab, var(--color-brand-accent) 55%, transparent)}
   .regband .rt-flag{position:absolute;top:-9px;left:18px;background:var(--color-brand-accent);color:var(--color-surface-inverse);font-family: var(--font-label);font-size: 10px;letter-spacing:.14em;padding:3px 9px;border-radius:2px;font-weight:600}
@@ -249,6 +250,7 @@
   .sess .bot .b{width:100%;justify-content:center}
   .sess.soon .cal{background:var(--color-content-muted)}
   .sess .flag{position:absolute;top:14px;right:-1px;background:var(--color-brand-primary);color:var(--color-surface-base);font-family: var(--font-label); font-weight: 600;font-size: 10px;letter-spacing:.14em;padding:4px 10px;border-radius:3px 0 0 3px}
+  .sess .flag.sold{background:var(--color-status-danger)}
   @media(max-width:960px){.sessions{grid-template-columns:1fr}.featintro{grid-template-columns:1fr !important}.featintro > div:first-child{min-height:180px !important}}
   /* Phones: price and seat status stack instead of squeezing side by side. */
   @media(max-width:480px){.sess .mid{flex-direction:column;align-items:flex-start;gap:12px}.sess .seats{text-align:left;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px}.sess .seats b{display:inline}}
