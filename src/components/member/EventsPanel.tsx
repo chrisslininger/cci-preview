@@ -225,6 +225,7 @@ export default function EventsPanel() {
         <span className="w" title={where ?? ''}>{where || '—'}</span>
         <span className="g">{canManage ? <>{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</> : mine.has(e.slug ?? '') ? <Pill kind="ok">Registered</Pill> : !isGov(e) && soldOut(e) ? <Pill kind="bad">Sold out</Pill> : null}</span>
         <span className="ac" onClick={(k) => k.stopPropagation()}>
+          {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <a className="b p-btn xs" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a>}
           {canManage && <>
             <button type="button" className="evt-ic" title="Edit" aria-label={`Edit ${e.title}`} onClick={() => setEdit(e)}>{IC.edit}</button>
             <button type="button" className="evt-ic" title="Duplicate" aria-label={`Duplicate ${e.title}`} onClick={() => void onDuplicate(e)}>{IC.copy}</button>
