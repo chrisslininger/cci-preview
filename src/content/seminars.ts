@@ -6,17 +6,24 @@
  * -------------------------------------------------------------------------- */
 
 import {
-  INTENSIVE_RULES, BOOTCAMP_RULE, nextOccurrence, longRange, eventSlug, zoomSeason, zoomDates, HUDDLE_SLUG, listDates,
+  AS_OF, INTENSIVE_RULES, BOOTCAMP_RULE, nextOccurrence, longRange, eventSlug, zoomSeason, zoomDates, HUDDLE_SLUG, listDates,
 } from './calendar'
 import { SEMINAR_COPY } from './seminarCopy'
 
 /* Dates that follow the Board's calendar rules are computed, not typed: the
  * next three Intensive weekends, the next Bootcamp, and this year's member
- * Zoom calls. See `./calendar.ts`. */
-const TODAY = new Date()
+ * Zoom calls. See `./calendar.ts`.
+ *
+ * They are reckoned from the day the site was built (`AS_OF`), not from each
+ * visitor's clock, so the browser's first render matches the prerendered
+ * HTML. A page that wants today's answer calls `datesAsOf(new Date())` after
+ * mount; the daily rebuild keeps the built values within a day of it. */
+const TODAY = AS_OF
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-const INTENSIVES = INTENSIVE_RULES.map((r) => ({ r, o: nextOccurrence(r, TODAY) }))
+/** The next three Intensive weekends as of a day, soonest first. */
+const intensivesAsOf = (today: Date) => INTENSIVE_RULES.map((r) => ({ r, o: nextOccurrence(r, today) }))
   .sort((a, b) => a.o.start.getTime() - b.o.start.getTime())
+const INTENSIVES = intensivesAsOf(TODAY)
 const BOOTCAMP = nextOccurrence(BOOTCAMP_RULE, TODAY)
 const ZOOM_SEASON = zoomSeason(TODAY)
 const regKey = (id: string) => id.replace('-', ':')
@@ -33,6 +40,14 @@ function monthsLine(list: typeof INTENSIVES): string {
   return [...byYear.entries()]
     .map(([y, ms]) => `${ms.length > 1 ? `${ms.slice(0, -1).join(', ')} & ${ms[ms.length - 1]}` : ms[0]} ${y}`)
     .join(' · ')
+}
+
+/** The Intensive and Bootcamp date lines as of a given day — the same strings
+ *  as `SEMINARS.intensive.dates` and `SEMINARS.bootcamp.dates`, which are
+ *  these for the build date. For a component that shows today's dates after
+ *  mount while the prerendered ones stand in. */
+export function datesAsOf(today: Date): { intensive: string; bootcamp: string } {
+  return { intensive: monthsLine(intensivesAsOf(today)), bootcamp: longRange(nextOccurrence(BOOTCAMP_RULE, today)) }
 }
 
 export type SeminarTier = {
@@ -408,7 +423,9 @@ export const REG_SLUG: Record<string, string> = {
   'bootcamp:week': 'advo-bootcamp',
 }
 
-/** Fallback event ids used only when the live sync request fails. */
+/** Fallback event ids, read in `src/lib/queries/events.ts` only for a key with
+ *  no slug — and every key has one (#112), so no id here is ever used. Kept
+ *  until that read goes; delete the two together. */
 export const DB_ID: Record<string, number | null> = {intro:7,fund1:null,fund2:9,fund3:10,intensive:null,bootcamp:null,conference:13,internship:null}
 
 /** Seminar key -> public route slug. `internship` has no DB row, so it gets a

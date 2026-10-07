@@ -26,6 +26,15 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const clientDir = join(root, 'dist', 'client')
 const serverDir = join(root, 'dist', 'server')
 
+/* The build's date, stamped into both bundles as `__BUILD_DATE__` so the
+ * browser works out the same calendar dates the prerender did (see `AS_OF` in
+ * src/content/calendar.ts). The same value goes into both bundles; if they
+ * differed, the client's first render would not match the HTML. `AOI_BUILD_DATE`
+ * overrides it, to build "as of" another day and watch the browser catch up. */
+const buildDate = /^\d{4}-\d{2}-\d{2}$/.test(process.env.AOI_BUILD_DATE ?? '')
+  ? process.env.AOI_BUILD_DATE
+  : new Date().toISOString().slice(0, 10)
+
 /** Resolves the `@/` alias the way tsconfig paths does, trying each extension. */
 const alias = {
   name: 'alias-@',
@@ -86,7 +95,7 @@ const clientBuild = await build({
   sourcemap: false,
   write: false,
   outfile: join(clientDir, 'assets', 'client.js'),
-  define: { 'process.env.NODE_ENV': '"production"' },
+  define: { 'process.env.NODE_ENV': '"production"', __BUILD_DATE__: JSON.stringify(buildDate) },
   plugins: [alias],
   loader: { '.md': 'text' },
 })
@@ -113,7 +122,7 @@ await build({
   target: ['node20'],
   jsx: 'automatic',
   outfile: join(serverDir, 'entry-server.js'),
-  define: { 'process.env.NODE_ENV': '"production"' },
+  define: { 'process.env.NODE_ENV': '"production"', __BUILD_DATE__: JSON.stringify(buildDate) },
   plugins: [alias],
   loader: { '.md': 'text' },
   packages: 'external',
