@@ -170,9 +170,11 @@ routes are untouched by it.
 
 ## Known follow-ups
 
-- **Route-level code splitting.** The client bundle is 116 kB gzipped, inside
-  the 150 kB budget, but every page's component ships on every page. Splitting
-  needs `React.lazy` plus care around hydrating prerendered markup.
+- **Route-level code splitting.** The members area is already split out: `/account`
+  loads `MemberShell` with `React.lazy`, so public pages ship about 160 kB gzipped
+  (two files) and the members-area chunk (130 kB) is fetched only after sign-in.
+  Splitting the public pages themselves is still open; it needs care around
+  hydrating prerendered markup.
 - **`text-wrap: balance`** on headings was removed so line breaks match the
   approved design exactly. It is a real improvement and can be turned on as a
   deliberate change.
