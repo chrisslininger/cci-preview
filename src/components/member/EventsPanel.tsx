@@ -24,8 +24,10 @@ import {
 } from '@/lib/queries/eventsAdmin'
 import type { RsvpCandidate, EventRow, EventInput, Venue, Committee, Speaker, Session, Reg, PersonHit } from '@/lib/queries/eventsAdmin'
 
-type Tab = 'upcoming' | 'past' | 'seminars' | 'gov' | 'drafts'
+type Tab = 'upcoming' | 'registered' | 'past' | 'seminars' | 'gov' | 'drafts'
 const TABS: [Tab, string][] = [['upcoming', 'Upcoming'], ['past', 'Past'], ['seminars', 'Seminars & courses'], ['gov', 'Board & committee'], ['drafts', 'Drafts']]
+/* A member's three tiles: what's coming, what they've signed up for, what's over. */
+const MEMBER_TABS: [Tab, string][] = [['upcoming', 'Upcoming'], ['registered', 'Registered'], ['past', 'Past']]
 
 const initials = (n: string) => n.replace(/^Dr\.?\s*/i, '').split(/\s+/).map((w) => w[0] ?? '').join('').slice(0, 2).toUpperCase()
 
@@ -102,10 +104,10 @@ export default function EventsPanel() {
    * the cards. */
   const narrow = useNarrow()
   const [layout, setLayoutState] = useState<Layout>(() => stored(LAYOUT_KEY, ['list', 'cal'] as const, 'list'))
-  const [density, setDensityState] = useState<Density>(() => stored(DENSITY_KEY, ['compact', 'comfortable'] as const, 'compact'))
+  const [density, setDensityState] = useState<Density>(() => stored(DENSITY_KEY, ['compact', 'comfortable'] as const, canManage ? 'compact' : 'comfortable'))
   const setLayout = (v: Layout) => { setLayoutState(v); store(LAYOUT_KEY, v) }
   const setDensity = (v: Density) => { setDensityState(v); store(DENSITY_KEY, v) }
-  const compact = density === 'compact' && !narrow && canManage
+  const compact = density === 'compact' && !narrow
   const [open, setOpen] = useState<number | null>(null)
   const [edit, setEdit] = useState<EventRow | 'new' | null>(null)
   const [confirm, setConfirm] = useState<EventRow | null>(null)
@@ -121,10 +123,11 @@ export default function EventsPanel() {
   const load = useCallback(async () => {
     const r = await listEvents()
     setError(r.error ? `The events could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
-    /* The database still shows an admin viewing as a member every draft;
-     * a member only ever sees published events. */
-    setRows(viewingAsMember ? r.rows.filter((e) => e.status === 'published') : r.rows); setLoading(false)
-  }, [viewingAsMember])
+    /* The database still shows an admin viewing as a member every draft; a
+     * member only ever sees published events, and never a leadership- or
+     * board-only meeting (those marked for all members show date only). */
+    setRows(canManage ? r.rows : r.rows.filter((e) => e.status === 'published' && e.visibility !== 'leadership' && e.visibility !== 'board')); setLoading(false)
+  }, [canManage])
   useEffect(() => { void load() }, [load])
   useEffect(() => { if (canManage) { void loadVenues().then(setVenues); void loadCommittees().then(setCommittees) } }, [canManage])
 
@@ -134,17 +137,19 @@ export default function EventsPanel() {
     const up = (pick: (e: EventRow) => boolean) => rows.filter((e) => pick(e) && !isPast(e)).length
     const gone = (pick: (e: EventRow) => boolean) => `${rows.filter((e) => pick(e) && isPast(e)).length} past`
     const draft = (e: EventRow) => e.status !== 'published'
+    const reg = (e: EventRow) => mine.has(e.slug ?? '')
     return {
-      counts: { upcoming: up(() => true), past: rows.filter((e) => isPast(e)).length, seminars: up((e) => !isGov(e)), gov: up(isGov), drafts: up(draft) } as Record<Tab, number>,
-      split: { seminars: gone((e) => !isGov(e)), gov: gone(isGov), drafts: gone(draft) } as Partial<Record<Tab, string>>,
+      counts: { upcoming: up(() => true), registered: up(reg), past: rows.filter((e) => isPast(e)).length, seminars: up((e) => !isGov(e)), gov: up(isGov), drafts: up(draft) } as Record<Tab, number>,
+      split: { registered: gone(reg), seminars: gone((e) => !isGov(e)), gov: gone(isGov), drafts: gone(draft) } as Partial<Record<Tab, string>>,
     }
-  }, [rows])
+  }, [rows, mine])
 
   const list = useMemo(() => {
     const t = q.trim().toLowerCase()
     return rows.filter((e) => {
       if (tab === 'upcoming' && isPast(e)) return false
       if (tab === 'past' && !isPast(e)) return false
+      if (tab === 'registered' && !mine.has(e.slug ?? '')) return false
       if (tab === 'seminars' && isGov(e)) return false
       if (tab === 'gov' && !isGov(e)) return false
       if (tab === 'drafts' && e.status === 'published') return false
@@ -190,8 +195,9 @@ export default function EventsPanel() {
       <article key={e.id} className={`evt${isPast(e) ? ' past' : ''}${e.status !== 'published' ? ' draft' : ''}`} tabIndex={0} role="button" aria-label={`Open ${e.title}`}
         onClick={() => setOpen(e.id)} onKeyDown={(k) => { if ((k.key === 'Enter' || k.key === ' ') && k.target === k.currentTarget) { k.preventDefault(); setOpen(e.id) } }}>
         <div className="dt"><span className="mo">{d.mo}</span><span className="dy">{d.dy}</span><span className="yr">{d.yr}</span>{d.tm && <span className="tm">{d.tm}</span>}</div>
-        <div className="ti"><h4>{e.title}</h4>{e.subtitle && <div className="st">{e.subtitle}</div>}{where && <div className="lc">{where}</div>}{canManage ? <Chips e={e} /> : <MemberChips e={e} registered={mine.has(e.slug ?? '')} />}</div>
+        <div className="ti"><h4>{e.title}</h4>{e.subtitle && <div className="st">{e.subtitle}</div>}{d.range && <div className="lc">{d.range}</div>}{where && <div className="lc">{where}</div>}{canManage ? <Chips e={e} /> : <MemberChips e={e} registered={mine.has(e.slug ?? '')} />}</div>
         <div className="ac" onClick={(k) => k.stopPropagation()}>
+          {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <a className="b p-btn xs" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a>}
           {canManage && <>
             <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(e)}>Edit</button>
             <button type="button" className="b s-btn on-light xs" onClick={() => void onDuplicate(e)}>Duplicate</button>
@@ -240,14 +246,14 @@ export default function EventsPanel() {
         {canManage && <div className="cert-actions"><button type="button" className="b p-btn sm" onClick={() => setEdit('new')}>+ Create event</button><button type="button" className="b s-btn on-light sm" onClick={exportCsv}>↓ Export CSV</button></div>}
       </div>
       {error && <div className="cert-err" role="alert">{error}</div>}
-      <div className={`cert-tiles${canManage ? '' : ' two'}`}>{(canManage ? TABS : TABS.filter(([k]) => k === 'upcoming' || k === 'past')).map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b><i>{split[k] ?? ' '}</i></button>)}</div>
+      <div className={`cert-tiles${canManage ? '' : ' three'}`}>{(canManage ? TABS : MEMBER_TABS).map(([k, l]) => <button type="button" key={k} className={`cert-tile${tab === k ? ' on' : ''}`} onClick={() => setTab(k)} aria-pressed={tab === k}><span>{l}</span><b>{counts[k]}</b><i>{split[k] ?? ' '}</i></button>)}</div>
       <div className="cert-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
         <input type="text" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setQ('')} autoComplete="off" placeholder="Search by title, venue, category, speaker…" aria-label="Search events" />
         {q && <button type="button" className="clr" aria-label="Clear search" onClick={() => setQ('')}>×</button>}
       </div>
       <div className="evt-bar"><span className="cnt">{list.length} {list.length === 1 ? 'event' : 'events'}{q ? ` matching “${q}”` : ''} · sorted by date</span>
-        <div className="evt-segs">{!narrow && canManage && <div className="evt-seg"><button type="button" className={compact ? 'on' : ''} onClick={() => setDensity('compact')}>Compact</button><button type="button" className={!compact ? 'on' : ''} onClick={() => setDensity('comfortable')}>Comfortable</button></div>}<div className="evt-seg"><button type="button" className={layout === 'list' ? 'on' : ''} onClick={() => setLayout('list')}>List</button><button type="button" className={layout === 'cal' ? 'on' : ''} onClick={() => setLayout('cal')}>Calendar</button></div></div></div>
+        <div className="evt-segs">{!narrow && <div className="evt-seg"><button type="button" className={compact ? 'on' : ''} onClick={() => setDensity('compact')}>Compact</button><button type="button" className={!compact ? 'on' : ''} onClick={() => setDensity('comfortable')}>Comfortable</button></div>}<div className="evt-seg"><button type="button" className={layout === 'list' ? 'on' : ''} onClick={() => setLayout('list')}>List</button><button type="button" className={layout === 'cal' ? 'on' : ''} onClick={() => setLayout('cal')}>Calendar</button></div></div></div>
       {list.length === 0 && <div className="cert-card" style={{ textAlign: 'center', color: 'var(--color-content-muted)', padding: 30 }}>{q ? `Nothing matches “${q}”.` : 'No events in this list.'}</div>}
       {layout === 'list'
         ? <>{upcoming.length > 0 && <><div className="evt-grp">Upcoming</div>{compact ? table(upcoming) : upcoming.map(card)}</>}{past.length > 0 && <><div className="evt-grp">Past</div>{compact ? table(past) : past.map(card)}</>}</>

@@ -51,6 +51,7 @@ export type EventRow = {
   primary_image: string | null; social_image: string | null; gallery_images: string[] | null
   room_block_hotel: string | null; room_block_rate: string | null; room_block_by: string | null
   zoom_url: string | null; video_url: string | null; committee_id: number | null; created_by: string | null
+  visibility: string | null
   venue?: Venue | null
   event_speakers?: Speaker[]
   event_sessions?: Session[]
@@ -240,17 +241,20 @@ export function zoned(iso: string | null | undefined, tz?: string | null) {
 export const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 export const MONL = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-export function dateBlock(e: EventRow): { mo: string; dy: string; yr: string; tm: string } {
+/** The date tile on a card. A range inside one month fits the tile ("OCT 13–14");
+ * one that crosses months shows the start and spells the whole range in `range`
+ * for the card to print ("Oct 13, 2026 – Sep 14, 2027"). */
+export function dateBlock(e: EventRow): { mo: string; dy: string; yr: string; tm: string; range?: string } {
   if (isOngoing(e)) return { mo: 'Ongoing', dy: 'Any', yr: 'time', tm: '' }
   const a = zoned(e.starts_at, e.timezone)
   if (!a) return { mo: 'TBD', dy: '—', yr: '', tm: '' }
   const b = zoned(e.ends_at, e.timezone)
-  let mo = MON[a.m]!.toUpperCase(); let dy = String(a.d)
-  if (b && (b.d !== a.d || b.m !== a.m)) {
-    if (b.m === a.m) dy = `${a.d}–${b.d}`
-    else { mo = `${MON[a.m]}–${MON[b.m]}`.toUpperCase(); dy = `${a.d}–${b.d}` }
+  const mo = MON[a.m]!.toUpperCase(); let dy = String(a.d); let range: string | undefined
+  if (b && (b.d !== a.d || b.m !== a.m || b.y !== a.y)) {
+    if (b.m === a.m && b.y === a.y) dy = `${a.d}–${b.d}`
+    else range = `${MON[a.m]} ${a.d}${b.y !== a.y ? `, ${a.y}` : ''} – ${MON[b.m]} ${b.d}, ${b.y}`
   }
-  return { mo, dy, yr: String(a.y), tm: a.time === '12:00 AM' && !b ? '' : a.time }
+  return { mo, dy, yr: String(a.y), tm: a.time === '12:00 AM' && !b ? '' : a.time, range }
 }
 
 export function whenText(e: Pick<EventRow, 'starts_at' | 'ends_at' | 'timezone' | 'category'>): string {
@@ -261,7 +265,7 @@ export function whenText(e: Pick<EventRow, 'starts_at' | 'ends_at' | 'timezone' 
   const tz = e.timezone ? ` (${e.timezone.replace('America/', '').replace('_', ' ')})` : ''
   if (!b) return `${a.wd}, ${MONL[a.m]} ${a.d}, ${a.y}${a.time && a.time !== '12:00 AM' ? ' · ' + a.time : ''}${tz}`
   if (b.d === a.d && b.m === a.m) return `${a.wd}, ${MONL[a.m]} ${a.d}, ${a.y} · ${a.time} – ${b.time}${tz}`
-  return `${MONL[a.m]} ${a.d} – ${b.m === a.m ? '' : MONL[b.m] + ' '}${b.d}, ${a.y} · ${a.time} start, ${b.time} finish${tz}`
+  return `${MONL[a.m]} ${a.d}${b.y !== a.y ? `, ${a.y}` : ''} – ${b.m === a.m && b.y === a.y ? '' : MONL[b.m] + ' '}${b.d}, ${b.y} · ${a.time} start, ${b.time} finish${tz}`
 }
 
 export function money(n: unknown): string | null {
