@@ -35,16 +35,27 @@ export function useRegKey() {
   }, [byKey])
 }
 
+/* When the first read fails, try again shortly rather than leave every Register
+ * button saying "not open yet" for the rest of the visit. */
+const RETRY_DELAYS_MS = [4000, 12000]
+
 export function CatalogProvider({ children }: { children: ReactNode }) {
   const [catalog, setCatalog] = useState<EventCatalog>(EMPTY)
 
   useEffect(() => {
     let cancelled = false
-    void fetchCatalog().then((next) => {
-      if (!cancelled) setCatalog(next)
-    })
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const load = async (attempt: number) => {
+      const next = await fetchCatalog()
+      if (cancelled) return
+      setCatalog(next)
+      const delay = RETRY_DELAYS_MS[attempt]
+      if (!next.synced && delay !== undefined) timer = setTimeout(() => void load(attempt + 1), delay)
+    }
+    void load(0)
     return () => {
       cancelled = true
+      if (timer) clearTimeout(timer)
     }
   }, [])
 

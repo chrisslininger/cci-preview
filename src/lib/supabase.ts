@@ -176,6 +176,85 @@ export function clearLinkError(): void {
   }
 }
 
+/* ------------------------------------------------------------- fetchJson */
+
+/** What every data call comes back with. `ok` is the only thing most callers
+ *  need; the rest lets a caller tell "the server said no" from "the server
+ *  never answered", which must not be read as signed out. */
+export type FetchJsonResult<T> = {
+  /** True for any 2xx answer whose body could be read. */
+  ok: boolean
+  /** HTTP status; 0 when the request never got an answer (offline, timed out). */
+  status: number
+  /** The parsed body on success, null otherwise. */
+  data: T | null
+  /** The parsed body whenever the server sent JSON, success or not. Edge
+   *  Functions explain a refusal this way. */
+  json: unknown
+  /** The server's own words when it said no (JSON as text, so callers can
+   *  still match on PostgREST codes), or a short reason when it never answered. */
+  error: string | null
+  /** True when trying again later could work: no answer, a timeout, a
+   *  server-side failure or a rate limit. Never true for a 401 or 403. */
+  transient: boolean
+  headers: Headers | null
+}
+
+export const DEFAULT_TIMEOUT_MS = 15_000
+
+/** Could not reach the Institute at all — the wording every caller shows. */
+export const OFFLINE_MESSAGE = 'Could not reach the Institute. Check your connection and try again.'
+export const TIMEOUT_MESSAGE = 'The Institute took too long to answer. Please try again in a moment.'
+
+/** One fetch for every data call: a timeout (so a hanging request cannot leave a
+ *  panel spinning forever), a body that is parsed only once it is known to be
+ *  JSON (an HTML 502 page used to surface as a SyntaxError), and a result that
+ *  never throws. */
+export async function fetchJson<T = unknown>(
+  url: string,
+  init: RequestInit = {},
+  { timeoutMs = DEFAULT_TIMEOUT_MS }: { timeoutMs?: number } = {},
+): Promise<FetchJsonResult<T>> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(url, { ...init, signal: controller.signal })
+    const text = await res.text()
+    const isJson = /json/i.test(res.headers.get('content-type') ?? '')
+    let json: unknown = undefined
+    if (text && isJson) {
+      try {
+        json = JSON.parse(text)
+      } catch {
+        json = undefined
+      }
+    }
+    if (!res.ok) {
+      const transient = res.status >= 500 || res.status === 408 || res.status === 429
+      return {
+        ok: false,
+        status: res.status,
+        data: null,
+        json,
+        error: json !== undefined ? text : `HTTP ${res.status}`,
+        transient,
+        headers: res.headers,
+      }
+    }
+    if (text && json === undefined) {
+      // A 200 that is not JSON is not an answer from Supabase — a captive portal
+      // or a proxy page. Treat it like no answer at all.
+      return { ok: false, status: res.status, data: null, json, error: TIMEOUT_MESSAGE, transient: true, headers: res.headers }
+    }
+    return { ok: true, status: res.status, data: (json ?? null) as T | null, json, error: null, transient: false, headers: res.headers }
+  } catch (err) {
+    const timedOut = (err as { name?: string } | null)?.name === 'AbortError'
+    return { ok: false, status: 0, data: null, json: undefined, error: timedOut ? TIMEOUT_MESSAGE : OFFLINE_MESSAGE, transient: true, headers: null }
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 let renewing: Promise<void> | null = null
 
 /** Renews the access token when it is close to expiring. Every data call awaits
@@ -187,20 +266,20 @@ export async function ensureSession(): Promise<void> {
 
   renewing = (async () => {
     try {
-      const res = await fetch(`${SB_URL}/auth/v1/token?grant_type=refresh_token`, {
+      const res = await fetchJson<Parameters<typeof adopt>[0]>(`${SB_URL}/auth/v1/token?grant_type=refresh_token`, {
         method: 'POST',
         headers: { apikey: SB_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: session.refresh }),
       })
-      if (!res.ok) {
-        // The refresh token is spent or revoked. Clearing is correct: it sends
-        // the visitor to a sign-in card rather than an endlessly failing page.
-        signOut()
+      if (res.ok && res.data) {
+        adopt(res.data)
         return
       }
-      adopt(await res.json())
-    } catch {
-      /* offline — keep what we have and try again on the next call */
+      // No answer, or a server-side failure: keep what we have and try again on
+      // the next call. Only a definite "no" from the auth server means the
+      // refresh token is spent or revoked — then clearing is correct, because it
+      // sends the visitor to a sign-in card rather than an endlessly failing page.
+      if (!res.transient) signOut()
     } finally {
       renewing = null
     }
@@ -279,7 +358,25 @@ export async function updatePassword(password: string): Promise<void> {
   clearRecovery()
 }
 
+/** Signs out here and at Supabase. The logout call revokes the refresh token on
+ *  the server, so a shared or stolen device cannot quietly renew the session
+ *  later. It is fire-and-forget: storage is cleared whether or not the server
+ *  answers, and `keepalive` lets the request finish if the page navigates away. */
 export function signOut(): void {
+  const token = session.token
+  if (token) {
+    try {
+      void fetch(`${SB_URL}/auth/v1/logout`, {
+        method: 'POST',
+        headers: { apikey: SB_KEY, Authorization: `Bearer ${token}` },
+        keepalive: true,
+      }).catch(() => {
+        /* already signed out server-side, or offline — nothing more to do */
+      })
+    } catch {
+      /* ignore */
+    }
+  }
   session.token = null
   session.refresh = null
   session.expires = 0
@@ -360,9 +457,9 @@ export async function select<T = unknown>(
   params: string,
 ): Promise<{ data: T[] | null; error?: string }> {
   await ensureSession()
-  const res = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, { headers: headers() })
-  if (!res.ok) return { data: null, error: await res.text() }
-  return { data: (await res.json()) as T[] }
+  const res = await fetchJson<T[]>(`${SB_URL}/rest/v1/${table}?${params}`, { headers: headers() })
+  if (!res.ok) return { data: null, error: res.error ?? `HTTP ${res.status}` }
+  return { data: res.data ?? [] }
 }
 
 export async function patch(
@@ -371,12 +468,12 @@ export async function patch(
   body: Record<string, unknown>,
 ): Promise<{ ok?: true; error?: string }> {
   await ensureSession()
-  const res = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, {
+  const res = await fetchJson(`${SB_URL}/rest/v1/${table}?${params}`, {
     method: 'PATCH',
     headers: headers(true),
     body: JSON.stringify(body),
   })
-  return res.ok ? { ok: true } : { error: await res.text() }
+  return res.ok ? { ok: true } : { error: res.error ?? `HTTP ${res.status}` }
 }
 
 export async function insert(
@@ -385,12 +482,12 @@ export async function insert(
 ): Promise<{ ok?: true; error?: string }> {
   await ensureSession()
   if (rows.length === 0) return { ok: true }
-  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+  const res = await fetchJson(`${SB_URL}/rest/v1/${table}`, {
     method: 'POST',
     headers: { ...headers(true), Prefer: 'return=minimal' },
     body: JSON.stringify(rows),
   })
-  return res.ok ? { ok: true } : { error: await res.text() }
+  return res.ok ? { ok: true } : { error: res.error ?? `HTTP ${res.status}` }
 }
 
 export async function remove(
@@ -398,57 +495,94 @@ export async function remove(
   params: string,
 ): Promise<{ ok?: true; error?: string }> {
   await ensureSession()
-  const res = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, {
+  const res = await fetchJson(`${SB_URL}/rest/v1/${table}?${params}`, {
     method: 'DELETE',
     headers: headers(),
   })
-  return res.ok ? { ok: true } : { error: await res.text() }
+  return res.ok ? { ok: true } : { error: res.error ?? `HTTP ${res.status}` }
 }
 
-export async function rpc<T = unknown>(name: string, args: Record<string, unknown> = {}): Promise<T | null> {
+export type RpcResult<T> = {
+  /** The function's answer, or null when the call did not succeed. */
+  data: T | null
+  /** Why it did not succeed; null on success. */
+  error: string | null
+  /** HTTP status; 0 when the server never answered. */
+  status: number
+  /** True when the failure was a blip (no answer, timeout, 5xx), not a refusal. */
+  transient: boolean
+}
+
+/** Calls a database function and says what happened. A failed call is not the
+ *  same as "no permissions": a 401 means the token is dead, a 5xx or no answer
+ *  means try again, and callers that care can tell the three apart. */
+export async function rpcResult<T = unknown>(
+  name: string,
+  args: Record<string, unknown> = {},
+  opts?: { timeoutMs?: number },
+): Promise<RpcResult<T>> {
   await ensureSession()
-  const res = await fetch(`${SB_URL}/rest/v1/rpc/${name}`, {
-    method: 'POST',
-    headers: headers(true),
-    body: JSON.stringify(args),
-  })
-  if (!res.ok) return null
-  return (await res.json()) as T
+  const res = await fetchJson<T>(
+    `${SB_URL}/rest/v1/rpc/${name}`,
+    { method: 'POST', headers: headers(true), body: JSON.stringify(args) },
+    opts,
+  )
+  return { data: res.ok ? res.data : null, error: res.error, status: res.status, transient: res.transient }
+}
+
+/** The short form most panels use: the answer, or null when the call failed. */
+export async function rpc<T = unknown>(name: string, args: Record<string, unknown> = {}): Promise<T | null> {
+  return (await rpcResult<T>(name, args)).data
 }
 
 export async function getUser(): Promise<SupabaseUser | null> {
   await ensureSession()
   if (!session.token) return null
   if (session.user) return session.user
-  const res = await fetch(`${SB_URL}/auth/v1/user`, { headers: headers() })
-  if (!res.ok) return null
-  session.user = await res.json()
+  const res = await fetchJson<SupabaseUser>(`${SB_URL}/auth/v1/user`, { headers: headers() })
+  if (!res.ok || !res.data) return null
+  session.user = res.data
   persist()
   return session.user
 }
 
-/** POSTs to an Edge Function with whatever credentials the visitor has. */
+/** POSTs to an Edge Function with whatever credentials the visitor has.
+ *
+ *  Edge Functions explain a refusal in JSON (`{ error, detail }`), and that is
+ *  handed back as is, whatever the status. When the answer is not JSON at all —
+ *  a gateway's HTML 502 page — the caller gets the same shape with a plain
+ *  explanation instead of a SyntaxError. No answer at all still throws, as a
+ *  plain fetch would, so existing `catch` blocks keep working. */
 export async function invoke<T = unknown>(
   name: string,
   body: Record<string, unknown>,
+  opts?: { timeoutMs?: number },
 ): Promise<T> {
   await ensureSession()
-  const res = await fetch(`${SB_URL}/functions/v1/${name}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers() },
-    body: JSON.stringify(body),
-  })
-  return (await res.json()) as T
+  const res = await fetchJson<T>(
+    `${SB_URL}/functions/v1/${name}`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers() }, body: JSON.stringify(body) },
+    opts,
+  )
+  if (res.ok) return (res.data ?? {}) as T
+  if (res.status === 0) throw new Error(res.error ?? OFFLINE_MESSAGE)
+  if (res.json && typeof res.json === 'object') return res.json as T
+  return {
+    error: 'unavailable',
+    detail: res.transient
+      ? 'The Institute\'s server is having trouble right now. Please try again in a moment.'
+      : `The Institute's server could not handle that request (HTTP ${res.status}).`,
+  } as T
 }
 
 /** Row count without transferring rows. Uses PostgREST's Content-Range header. */
 export async function count(table: string, params = ''): Promise<number> {
   await ensureSession()
-  const res = await fetch(`${SB_URL}/rest/v1/${table}?select=*&limit=1${params ? `&${params}` : ''}`, {
+  const res = await fetchJson(`${SB_URL}/rest/v1/${table}?select=*&limit=1${params ? `&${params}` : ''}`, {
     headers: { ...headers(), Prefer: 'count=exact' },
   })
   if (!res.ok) return 0
-  const range = res.headers.get('content-range') ?? ''
+  const range = res.headers?.get('content-range') ?? ''
   const total = range.split('/')[1]
   const n = Number(total)
   return Number.isFinite(n) ? n : 0
