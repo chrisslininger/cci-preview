@@ -12,6 +12,7 @@
  * with a certification in progress first, then everyone else, both
  * alphabetical — the chair's active work is always at the top.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -59,7 +60,7 @@ export default function CertificationPanel() {
     const [r, p] = await Promise.all([requirements(), register()])
     // A failed read must never look like an empty register.
     const problem = p.error ?? r.error
-    if (problem) setError(`The register could not be read — the database answered: ${problem.slice(0, 200)}`)
+    if (problem) setError(`The register could not be read. ${friendlyError(problem)}`)
     setReqs(r.rows)
     setPeople(p.rows)
     setLoading(false)
@@ -87,7 +88,7 @@ export default function CertificationPanel() {
   async function run(key: string, fn: () => Promise<{ error?: string } | { ok: true } | void>, done?: string) {
     setBusy(key)
     const r = await fn()
-    if (r && 'error' in r && r.error) toast('The database refused that change: ' + r.error.slice(0, 140))
+    if (r && 'error' in r && r.error) toast(friendlyError(r.error))
     else if (done) toast(done)
     await load()
     setBusy(null)
@@ -234,7 +235,7 @@ function ManageDialog({ person, me, onClose, onSaved }: { person: Person | null;
     setSaving(true)
     const r = await overrideCertification(chosen, level, date || null, num || null, me, (target || null) as Level | null, interest)
     setSaving(false)
-    if (r.error) { setErr('The database refused the change: ' + r.error.slice(0, 160)); return }
+    if (r.error) { setErr(friendlyError(r.error)); return }
     onSaved(`${chosen.first_name} ${chosen.last_name} saved.`)
   }
 
@@ -278,7 +279,7 @@ function ContactCard({ person: p, reqs, me, meId, canNote, onClose, onChanged }:
   async function add() {
     const t = note.trim(); if (!t) return
     setSaving(true); const r = await addNote(p.id, t, me, meId); setSaving(false)
-    if (r.error) return alert('Could not save the note: ' + r.error.slice(0, 140))
+    if (r.error) return alert('The note could not be saved. ' + friendlyError(r.error))
     setNote(''); await onChanged()
   }
   const KV = ({ k, v }: { k: string; v: React.ReactNode }) => <><span>{k}</span><div>{v ?? '—'}</div></>

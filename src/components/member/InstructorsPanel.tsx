@@ -4,6 +4,7 @@
  * never ticked by hand; Train the Trainer and practice years are two-step
  * lock-ins; Certify, Initiate Senior and End service are dated and stamped.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -22,7 +23,7 @@ function F({ l, children, full = false, hint }: { l: string; children: React.Rea
 function useEsc(onClose: () => void) { useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose]) }
 function friendly(err: string): string {
   if (/row-level security/.test(err)) return 'The database did not allow that — only the executive director and the Instructor Committee chair can change instructor records.'
-  return 'The database refused the change: ' + err.slice(0, 160)
+  return friendlyError(err)
 }
 function ChkRow({ id, label, done, pending, canEdit, auto, onPend, onDate, onLock, onUntick }: {
   id: string; label: string; done?: Stamp; pending?: string; canEdit: boolean; auto?: { ok: boolean; have: string; need: string; technique: string }
@@ -47,7 +48,7 @@ export default function InstructorsPanel() {
 
   const load = useCallback(async () => {
     const r = await loadRecords()
-    setError(r.error ? `The instructor records could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
+    setError(r.error ? `The instructor records could not be read. ${friendlyError(r.error)}` : null)
     setRows(r.rows); setLoading(false)
   }, [])
   useEffect(() => { void load() }, [load])

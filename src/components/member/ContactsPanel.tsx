@@ -3,6 +3,9 @@
  * in one list, the full contact card (only what is filled in), a stepped
  * Add / Edit form, offices, roles and the running notes log.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
+import { webHref } from '@/lib/safeHref'
+import { SafeLink } from './opsUi'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -50,7 +53,7 @@ export default function ContactsPanel() {
 
   const load = useCallback(async () => {
     const r = await everyone()
-    setError(r.error ? `The contacts could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
+    setError(r.error ? `The contacts could not be read. ${friendlyError(r.error)}` : null)
     setRows(r.rows); setLoading(false)
   }, [])
   useEffect(() => { void load() }, [load])
@@ -127,13 +130,13 @@ function ContactCard({ p, me, meId, canEdit, onClose, onEdit, onChanged }: { p: 
   // Many imported addresses already end in "City, ST ZIP"; don't repeat it.
   const tail = [p.practice_city, [p.practice_state, p.practice_zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')
   const addr = p.practice_address && p.practice_city && p.practice_address.toLowerCase().includes(p.practice_city.toLowerCase()) ? p.practice_address : [p.practice_address, tail].filter(Boolean).join(', ')
-  const web = (w: string | null) => (w ? <a href={w.startsWith('http') ? w : `https://${w}`} target="_blank" rel="noreferrer">{w}</a> : null)
+  const web = (w: string | null) => (w ? <SafeLink href={webHref(w)}>{w}</SafeLink> : null)
   const offices = p.practice_locations ?? []
   const notes = [...(p.contact_notes ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at))
   async function save() {
     if (!note.trim()) return
     setBusy(true); const r = await addNote(p.id, note.trim(), me, meId); setBusy(false)
-    if (r.error) { toast('The note was refused: ' + r.error.slice(0, 140)); return }
+    if (r.error) { toast('The note could not be saved. ' + friendlyError(r.error)); return }
     setNote(''); await onChanged(); toast('Note added')
   }
   return (
@@ -226,9 +229,9 @@ function EditDialog({ p, comms, canRoles, me, meId, onClose, onSaved }: { p: Con
     let id = p?.id ?? null
     if (id) { const r = await saveProfile(id, prof); if (r.error) { setSaving(false); setErr(friendly(r.error)); return } }
     else { const r = await createContact(prof); if (r.error || !r.id) { setSaving(false); setErr(friendly(r.error ?? 'no id returned')); return }; id = r.id }
-    const o = await saveOffices(id, offices); if (o.error) { setSaving(false); setErr('Saved, but the extra offices were refused: ' + o.error.slice(0, 140)); return }
-    if (canRoles) { const r = await saveRoles(id, seats, instrLevel); if (r.error) { setSaving(false); setErr('Saved, but the roles were refused: ' + r.error.slice(0, 140)); return } }
-    if (v.newNote && v.newNote.trim()) { const n = await addNote(id, v.newNote.trim(), me, meId); if (n.error) { setSaving(false); setErr('Saved, but the note was refused: ' + n.error.slice(0, 140)); return } }
+    const o = await saveOffices(id, offices); if (o.error) { setSaving(false); setErr('Saved, but the extra offices were not. ' + friendlyError(o.error)); return }
+    if (canRoles) { const r = await saveRoles(id, seats, instrLevel); if (r.error) { setSaving(false); setErr('Saved, but the roles were not. ' + friendlyError(r.error)); return } }
+    if (v.newNote && v.newNote.trim()) { const n = await addNote(id, v.newNote.trim(), me, meId); if (n.error) { setSaving(false); setErr('Saved, but the note was not. ' + friendlyError(n.error)); return } }
     setSaving(false)
     onSaved(p ? 'Saved.' : `${prof.first_name} ${prof.last_name} added${prof.membership_status === 'never' || !prof.membership_status ? ' as a lead' : ''}.`)
   }
@@ -302,5 +305,5 @@ function EditDialog({ p, comms, canRoles, me, meId, onClose, onSaved }: { p: Con
 function friendly(err: string): string {
   if (/row-level security/.test(err)) return 'The database did not allow that — only board, the executive director and the membership committee chair can change contacts.'
   if (/duplicate key/.test(err)) return 'Someone with that key already exists.'
-  return 'The database refused the change: ' + err.slice(0, 160)
+  return friendlyError(err)
 }

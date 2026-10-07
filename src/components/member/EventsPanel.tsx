@@ -8,6 +8,8 @@
  * The controls appear for board, the executive director and the seminar
  * committee chair — the same people the database lets write.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
+import { SafeLink } from './opsUi'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useRegKey } from '@/lib/queries/CatalogProvider'
@@ -150,7 +152,7 @@ export default function EventsPanel() {
 
   const load = useCallback(async () => {
     const r = await listEvents()
-    setError(r.error ? `The events could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
+    setError(r.error ? `The events could not be read. ${friendlyError(r.error)}` : null)
     /* The database still shows an admin viewing as a member every draft; a
      * member only ever sees published events, and never a leadership- or
      * board-only meeting (those marked for all members show date only). */
@@ -195,7 +197,7 @@ export default function EventsPanel() {
 
   async function onDuplicate(e: EventRow) {
     const r = await duplicateEvent(e, meId)
-    if (r.error) { toast('The database refused the copy: ' + r.error.slice(0, 140)); return }
+    if (r.error) { toast('The event could not be copied. ' + friendlyError(r.error)); return }
     await load(); setOpen(null)
     const copy = (await listEvents()).rows.find((x) => x.id === r.id)
     toast('Duplicated as a draft — change the dates and publish when ready')
@@ -203,12 +205,12 @@ export default function EventsPanel() {
   }
   async function onRemove(e: EventRow) {
     const r = await deleteEvent(e.id)
-    if (r.error) { toast('The database refused the removal: ' + r.error.slice(0, 140)); return }
+    if (r.error) { toast('The event could not be removed. ' + friendlyError(r.error)); return }
     setConfirm(null); setOpen(null); await load(); toast('Event removed')
   }
   async function onUnpublish(e: EventRow) {
     const r = await setStatus(e.id, 'draft')
-    if (r.error) { toast('Could not unpublish: ' + r.error.slice(0, 140)); return }
+    if (r.error) { toast('The event could not be unpublished. ' + friendlyError(r.error)); return }
     setConfirm(null); await load(); toast('Taken off the public site (kept as draft)')
   }
 
@@ -225,7 +227,7 @@ export default function EventsPanel() {
         <div className="dt"><span className="mo">{d.mo}</span><span className="dy">{d.dy}</span><span className="yr">{d.yr}</span>{d.tm && <span className="tm">{d.tm}</span>}</div>
         <div className="ti"><h4>{e.title}</h4>{e.subtitle && <div className="st">{e.subtitle}</div>}{d.range && <div className="lc">{d.range}</div>}{where && <div className="lc">{where}</div>}{canManage ? <Chips e={e} /> : <MemberChips e={e} registered={mine.has(e.slug ?? '')} />}</div>
         <div className="ac" onClick={(k) => k.stopPropagation()}>
-          {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <a className="b p-btn xs" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a>}
+          {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <SafeLink className="b p-btn xs" href={e.zoom_url}>Join on Zoom</SafeLink>}
           {canManage && <>
             <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(e)}>Edit</button>
             <button type="button" className="b s-btn on-light xs" onClick={() => void onDuplicate(e)}>Duplicate</button>
@@ -253,7 +255,7 @@ export default function EventsPanel() {
         <span className="w" title={where ?? ''}>{where || '—'}</span>
         <span className="g">{canManage ? <>{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</> : mine.has(e.slug ?? '') ? <Pill kind="ok">Registered</Pill> : !isGov(e) && soldOut(e) ? <Pill kind="bad">Sold out</Pill> : null}</span>
         <span className="ac" onClick={(k) => k.stopPropagation()}>
-          {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <a className="b p-btn xs" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a>}
+          {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <SafeLink className="b p-btn xs" href={e.zoom_url}>Join on Zoom</SafeLink>}
           {canManage && <>
             <button type="button" className="evt-ic" title="Edit" aria-label={`Edit ${e.title}`} onClick={() => setEdit(e)}>{IC.edit}</button>
             <button type="button" className="evt-ic" title="Duplicate" aria-label={`Duplicate ${e.title}`} onClick={() => void onDuplicate(e)}>{IC.copy}</button>
@@ -350,7 +352,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
           <div className="sec">Where</div>
           {v ? <div className="kv">{kv('Venue', <><b>{v.name}</b><br />{[v.address, [v.city, v.state].filter(Boolean).join(', ')].filter(Boolean).join(', ')}{(v.address || v.city) && <><br /><a href={`https://maps.google.com/?q=${encodeURIComponent([v.name, v.address, v.city, v.state].filter(Boolean).join(', '))}`} target="_blank" rel="noreferrer">Open in maps</a></>}</>)}{e.location && e.location !== v.name && kv('Notes', e.location)}</div>
             : <div className="kv">{kv('Location', e.location || 'To be announced')}</div>}
-          {e.zoom_url && <div className="kv" style={{ marginTop: 6 }}>{kv('Zoom', <a href={e.zoom_url} target="_blank" rel="noreferrer">{e.zoom_url}</a>)}</div>}
+          {e.zoom_url && <div className="kv" style={{ marginTop: 6 }}>{kv('Zoom', <SafeLink href={e.zoom_url}>{e.zoom_url}</SafeLink>)}</div>}
           {e.room_block_hotel && <><div className="sec">Room block</div><div className="kv">{kv('Hotel', e.room_block_hotel)}{kv('Rate', e.room_block_rate || '—')}{kv('Book by', e.room_block_by || '—')}</div></>}
           {e.description && <><div className="sec">About</div>{e.description.split(/\n\n+/).map((p, i) => <p key={i}>{p}</p>)}</>}
           {e.prerequisites && <div className="kv" style={{ marginTop: 6 }}>{kv('Prerequisites', e.prerequisites)}</div>}
@@ -368,14 +370,14 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
           </div></>}
           {!gov && <><div className="sec">CE credits</div>{e.ce_credits ? <div className="kv">{kv('CE credits', `Yes${e.ce_mode ? ` · ${e.ce_mode === 'addon' ? 'paid add-on' : e.ce_mode}` : ''}${e.ce_price != null ? ` · ${money(e.ce_price)}` : ''}`)}{e.ce_school && kv('Sponsoring school', e.ce_school)}</div> : <p className="muted">No CE credits offered.</p>}</>}
           {!gov && (e.refund_policy || (!e.free_with_membership && money(e.price))) && <><div className="sec">Refund policy</div><p>{refundLine(e.starts_at, e.refund_policy)}</p></>}
-          {e.video_url && <div className="kv" style={{ marginTop: 6 }}>{kv('Video', <a href={e.video_url} target="_blank" rel="noreferrer">{e.video_url}</a>)}</div>}
+          {e.video_url && <div className="kv" style={{ marginTop: 6 }}>{kv('Video', <SafeLink href={e.video_url}>{e.video_url}</SafeLink>)}</div>}
           {(e.gallery_images?.length ?? 0) > 0 && <><div className="sec">Gallery</div><div className="evt-gal">{e.gallery_images!.map((u, i) => <img key={i} src={u} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} />)}</div></>}
           {(canManage || hasPage) && <><div className="sec">Public page</div>
           <div className="kv">{kv('URL', e.status === 'published' && hasPage ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : e.status === 'published' ? <span className="muted" style={{ margin: 0 }}>No page on the site for this slug yet · /seminars/{e.slug}</span> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div></>}
           {!gov && !attending && !regKey && e.status === 'published' && !isPast(e) && <><div className="sec">How to register</div><p className="muted">Registration for this event is handled by the Institute. <a href="/contact">Contact us</a> and we’ll sign you up.</p></>}
         </div>
         <div className="mf evt-foot">
-          <div className="r">{attending ? (e.zoom_url ? <a className="b p-btn sm" href={e.zoom_url} target="_blank" rel="noopener noreferrer">Join on Zoom</a> : <span className="muted">✓ You’re attending</span>) : regKey && <button type="button" className="b p-btn sm" onClick={() => { onClose(); register(regKey) }}>{rsvp ? 'RSVP — Free with Membership' : 'Register'}</button>}{!gov && onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations ({regs.length})</button>}</div>
+          <div className="r">{attending ? (e.zoom_url ? <SafeLink className="b p-btn sm" href={e.zoom_url}>Join on Zoom</SafeLink> : <span className="muted">✓ You’re attending</span>) : regKey && <button type="button" className="b p-btn sm" onClick={() => { onClose(); register(regKey) }}>{rsvp ? 'RSVP — Free with Membership' : 'Register'}</button>}{!gov && onCheckin && <button type="button" className="b p-btn sm" onClick={onCheckin}>Go to check-in</button>}{!gov && canManage && <button type="button" className="b s-btn on-light sm" onClick={onRegs}>Registrations ({regs.length})</button>}</div>
           <div className="r">{canManage && <><button type="button" className="b s-btn on-light sm" onClick={onEdit}>Edit</button><button type="button" className="b s-btn on-light sm" onClick={onDuplicate}>Duplicate</button></>}{attending && onCancelRsvp && <button type="button" className="b s-btn on-light sm" onClick={onCancelRsvp}>Cancel my RSVP</button>}{attending && onRequestCancel && <button type="button" className="b s-btn on-light sm" onClick={onRequestCancel}>Request a cancellation</button>}<button type="button" className="b p-btn sm" onClick={onClose}>Close</button></div>
         </div>
       </div>
@@ -397,7 +399,7 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged, onCheckin }: { e
   const [busyId, setBusyId] = useState<string | null>(null)
   const memberFree = e.free_with_membership === true
   const load = useCallback(async () => {
-    const r = await registrations(e.id); setErr(r.error ? r.error.slice(0, 160) : null); setRows(r.rows)
+    const r = await registrations(e.id); setErr(r.error ? `The registrations could not be read. ${friendlyError(r.error)}` : null); setRows(r.rows)
     if (memberFree) { const [ok, c] = await Promise.all([canManageRsvps(), rsvpCandidates(e.id)]); setCanRsvp(ok); setCands(c) }
   }, [e.id, memberFree])
   async function confirmRsvp(c: RsvpCandidate) {
@@ -405,7 +407,7 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged, onCheckin }: { e
     setBusyId(c.person_id)
     const x = await manualRsvp(e.id, c.person_id)
     setBusyId(null)
-    if (x.error) { toast('Could not confirm: ' + x.error.slice(0, 140)); return }
+    if (x.error) { toast('The RSVP could not be confirmed. ' + friendlyError(x.error)); return }
     toast(`${c.full_name} is now attending`)
     await load(); await onChanged()
   }
@@ -419,7 +421,7 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged, onCheckin }: { e
   const rev = live.reduce((s, r) => s + (r.payment_status === 'paid' ? r.price_paid_cents : 0), 0) / 100
   async function toggle(r: Reg) {
     const x = await checkIn(r.id, !!r.checked_in_at)
-    if (x.error) { toast('Could not update check-in: ' + x.error.slice(0, 120)); return }
+    if (x.error) { toast('The check-in could not be updated. ' + friendlyError(x.error)); return }
     await load(); await onChanged()
   }
   function exportRoster() {
@@ -459,7 +461,7 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged, onCheckin }: { e
             {[...rows].sort((a, b) => b.created_at.localeCompare(a.created_at)).map((r) => <tr key={r.id} className={r.registration_status === 'cancelled' ? 'off' : ''}>
               <td><b>{r.full_name}</b><br /><small><a href={`mailto:${r.email}`}>{r.email}</a>{r.practice_name ? ` · ${r.practice_name}` : ''}{r.phone ? ` · ${r.phone}` : ''}</small></td>
               <td>{TIER[r.reg_type] ?? r.reg_type}{r.is_member_at_registration && r.reg_type !== 'member' ? ' · member' : ''}{r.source === 'manual_rsvp' ? <><br /><small className="muted">{r.notes ?? 'confirmed by hand'}</small></> : null}{r.discount_applied ? <><br /><small className="muted">{r.discount_applied.replace(/\+/g, ' + ')}</small></> : null}{r.registration_status === 'cancelled' ? <><br /><Pill kind="bad">canceled</Pill></> : null}
-                {r.verification_status === 'pending' && r.registration_status !== 'cancelled' ? <><br /><Pill kind="warn">eligibility to confirm</Pill>{canManage && <> <button type="button" className="flink" onClick={async () => { const x = await setVerification(r.id, 'verified'); if (x.error) return toast('Could not update: ' + x.error.slice(0, 120)); await load(); await onChanged() }}>confirm</button></>}</> : r.verification_status === 'verified' ? <><br /><Pill kind="ok">verified</Pill></> : null}</td>
+                {r.verification_status === 'pending' && r.registration_status !== 'cancelled' ? <><br /><Pill kind="warn">eligibility to confirm</Pill>{canManage && <> <button type="button" className="flink" onClick={async () => { const x = await setVerification(r.id, 'verified'); if (x.error) return toast(friendlyError(x.error)); await load(); await onChanged() }}>confirm</button></>}</> : r.verification_status === 'verified' ? <><br /><Pill kind="ok">verified</Pill></> : null}</td>
               <td>{money(r.price_paid_cents / 100) ?? '$0'}{r.reg_type === 'member' && r.ce_credits ? <><br /><small className="muted">CE certificate</small></> : null}<br /><Pill kind={r.payment_status === 'paid' || r.payment_status === 'free' ? 'ok' : r.payment_status === 'pending' ? 'warn' : 'bad'}>{r.payment_status === 'pending' ? 'awaiting payment' : r.payment_status === 'free' && r.reg_type === 'member' ? 'member' : r.payment_status}</Pill></td>
               <td><small>{new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}<br />{new Date(r.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</small></td>
               <td>{r.checked_in_at ? <><Pill kind="ok">Checked in</Pill><br /><small className="muted">{new Date(r.checked_in_at).toLocaleString()}</small></> : (canManage && r.registration_status !== 'cancelled' ? <button type="button" className="b s-btn on-light xs" onClick={() => void toggle(r)}>Check in</button> : '—')}</td>
@@ -549,8 +551,8 @@ function FormDialog({ e, venues, committees, meId, onClose, onSaved, onRemove }:
     let id = e?.id ?? null
     if (id) { const r = await updateEvent(id, input); if (r.error) { setSaving(false); setErr(friendly(r.error)); return } }
     else { const r = await createEvent(input, meId); if (r.error || !r.id) { setSaving(false); setErr(friendly(r.error ?? 'no id returned')); return }; id = r.id }
-    const s1 = await saveSpeakers(id, speakers); if (s1.error) { setSaving(false); setErr('Event saved, but speakers were refused: ' + s1.error.slice(0, 140)); return }
-    const s2 = await saveSessions(id, sessions); if (s2.error) { setSaving(false); setErr('Event saved, but sessions were refused: ' + s2.error.slice(0, 140)); return }
+    const s1 = await saveSpeakers(id, speakers); if (s1.error) { setSaving(false); setErr('Event saved, but the speakers were not. ' + friendlyError(s1.error)); return }
+    const s2 = await saveSessions(id, sessions); if (s2.error) { setSaving(false); setErr('Event saved, but the sessions were not. ' + friendlyError(s2.error)); return }
     setSaving(false)
     onSaved(status === 'published' ? (e ? 'Saved — live on the public site.' : 'Created and published.') : (e ? 'Saved as draft.' : 'Created as draft.'))
   }
@@ -651,7 +653,7 @@ function friendly(err: string): string {
   if (/events_category_check/.test(err)) return 'Pick a category from the list.'
   if (/events_event_type_check/.test(err)) return 'Pick an event type from the list.'
   if (/row-level security/.test(err)) return 'The database did not allow that — only board, the executive director and the seminar committee chair can change events.'
-  return 'The database refused the change: ' + err.slice(0, 160)
+  return friendlyError(err)
 }
 
 function SpeakerRow({ s, onChange, onRemove }: { s: Speaker; onChange: (s: Speaker) => void; onRemove: () => void }) {

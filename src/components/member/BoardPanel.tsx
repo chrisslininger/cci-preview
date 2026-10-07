@@ -4,6 +4,7 @@
  * when), seating with a hard seat limit, past directors, and the director
  * record: service trail, reviews, documents, board-only notes.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Chips } from './PersonChips'
 import { CERT_LABEL, roleChips } from '@/lib/chips'
@@ -35,7 +36,7 @@ export default function BoardPanel() {
 
   const load = useCallback(async () => {
     const r = await loadTerms()
-    setError(r.error ? `The board record could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
+    setError(r.error ? `The board record could not be read. ${friendlyError(r.error)}` : null)
     setRows(r.rows); setLoading(false)
   }, [])
   useEffect(() => { void load() }, [load])
@@ -151,7 +152,7 @@ export default function BoardPanel() {
 
 function friendly(err: string): string {
   if (/row-level security/.test(err)) return 'The database did not allow that — only board, the executive director and the Nominations & Elections chair can change board records.'
-  return 'The database refused the change: ' + err.slice(0, 160)
+  return friendlyError(err)
 }
 
 /* ------------------------------------------------------------ add nominee -- */

@@ -1,5 +1,7 @@
 /* Small shared pieces for the operations tabs (Tasks, Reports, Calendar, Stats, Records). */
 import { useEffect } from 'react'
+import { friendlyError } from '@/lib/friendlyError'
+import { safeHref } from '@/lib/safeHref'
 
 export function Pill({ kind = '', children }: { kind?: string; children: React.ReactNode }) { return <span className={`cpill ${kind}`}>{children}</span> }
 export function F({ l, children, full = false, hint }: { l: string; children: React.ReactNode; full?: boolean; hint?: string }) { return <div className={full ? 'full' : ''}><label className="flabel">{l}</label>{children}{hint && <div className="evt-hint">{hint}</div>}</div> }
@@ -7,7 +9,13 @@ export function useEsc(onClose: () => void) { useEffect(() => { const k = (e: Ke
 export function friendly(err: string, who = 'the Executive Director or the Board'): string {
   if (/locked/.test(err)) return 'This report is locked — the Board meeting it was filed for has passed. The Executive Director can unlock it.'
   if (/row-level security|42501|not authorized/.test(err)) return `The database did not allow that — only ${who} can make this change.`
-  return 'The database refused the change: ' + err.slice(0, 160)
+  return friendlyError(err)
+}
+/** A link to an address typed into the database. It becomes an anchor only
+ *  when the address is plainly a web URL; anything else is shown as text. */
+export function SafeLink({ href, children, className }: { href: string | null | undefined; children: React.ReactNode; className?: string }) {
+  const h = safeHref(href)
+  return h ? <a className={className} href={h} target="_blank" rel="noopener noreferrer">{children}</a> : <span className="muted">{children}</span>
 }
 export function Modal({ children, wide = false, onClose, cls = '' }: { children: React.ReactNode; wide?: boolean; onClose: () => void; cls?: string }) {
   useEsc(onClose)

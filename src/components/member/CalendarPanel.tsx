@@ -6,6 +6,7 @@
  * link. Seminars and conferences are managed from Events; meetings can be
  * added here.
  * -------------------------------------------------------------------------- */
+import { friendlyError } from '@/lib/friendlyError'
 import { useCallback, useEffect, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -16,7 +17,7 @@ import type { Committee } from '@/lib/queries/reports'
 import { dayET, daysUntil, monthLabel, nextMonth, prevMonth } from '@/lib/queries/meetings'
 import { session } from '@/lib/supabase'
 import { logActivity } from '@/lib/queries/attention'
-import { Pill, F, Modal, Head, Sec, friendly } from './opsUi'
+import { Pill, F, Modal, Head, Sec, friendly, SafeLink } from './opsUi'
 
 const ZOOM_SCHEDULE = 'https://zoom.us/meeting/schedule'
 
@@ -33,7 +34,7 @@ export default function CalendarPanel() {
 
   const load = useCallback(async () => {
     const [r, m, c] = await Promise.all([loadCalendar(), myRegisteredEventIds(session.user?.id ?? null), loadCommittees()])
-    setError(r.error ? `The calendar could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
+    setError(r.error ? `The calendar could not be read. ${friendlyError(r.error)}` : null)
     /* The database still answers an admin viewing as a member as the admin:
      * drop drafts and the leadership-only Zoom links a member never gets. */
     const rows = viewingAsMember ? r.rows.filter((e) => e.status !== 'draft').map((e) => (e.visibility === 'leadership' || e.visibility === 'board' ? { ...e, zoom_url: null } : e)) : r.rows
@@ -76,7 +77,7 @@ export default function CalendarPanel() {
       <div className="mb"><div className="kv">
         <span>When</span><div>{dayLabel(startDay(detail), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}{endDay(detail) !== startDay(detail) ? ` – ${dayLabel(endDay(detail), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}` : ''} · {whenLine(detail)}</div>
         {detail.location && <><span>Where</span><div>{detail.location}</div></>}
-        {detail.zoom_url ? <><span>Zoom</span><div><a className="b p-btn sm" href={detail.zoom_url} target="_blank" rel="noopener noreferrer">Join the meeting</a></div></> : detail.has_zoom ? <><span>Zoom</span><div><small className="muted">The link is shared with directors, chairs and committee members.</small></div></> : null}
+        {detail.zoom_url ? <><span>Zoom</span><div><SafeLink className="b p-btn sm" href={detail.zoom_url}>Join the meeting</SafeLink></div></> : detail.has_zoom ? <><span>Zoom</span><div><small className="muted">The link is shared with directors, chairs and committee members.</small></div></> : null}
         {detail.agenda && <><span>Agenda</span><div style={{ whiteSpace: 'pre-line' }}>{detail.agenda}</div></>}
         {detail.audience && <><span>Audience</span><div>{detail.audience}</div></>}
         {(detail.event_type === 'seminar' || detail.event_type === 'conference') && <><span>Public site</span><div>{detail.status === 'published' ? 'Published — open for registration' : 'Draft — not yet on the public site'}</div></>}
