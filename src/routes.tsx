@@ -346,7 +346,7 @@ const problemRoutes: RouteEntry[] = PROBLEM_ORDER.map((key) => {
       description: summarize(problem.sub),
       priority: 0.7,
       updatedAt: UPDATED,
-      breadcrumbs: [{ name: 'Clinical Challenges', path: '/#clinical-challenges' }],
+      breadcrumbs: [{ name: 'Clinical Challenges', path: '/#probgrid' }],
     },
   }
 })
