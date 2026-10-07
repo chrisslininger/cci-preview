@@ -24,7 +24,7 @@ const ITEMS = [
 ]
 
 export default function AccountMenu() {
-  const { access, signedIn, refresh, canViewAsMember, viewingAsMember, setViewingAsMember } = useAccess()
+  const { access, signedIn, ready, refresh, canViewAsMember, viewingAsMember, setViewingAsMember } = useAccess()
   const navigate = useNavigate()
   const { pathname, hash } = useLocation()
   const [mounted, setMounted] = useState(false)
@@ -62,6 +62,19 @@ export default function AccountMenu() {
           Log in
         </Link>
       </>
+    )
+  }
+
+  if (!ready) {
+    // Signed in, but who this is has not come back yet. A blank circle the size
+    // of the avatar holds the spot; the name and role follow. Showing "Member
+    // Login" or a placeholder name here is the flash of wrong state (#103).
+    return (
+      <div className="acctmenu">
+        <span className="acctbtn wait" role="status" aria-busy="true" aria-label="Checking your account">
+          <span className="acctav" aria-hidden="true" />
+        </span>
+      </div>
     )
   }
 
@@ -129,7 +142,7 @@ export default function AccountMenu() {
             role="menuitem"
             className="acctout"
             onClick={() => {
-              signOut()
+              void signOut()
               setViewingAsMember(false)
               setOpen(false)
               void refresh()
