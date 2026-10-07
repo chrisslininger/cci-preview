@@ -12,17 +12,58 @@
  * flagged it as scaffolding to remove before public launch, and the site is now
  * public.
  * -------------------------------------------------------------------------- */
-import { useState } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import { Link } from '@/lib/router'
 import { signIn, sendMagicLink, linkError, clearLinkError } from '@/lib/supabase'
 import { activateAccount } from '@/lib/queries/access'
 import { useAccess } from '@/lib/queries/AccessProvider'
-import MemberShell from '@/components/member/MemberShell'
 import { useToast } from '@/components/ui/Toast'
+
+/* The members area is close to half the site's JavaScript, and only a signed-in
+ * member ever needs it. Loading it here, on demand, keeps it out of every public
+ * page. This route is client-only (no prerendered markup to hydrate), so a lazy
+ * component is safe. */
+const MemberShell = lazy(() => import('@/components/member/MemberShell'))
+
+/** Shown while access is being read or the shell's code is on its way. Light on
+ *  purpose: it must not look like a member's menu, because which menu is not
+ *  known yet. */
+function ShellPlaceholder() {
+  return (
+    <section className="tight" aria-busy="true">
+      <div className="wrap" style={{ minHeight: '60vh', display: 'grid', placeItems: 'center' }}>
+        <p className="acct-help" style={{ color: 'var(--color-content-tertiary)' }}>Opening your account…</p>
+      </div>
+    </section>
+  )
+}
+
+/** Signed in, but the Institute could not be reached on this load and nothing
+ *  earlier is available to show. Not a sign-in card: the session is fine. */
+function ShellUnavailable({ onRetry, busy }: { onRetry: () => void; busy: boolean }) {
+  return (
+    <section className="tight">
+      <div className="wrap" style={{ maxWidth: '460px' }}>
+        <div className="acct-card">
+          <h3>
+            Can&apos;t reach the Institute<span className="gr" />
+          </h3>
+          <p className="acct-help" style={{ marginBottom: 16 }}>
+            You are still signed in, but your account could not be loaded just now. Check your
+            connection and try again.
+          </p>
+          <button type="button" className="b p-btn" style={{ justifyContent: 'center', width: '100%' }} onClick={onRetry} disabled={busy}>
+            {busy ? 'One moment…' : 'Try again'}
+          </button>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 export default function AccountPage() {
   const toast = useToast()
-  const { signedIn, loading, refresh } = useAccess()
+  const { signedIn, loading, ready, unavailable, refresh } = useAccess()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -82,7 +123,16 @@ export default function AccountPage() {
     setBusy(false)
   }
 
-  if (signedIn) return <MemberShell />
+  if (signedIn) {
+    // Nothing role-dependent renders until access has been read once: a
+    // Director must not see the plain-member rail for a moment first.
+    if (!ready) return unavailable ? <ShellUnavailable onRetry={() => void refresh()} busy={loading} /> : <ShellPlaceholder />
+    return (
+      <Suspense fallback={<ShellPlaceholder />}>
+        <MemberShell />
+      </Suspense>
+    )
+  }
 
   return (
     <>
