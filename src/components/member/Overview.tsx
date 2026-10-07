@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useRegKey } from '@/lib/queries/CatalogProvider'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
-import { myRegistrations, upcomingEvents, myCompletions } from '@/lib/queries/member'
+import { myRegistrations, upcomingEvents, myCompletions, eventZoom } from '@/lib/queries/member'
 import type { Registration, PublicEvent, Completion } from '@/lib/queries/member'
 import { RoleChips } from './MemberShell'
 import { TIER_LABEL } from '@/lib/access'
@@ -36,6 +36,8 @@ type Card = {
   tab: string
   /** Opens the sign-up window instead of a tab. */
   reg?: string
+  /** Opens this link (a Zoom call) instead of a tab. */
+  href?: string
 }
 
 export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) {
@@ -45,6 +47,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
   const [regs, setRegs] = useState<Registration[] | null>(null)
   const [events, setEvents] = useState<PublicEvent[] | null>(null)
   const [ce, setCe] = useState<Completion[] | null>(null)
+  const [zoom, setZoom] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -70,6 +73,13 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
     .filter((e) => daysUntil(e.starts_at) !== null && (daysUntil(e.starts_at) as number) >= 0)
     .sort((a, b) => String(a.starts_at).localeCompare(String(b.starts_at)))[0]
   const registeredSlugs = new Set((regs ?? []).map((r) => r.events?.slug).filter(Boolean))
+  const nextSlug = next?.slug && registeredSlugs.has(next.slug) ? next.slug : null
+  useEffect(() => {
+    if (!nextSlug) { setZoom(null); return }
+    let cancelled = false
+    void eventZoom(nextSlug).then((z) => { if (!cancelled) setZoom(z) })
+    return () => { cancelled = true }
+  }, [nextSlug])
   const hours = (ce ?? []).reduce((sum, c) => sum + Number(c.ce_hours ?? 0), 0)
 
   const cards: Card[] = []
@@ -78,6 +88,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
     const d = daysUntil(next.starts_at)
     const already = registeredSlugs.has(next.slug)
     const reg = already ? null : regKey(next.slug)
+    const join = already && zoom ? zoom : null
     cards.push({
       key: 'next-event',
       urgency: already ? 'ok' : d !== null && d <= 30 ? 'now' : 'soon',
@@ -86,9 +97,10 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
       detail: already
         ? `${next.location ?? 'Location to be confirmed'} — you are registered`
         : `until ${next.title ?? 'this event'}${next.location ? ` · ${next.location}` : ''}`,
-      go: already ? 'View the event →' : 'Register →',
+      go: join ? 'Join on Zoom →' : already ? 'View the event →' : 'Register →',
       tab: 'events',
       ...(reg ? { reg } : {}),
+      ...(join ? { href: join } : {}),
     })
   }
 
@@ -189,7 +201,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
             type="button"
             className={`ma-card ${card.urgency}`}
             key={card.key}
-            onClick={() => (card.reg ? register(card.reg) : onOpen(card.tab))}
+            onClick={() => (card.href ? window.open(card.href, '_blank', 'noopener') : card.reg ? register(card.reg) : onOpen(card.tab))}
           >
             <span className="rail" />
             <span className="k">{card.label}</span>
