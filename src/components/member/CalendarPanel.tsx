@@ -22,7 +22,7 @@ const ZOOM_SCHEDULE = 'https://zoom.us/meeting/schedule'
 
 export default function CalendarPanel() {
   const toast = useToast()
-  const { access, can } = useAccess()
+  const { access, can, viewingAsMember } = useAccess()
   const oversight = can('full_admin') || can('board')
   const leads = access.committees.filter((c) => c.leads)
   const canAdd = oversight || leads.length > 0
@@ -34,8 +34,11 @@ export default function CalendarPanel() {
   const load = useCallback(async () => {
     const [r, m, c] = await Promise.all([loadCalendar(), myRegisteredEventIds(session.user?.id ?? null), loadCommittees()])
     setError(r.error ? `The calendar could not be read — the database answered: ${r.error.slice(0, 200)}` : null)
-    setRows(r.rows); setMine(m); setComs(c); setLoading(false)
-  }, [])
+    /* The database still answers an admin viewing as a member as the admin:
+     * drop drafts and the leadership-only Zoom links a member never gets. */
+    const rows = viewingAsMember ? r.rows.filter((e) => e.status !== 'draft').map((e) => (e.visibility === 'leadership' || e.visibility === 'board' ? { ...e, zoom_url: null } : e)) : r.rows
+    setRows(rows); setMine(m); setComs(c); setLoading(false)
+  }, [viewingAsMember])
   useEffect(() => { void load() }, [load])
 
   const today = dayET()
