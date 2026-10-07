@@ -119,7 +119,8 @@ export type Seminar = {
   ctaH: string
   spk?: string[]
   /** Sponsors shown with their logos. `light` puts a logo made for white on a white tile. */
-  sponsors?: { name: string; logo: string; url: string; light?: boolean }[]
+  /** `w`/`h` are the image file's pixel size, so the logo reserves its space before it loads. */
+  sponsors?: { name: string; logo: string; url: string; light?: boolean; w: number; h: number }[]
   agenda?: unknown
   ce?: SeminarCE
   story?: SeminarStory
@@ -331,7 +332,7 @@ export const SEMINARS = {
     },
     ctaH:'Be in the room in St. Petersburg.', ctaP:'Included with AOI membership · two days at the home of Advanced Orthogonal', ctaBtn:'Reserve Your Seat',
     spk:['silver','billiris','hulsey','wooden','beadle','colavita','miranda','bollen','jobarah','pavlovic','corsello','fowler','cs'], keynote:null,
-    sponsors:[{name:'Anode Imaging',logo:'sponsor-anode',url:'https://anodeimaging.com/'},{name:'Sonus: Blueprint',logo:'sponsor-sonus',url:'https://sonusblueprint.com/'},{name:'Spinalight',logo:'sponsor-spinalight',url:'https://www.spinalight.com/',light:true}],
+    sponsors:[{name:'Anode Imaging',logo:'sponsor-anode',url:'https://anodeimaging.com/',w:640,h:159},{name:'Sonus: Blueprint',logo:'sponsor-sonus',url:'https://sonusblueprint.com/',w:420,h:182},{name:'Spinalight',logo:'sponsor-spinalight',url:'https://www.spinalight.com/',light:true,w:317,h:240}],
     agenda:[
       {day:'Day 1',date:'FRI NOV 6',items:[
         {t:'7:00',ap:'AM · DOORS',title:'Registration, Breakfast & Vendor Hall',desc:'Check-in with photo ID, coffee, and the vendor floor opens. Breakfast from 8:00.',who:[]},
