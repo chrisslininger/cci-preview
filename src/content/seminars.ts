@@ -427,9 +427,6 @@ export const REG_SLUG: Record<string, string> = {
   'bootcamp:week': 'advo-bootcamp',
 }
 
-/** Fallback event ids used only when the live sync request fails. */
-export const DB_ID: Record<string, number | null> = {intro:7,fund1:null,fund2:9,fund3:10,intensive:null,bootcamp:null,conference:13,internship:null}
-
 /** Seminar key -> public route slug. `internship` has no DB row, so it gets a
  *  hand-written slug; every other route slug IS the database slug, which keeps
  *  the URL, the sitemap and the event record in agreement. */
