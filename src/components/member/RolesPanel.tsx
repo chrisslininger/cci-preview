@@ -136,10 +136,10 @@ export default function RolesPanel() {
                   <span>{person.email ?? 'No email on file'}</span>
                   <div className="ma-chips" style={{ marginTop: '6px' }}>
                     {roles.length === 0 ? (
-                      <span className="rolechip">NO ROLES</span>
+                      <span className="cpill">NO ROLES</span>
                     ) : (
                       roles.map((r, i) => (
-                        <span className="rolechip gold" key={i}>
+                        <span className="cpill" key={i}>
                           {(ROLE_LABEL[r.role_key] ?? r.role_key).toUpperCase()}
                           {r.committee_id
                             ? ` · ${(coms.find((c) => c.id === r.committee_id)?.name ?? '').replace(/ Committee.*/, '')}`
