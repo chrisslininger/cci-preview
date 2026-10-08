@@ -2382,7 +2382,7 @@ a.othercard {
 .ma-dot::after { content: ''; position: absolute; inset: -4px; border-radius: 999px; border: 2px solid currentColor; color: inherit; opacity: 0; animation: ma-pulse 2.4s ease-out infinite; }
 .ma-dot { color: var(--color-brand-accent); } .ma-dot.urgent { color: var(--color-status-danger); }
 @keyframes ma-pulse { 0% { transform: scale(.6); opacity: .8; } 70% { transform: scale(1.5); opacity: 0; } 100% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .ma-dot::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .ma-dot::after { animation: none; } .ov-timer .bar span { transition: none; } }
 /* shared */
 .ogrp { font-family: var(--font-label); font-weight: 600; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-brand-primary); margin: 18px 0 8px; display: flex; align-items: center; gap: 12px; }
 .ogrp:after { content: ''; flex: 1; height: 1px; background: var(--color-border-subtle); }
@@ -2890,6 +2890,24 @@ section.ov-alert.live { background: var(--color-surface-inverse); border-color: 
 .ov-alert.live p { color: var(--color-content-on-inverse-subtle); font-size: 15px; }
 .ov-alert.live .ov-hint { font-size: 14px; color: var(--color-content-on-inverse-muted); }
 .ov-alert.live .ov-join { padding: 16px 34px; font-size: 14px; }
+section.ov-alert.timed { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; }
+.ov-timer { padding-left: 28px; border-left: 1px solid var(--color-border-subtle); text-align: center; }
+.ov-timer .ov-eyebrow { margin-bottom: 8px; }
+.ov-timer .digits { display: flex; align-items: flex-start; justify-content: center; }
+.ov-timer .unit { display: flex; flex-direction: column; align-items: center; }
+.ov-timer .colon { padding: 0 6px; font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 52px; color: var(--color-brand-accent); }
+.ov-timer .tile { display: block; min-width: 58px; padding: 0 8px; font-family: var(--font-display); font-weight: 700; font-size: 32px; line-height: 52px; letter-spacing: -0.01em; color: var(--color-content-primary); background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-control); box-shadow: var(--shadow-card); }
+.ov-timer .u { display: block; margin-top: 5px; font-family: var(--font-label); font-weight: 600; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-content-muted); }
+.ov-timer .bar { display: block; height: 3px; margin-top: 12px; border-radius: 2px; background: var(--color-border-on-inverse); overflow: hidden; }
+.ov-timer .bar span { display: block; height: 100%; background: var(--color-brand-accent); transition: width 1s linear; }
+.ov-alert.today .ov-timer .ov-eyebrow { color: var(--color-status-pending-content); }
+.ov-alert.live .ov-timer { border-left-color: var(--color-border-on-inverse); }
+.ov-alert.live .ov-timer .ov-eyebrow { color: var(--color-brand-accent-bright); }
+.ov-alert.live .ov-timer .tile { min-width: 72px; font-size: 42px; line-height: 64px; color: var(--color-brand-accent-bright); background: var(--color-surface-inverse-raised); border-color: var(--color-border-on-inverse); box-shadow: none; }
+.ov-alert.live .ov-timer .colon { font-size: 32px; line-height: 64px; color: var(--color-content-on-inverse-muted); }
+.ov-alert.live .ov-timer .u { color: var(--color-content-on-inverse-muted); }
+.ov-wide { display: inline; }
+.ov-narrow { display: none; }
 
 /* Text links that go somewhere: one style for "Fill it out", "View my record"… */
 .ov-go { display: inline-block; margin-left: 12px; padding: 0 0 1px; border: 0; border-bottom: 2px solid var(--color-brand-accent); background: none; cursor: pointer; font-family: var(--font-display); font-weight: 700; font-size: 12.5px; color: var(--color-brand-primary-deep); text-decoration: none; white-space: nowrap; }
@@ -2925,6 +2943,10 @@ section.ov-sec { margin-top: 28px; padding: 0; }
 .ov-regs .num { color: var(--color-content-secondary); }
 
 @media (max-width: 620px) {
+  section.ov-alert.timed { display: block; }
+  .ov-timer { display: none; }
+  .ov-wide { display: none; }
+  .ov-narrow { display: inline; }
   section.ov-alert.live { padding: 20px 18px; }
   .ov-alert.live .ov-join { width: 100%; justify-content: center; }
   .ov-glance, .ov-glance tbody, .ov-glance tr, .ov-glance th, .ov-glance td { display: block; width: auto; }

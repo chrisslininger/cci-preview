@@ -15,7 +15,7 @@
  * not available yet the row says so rather than showing a placeholder that
  * looks like a fact.
  * -------------------------------------------------------------------------- */
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { Link } from '@/lib/router'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { fmtDate, fmtTime, zoneAbbr, isOnline, viewerZone, ET } from '@/lib/dates'
@@ -337,24 +337,37 @@ function EventBand({ next, zoom, now, onOpen }: { next: Booked; zoom: string | n
 
   if (live) {
     return (
-      <section className="ov-alert live" role="alert">
-        <span className="ov-eyebrow">{until > 0 ? 'Starting soon' : 'Happening now'}</span>
-        <h2>{until > 0 ? `${title} starts ${countdown(until)}` : `${title} is underway`}</h2>
-        <p className="num">{timeText(next, run.iso)}{next.online ? ' · live on Zoom' : ''}</p>
-        <div className="ov-act">
-          {join ?? <span className="ov-hint">The Zoom link is in your confirmation email.</span>}
+      <section className="ov-alert live timed" role="alert">
+        <div>
+          <span className="ov-eyebrow">{until > 0 ? 'Starting soon' : 'Happening now'}</span>
+          <h2>
+            {until > 0 ? (
+              <>
+                <span className="ov-wide">{title} is about to start</span>
+                <span className="ov-narrow">{title} starts {countdown(until)}</span>
+              </>
+            ) : `${title} is underway`}
+          </h2>
+          <p className="num">{timeText(next, run.iso)}{next.online ? ' · live on Zoom' : ''}</p>
+          <div className="ov-act">
+            {join ?? <span className="ov-hint">The Zoom link is in your confirmation email.</span>}
+          </div>
         </div>
+        <Timer start={run.start} />
       </section>
     )
   }
   if (today) {
     const evening = Number(new Date(run.start).toLocaleTimeString('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: next.zone })) >= 17
     return (
-      <section className="ov-alert today" role="status">
-        <span className="ov-eyebrow">Today</span>
-        <h2>{title} — {evening ? 'tonight' : 'today'} at {timeText(next, run.iso)}</h2>
-        <p>Starts {countdown(until)}. You’re registered.</p>
-        <div className="ov-act">{join}{details}</div>
+      <section className="ov-alert today timed" role="status">
+        <div>
+          <span className="ov-eyebrow">Today</span>
+          <h2>{title} — {evening ? 'tonight' : 'today'} at {timeText(next, run.iso)}</h2>
+          <p><span className="ov-narrow">Starts {countdown(until)}. </span>You’re registered.</p>
+          <div className="ov-act">{join}{details}</div>
+        </div>
+        <Timer start={run.start} />
       </section>
     )
   }
@@ -374,6 +387,54 @@ function EventBand({ next, zoom, now, onOpen }: { next: Booked; zoom: string | n
       <b>{title}</b> <span className="num">{whenText(next, true)}</span>
       {details}
     </p>
+  )
+}
+
+/** The countdown at the right of the band, on wider screens only (hidden on a
+ *  phone by the stylesheet). It keeps its own one-second clock so the rest of
+ *  the page does not redraw every second. On the day it shows hours and
+ *  minutes; in the last fifteen, minutes and seconds over a bar that fills as
+ *  the start nears; once started, how long it has been running. */
+function Timer({ start }: { start: number }) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(t)
+  }, [])
+  const ms = start - now
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const sec = Math.ceil(Math.abs(ms) / 1000)
+  let label: string
+  let units: [string, string][]
+  if (ms > 15 * MIN) {
+    const m = Math.ceil(ms / MIN)
+    label = 'Starts in'
+    units = [[pad(Math.floor(m / 60)), 'hrs'], [pad(m % 60), 'min']]
+  } else if (ms > 0) {
+    label = 'Starts in'
+    units = [[pad(Math.floor(sec / 60)), 'min'], [pad(sec % 60), 'sec']]
+  } else {
+    const m = Math.floor(-ms / MIN)
+    label = 'Running for'
+    units = m >= 60 ? [[String(Math.floor(m / 60)), 'hr'], [pad(m % 60), 'min']] : [[pad(m), 'min'], [pad(Math.floor(-ms / 1000) % 60), 'sec']]
+  }
+  const fill = ms > 0 && ms <= 15 * MIN ? 1 - ms / (15 * MIN) : null
+  return (
+    <div className="ov-timer" aria-hidden="true">
+      <span className="ov-eyebrow">{label}</span>
+      <div className="digits">
+        {units.map(([n, u], i) => (
+          <Fragment key={u}>
+            {i > 0 && <span className="colon">:</span>}
+            <span className="unit">
+              <span className="tile num">{n}</span>
+              <span className="u">{u}</span>
+            </span>
+          </Fragment>
+        ))}
+      </div>
+      {fill !== null && <span className="bar"><span style={{ width: `${(fill * 100).toFixed(2)}%` }} /></span>}
+    </div>
   )
 }
 
