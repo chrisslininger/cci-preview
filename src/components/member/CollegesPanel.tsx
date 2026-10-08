@@ -20,7 +20,7 @@ import { PersonCard } from './InternshipsPanel'
 function Pill({ kind = '', children }: { kind?: string; children: React.ReactNode }) { return <span className={`cpill ${kind}`}>{children}</span> }
 function F({ l, children, full = false }: { l: string; children: React.ReactNode; full?: boolean }) { return <div className={full ? 'full' : ''}><label className="flabel">{l}</label>{children}</div> }
 function friendly(err: string): string {
-  if (/row-level security/.test(err)) return 'The database did not allow that — only the executive director and board can change college records.'
+  if (/row-level security/.test(err)) return 'You don’t have permission for that. Only the executive director and board can change college records.'
   return friendlyError(err)
 }
 function useEsc(onClose: () => void) { useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose]) }

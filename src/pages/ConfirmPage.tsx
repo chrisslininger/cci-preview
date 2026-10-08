@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from '@/lib/router'
 import { refundLine } from '@/lib/refund'
 import { invoke } from '@/lib/supabase'
+import { fmtDate } from '@/lib/dates'
 
 /* ----------------------------------------------------------------------------
  * Landing after Stripe Checkout. The visitor arrives with ?session_id=…, and
@@ -50,7 +51,7 @@ export default function ConfirmPage() {
   }, [sessionId])
 
   const paid = c && c !== 'loading' && c.status === 'paid'
-  const when = paid && c.starts_at ? new Date(c.starts_at).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : null
+  const when = paid && c.starts_at ? fmtDate(c.starts_at, { long: true }) : null
   const amount = paid && typeof c.amount_cents === 'number' ? `$${(c.amount_cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : null
 
   const headline = c === 'loading' ? 'Recording your payment…'

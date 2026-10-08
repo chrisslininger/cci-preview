@@ -323,7 +323,7 @@ function EditDialog({ p, comms, canRoles, me, meId, onClose, onSaved }: { p: Con
 }
 
 function friendly(err: string): string {
-  if (/row-level security/.test(err)) return 'The database did not allow that — only board, the executive director and the membership committee chair can change contacts.'
+  if (/row-level security/.test(err)) return 'You don’t have permission for that. Only board, the executive director and the membership committee chair can change contacts.'
   if (/duplicate key/.test(err)) return 'Someone with that key already exists.'
   return friendlyError(err)
 }

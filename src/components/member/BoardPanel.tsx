@@ -151,7 +151,7 @@ export default function BoardPanel() {
 }
 
 function friendly(err: string): string {
-  if (/row-level security/.test(err)) return 'The database did not allow that — only board, the executive director and the Nominations & Elections chair can change board records.'
+  if (/row-level security/.test(err)) return 'You don’t have permission for that. Only board, the executive director and the Nominations & Elections chair can change board records.'
   return friendlyError(err)
 }
 

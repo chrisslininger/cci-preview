@@ -20,6 +20,7 @@ import { SLUG_TO_SEMINAR } from '@/content/seminars'
 import { refundable, refundLine } from '@/lib/refund'
 import CheckinRoom from './CheckinRoom'
 import { useToast } from '@/components/ui/Toast'
+import { fmtDate, fmtTime } from '@/lib/dates'
 import {
   listEvents, venues as loadVenues, committees as loadCommittees, registrations, searchPeople,
   createEvent, updateEvent, setStatus, deleteEvent, saveSpeakers, saveSessions, duplicateEvent, checkIn,
@@ -85,7 +86,7 @@ function Chips({ e }: { e: EventRow }) {
     <div className="cert-chips" style={{ marginBottom: 0, marginTop: 9 }}>
       {e.status === 'published' ? <Pill kind="ok">Live on site</Pill> : <Pill kind="warn">Draft</Pill>}
       {e.is_keystone && <Pill kind="gold">Keystone</Pill>}
-      {unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}
+      {unv > 0 && <Pill kind="warn">{unv} to confirm eligibility</Pill>}
       <small className="muted evt-facts">{[gov ? typeLabel(e.event_type) : (e.category ? catLabel(e.category) : typeLabel(e.event_type)), !gov && e.category && e.event_type && !['seminar', 'Other'].includes(e.event_type) ? typeLabel(e.event_type) : null, e.ce_credits ? 'CE credits' : null, isPast(e) ? 'Past' : null, n > 0 ? `${n} registered` : null, fresh > 0 ? `${fresh} new this week` : null, pend > 0 ? `${pend} awaiting payment` : null, p && !gov ? `${p}${e.member_price != null ? ` · members ${money(e.member_price)}` : ''}${e.free_with_membership ? ' · free w/ membership' : ''}` : null].filter(Boolean).join(' · ')}</small>
     </div>
   )
@@ -211,7 +212,7 @@ export default function EventsPanel() {
   async function onUnpublish(e: EventRow) {
     const r = await setStatus(e.id, 'draft')
     if (r.error) { toast('The event could not be unpublished. ' + friendlyError(r.error)); return }
-    setConfirm(null); await load(); toast('Taken off the public site (kept as draft)')
+    setConfirm(null); await load(); toast('Unpublished. The event is saved as a draft.')
   }
 
   if (loading) return <><h1>Events</h1><div className="ma-sub">Reading the Institute calendar…</div><div className="ma-panel"><p className="ma-empty">One moment.</p></div></>
@@ -253,7 +254,7 @@ export default function EventsPanel() {
         <span className="t">{d.tm || '—'}</span>
         <span className="n" title={e.title}>{e.title}</span>
         <span className="w" title={where ?? ''}>{where || '—'}</span>
-        <span className="g">{canManage ? <>{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to verify</Pill>}</> : mine.has(e.slug ?? '') ? <Pill kind="ok">Registered</Pill> : !isGov(e) && soldOut(e) ? <Pill kind="bad">Sold out</Pill> : null}</span>
+        <span className="g">{canManage ? <>{e.status === 'published' ? <Pill kind="ok">Live</Pill> : <Pill kind="warn">Draft</Pill>}{e.is_keystone && <Pill kind="gold">Keystone</Pill>}{unv > 0 && <Pill kind="warn">{unv} to confirm eligibility</Pill>}</> : mine.has(e.slug ?? '') ? <Pill kind="ok">Registered</Pill> : !isGov(e) && soldOut(e) ? <Pill kind="bad">Sold out</Pill> : null}</span>
         <span className="ac" onClick={(k) => k.stopPropagation()}>
           {!canManage && mine.has(e.slug ?? '') && e.zoom_url && !isPast(e) && <SafeLink className="b p-btn xs" href={e.zoom_url}>Join on Zoom</SafeLink>}
           {canManage && <>
@@ -373,7 +374,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
           {e.video_url && <div className="kv" style={{ marginTop: 6 }}>{kv('Video', <SafeLink href={e.video_url}>{e.video_url}</SafeLink>)}</div>}
           {(e.gallery_images?.length ?? 0) > 0 && <><div className="sec">Gallery</div><div className="evt-gal">{e.gallery_images!.map((u, i) => <img key={i} src={u} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} />)}</div></>}
           {(canManage || hasPage) && <><div className="sec">Public page</div>
-          <div className="kv">{kv('URL', e.status === 'published' && hasPage ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : e.status === 'published' ? <span className="muted" style={{ margin: 0 }}>No page on the site for this slug yet · /seminars/{e.slug}</span> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div></>}
+          <div className="kv">{kv('URL', e.status === 'published' && hasPage ? <a href={`/seminars/${e.slug ?? ''}`} target="_blank" rel="noreferrer">advancedorthogonal.com/seminars/{e.slug}</a> : e.status === 'published' ? <span className="muted" style={{ margin: 0 }}>No page on the site at this address yet · /seminars/{e.slug}</span> : <span className="muted" style={{ margin: 0 }}>Not on the public site until published · /seminars/{e.slug}</span>)}</div></>}
           {!gov && !attending && !regKey && e.status === 'published' && !isPast(e) && <><div className="sec">How to register</div><p className="muted">Registration for this event is handled by the Institute. <a href="/contact">Contact us</a> and we’ll sign you up.</p></>}
         </div>
         <div className="mf evt-foot">
@@ -463,8 +464,8 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged, onCheckin }: { e
               <td>{TIER[r.reg_type] ?? r.reg_type}{r.is_member_at_registration && r.reg_type !== 'member' ? ' · member' : ''}{r.source === 'manual_rsvp' ? <><br /><small className="muted">{r.notes ?? 'confirmed by hand'}</small></> : null}{r.discount_applied ? <><br /><small className="muted">{r.discount_applied.replace(/\+/g, ' + ')}</small></> : null}{r.registration_status === 'cancelled' ? <><br /><Pill kind="bad">canceled</Pill></> : null}
                 {r.verification_status === 'pending' && r.registration_status !== 'cancelled' ? <><br /><Pill kind="warn">eligibility to confirm</Pill>{canManage && <> <button type="button" className="flink" onClick={async () => { const x = await setVerification(r.id, 'verified'); if (x.error) return toast(friendlyError(x.error)); await load(); await onChanged() }}>confirm</button></>}</> : r.verification_status === 'verified' ? <><br /><Pill kind="ok">verified</Pill></> : null}</td>
               <td>{money(r.price_paid_cents / 100) ?? '$0'}{r.reg_type === 'member' && r.ce_credits ? <><br /><small className="muted">CE certificate</small></> : null}<br /><Pill kind={r.payment_status === 'paid' || r.payment_status === 'free' ? 'ok' : r.payment_status === 'pending' ? 'warn' : 'bad'}>{r.payment_status === 'pending' ? 'awaiting payment' : r.payment_status === 'free' && r.reg_type === 'member' ? 'member' : r.payment_status}</Pill></td>
-              <td><small>{new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}<br />{new Date(r.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</small></td>
-              <td>{r.checked_in_at ? <><Pill kind="ok">Checked in</Pill><br /><small className="muted">{new Date(r.checked_in_at).toLocaleString()}</small></> : (canManage && r.registration_status !== 'cancelled' ? <button type="button" className="b s-btn on-light xs" onClick={() => void toggle(r)}>Check in</button> : '—')}</td>
+              <td><small>{fmtDate(r.created_at)}<br />{fmtTime(r.created_at)}</small></td>
+              <td>{r.checked_in_at ? <><Pill kind="ok">Checked in</Pill><br /><small className="muted">{fmtDate(r.checked_in_at, { time: true })}</small></> : (canManage && r.registration_status !== 'cancelled' ? <button type="button" className="b s-btn on-light xs" onClick={() => void toggle(r)}>Check in</button> : '—')}</td>
               <td>{r.checked_in_at && canManage && <button type="button" className="flink" onClick={() => void toggle(r)}>undo</button>}</td>
             </tr>)}
           </tbody></table></div>
@@ -656,7 +657,7 @@ function friendly(err: string): string {
   if (/events_slug_unique/.test(err)) return 'That public URL is already used by another event — change the slug on Basics.'
   if (/events_category_check/.test(err)) return 'Pick a category from the list.'
   if (/events_event_type_check/.test(err)) return 'Pick an event type from the list.'
-  if (/row-level security/.test(err)) return 'The database did not allow that — only board, the executive director and the seminar committee chair can change events.'
+  if (/row-level security/.test(err)) return 'You don’t have permission for that. Only board, the executive director and the seminar committee chair can change events.'
   return friendlyError(err)
 }
 

@@ -7,6 +7,7 @@
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
+import { fmtDate } from '@/lib/dates'
 import { useRegKey } from '@/lib/queries/CatalogProvider'
 import { useRegistration } from '@/components/blocks/RegistrationDialog'
 import { myRegistrations, upcomingEvents, myCompletions, eventZoom } from '@/lib/queries/member'
@@ -111,7 +112,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
     big: TIER_LABEL[access.tier],
     detail:
       access.tier === 'member' && person?.membership_expires
-        ? `renews ${new Date(person.membership_expires).toLocaleDateString()}`
+        ? `renews ${fmtDate(person.membership_expires)}`
         : access.tier === 'member'
           ? 'active'
           : 'Members save $200 on every Intensive and $600 on Bootcamp, and the Monthly Huddle and the Annual Conference are included',
@@ -190,7 +191,7 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
       </h1>
       <div className="ma-sub">
         {access.roles.length > 0 || access.tier !== 'guest'
-          ? 'Everything below is scoped to the roles you hold.'
+          ? 'Here’s what’s waiting for you.'
           : 'Your account is active. Membership unlocks the rest.'}
       </div>
       <RoleChips />

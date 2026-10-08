@@ -55,7 +55,7 @@ export default function ReportsPanel({ committee }: { committee?: string } = {})
   if (loading) return <><h1>Reports</h1><div className="ma-sub">Reading the committee reports…</div><div className="ma-panel"><p className="ma-empty">One moment.</p></div></>
 
   // opened from a committee the database does not have yet: say so rather than show every committee
-  if (committee && !coms.some((x) => isCommittee(x, committee))) return <><h1>Reports</h1><div className="ma-sub">This committee is not set up in the database yet.</div><div className="ma-panel"><p className="ma-empty">Once the Executive Director adds it, its monthly reports will appear here.</p></div></>
+  if (committee && !coms.some((x) => isCommittee(x, committee))) return <><h1>Reports</h1><div className="ma-sub">This committee hasn’t been set up yet.</div><div className="ma-panel"><p className="ma-empty">Once the Executive Director adds it, its monthly reports will appear here.</p></div></>
 
   const inView = com === 'all' ? visible : visible.filter((c) => c.id === com)
   const status = statusFor(coms, rows, cycle.reportMonth)
