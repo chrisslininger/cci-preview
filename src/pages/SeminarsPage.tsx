@@ -180,6 +180,8 @@ export default function SeminarsPage() {
             {visible.map((id) => (
               <SeminarCard id={id} key={id} />
             ))}
+            {/* On a phone the free intro is the last row instead of the strip at the top */}
+            {filter !== 'free' && <SeminarCard id="intro" key="intro" />}
           </div>
           {empty && (
             <p id="semempty" style={{ fontSize: '15px', color: 'var(--color-content-muted)', padding: '30px 0' }}>
