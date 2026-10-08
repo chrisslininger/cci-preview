@@ -18,7 +18,7 @@ import { calendar as loadCalendar, startDay, dayLabel } from '@/lib/queries/cale
 import type { CalEvent } from '@/lib/queries/calendar'
 import { dayET, monthLabel, fmtD, addDays } from '@/lib/queries/meetings'
 import { logActivity } from '@/lib/queries/attention'
-import { Pill, Modal, Head, Sec, friendly } from './opsUi'
+import { Pill, Modal, Head, Sec, friendly, askConfirm } from './opsUi'
 import { ReportBody } from './ReportsPanel'
 
 type FolderKey = Folder
@@ -48,7 +48,7 @@ export default function RecordsPanel() {
   useEffect(() => { void load() }, [load])
 
   const open = async (r: Record_) => { if (!r.storage_path) return; const u = await fileUrl(r.storage_path); if (u) window.open(u, '_blank', 'noopener'); else toast('That file could not be opened — you may not have access to it.') }
-  const del = async (r: Record_) => { if (!confirm(`Remove “${r.title}” from Records?`)) return; const x = await removeRecord(r); if (x.error) return toast(friendly(x.error)); await load(); toast('Removed') }
+  const del = async (r: Record_) => { if (!(await askConfirm(`Remove “${r.title}” from Records?`, { ok: 'Remove', danger: true }))) return; const x = await removeRecord(r); if (x.error) return toast(friendly(x.error)); await load(); toast('Removed') }
   const fileRow = (r: Record_) => <div key={r.id} className="recrow"><button type="button" className="rdoc" onClick={() => void open(r)}>📄 {r.title}<small>{KIND_LABEL[r.kind] ?? r.kind} · {r.file_name}{r.size_bytes ? ` · ${fmtSize(r.size_bytes)}` : ''} · {r.uploaded_by_name ?? '—'} · {fmtTs(r.created_at)}</small></button>{oversight && <button type="button" className="x" aria-label="Remove" onClick={() => void del(r)}>×</button>}</div>
   const uploader = (label: string, folderKey: Folder, sub: string, meta: Parameters<typeof upload>[3], key: string) => <label className="b s-btn on-light xs" style={{ cursor: 'pointer' }}>{uploading === key ? 'Uploading…' : label}<input type="file" hidden accept="application/pdf,image/*,.docx,.xlsx,.csv" disabled={!!uploading} onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; setUploading(key); const r = await upload(folderKey, sub, f, meta, who); setUploading(null); if (r.error) return toast('The upload failed. ' + friendlyError(r.error)); await load(); toast('Filed'); void logActivity('write', 'records', { folder: folderKey, kind: meta.kind }) }} /></label>
 

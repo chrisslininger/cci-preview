@@ -23,6 +23,7 @@ import {
   LEVELS, LEVEL_LABEL, RANK, NEXT,
 } from '@/lib/queries/certifications'
 import type { Person, Requirement, Level } from '@/lib/queries/certifications'
+import { askConfirm, notice } from './opsUi'
 
 type Tab = 'all' | 'interest' | 'student' | 'level_1' | 'level_2'
 const TABS: [Tab, string][] = [['all', 'All'], ['interest', 'Interest'], ['student', 'Student'], ['level_1', 'Level 1'], ['level_2', 'Level 2']]
@@ -94,12 +95,12 @@ export default function CertificationPanel() {
     setBusy(null)
   }
   const initiate = (p: Person, level: Level) => run(p.id, () => setTarget(p.id, level), `${p.first_name} ${p.last_name} is now working toward ${LEVEL_LABEL[level]}.`)
-  const withdraw = (p: Person) => { if (confirm(`Stop ${p.first_name}'s progression toward ${LEVEL_LABEL[p.target_cert_level!]}? Ticked criteria stay on record.`)) void run(p.id, () => setTarget(p.id, null)) }
+  const withdraw = async (p: Person) => { if (await askConfirm(`Stop ${p.first_name}'s progression toward ${LEVEL_LABEL[p.target_cert_level!]}?`, { body: 'Ticked criteria stay on record.', ok: 'Stop progression', danger: true })) void run(p.id, () => setTarget(p.id, null)) }
   const tick = (p: Person, r: Requirement, on: boolean) => run(`${p.id}:${r.id}`, () => markRequirement(p.id, r.id, on, on ? today() : null, me, meId))
   const date = (p: Person, r: Requirement, d: string) => run(`${p.id}:${r.id}`, () => markRequirement(p.id, r.id, true, d || null, me, meId))
-  const award = (p: Person) => {
+  const award = async (p: Person) => {
     const lvl = p.target_cert_level as Level
-    if (!confirm(`Award ${LEVEL_LABEL[lvl]} to ${fullName(p)}?\n\nThis writes the certification (dated today, certified by ${me}), sets their level, and clears the progression.`)) return
+    if (!(await askConfirm(`Award ${LEVEL_LABEL[lvl]} to ${fullName(p)}?`, { body: `This writes the certification (dated today, certified by ${me}), sets their level, and clears the progression.`, ok: 'Award' }))) return
     void run(p.id, async () => { const r = await certify(p, lvl, me); if ('number' in r) toast(`${p.first_name} ${p.last_name} is now ${LEVEL_LABEL[lvl]} — certificate #${r.number}.`); return r })
   }
 
@@ -279,7 +280,7 @@ function ContactCard({ person: p, reqs, me, meId, canNote, onClose, onChanged }:
   async function add() {
     const t = note.trim(); if (!t) return
     setSaving(true); const r = await addNote(p.id, t, me, meId); setSaving(false)
-    if (r.error) return alert('The note could not be saved. ' + friendlyError(r.error))
+    if (r.error) return void notice('The note could not be saved', friendlyError(r.error))
     setNote(''); await onChanged()
   }
   const KV = ({ k, v }: { k: string; v: React.ReactNode }) => <><span>{k}</span><div>{v ?? '—'}</div></>

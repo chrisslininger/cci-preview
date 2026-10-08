@@ -17,7 +17,7 @@ import type { Committee } from '@/lib/queries/reports'
 import { dayET, daysUntil, monthLabel, nextMonth, prevMonth } from '@/lib/queries/meetings'
 import { session } from '@/lib/supabase'
 import { logActivity } from '@/lib/queries/attention'
-import { Pill, F, Modal, Head, Sec, friendly, SafeLink } from './opsUi'
+import { Pill, F, Modal, Head, Sec, friendly, SafeLink, askConfirm } from './opsUi'
 
 const ZOOM_SCHEDULE = 'https://zoom.us/meeting/schedule'
 
@@ -137,6 +137,6 @@ function MeetingDialog({ e, coms, oversight, onClose, onSaved, createdBy }: { e:
       <F l="Keystone"><label className="evt-tog"><input type="checkbox" checked={v.is_keystone} onChange={(ev) => setV({ ...v, is_keystone: ev.target.checked })} /> Mark with ★ on the calendar</label></F>
       <F l="Agenda / notes" full><textarea className="fi" value={v.agenda} onChange={(ev) => setV({ ...v, agenda: ev.target.value })} /></F>
     </div></div>
-    <div className="mf evt-foot"><span>{e && <button type="button" className="b d-btn sm" onClick={async () => { if (!confirm('Remove this meeting from the calendar?')) return; const r = await deleteMeeting(e.id); if (r.error) return toast(friendly(r.error)); onSaved('Meeting removed') }}>Remove</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : e ? 'Save' : 'Add to calendar'}</button></span></div>
+    <div className="mf evt-foot"><span>{e && <button type="button" className="b d-btn sm" onClick={async () => { if (!(await askConfirm('Remove this meeting from the calendar?', { body: 'This cannot be undone.', ok: 'Remove', danger: true }))) return; const r = await deleteMeeting(e.id); if (r.error) return toast(friendly(r.error)); onSaved('Meeting removed') }}>Remove</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : e ? 'Save' : 'Add to calendar'}</button></span></div>
   </Modal>
 }

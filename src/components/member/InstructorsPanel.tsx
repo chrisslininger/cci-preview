@@ -14,6 +14,7 @@ import {
   TECHNIQUES, SEMINARS, LEVEL_LABEL, END_REASONS, LOG_KINDS, CRITERIA, fullName, initials, lastName, certLabel, certRank, critMet, critDone, critAll, isReady, inTraining, registerGap, fmtD, fmtM, fmtTs,
 } from '@/lib/queries/instructors'
 import type { InstructorRecord, PersonLite, Level, Status, LogEntry, Note, Who, Stamp } from '@/lib/queries/instructors'
+import { askConfirm } from './opsUi'
 
 const today = () => new Date().toISOString().slice(0, 10)
 function Pill({ kind = '', children, title }: { kind?: string; children: React.ReactNode; title?: string }) { return <span className={`cpill ${kind}`} title={title}>{children}</span> }
@@ -61,7 +62,7 @@ export default function InstructorsPanel() {
     const k = pk(r.id, key); const date = pending[k]; if (!date) return toast('Choose a date first')
     if (await run(tick(r, key, true, date, who), `Locked in · ${fmtD(date)} · ${who.name}`)) setPending((s) => { const n = { ...s }; delete n[k]; return n })
   }
-  async function untick(r: InstructorRecord, key: string) { if (!confirm('Clear this item? The date and verifier will be removed.')) return; await run(tick(r, key, false, '', who)) }
+  async function untick(r: InstructorRecord, key: string) { if (!(await askConfirm('Clear this item?', { body: 'The date and verifier will be removed.', ok: 'Clear', danger: true }))) return; await run(tick(r, key, false, '', who)) }
 
   const cnt = useMemo(() => ({ training: rows.filter(inTraining).length, current: rows.filter((r) => r.status === 'current').length, past: rows.filter((r) => r.status === 'past').length, senior: rows.filter((r) => r.status === 'current' && r.level === 'senior_instructor').length, instr: rows.filter((r) => r.status === 'current' && r.level === 'instructor').length }), [rows])
   const lq = q.trim().toLowerCase()
@@ -208,7 +209,7 @@ function RecordDialog({ r, preset, rows, onClose, onSaved, onRemoved }: { r: Ins
           <div className="full"><label className="flabel">Cleared to teach</label><div className="ctc-chk">{SEMINARS.map((s) => <label key={s} className={sems.includes(s) ? 'on' : ''}><input type="checkbox" checked={sems.includes(s)} onChange={(e) => setSems((x) => e.target.checked ? [...x, s] : x.filter((y) => y !== s))} />{s}</label>)}</div><div className="evt-hint">Drives who can be picked as a speaker on the Events tab.</div></div>
           <F l="Notes" full><textarea className="fi" value={v.notes} onChange={set('notes')} /></F>
         </div></div>
-        <div className="mf evt-foot"><span>{r && <button type="button" className="b d-btn sm" onClick={async () => { if (!confirm('Remove this record entirely? Use End instructor service to keep the history.')) return; const w = await removeRecord(r.id); if (w.error) return toast(friendly(w.error)); onRemoved() }}>Remove record</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : r ? 'Save' : 'Add instructor'}</button></span></div>
+        <div className="mf evt-foot"><span>{r && <button type="button" className="b d-btn sm" onClick={async () => { if (!(await askConfirm('Remove this record entirely?', { body: 'This cannot be undone. Use End instructor service to keep the history.', ok: 'Remove record', danger: true }))) return; const w = await removeRecord(r.id); if (w.error) return toast(friendly(w.error)); onRemoved() }}>Remove record</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : r ? 'Save' : 'Add instructor'}</button></span></div>
       </div>
     </div>
   )
