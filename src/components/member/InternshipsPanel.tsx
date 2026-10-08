@@ -24,7 +24,7 @@ const today = () => new Date().toISOString().slice(0, 10)
 function Pill({ kind = '', children, title }: { kind?: string; children: React.ReactNode; title?: string }) { return <span className={`cpill ${kind}`} title={title}>{children}</span> }
 const statusPill = (st: ReturnType<typeof approvalStatus>) => <Pill kind={st === 'active' ? 'ok' : st === 'lapsed' ? 'bad' : 'warn'}>{st}</Pill>
 function friendly(err: string): string {
-  if (/row-level security/.test(err)) return 'The database did not allow that — only the executive director and the Internship Committee chair can change internship records.'
+  if (/row-level security/.test(err)) return 'You don’t have permission for that. Only the executive director and the Internship Committee chair can change internship records.'
   if (/preceptor_colleges_approval_unique/.test(err)) return 'That school approval (same school, site and start date) is already on this preceptor.'
   return friendlyError(err)
 }

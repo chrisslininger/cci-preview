@@ -23,7 +23,7 @@ function F({ l, children, full = false, hint }: { l: string; children: React.Rea
 }
 function useEsc(onClose: () => void) { useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose]) }
 function friendly(err: string): string {
-  if (/row-level security/.test(err)) return 'The database did not allow that — only the executive director and the Instructor Committee chair can change instructor records.'
+  if (/row-level security/.test(err)) return 'You don’t have permission for that. Only the executive director and the Instructor Committee chair can change instructor records.'
   return friendlyError(err)
 }
 function ChkRow({ id, label, done, pending, canEdit, auto, onPend, onDate, onLock, onUntick }: {
@@ -81,7 +81,7 @@ export default function InstructorsPanel() {
     return <div key={r.id} className={`irow ${r.status}`}>
       <div className="hd"><button type="button" className="pname" onClick={() => r.people && setPerson(r.people)}>{name}</button><span className="sp">{canManage && <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(r)}>Override</button>}</span></div>
       <div className="meta under"><Pill>{r.technique}</Pill>{r.level && <Pill>{LEVEL_LABEL[r.level]}</Pill>}{r.target_level && <Pill kind="warn">Working toward {LEVEL_LABEL[r.target_level]}</Pill>}{r.status === 'past' ? <Pill>Past</Pill> : r.status === 'upcoming' ? <Pill kind="warn">In training</Pill> : null}</div>
-      {dates ? <div className="meta dates">{dates}{r.certified_by ? ` · certified by ${r.certified_by}` : ''}</div> : r.status === 'current' ? <div className="meta dates muted">Award dates not recorded (pre-date this system)</div> : null}
+      {dates ? <div className="meta dates">{dates}{r.certified_by ? ` · certified by ${r.certified_by}` : ''}</div> : r.status === 'current' ? <div className="meta dates muted">Award dates not recorded (awarded before these records began)</div> : null}
       {gap && <div className="meta warn-txt">⚠ {gap} — reconcile on the Certifications tab</div>}
       {r.status !== 'past' && <div className="meta"><span className="lbl">Cleared to teach</span>{(r.seminars ?? []).length ? (r.seminars ?? []).map((s) => <Pill key={s} kind="lead">{s}</Pill>) : <i>not set — set under Override</i>}</div>}
       {r.status === 'past' && <div className="meta muted">Past instructor · ended {fmtD(r.end_date)} · {END_REASONS[r.end_reason ?? ''] ?? r.end_reason ?? ''}{r.ended_by_name ? ` · by ${r.ended_by_name}` : ''}</div>}

@@ -9,7 +9,7 @@ export function F({ l, children, full = false, hint }: { l: string; children: Re
 export function useEsc(onClose: () => void) { useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose]) }
 export function friendly(err: string, who = 'the Executive Director or the Board'): string {
   if (/locked/.test(err)) return 'This report is locked — the Board meeting it was filed for has passed. The Executive Director can unlock it.'
-  if (/row-level security|42501|not authorized/.test(err)) return `The database did not allow that — only ${who} can make this change.`
+  if (/row-level security|42501|not authorized/.test(err)) return `You don’t have permission for that. Only ${who} can make this change.`
   return friendlyError(err)
 }
 /** A link to an address typed into the database. It becomes an anchor only

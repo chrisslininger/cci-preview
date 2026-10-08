@@ -121,7 +121,7 @@ export default function CertificationPanel() {
   return (
     <>
       <div className="cert-head">
-        <div><h1>Certifications</h1><div className="ma-sub" style={{ marginBottom: 0 }}>Lock in completed criteria (date required), award levels, and set progression.</div></div>
+        <div><h1>Certifications</h1><div className="ma-sub" style={{ marginBottom: 0 }}>Record each completed step with its date, award certification levels, and track who is working toward which level.</div></div>
         <div className="cert-actions">
           {canManage && <button type="button" className="b p-btn sm" onClick={() => setManageFor('new')}>+ Add</button>}
           <button type="button" className="b s-btn on-light sm" onClick={exportCsv}>↓ Export {tab === 'all' ? 'all' : tabLabel.toLowerCase()}</button>

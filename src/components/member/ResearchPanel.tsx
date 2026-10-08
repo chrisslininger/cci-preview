@@ -21,7 +21,7 @@ function Pill({ kind = '', children }: { kind?: string; children: React.ReactNod
 function F({ l, children, full = false, hint }: { l: string; children: React.ReactNode; full?: boolean; hint?: string }) { return <div className={full ? 'full' : ''}><label className="flabel">{l}</label>{children}{hint && <div className="evt-hint">{hint}</div>}</div> }
 function useEsc(onClose: () => void) { useEffect(() => { const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', k); return () => document.removeEventListener('keydown', k) }, [onClose]) }
 function friendly(err: string): string {
-  if (/row-level security/.test(err)) return 'The database did not allow that — only the executive director and the Research Director can change research records.'
+  if (/row-level security/.test(err)) return 'You don’t have permission for that. Only the executive director and the Research Director can change research records.'
   return friendlyError(err)
 }
 const host = (u: string) => u.replace(/^https?:\/\//, '').replace(/\/$/, '')

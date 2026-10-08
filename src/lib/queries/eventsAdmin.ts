@@ -11,6 +11,7 @@
  * what may change: everyone sees published events; board, the executive
  * director and the seminar committee see drafts and can edit.
  * -------------------------------------------------------------------------- */
+import { zoneAbbr } from '@/lib/dates'
 import { select, searchSelect, patch, insert, remove, rpc, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export const CATEGORIES: [string, string][] = [
@@ -270,8 +271,8 @@ export function whenText(e: Pick<EventRow, 'starts_at' | 'ends_at' | 'timezone' 
   const a = zoned(e.starts_at, e.timezone)
   if (!a) return 'Date to be announced'
   const b = zoned(e.ends_at, e.timezone)
-  const tz = e.timezone ? ` (${e.timezone.replace('America/', '').replace('_', ' ')})` : ''
-  if (!b) return `${a.wd}, ${MONL[a.m]} ${a.d}, ${a.y}${a.time && a.time !== '12:00 AM' ? ' · ' + a.time : ''}${tz}`
+  const tz = ` ${zoneAbbr(e.timezone)}`
+  if (!b) return `${a.wd}, ${MONL[a.m]} ${a.d}, ${a.y}${a.time && a.time !== '12:00 AM' ? ' · ' + a.time + tz : ''}`
   if (b.d === a.d && b.m === a.m) return `${a.wd}, ${MONL[a.m]} ${a.d}, ${a.y} · ${a.time} – ${b.time}${tz}`
   return `${MONL[a.m]} ${a.d}${b.y !== a.y ? `, ${a.y}` : ''} – ${b.m === a.m && b.y === a.y ? '' : MONL[b.m] + ' '}${b.d}, ${b.y} · ${a.time} start, ${b.time} finish${tz}`
 }
