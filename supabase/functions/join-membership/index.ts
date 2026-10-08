@@ -1,4 +1,4 @@
-// CCI Website — join-membership (v1)
+// CCI Website — join-membership (v2)
 // The way in. The site could take money for a seminar seat but never for a
 // membership: the two "Become a Member" buttons were styled spans with nothing
 // behind them, and the only working join flow lived on an outside store.
@@ -14,6 +14,14 @@
 //   price     (public) what joining costs today, for the page to display.
 //   checkout  (public) find or create the contact record, then hand back a
 //             Stripe URL. A current member is refused rather than charged twice.
+//
+// Deployed with verify_jwt DISABLED, and it has to stay that way. The public
+// site holds a publishable key (sb_publishable_...), which is not a JWT, and
+// Supabase's gateway rejects a non-JWT bearer token outright. A prospect
+// joining the Institute is by definition signed out, so with verify_jwt on,
+// every real join attempt would be refused before this code ran. Nothing here
+// trusts the caller: the price is read from the server, the membership is
+// granted only by Stripe's paid invoice.
 //
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY,
 //      STRIPE_MEMBERSHIP_PRICE (the recurring yearly price id).

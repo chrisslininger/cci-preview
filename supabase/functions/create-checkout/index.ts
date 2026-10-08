@@ -1,5 +1,12 @@
-// CCI Website — create-checkout (v7)
+// CCI Website — create-checkout (v8)
 // Public checkout entry. Prices ALWAYS resolved server-side.
+//
+// NOTE: this function is deliberately deployed with verify_jwt DISABLED. The
+// public site holds a publishable key (sb_publishable_...), which is not a JWT,
+// so a signed-out visitor registering for a seminar would be rejected at the
+// gateway before this code ever ran. Authentication is done here instead: a
+// member RSVP requires a real user JWT and is refused without one.
+//
 // v2: guest email matching a current member pauses and offers login for discount.
 // v3: fixed column names to match the live CCI OS schema (early_bird_until /
 //     early_bird_price), made the dollars->cents conversion deterministic, and
@@ -31,6 +38,14 @@
 //     member pays for: with ce=true a Stripe session for the CE fee is created;
 //     without it the RSVP is recorded free on the spot. Rows carry
 //     source='rsvp' and ce_credits so the Events tab can list attendees.
+// v8: stopped handing the database's own rejection text to the visitor. When a
+//     free registration failed to insert, the raw PostgREST body — table name,
+//     constraint name and the entire failing row, including the registrant's
+//     name, email and phone — was returned as `detail` and printed in the
+//     registration dialog. It now goes to the function log and the visitor gets
+//     a sentence they can act on. (Found when the member RSVP constraint
+//     rejection was displayed verbatim to a member.) No pricing or logic
+//     changed; the paid path already logged rather than echoed.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const CORS: Record<string, string> = {
@@ -318,7 +333,16 @@ Deno.serve(async (req: Request) => {
         payment_status: "free", registration_status: "registered", source,
       }),
     });
-    if (!ins.ok) return json(500, { error: "registration_failed", detail: await ins.text() });
+    if (!ins.ok) {
+      // PostgREST's rejection body names the table, the constraint and the whole
+      // failing row — the registrant's own name, email and phone included. That
+      // belongs in the function log, never in a dialog on the public site.
+      console.error("free registration insert failed", ins.status, (await ins.text()).slice(0, 600));
+      return json(500, {
+        error: "registration_failed",
+        detail: "We could not record your registration just now. Please try again, or email info@advancedorthogonal.com and we will reserve your seat by hand.",
+      });
+    }
     const [row] = await ins.json();
     return json(200, {
       free: true, rsvp: isRsvp, registration_id: row.id, event_title: title,
