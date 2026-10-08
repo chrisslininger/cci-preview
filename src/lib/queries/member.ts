@@ -43,6 +43,12 @@ export type PublicEvent = {
   location?: string | null
   price?: number | string | null
   seats_remaining?: number | string | null
+  /** The rest arrive with `select=*`; each is absent if the view does not carry it. */
+  timezone?: string | null
+  member_price?: number | string | null
+  free_with_membership?: boolean | null
+  /** Timed sessions (the Monthly Huddle's monthly calls), once the view carries them. */
+  sessions?: { starts_at?: string | null; ends_at?: string | null }[] | null
 }
 
 export type CommitteeReport = {
@@ -136,7 +142,8 @@ export async function eventZoom(slug: string): Promise<string | null> {
 export async function upcomingEvents(): Promise<PublicEvent[]> {
   const q = await select<PublicEvent>(
     'v_public_events',
-    'select=id,slug,title,starts_at,ends_at,location,price,seats_remaining&order=starts_at',
+    // Every column the view has, so timed sessions come along whenever it carries them.
+    'select=*&order=starts_at',
   )
   return q.data ?? []
 }
