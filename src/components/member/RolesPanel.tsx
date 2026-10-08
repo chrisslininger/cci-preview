@@ -15,6 +15,7 @@ import { roster, committees } from '@/lib/queries/member'
 import type { RosterRow } from '@/lib/queries/member'
 import { insert, remove } from '@/lib/supabase'
 import { ROLE_LABEL } from '@/lib/access'
+import { roleChipClass } from '@/lib/chips'
 
 type Committee = { id: number; key: string; name: string }
 
@@ -139,7 +140,7 @@ export default function RolesPanel() {
                       <span className="cpill">NO ROLES</span>
                     ) : (
                       roles.map((r, i) => (
-                        <span className="cpill" key={i}>
+                        <span className={roleChipClass(r.role_key)} key={i}>
                           {(ROLE_LABEL[r.role_key] ?? r.role_key).toUpperCase()}
                           {r.committee_id
                             ? ` · ${(coms.find((c) => c.id === r.committee_id)?.name ?? '').replace(/ Committee.*/, '')}`

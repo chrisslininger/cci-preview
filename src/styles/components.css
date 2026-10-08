@@ -1908,6 +1908,7 @@ a.othercard {
 .cpill.info { background: var(--color-status-info-surface); border-color: var(--color-brand-primary); color: var(--color-brand-primary-deep); } /* alias of .cert */
 .cpill.warn { background: var(--color-status-pending-surface); border-color: var(--color-brand-accent); color: var(--color-status-pending-content); }
 .cpill.bad { background: var(--color-status-danger-surface); border-color: var(--color-status-danger); color: var(--color-status-danger); }
+.cpill.leader { background: var(--color-brand-primary-deep); border-color: var(--color-brand-primary-deep); color: var(--color-content-on-inverse); }
 .cert-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
 
 .cert-prog { height: 7px; background: var(--color-surface-sunken); border-radius: 999px; overflow: hidden; margin: 12px 0 6px; }

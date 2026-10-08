@@ -13,6 +13,7 @@ import { useAccess } from '@/lib/queries/AccessProvider'
 import { navFor, findNav, railKey, isCommittee, FOLDS, GROUP_LABEL } from '@/lib/nav'
 import type { NavGroup } from '@/lib/nav'
 import { roleLabel } from '@/lib/access'
+import { roleChipClass } from '@/lib/chips'
 import { session, signOut } from '@/lib/supabase'
 import { attention, EMPTY, markEventsSeen, logSignInOnce, logActivity } from '@/lib/queries/attention'
 import type { Attention } from '@/lib/queries/attention'
@@ -196,7 +197,7 @@ function Shell() {
 /** The person's roles, as chips. Shown on Overview. */
 export function RoleChips() {
   const { access } = useAccess()
-  // Roles are who someone is, so they are neutral chips; gold is kept for a
+  // Roles are neutral chips and leadership roles navy; gold is kept for a
   // person's highest certification (see src/lib/chips.ts).
   return (
     <div className="ma-chips">
@@ -206,7 +207,7 @@ export function RoleChips() {
       {access.roles
         .filter((r) => !r.role_key.startsWith('past_'))
         .map((role) => (
-          <span className="cpill" key={`${role.role_key}-${role.committee_id ?? ''}`}>
+          <span className={roleChipClass(role.role_key)} key={`${role.role_key}-${role.committee_id ?? ''}`}>
             {roleLabel(role).toUpperCase()}
           </span>
         ))}
