@@ -18,6 +18,7 @@ import {
 } from '@/lib/queries/internships'
 import type { Preceptor, Intern, Site, College, Approval, Stamp, PersonLite, Note, Who, ProgressRow } from '@/lib/queries/internships'
 import type { Requirement } from '@/lib/queries/certifications'
+import { askConfirm } from './opsUi'
 
 const today = () => new Date().toISOString().slice(0, 10)
 function Pill({ kind = '', children, title }: { kind?: string; children: React.ReactNode; title?: string }) { return <span className={`cpill ${kind}`} title={title}>{children}</span> }
@@ -93,7 +94,7 @@ export default function InternshipsPanel() {
     if (await run(tickPreceptor(p, field, key, true, date, who), `Locked in · ${fmtD(date)} · ${who.name}`)) unpend(k)
   }
   async function untickPrec(p: Preceptor, field: 'progress' | 'approval', key: string) {
-    if (!confirm('Clear this item? The date and verifier will be removed.')) return
+    if (!(await askConfirm('Clear this item?', { body: 'The date and verifier will be removed.', ok: 'Clear', danger: true }))) return
     await run(tickPreceptor(p, field, key, false, '', who))
   }
   async function lockInt(i: Intern, key: string) {
@@ -105,7 +106,7 @@ export default function InternshipsPanel() {
     }
   }
   async function untickInt(i: Intern, key: string) {
-    if (!confirm('Clear this item? The date and verifier will be removed. (The certification pathway keeps what was already written there.)')) return
+    if (!(await askConfirm('Clear this item?', { body: 'The date and verifier will be removed. (The certification pathway keeps what was already written there.)', ok: 'Clear', danger: true }))) return
     await run(tickIntern(i, key, false, '', who, reqs))
   }
   const act = (k: string, d = today()) => setAction((s) => ({ ...s, [k]: d }))
@@ -423,7 +424,7 @@ function PreceptorDialog({ p, sites, cols, who, onClose, onSaved, onRemoved }: {
             <div className="evt-hint">Leave the dates blank while the school's approval is pending; attach the paperwork once it comes back (after saving).</div></div>
           <F l="Notes" full><textarea className="fi" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Anything the committee should know" /></F>
         </div></div>
-        <div className="mf evt-foot"><span>{!isNew && <button type="button" className="b d-btn sm" onClick={async () => { if (!confirm('Remove this preceptor record? Their interns keep their history.')) return; const r = await removePreceptor(p!.id); if (r.error) return toast(friendly(r.error)); onRemoved() }}>Remove preceptor</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : isNew ? 'Add preceptor' : 'Save'}</button></span></div>
+        <div className="mf evt-foot"><span>{!isNew && <button type="button" className="b d-btn sm" onClick={async () => { if (!(await askConfirm('Remove this preceptor record?', { body: 'Their interns keep their history. This cannot be undone.', ok: 'Remove preceptor', danger: true }))) return; const r = await removePreceptor(p!.id); if (r.error) return toast(friendly(r.error)); onRemoved() }}>Remove preceptor</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : isNew ? 'Add preceptor' : 'Save'}</button></span></div>
       </div>
     </div>
   )
@@ -474,7 +475,7 @@ function InternDialog({ i, precs, sites, cols, who, onClose, onSaved, onRemoved 
           <F l="Estimated end"><input className="fi" type="date" value={end} onChange={(e) => setEnd(e.target.value)} /></F>
           <div className="full"><label className="evt-tog" style={{ marginTop: 4 }}><input type="checkbox" checked={official} onChange={(e) => setOfficial(e.target.checked)} /><span><b>Official internship — by approval of the intern's school</b><small>Untick for an unaffiliated, Institute-only internship.</small></span></label></div>
         </div></div>
-        <div className="mf evt-foot"><span>{i && <button type="button" className="b d-btn sm" onClick={async () => { if (!confirm('Remove this internship record?')) return; const r = await removeIntern(i.id); if (r.error) return toast(friendly(r.error)); onRemoved() }}>Remove</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : i ? 'Save' : 'Add intern'}</button></span></div>
+        <div className="mf evt-foot"><span>{i && <button type="button" className="b d-btn sm" onClick={async () => { if (!(await askConfirm('Remove this internship record?', { body: 'This cannot be undone.', ok: 'Remove', danger: true }))) return; const r = await removeIntern(i.id); if (r.error) return toast(friendly(r.error)); onRemoved() }}>Remove</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : i ? 'Save' : 'Add intern'}</button></span></div>
       </div>
     </div>
   )
@@ -517,7 +518,7 @@ function PairDialog({ i, precs, sites, cols, who, onClose, onSaved }: { i: Inter
           <div className="full"><label className="evt-tog" style={{ marginTop: 4 }}><input type="checkbox" checked={official} onChange={(e) => setOfficial(e.target.checked)} /><span><b>Official internship — by approval of the intern’s school (their requirements plus ours)</b><small>Untick for an unaffiliated, Institute-only internship. Same checklist, still counts toward certification, but the school is not approving it.</small></span></label></div>
           <div className="full"><label className="flabel">Match check</label>{checks.map((c, n) => <div key={n} className={`tick${c.ok ? ' ok' : c.hard ? ' bad' : ' warn'}`}><i /><div>{c.text}{!c.ok && !c.hard && <small>warning only</small>}</div></div>)}</div>
         </div></div>
-        <div className="mf evt-foot"><span>{isPaired(i) && <button type="button" className="b d-btn sm" onClick={async () => { if (!confirm('Unpair this intern? The preceptor and site are cleared; the notes stay.')) return; const r = await unpairIntern(i); if (r.error) return toast(friendly(r.error)); onSaved('Unpaired') }}>Unpair</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={!hardOk || !pr || !st} onClick={async () => { if (!pr || !st) return; if (!date) return toast('Choose the pairing date'); const r = await pairIntern(i, pr, st.id, start || null, date, official, who); if (r.error) return toast(friendly(r.error)); onSaved(`Paired · ${fmtD(date)} · ${who.name}`) }}>Lock in &amp; pair</button></span></div>
+        <div className="mf evt-foot"><span>{isPaired(i) && <button type="button" className="b d-btn sm" onClick={async () => { if (!(await askConfirm('Unpair this intern?', { body: 'The preceptor and site are cleared; the notes stay.', ok: 'Unpair', danger: true }))) return; const r = await unpairIntern(i); if (r.error) return toast(friendly(r.error)); onSaved('Unpaired') }}>Unpair</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={!hardOk || !pr || !st} onClick={async () => { if (!pr || !st) return; if (!date) return toast('Choose the pairing date'); const r = await pairIntern(i, pr, st.id, start || null, date, official, who); if (r.error) return toast(friendly(r.error)); onSaved(`Paired · ${fmtD(date)} · ${who.name}`) }}>Lock in &amp; pair</button></span></div>
       </div>
     </div>
   )

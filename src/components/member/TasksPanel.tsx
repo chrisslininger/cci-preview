@@ -13,7 +13,7 @@ import type { Task, Assignee, Who, TaskInput } from '@/lib/queries/tasks'
 import { committees as loadCommittees } from '@/lib/queries/reports'
 import type { Committee } from '@/lib/queries/reports'
 import { logActivity } from '@/lib/queries/attention'
-import { Pill, F, Modal, Head, Sec, friendly } from './opsUi'
+import { Pill, F, Modal, Head, Sec, friendly, askConfirm } from './opsUi'
 
 export default function TasksPanel() {
   const toast = useToast()
@@ -58,7 +58,7 @@ export default function TasksPanel() {
       <div className="ta">
         {canManage && t.status === 'done' && !t.verified_at && <button type="button" className="b s-btn on-light xs" onClick={() => void act(verifyTask(t.id, who), 'Checked off')}>Check off</button>}
         {canManage && t.status === 'open' && <button type="button" className="b s-btn on-light xs" onClick={() => setEdit(t)}>Edit</button>}
-        {canManage && <button type="button" className="x" title="Delete" onClick={() => { if (confirm('Delete this task?')) void act(deleteTask(t.id), 'Task deleted') }}>×</button>}
+        {canManage && <button type="button" className="x" title="Delete" onClick={async () => { if (await askConfirm('Delete this task?', { body: 'This cannot be undone.', ok: 'Delete', danger: true })) void act(deleteTask(t.id), 'Task deleted') }}>×</button>}
       </div>
     </div>
   }

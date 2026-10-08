@@ -5,7 +5,7 @@
  * publication details and outcomes.
  * -------------------------------------------------------------------------- */
 import { friendlyError } from '@/lib/friendlyError'
-import { SafeLink } from './opsUi'
+import { SafeLink, askConfirm } from './opsUi'
 import { useCallback, useEffect, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -81,7 +81,7 @@ export default function ResearchPanel() {
       <div className="rsec"><button type="button" className="link" onClick={() => setOpenLedger((s) => { const n = new Set(s); n.has(p.id) ? n.delete(p.id) : n.add(p.id); return n })}>{open ? '▾ Hide' : '▸ Show'} grant &amp; expense ledger · {p.research_ledger.length} {p.research_ledger.length === 1 ? 'entry' : 'entries'}</button></div>
       {open && <>
         <table className="rled"><thead><tr><th>Date</th><th>Kind</th><th>Note</th><th className="num">Amount</th><th>By</th>{canManage && <th />}</tr></thead><tbody>
-          {p.research_ledger.length ? [...p.research_ledger].sort((a, b) => b.entry_date.localeCompare(a.entry_date)).map((l) => <tr key={l.id}><td>{fmtD(l.entry_date)}</td><td><Pill kind={l.kind === 'expense' ? 'warn' : l.kind === 'overhead' ? '' : 'ok'}>{KIND_LABEL[l.kind]}</Pill></td><td>{l.note}</td><td className="num">{l.kind === 'expense' ? '−' : ''}{money(l.amount)}</td><td>{l.by_name}</td>{canManage && <td><button type="button" className="link" onClick={async () => { if (!confirm('Remove this ledger entry?')) return; const r = await removeEntry(l.id); if (r.error) return toast(friendly(r.error)); await load() }}>remove</button></td>}</tr>) : <tr><td colSpan={6} style={{ color: 'var(--color-content-muted)' }}>No entries yet.</td></tr>}</tbody></table>
+          {p.research_ledger.length ? [...p.research_ledger].sort((a, b) => b.entry_date.localeCompare(a.entry_date)).map((l) => <tr key={l.id}><td>{fmtD(l.entry_date)}</td><td><Pill kind={l.kind === 'expense' ? 'warn' : l.kind === 'overhead' ? '' : 'ok'}>{KIND_LABEL[l.kind]}</Pill></td><td>{l.note}</td><td className="num">{l.kind === 'expense' ? '−' : ''}{money(l.amount)}</td><td>{l.by_name}</td>{canManage && <td><button type="button" className="link" onClick={async () => { if (!(await askConfirm('Remove this ledger entry?', { body: 'This cannot be undone.', ok: 'Remove', danger: true }))) return; const r = await removeEntry(l.id); if (r.error) return toast(friendly(r.error)); await load() }}>remove</button></td>}</tr>) : <tr><td colSpan={6} style={{ color: 'var(--color-content-muted)' }}>No entries yet.</td></tr>}</tbody></table>
         {canManage && <div className="rledadd">
           <input className="fi" type="date" value={e.date} onChange={(ev) => setEntry((s) => ({ ...s, [p.id]: { ...e, date: ev.target.value } }))} />
           <select className="fi" value={e.kind} onChange={(ev) => setEntry((s) => ({ ...s, [p.id]: { ...e, kind: ev.target.value as Kind } }))}>{(Object.entries(KIND_LABEL) as [Kind, string][]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select>
@@ -187,6 +187,6 @@ function ProjectDialog({ p, onClose, onSaved, onRemoved }: { p: Project | null; 
       </>}
       <F l="Outcomes & findings — for the Curriculum Committee (P&P 3.8.5)" full><textarea className="fi" value={v.outcomes} onChange={set('outcomes')} /></F>
     </div></div>
-    <div className="mf evt-foot"><span>{p && <button type="button" className="b d-btn sm" onClick={async () => { if (!confirm('Remove this project entirely? Set it to Past instead to keep the record.')) return; const r = await removeProject(p.id); if (r.error) return toast(friendly(r.error)); onRemoved() }}>Remove project</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : p ? 'Save' : 'Add project'}</button></span></div>
+    <div className="mf evt-foot"><span>{p && <button type="button" className="b d-btn sm" onClick={async () => { if (!(await askConfirm('Remove this project entirely?', { body: 'This cannot be undone. Set it to Past instead to keep the record.', ok: 'Remove project', danger: true }))) return; const r = await removeProject(p.id); if (r.error) return toast(friendly(r.error)); onRemoved() }}>Remove project</button>}</span><span style={{ display: 'flex', gap: 8 }}><button type="button" className="b s-btn on-light sm" onClick={onClose}>Cancel</button><button type="button" className="b p-btn sm" disabled={saving} onClick={() => void save()}>{saving ? 'Saving…' : p ? 'Save' : 'Add project'}</button></span></div>
   </div></div>
 }

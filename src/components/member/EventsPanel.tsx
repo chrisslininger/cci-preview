@@ -9,7 +9,7 @@
  * committee chair — the same people the database lets write.
  * -------------------------------------------------------------------------- */
 import { friendlyError } from '@/lib/friendlyError'
-import { SafeLink } from './opsUi'
+import { SafeLink, askConfirm } from './opsUi'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useRegKey } from '@/lib/queries/CatalogProvider'
@@ -115,6 +115,8 @@ export default function EventsPanel() {
   const [open, setOpen] = useState<number | null>(null)
   const [edit, setEdit] = useState<EventRow | 'new' | null>(null)
   const [confirm, setConfirm] = useState<EventRow | null>(null)
+  const [typed, setTyped] = useState('') // an event with registrations is removed only after its title is typed
+  useEffect(() => setTyped(''), [confirm])
   const [regsFor, setRegsFor] = useState<EventRow | null>(null)
   const [room, setRoom] = useState<number | null>(null)
   const [canCheckin, setCanCheckin] = useState(false)
@@ -296,7 +298,8 @@ export default function EventsPanel() {
         <div className="cert-veil" onClick={(e) => e.target === e.currentTarget && setConfirm(null)}>
           <div className="cert-modal" role="dialog" aria-modal="true">
             <div className="mh"><div><h3>Remove “{confirm.title}”?</h3><p>{activeRegs(confirm).length > 0 ? `${activeRegs(confirm).length} registration${activeRegs(confirm).length > 1 ? 's' : ''} will be deleted with it. Consider unpublishing instead.` : 'This deletes the event with its speakers and sessions.'}</p></div><button type="button" className="x" aria-label="Close" onClick={() => setConfirm(null)}>×</button></div>
-            <div className="mf">{confirm.status === 'published' && <button type="button" className="b s-btn on-light sm" onClick={() => void onUnpublish(confirm)}>Unpublish instead</button>}<button type="button" className="b s-btn on-light sm" onClick={() => setConfirm(null)}>Keep</button><button type="button" className="b dgr sm" onClick={() => void onRemove(confirm)}>Remove</button></div>
+            {activeRegs(confirm).length > 0 && <div className="mb"><label className="flabel" htmlFor="evt-del-title">Type “{confirm.title}” to remove it</label><input id="evt-del-title" className="fi" autoComplete="off" value={typed} onChange={(ev) => setTyped(ev.target.value)} /></div>}
+            <div className="mf">{confirm.status === 'published' && <button type="button" className="b s-btn on-light sm" onClick={() => void onUnpublish(confirm)}>Unpublish instead</button>}<button type="button" className="b s-btn on-light sm" onClick={() => setConfirm(null)}>Keep</button><button type="button" className="b dgr sm" disabled={activeRegs(confirm).length > 0 && typed.trim() !== confirm.title.trim()} onClick={() => void onRemove(confirm)}>Remove</button></div>
           </div>
         </div>
       )}
@@ -403,7 +406,7 @@ function RegsDialog({ e, canManage, onClose, onBack, onChanged, onCheckin }: { e
     if (memberFree) { const [ok, c] = await Promise.all([canManageRsvps(), rsvpCandidates(e.id)]); setCanRsvp(ok); setCands(c) }
   }, [e.id, memberFree])
   async function confirmRsvp(c: RsvpCandidate) {
-    if (!confirm(`Confirm ${c.full_name}'s RSVP for ${e.title}? They will move to the attendee list as a member (no charge).`)) return
+    if (!(await askConfirm(`Confirm ${c.full_name}'s RSVP for ${e.title}?`, { body: 'They will move to the attendee list as a member (no charge).', ok: 'Confirm RSVP' }))) return
     setBusyId(c.person_id)
     const x = await manualRsvp(e.id, c.person_id)
     setBusyId(null)

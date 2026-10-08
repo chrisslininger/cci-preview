@@ -5,7 +5,7 @@
  * tab, read here).
  * -------------------------------------------------------------------------- */
 import { friendlyError } from '@/lib/friendlyError'
-import { SafeLink } from './opsUi'
+import { SafeLink, askConfirm } from './opsUi'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useToast } from '@/components/ui/Toast'
@@ -118,12 +118,12 @@ function CollegeCard({ c, precs, sites, ints, canManage, onClose, onEdit, onOpen
           <div className="kv"><span>Address</span><div>{[c.address, c.city, c.state, c.country].filter(Boolean).join(', ') || '—'}</div>{c.phone && <><span>Phone</span><div>{c.phone}</div></>}{c.website && <><span>Website</span><div><SafeLink href={c.website}>{webHost(c.website)}</SafeLink></div></>}<span>Partnership</span><div>{partnerText(c)}</div></div>
 
           <div className="sec">Our contact / instructor <span className="r">our people who are the liaison here</span></div>
-          {ours.length ? ours.map((x) => <div key={x.id} className="il"><span>{x.people ? <button type="button" className="plink" onClick={() => onOpenPerson(x.people!)}>{fullName(x.people)}</button> : <b>{x.name}</b>} <small>· {x.role ?? ''}</small></span>{canManage && <button type="button" className="link" onClick={async () => { if (!confirm('Remove this contact from the school?')) return; const r = await removeContact(x.id); if (r.error) return toast(friendly(r.error)); void reload() }}>remove</button>}</div>) : <div className="il"><i>No liaison recorded yet</i></div>}
+          {ours.length ? ours.map((x) => <div key={x.id} className="il"><span>{x.people ? <button type="button" className="plink" onClick={() => onOpenPerson(x.people!)}>{fullName(x.people)}</button> : <b>{x.name}</b>} <small>· {x.role ?? ''}</small></span>{canManage && <button type="button" className="link" onClick={async () => { if (!(await askConfirm('Remove this contact from the school?', { ok: 'Remove', danger: true }))) return; const r = await removeContact(x.id); if (r.error) return toast(friendly(r.error)); void reload() }}>remove</button>}</div>) : <div className="il"><i>No liaison recorded yet</i></div>}
           {canManage && adding !== 'ours' && <div className="ctc-noteform" style={{ marginTop: 8 }}><div className="r" style={{ justifyContent: 'flex-start' }}><button type="button" className="b s-btn on-light sm" onClick={() => setAdding('ours')}>+ Add our contact (from Contacts)</button></div></div>}
           {adding === 'ours' && <OurContactForm collegeId={c.id} onDone={(m) => { setAdding(null); if (m) toast(m); void reload() }} />}
 
           <div className="sec">School contact points <span className="r">the school's own people</span></div>
-          {theirs.length ? theirs.map((x) => <div key={x.id} className="il"><span><b>{x.name}</b> <small>· {[x.role, x.email, x.phone].filter(Boolean).join(' · ')}</small></span><span>{x.is_keystone && <Pill kind="gold">Keystone</Pill>}{x.is_instructor && <Pill>Instructor</Pill>}{canManage && <button type="button" className="link" style={{ marginLeft: 8 }} onClick={async () => { if (!confirm('Remove this school contact?')) return; const r = await removeContact(x.id); if (r.error) return toast(friendly(r.error)); void reload() }}>remove</button>}</span></div>) : <div className="il"><i>None recorded yet</i></div>}
+          {theirs.length ? theirs.map((x) => <div key={x.id} className="il"><span><b>{x.name}</b> <small>· {[x.role, x.email, x.phone].filter(Boolean).join(' · ')}</small></span><span>{x.is_keystone && <Pill kind="gold">Keystone</Pill>}{x.is_instructor && <Pill>Instructor</Pill>}{canManage && <button type="button" className="link" style={{ marginLeft: 8 }} onClick={async () => { if (!(await askConfirm('Remove this school contact?', { ok: 'Remove', danger: true }))) return; const r = await removeContact(x.id); if (r.error) return toast(friendly(r.error)); void reload() }}>remove</button>}</span></div>) : <div className="il"><i>None recorded yet</i></div>}
           {canManage && adding !== 'theirs' && <div className="ctc-noteform" style={{ marginTop: 8 }}><div className="r" style={{ justifyContent: 'flex-start' }}><button type="button" className="b s-btn on-light sm" onClick={() => setAdding('theirs')}>+ Add school contact</button></div></div>}
           {adding === 'theirs' && <SchoolContactForm collegeId={c.id} onDone={(m) => { setAdding(null); if (m) toast(m); void reload() }} />}
 
