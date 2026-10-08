@@ -35,8 +35,9 @@ export default function SeminarsPage() {
   const nextHref = `/seminars/${SEMINAR_SLUG[next.page]}`
   const showNext = filter === 'all' || filter === nextSem.cat
 
-  const visible = ORDER.filter((id) => filter === 'all' || SEMINARS[id]?.cat === filter)
-  const empty = visible.length === 0 && filter !== 'free'
+  /* The featured event is not repeated in the grid beneath it. */
+  const visible = ORDER.filter((id) => (filter === 'all' || SEMINARS[id]?.cat === filter) && !(showNext && id === next.page))
+  const empty = visible.length === 0 && filter !== 'free' && !showNext
 
   return (
     <>
@@ -60,6 +61,13 @@ export default function SeminarsPage() {
 
       <section className="tight">
         <div className="wrap">
+          {/* On a phone the filter buttons fold into one menu */}
+          <label className="fselect">
+            <span>Show</span>
+            <select value={filter} onChange={(ev) => setFilter(ev.target.value)}>
+              {FILTERS.map((f) => <option key={f.cat} value={f.cat}>{f.label}</option>)}
+            </select>
+          </label>
           <div
             style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '34px' }}
             id="filterrow"

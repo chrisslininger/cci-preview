@@ -895,6 +895,37 @@ dialog.bio-bg::backdrop {
 
 
 
+/* -------------------------------------------- Seminars page on a phone ---
+   The filter buttons fold into one menu, and the event cards become compact
+   rows — a photo on the left, the title, dates and place on the right — so
+   the list reads at a glance instead of one tall card per screen. */
+.fselect { display: none; }
+.card .when { display: none; }
+@media (max-width: 640px) {
+  #filterrow { display: none !important; }
+  .fselect { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .fselect > span { font-family: var(--font-label); font-weight: 700; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-content-muted); }
+  .fselect select { flex: 1; min-height: 46px; padding: 0 40px 0 14px; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-brand-primary-deep); background-color: var(--color-surface-base); border: 1.5px solid var(--color-brand-primary); border-radius: var(--radius-control); appearance: none; -webkit-appearance: none; }
+  .fselect select { background-image: linear-gradient(45deg, transparent 50%, var(--color-brand-accent) 50%), linear-gradient(135deg, var(--color-brand-accent) 50%, transparent 50%); background-position: calc(100% - 22px) 50%, calc(100% - 16px) 50%; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; }
+  .startfree { padding: 14px 16px; }
+  .featintro-media { min-height: 170px; }
+  .featintro > div:first-child { min-height: 170px !important; }
+  .featintro-body { padding: 34px 22px 24px; }
+  .featintro-flag { left: 22px; }
+  .featintro-eyebrow { font-size: 12px; }
+  .featintro-body h3 { font-size: 24px; line-height: 1.2; }
+  .featintro-body > p { font-size: 14px; margin-bottom: 20px; }
+  #semgrid { grid-template-columns: 1fr; gap: 12px; }
+  #semgrid .semcard { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: stretch; }
+  #semgrid .semcard .imgwrap { height: auto; min-height: 104px; }
+  #semgrid .semcard .datechip, #semgrid .semcard .loc, #semgrid .semcard .desc, #semgrid .semcard .foot { display: none; }
+  #semgrid .semcard .bd { padding: 14px 34px 14px 16px; position: relative; display: flex; flex-direction: column; justify-content: center; }
+  #semgrid .semcard .bd::after { content: '→'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--color-brand-accent); font-weight: 700; }
+  #semgrid .semcard h3 { font-size: 16.5px; margin-bottom: 4px; }
+  #semgrid .semcard .when { display: block; font-family: var(--font-sans); font-weight: 600; font-size: 12.5px; line-height: 1.4; color: var(--color-content-secondary); margin-bottom: 4px; }
+  #semgrid .semcard .meta { margin-bottom: 0; }
+}
+
 /* ------------------------------------------------- seminar detail page ---
    These rules replace inline styles that the old renderer wrote into
    innerHTML. Same output, expressed once and in tokens. */
