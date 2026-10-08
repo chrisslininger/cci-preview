@@ -205,7 +205,7 @@ console.log(`\n✓ ${written} routes prerendered`)
 /* ------------------------------------------------------------- SEO files */
 
 const origin = String(manifest.origin).replace(/\/$/, '')
-const today = new Date().toISOString().slice(0, 10)
+const today = buildDate
 const indexable = manifest.entries.filter((e) => e.prerender && !e.meta.noindex)
 
 await writeFile(
