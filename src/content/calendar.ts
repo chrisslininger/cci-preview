@@ -22,7 +22,7 @@ declare const __BUILD_DATE__: string | undefined
 
 /** The day the site's computed dates are reckoned from.
  *
- *  The build stamps its own date (UTC, `YYYY-MM-DD`) into both bundles, so a
+ *  The build stamps its own date (Eastern, `YYYY-MM-DD`) into both bundles, so a
  *  browser works out the same dates the build box did. Without this each
  *  browser used its own clock: the morning after any date passed, the
  *  prerendered HTML said one thing and the first client render another, and
