@@ -116,6 +116,21 @@ export const CONFERENCE_RULE: Rule = { id: 'conference', event: 'Annual Conferen
 /** Every weekend event, in calendar order. */
 export const WEEKEND_RULES: Rule[] = [INTENSIVE_RULES[0]!, INTENSIVE_RULES[1]!, BOOTCAMP_RULE, INTENSIVE_RULES[2]!, CONFERENCE_RULE]
 
+/** The 2026 conference, which kept its November date ahead of the rules. */
+export const CONFERENCE_2026: Occurrence = { start: new Date(2026, 10, 6), end: new Date(2026, 10, 7), year: 2026 }
+
+export type NextEvent = { page: string; o: Occurrence; where: string }
+
+/** The soonest in-person weekend event (Intensive, Bootcamp or Conference)
+ *  that has not finished yet. Reckoned from the build date by default, so the
+ *  seminars page hydrates cleanly; it recomputes from today after mount. */
+export function nextInPerson(today = AS_OF): NextEvent {
+  const day = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const list: NextEvent[] = WEEKEND_RULES.map((r) => ({ page: r.page!, o: nextOccurrence(r, today), where: r.where }))
+  if (CONFERENCE_2026.end >= day) list.push({ page: 'conference', o: CONFERENCE_2026, where: 'St. Petersburg, FL' })
+  return list.sort((a, b) => a.o.start.getTime() - b.o.start.getTime())[0]!
+}
+
 /* -------------------------------------------------------- member Zoom call */
 
 /** The second Tuesday of the month. The Fundamentals year runs October to

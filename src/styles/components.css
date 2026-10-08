@@ -842,6 +842,54 @@ dialog.bio-bg::backdrop {
   .featintro-body {
     padding: 40px 28px 32px;
   }
+  .featintro-flag {
+    left: 28px;
+  }
+}
+
+
+
+
+/* ------------------------------------------- "START HERE · FREE" pointer ---
+   A small strip pointing to the free intro course, above the featured event. */
+.startfree {
+  display: flex;
+  align-items: center;
+  gap: 14px 20px;
+  flex-wrap: wrap;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 4px solid var(--color-brand-accent);
+  border-radius: var(--radius-card);
+  padding: 14px 20px;
+  margin-bottom: 18px;
+}
+.startfree-flag {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  background: var(--color-brand-accent);
+  color: var(--color-surface-inverse);
+  padding: 6px 12px;
+  border-radius: var(--radius-control);
+  white-space: nowrap;
+}
+.startfree > p {
+  flex: 1 1 280px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--color-content-secondary);
+  margin: 0;
+}
+.startfree > p b {
+  color: var(--color-content-primary);
+}
+.startfree-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 
