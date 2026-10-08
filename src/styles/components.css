@@ -896,9 +896,9 @@ dialog.bio-bg::backdrop {
 
 
 /* -------------------------------------------- Seminars page on a phone ---
-   The filter buttons fold into one menu, and the event cards become compact
-   rows — a photo on the left, the title, dates and place on the right — so
-   the list reads at a glance instead of one tall card per screen. */
+   The filter buttons fold into one menu, and the event cards become compact:
+   a short photo strip on top, then the title, dates and place, and format —
+   so the list reads at a glance instead of one tall card per screen. */
 .fselect { display: none; }
 .card .when { display: none; }
 #semgrid .semcard[data-cat="free"] { display: none; }
@@ -909,7 +909,7 @@ dialog.bio-bg::backdrop {
   .fselect select { flex: 1; min-height: 46px; padding: 0 40px 0 14px; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-brand-primary-deep); background-color: var(--color-surface-base); border: 1.5px solid var(--color-brand-primary); border-radius: var(--radius-control); appearance: none; -webkit-appearance: none; }
   .fselect select { background-image: linear-gradient(45deg, transparent 50%, var(--color-brand-accent) 50%), linear-gradient(135deg, var(--color-brand-accent) 50%, transparent 50%); background-position: calc(100% - 22px) 50%, calc(100% - 16px) 50%; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; }
   .startfree { display: none; }
-  #semgrid .semcard[data-cat="free"] { display: grid; }
+  #semgrid .semcard[data-cat="free"] { display: block; }
   .featintro-media { min-height: 170px; }
   .featintro > div:first-child { min-height: 170px !important; }
   .featintro-body { padding: 34px 22px 24px; }
@@ -918,10 +918,10 @@ dialog.bio-bg::backdrop {
   .featintro-body h3 { font-size: 24px; line-height: 1.2; }
   .featintro-body > p { font-size: 14px; margin-bottom: 20px; }
   #semgrid { grid-template-columns: 1fr; gap: 12px; }
-  #semgrid .semcard { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: stretch; }
-  #semgrid .semcard .imgwrap { height: auto; min-height: 104px; }
+  #semgrid .semcard { display: block; }
+  #semgrid .semcard .imgwrap { height: 112px; }
   #semgrid .semcard .datechip, #semgrid .semcard .loc, #semgrid .semcard .desc, #semgrid .semcard .foot { display: none; }
-  #semgrid .semcard .bd { padding: 14px 34px 14px 16px; position: relative; display: flex; flex-direction: column; justify-content: center; }
+  #semgrid .semcard .bd { padding: 14px 40px 16px 18px; position: relative; display: flex; flex-direction: column; justify-content: center; }
   #semgrid .semcard .bd::after { content: '→'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--color-brand-accent); font-weight: 700; }
   #semgrid .semcard h3 { font-size: 16.5px; margin-bottom: 4px; }
   #semgrid .semcard .when { display: block; font-family: var(--font-sans); font-weight: 600; font-size: 12.5px; line-height: 1.4; color: var(--color-content-secondary); margin-bottom: 4px; }
