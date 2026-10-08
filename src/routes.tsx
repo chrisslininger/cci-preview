@@ -57,14 +57,6 @@ export type RouteEntry = {
  *  built, since content ships with each build. */
 const UPDATED = BUILD_DATE
 
-/** Photos too small for a share card (under 1200×630), and the larger photo of
- *  the same subject that stands in for them on social previews. */
-const SHARE_STAND_IN: Record<string, string> = { intro: 'conference', instrument: 'adjust' }
-
-function shareImage(photo?: string): string {
-  return `/images/${SHARE_STAND_IN[photo ?? ''] ?? photo ?? 'conference'}.webp`
-}
-
 const MONTHS = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
 
 /** 'JULY 2026' -> '2026-07'. Articles are dated to the month, which ISO 8601 allows. */
@@ -92,7 +84,6 @@ function conferenceEvent(key: string, seminar: Seminar, path: string): JsonLdNod
     price: String(price),
     priceCurrency: 'USD',
     url,
-    availability: 'https://schema.org/InStock',
   })
   return [
     {
@@ -114,7 +105,7 @@ function conferenceEvent(key: string, seminar: Seminar, path: string): JsonLdNod
           addressCountry: 'US',
         },
       },
-      image: [`${ORIGIN}${shareImage(seminar.photo)}`],
+      image: [`${ORIGIN}/images/${seminar.photo ?? 'conference'}.webp`],
       organizer: { '@id': `${ORIGIN}/#organization` },
       offers: [
         offer('Doctor', seminar.fullPrice),
@@ -164,7 +155,7 @@ const staticRoutes: RouteEntry[] = [
       title: 'The Advanced Orthogonal Difference — What Makes It Specific',
       description:
         'Digital measurement, patient-specific vectors and a percussive sound-wave instrument: how Advanced Orthogonal differs from other upper cervical methods.',
-      image: '/images/adjust.webp',
+      image: '/images/instrument.webp',
       priority: 0.8,
       updatedAt: UPDATED,
       breadcrumbs: [{ name: 'About', path: '/about' }],
@@ -178,7 +169,7 @@ const staticRoutes: RouteEntry[] = [
       title: 'Board of Directors — Advanced Orthogonal Institute',
       description:
         'The doctors who govern the Advanced Orthogonal Institute, set its certification standards, and direct its research and instruction.',
-      image: '/images/conference.webp',
+      image: '/images/cs.webp',
       priority: 0.7,
       updatedAt: UPDATED,
       breadcrumbs: [{ name: 'About', path: '/about' }],
@@ -336,7 +327,7 @@ const seminarRoutes: RouteEntry[] = Object.entries(SEMINARS).map(([key, seminar]
   meta: {
     title: pageTitle(seminar.title),
     description: summarize(seminar.sub),
-    image: shareImage(seminar.photo),
+    image: seminar.photo ? `/images/${seminar.photo}.webp` : '/images/conference.webp',
     priority: 0.8,
     changefreq: 'weekly',
     updatedAt: UPDATED,
