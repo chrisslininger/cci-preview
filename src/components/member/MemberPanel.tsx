@@ -180,7 +180,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
               key={i}
               title={`${c.technique ?? 'Advanced Orthogonal'} — ${c.level === 'level_2' ? 'Level 2' : c.level === 'level_1' ? 'Level 1' : (c.level ?? '—')}`}
               detail={`Certified ${date(c.cert_date)}${c.certificate_number ? ` · ${c.certificate_number}` : ''}`}
-              right={<span className="pillst st-free">ACTIVE</span>}
+              right={<span className="cpill ok">ACTIVE</span>}
             />
           ))
         )}
@@ -253,7 +253,7 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
               title={`${r.people?.first_name ?? ''} ${r.people?.last_name ?? ''}`.trim() || 'Seat'}
               detail={`${r.office ?? 'Board member'} · ${date(r.term_start)} – ${date(r.term_end)}`}
               right={
-                <span className={`pillst ${r.status === 'active' ? 'st-free' : 'st-pending'}`}>
+                <span className={`cpill ${r.status === 'active' ? 'ok' : 'warn'}`}>
                   {(r.status ?? '').toUpperCase()}
                 </span>
               }

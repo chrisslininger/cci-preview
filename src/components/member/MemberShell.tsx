@@ -196,23 +196,21 @@ function Shell() {
 /** The person's roles, as chips. Shown on Overview. */
 export function RoleChips() {
   const { access } = useAccess()
-  const gold = new Set(['executive_director', 'board_member', 'committee_chair', 'research_director'])
+  // Roles are who someone is, so they are neutral chips; gold is kept for a
+  // person's highest certification (see src/lib/chips.ts).
   return (
     <div className="ma-chips">
-      {access.tier === 'member' && <span className="rolechip gold">AOI MEMBER</span>}
-      {access.tier === 'student' && <span className="rolechip">STUDENT</span>}
-      {access.tier === 'expired' && <span className="rolechip">MEMBERSHIP EXPIRED</span>}
+      {access.tier === 'member' && <span className="cpill">AOI MEMBER</span>}
+      {access.tier === 'student' && <span className="cpill">STUDENT</span>}
+      {access.tier === 'expired' && <span className="cpill bad">MEMBERSHIP EXPIRED</span>}
       {access.roles
         .filter((r) => !r.role_key.startsWith('past_'))
         .map((role) => (
-          <span
-            className={`rolechip${gold.has(role.role_key) ? ' gold' : ''}`}
-            key={`${role.role_key}-${role.committee_id ?? ''}`}
-          >
+          <span className="cpill" key={`${role.role_key}-${role.committee_id ?? ''}`}>
             {roleLabel(role).toUpperCase()}
           </span>
         ))}
-      {access.staff_role === 'administrator' && <span className="rolechip gold">ADMINISTRATOR</span>}
+      {access.staff_role === 'administrator' && <span className="cpill">ADMINISTRATOR</span>}
     </div>
   )
 }
