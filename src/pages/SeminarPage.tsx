@@ -12,6 +12,8 @@ import { useToast } from '@/components/ui/Toast'
 import { useAccess } from '@/lib/queries/AccessProvider'
 import { useCatalog } from '@/lib/queries/CatalogProvider'
 import { myRegistrations } from '@/lib/queries/member'
+import type { PublicEvent } from '@/lib/queries/events'
+import { HUDDLE_SLUG } from '@/content/calendar'
 import NotFoundPage from './NotFoundPage'
 
 type Session = {
@@ -30,7 +32,7 @@ type Session = {
   /** Only signed-in members can RSVP; everyone else is pointed to membership. */
   members?: boolean
 }
-type AgendaItem = { t: string; ap: string; title: string; desc: string; who?: string[] }
+type AgendaItem = { t: string; ap: string; title: string; desc: string; who?: string[]; on?: string }
 type AgendaDay = { day: string; date?: string; items: AgendaItem[] }
 type NoSess = {
   kick?: string
@@ -41,6 +43,43 @@ type NoSess = {
   primary?: boolean
   /** Set when the button should start registration rather than go to Contact. */
   act?: string
+}
+
+/* The Monthly Huddle's instructors come from its event in the members area. A
+ * session on an agenda line's date names that line's instructor; otherwise the
+ * event's speaker list stands for every line. Names match the site's people by
+ * first and last name ("Dr." and credentials ignored); a name with no bio on the
+ * site is left off. With nothing usable, the page keeps its own list. */
+const plainName = (n: string) => n.toLowerCase().replace(/^dr\.?\s+/, '').replace(/[^a-z' -]/g, '').replace(/\s+/g, ' ').trim()
+const PERSON_BY_NAME = new Map(Object.entries(PEOPLE).map(([id, p]) => [plainName(p.name), id]))
+function peopleNamed(names: string): string[] {
+  return names.split(/\s*(?:,|&|\band\b)\s*/i).map((n) => PERSON_BY_NAME.get(plainName(n))).filter((id): id is string => !!id)
+}
+function dayIn(iso: string, tz: string): string | null {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return null
+  try {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
+  } catch {
+    return null
+  }
+}
+function liveInstructors(event: PublicEvent | undefined, agenda: AgendaDay[], fallback: string[]) {
+  if (!event || event.slug !== HUDDLE_SLUG) return { agenda, speakers: fallback }
+  const listed = [...new Set([...(event.speakers ?? [])].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)).flatMap((x) => peopleNamed(x.name ?? '')))]
+  const byDay = new Map<string, string[]>()
+  for (const x of event.sessions ?? []) {
+    const day = x.starts_at ? dayIn(x.starts_at, event.timezone || 'America/New_York') : null
+    const ids = x.speaker ? peopleNamed(x.speaker) : []
+    if (day && ids.length) byDay.set(day, ids)
+  }
+  if (!listed.length && !byDay.size) return { agenda, speakers: fallback }
+  const next = agenda.map((day) => ({
+    ...day,
+    items: day.items.map((it) => ({ ...it, who: (it.on && byDay.get(it.on)) || (listed.length ? listed : it.who) })),
+  }))
+  const taught = [...new Set(next.flatMap((day) => day.items.flatMap((it) => it.who ?? [])))]
+  return { agenda: next, speakers: listed.length ? [...new Set([...listed, ...taught])] : taught }
 }
 
 const money = (n: number) => n.toLocaleString()
@@ -177,8 +216,7 @@ export default function SeminarPage({ param }: { param?: string }) {
         : 'AOI membership connects you with the full Institute community.')
 
   const sessions = (s.sessions ?? []) as unknown as Session[]
-  const agenda = (s.agenda ?? []) as unknown as AgendaDay[]
-  const speakers = s.spk ?? []
+  const { agenda, speakers } = liveInstructors(overlay?.event, (s.agenda ?? []) as unknown as AgendaDay[], s.spk ?? [])
   const keynote = s.keynote
   const rest = speakers.filter((id) => id !== keynote)
 

@@ -32,7 +32,14 @@ export type PublicEvent = {
   ce_school?: string | null
   seats_remaining?: number | string | null
   reg_closes?: string | null
+  /** The event's speakers and timed sessions, as entered in the members area.
+   *  Absent until the public view carries them; pages then keep their own list. */
+  speakers?: PublicSpeaker[] | null
+  sessions?: PublicSession[] | null
 }
+
+export type PublicSpeaker = { name: string; speaker_title?: string | null; is_keynote?: boolean | null; sort?: number | null }
+export type PublicSession = { title?: string | null; starts_at?: string | null; speaker?: string | null; sort?: number | null }
 
 export type EventOverlay = {
   event?: PublicEvent

@@ -2085,7 +2085,14 @@ a.othercard {
 .evt-slug .fi { border: 0; border-radius: 0; padding-left: 4px; margin: 0; box-shadow: none; }
 .evt-rows { display: grid; gap: 8px; margin-top: 4px; }
 .evt-rows .rr { display: grid; grid-template-columns: 1fr 1fr 110px auto; gap: 8px; align-items: start; }
-.evt-rows .rr.sess { grid-template-columns: 1.4fr 1fr 1fr 80px auto; }
+/* A session takes two lines: title and speaker, then start, end and CE hours. */
+.evt-rows .rr.sess { grid-template-columns: 1fr 1fr 1fr auto; grid-template-areas: "t t s x" "a b c ."; padding-bottom: 8px; border-bottom: 1px solid var(--color-border-subtle); }
+.evt-rows .rr.sess > :nth-child(1) { grid-area: t; }
+.evt-rows .rr.sess > :nth-child(2) { grid-area: a; }
+.evt-rows .rr.sess > :nth-child(3) { grid-area: b; }
+.evt-rows .rr.sess > :nth-child(4) { grid-area: s; }
+.evt-rows .rr.sess > :nth-child(5) { grid-area: c; }
+.evt-rows .rr.sess > :nth-child(6) { grid-area: x; }
 .evt-rows .rr .fi { margin: 0; }
 .evt-rows .rr .del { border: 1px solid var(--color-border-strong); background: transparent; border-radius: 4px; width: 36px; height: 38px; cursor: pointer; color: var(--color-content-muted); font-size: 18px; }
 .evt-rows .rr .del:hover { color: var(--color-status-danger); border-color: var(--color-status-danger); }
@@ -2110,6 +2117,7 @@ a.othercard {
   .evt-dsec .agenda li { grid-template-columns: 1fr; gap: 2px; }
   .evt-tabs { padding: 6px 12px 0; }
   .evt-rows .rr, .evt-rows .rr.sess { grid-template-columns: 1fr 1fr; }
+  .evt-rows .rr.sess { grid-template-areas: "t t" "a b" "s c" "x ."; }
   .evt-regstats { grid-template-columns: repeat(2, 1fr); }
 }
 
