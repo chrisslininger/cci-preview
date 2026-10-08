@@ -19,3 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx tsc --noEmit -p tsconfig.json
+      # Does the site's event catalog agree with what is published in the
+      # database? Warns in the log and never fails the check (`--strict` would),
+      # so a database hiccup cannot block a deploy.
+      - run: npm run check:catalog
