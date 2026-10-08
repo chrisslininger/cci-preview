@@ -23,7 +23,9 @@ const regKey = (id: string) => id.replace('-', ':')
 /** An agenda line's date ("OCT 13" over "TUE · 9 PM ET · ZOOM"), from this year's Huddle dates. */
 function huddleDay(part: string, i: number) {
   const d = zoomDates(part, ZOOM_SEASON)[i]
-  return { t: d ? `${MON[d.getMonth()]} ${d.getDate()}` : `PART ${i + 1}`, ap: 'TUE · 9 PM ET · ZOOM' }
+  // `on` lets a session in the Monthly Huddle event name this date's instructor.
+  const on = d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` : undefined
+  return { t: d ? `${MON[d.getMonth()]} ${d.getDate()}` : `PART ${i + 1}`, ap: 'TUE · 9 PM ET · ZOOM', on }
 }
 
 /** "Feb, Apr & Aug 2027", or "Apr & Aug 2027 · Feb 2028" across a new year. */

@@ -621,9 +621,13 @@ function FormDialog({ e, venues, committees, meId, onClose, onSaved, onRemove }:
                 <input className="fi" placeholder="Session title" value={s.title ?? ''} onChange={(ev) => set('sessions', v.sessions.map((x, j) => (j === i ? { ...x, title: ev.target.value } : x)))} />
                 <input className="fi" type="datetime-local" value={toLocal(s.starts_at, v.timezone)} onChange={(ev) => set('sessions', v.sessions.map((x, j) => (j === i ? { ...x, starts_at: fromLocal(ev.target.value, v.timezone) } : x)))} />
                 <input className="fi" type="datetime-local" value={toLocal(s.ends_at, v.timezone)} onChange={(ev) => set('sessions', v.sessions.map((x, j) => (j === i ? { ...x, ends_at: fromLocal(ev.target.value, v.timezone) } : x)))} />
+                <select className="fi" aria-label="Speaker" value={s.speaker ?? ''} onChange={(ev) => set('sessions', v.sessions.map((x, j) => (j === i ? { ...x, speaker: ev.target.value || null } : x)))}>
+                  <option value="">No speaker</option>
+                  {[...new Set([...v.speakers.map((p) => p.name.trim()).filter(Boolean), ...(s.speaker ? [s.speaker] : [])])].map((n) => <option key={n} value={n}>{n}</option>)}
+                </select>
                 <input className="fi" type="number" step={0.5} min={0} placeholder="CE h" value={s.ce_hours ?? ''} onChange={(ev) => set('sessions', v.sessions.map((x, j) => (j === i ? { ...x, ce_hours: ev.target.value === '' ? null : Number(ev.target.value) } : x)))} />
                 <button type="button" className="del" aria-label="Remove session" onClick={() => set('sessions', v.sessions.filter((_, j) => j !== i))}>×</button></div>)}</div>
-              <div className="full"><button type="button" className="b s-btn on-light xs" onClick={() => set('sessions', [...v.sessions, { title: '', starts_at: v.starts_at || null, ends_at: null, ce_hours: null, speaker: null, sort: v.sessions.length }])}>+ Add session</button></div>
+              <div className="full"><button type="button" className="b s-btn on-light xs" onClick={() => set('sessions', [...v.sessions, { title: '', starts_at: v.starts_at || null, ends_at: null, ce_hours: null, speaker: null, sort: v.sessions.length }])}>+ Add session</button> <span className="evt-hint" style={{ display: 'inline', marginLeft: 8 }}>For the Monthly Huddle, each session's speaker shows on that date on the Fundamentals pages.</span></div>
             </>}
             {step === 'images' && <>
               <div className="full evt-img"><div className="pv">{v.primary_image ? <img src={v.primary_image} alt="" onError={(ev) => (ev.currentTarget.style.display = 'none')} /> : 'HERO'}</div><F l="HERO IMAGE" hint="Shown at the top of the event page and popup. 1600×900 works best."><input className="fi" type="url" value={v.primary_image ?? ''} onChange={txt('primary_image')} placeholder="https://…" /></F></div>
