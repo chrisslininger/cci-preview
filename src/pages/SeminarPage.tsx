@@ -220,7 +220,9 @@ export default function SeminarPage({ param }: { param?: string }) {
   const keynote = s.keynote
   const rest = speakers.filter((id) => id !== keynote)
 
-  const regLabel = (fallback: string) => attending ? '\u2713 You\u2019re attending' : rsvpMode ? 'RSVP \u2014 Free with Membership' : fallback
+  /* One verb per action: a member's free seat is an RSVP, so "Register for
+   * the Conference" reads "RSVP for the Conference" for them. */
+  const regLabel = (fallback: string) => attending ? '\u2713 You\u2019re attending' : rsvpMode ? (/^(Register|RSVP) for /.test(fallback) ? fallback.replace(/^Register /, 'RSVP ') : `RSVP for ${s.title}`) : fallback
   const onRegister = () => { if (attending) { toast('You are already on the attendee list for this event.'); return } register(key) }
 
   const scrollToRegistration = () => {
@@ -865,7 +867,7 @@ export default function SeminarPage({ param }: { param?: string }) {
             {s.mbSub && <div className="mb-s">{s.mbSub}</div>}
           </div>
           <Link className="b sm" to="/membership">
-            Become a Member &amp; Save
+            Join the Institute
           </Link>
         </div>
       </div>

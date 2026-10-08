@@ -257,7 +257,7 @@ export const SEMINARS = {
     overview:'<p>The AdvO Intensive is where the technique becomes hands-on. Day one walks through the whole procedure — history and exam, X-ray and CBCT setup and analysis, pattern understanding, corrective setup and the adjustment — with instructors demonstrating each step. Day two is supervised practice of every step, from the exam through simple and advanced corrective setups, finishing with case studies and your questions.</p><p>Its hands-on training covers all three Fundamentals, so it is the in-person companion to the monthly Fundamentals Zoom sessions. It runs three weekends a year, in St. Petersburg, Florida, and Orem, Utah.</p>',
     learn:['The history and exam, demonstrated and practiced','X-ray and CBCT setup','X-ray and CBCT analysis','Pattern understanding and corrective setup, simple and advanced','The adjustment','Review and case studies with instructors'],
     sched:[['DAY 1','Instruction and demonstration: the exam, X-ray and CBCT, corrective setup and the adjustment.'],['DAY 2','Supervised practice of every step, then case studies and Q&A.']],
-    ctaH:'Two days. Hands-on, start to finish.', ctaP:'Offered three times a year · each registration is one weekend', ctaBtn:'Choose Your Intensive Weekend',
+    ctaH:'Two days. Hands-on, start to finish.', ctaP:'Offered three times a year · each registration is one weekend', ctaBtn:'Register for an Intensive',
     spk:['cs','jk'], keynote:null,
     agenda:[
       {day:'Day 1',date:'FRIDAY',items:[
@@ -351,7 +351,7 @@ export const SEMINARS = {
       special:[['Mississippi','Sherman does not apply to Mississippi; attendees may apply to the Mississippi Board directly as a licensed DC.'],['Tennessee','Sherman does not apply to Tennessee; the hosting organization applies to the TN board directly.'],['Alberta','Attendees are responsible for confirming the activity meets provincial requirements.'],['New Brunswick','The NBCA no longer pre-approves courses; eligibility rests with the member.']],
       disclaimer:'Sherman College is a CCE-accredited college, so applications are not made to states listed as Auto Approval or DC Self; check with your board that the content falls within its scope requirements. Missouri: approval of this course is not a ruling by the Board that the methods taught are the appropriate practice of chiropractic as defined in Section 331.010, RSMo. The opinions and statements of the speakers do not necessarily reflect those of Sherman College.'
     },
-    ctaH:'Be in the room in St. Petersburg.', ctaP:'Included with AOI membership · two days at the home of Advanced Orthogonal', ctaBtn:'Reserve Your Seat',
+    ctaH:'Be in the room in St. Petersburg.', ctaP:'Included with AOI membership · two days at the home of Advanced Orthogonal', ctaBtn:'Register for the Conference',
     spk:['silver','billiris','hulsey','wooden','beadle','colavita','miranda','bollen','jobarah','pavlovic','corsello','fowler','cs'], keynote:null,
     sponsors:[{name:'Anode Imaging',logo:'sponsor-anode',url:'https://anodeimaging.com/',w:640,h:159},{name:'Sonus: Blueprint',logo:'sponsor-sonus',url:'https://sonusblueprint.com/',w:420,h:182},{name:'Spinalight',logo:'sponsor-spinalight',url:'https://www.spinalight.com/',light:true,w:317,h:240}],
     agenda:[

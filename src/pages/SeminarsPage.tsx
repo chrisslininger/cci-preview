@@ -155,7 +155,7 @@ export default function SeminarsPage() {
             <p>The Monthly Huddle and the Annual Conference are included with membership.</p>
           </div>
           <Link className="b lg p-btn" to="/membership">
-            Join &amp; Save
+            Join the Institute
           </Link>
         </div>
       </section>
