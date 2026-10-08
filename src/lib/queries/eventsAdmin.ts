@@ -11,7 +11,7 @@
  * what may change: everyone sees published events; board, the executive
  * director and the seminar committee see drafts and can edit.
  * -------------------------------------------------------------------------- */
-import { zoneAbbr } from '@/lib/dates'
+import { zoneAbbr, shownZone, isOnline } from '@/lib/dates'
 import { select, searchSelect, patch, insert, remove, rpc, headers, SB_URL, ensureSession } from '@/lib/supabase'
 
 export const CATEGORIES: [string, string][] = [
@@ -255,23 +255,30 @@ export const MONL = ['January', 'February', 'March', 'April', 'May', 'June', 'Ju
  * for the card to print ("Oct 13, 2026 – Sep 14, 2027"). */
 export function dateBlock(e: EventRow): { mo: string; dy: string; yr: string; tm: string; range?: string } {
   if (isOngoing(e)) return { mo: 'Ongoing', dy: 'Any', yr: 'time', tm: '' }
-  const a = zoned(e.starts_at, e.timezone)
+  const zone = shownZone(e)
+  const a = zoned(e.starts_at, zone)
   if (!a) return { mo: 'TBD', dy: '—', yr: '', tm: '' }
-  const b = zoned(e.ends_at, e.timezone)
+  const b = zoned(e.ends_at, zone)
   const mo = MON[a.m]!.toUpperCase(); let dy = String(a.d); let range: string | undefined
   if (b && (b.d !== a.d || b.m !== a.m || b.y !== a.y)) {
     if (b.m === a.m && b.y === a.y) dy = `${a.d}–${b.d}`
     else range = `${MON[a.m]} ${a.d}${b.y !== a.y ? `, ${a.y}` : ''} – ${MON[b.m]} ${b.d}, ${b.y}`
   }
-  return { mo, dy, yr: String(a.y), tm: a.time === '12:00 AM' && !b ? '' : a.time, range }
+  return { mo, dy, yr: String(a.y), tm: a.time === '12:00 AM' && !b ? '' : `${a.time} ${zoneAbbr(zone, new Date(e.starts_at))}`.trim(), range }
 }
 
-export function whenText(e: Pick<EventRow, 'starts_at' | 'ends_at' | 'timezone' | 'category'>): string {
+/** For an online event, its times in the viewer's zone, then the Institute's in
+ *  brackets when the two differ: "6:00 – 7:30 PM PT (9:00 PM ET)". */
+export function whenText(e: Pick<EventRow, 'starts_at' | 'ends_at' | 'timezone' | 'category'> & Partial<Pick<EventRow, 'location' | 'location_id' | 'venue' | 'zoom_url'>>): string {
   if (isOngoing(e)) return 'Ongoing · enroll any time'
-  const a = zoned(e.starts_at, e.timezone)
+  const zone = shownZone(e)
+  const a = zoned(e.starts_at, zone)
   if (!a) return 'Date to be announced'
-  const b = zoned(e.ends_at, e.timezone)
-  const tz = ` ${zoneAbbr(e.timezone)}`
+  const b = zoned(e.ends_at, zone)
+  const at = new Date(e.starts_at)
+  const home = e.timezone || 'America/New_York'
+  const h = isOnline(e) && zoneAbbr(zone, at) !== zoneAbbr(home, at) ? zoned(e.starts_at, home) : null
+  const tz = ` ${zoneAbbr(zone, at)}${h ? ` (${h.time} ${zoneAbbr(home, at)})` : ''}`
   if (!b) return `${a.wd}, ${MONL[a.m]} ${a.d}, ${a.y}${a.time && a.time !== '12:00 AM' ? ' · ' + a.time + tz : ''}`
   if (b.d === a.d && b.m === a.m) return `${a.wd}, ${MONL[a.m]} ${a.d}, ${a.y} · ${a.time} – ${b.time}${tz}`
   return `${MONL[a.m]} ${a.d}${b.y !== a.y ? `, ${a.y}` : ''} – ${b.m === a.m && b.y === a.y ? '' : MONL[b.m] + ' '}${b.d}, ${b.y} · ${a.time} start, ${b.time} finish${tz}`

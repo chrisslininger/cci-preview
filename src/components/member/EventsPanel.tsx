@@ -20,7 +20,7 @@ import { SLUG_TO_SEMINAR } from '@/content/seminars'
 import { refundable, refundLine } from '@/lib/refund'
 import CheckinRoom from './CheckinRoom'
 import { useToast } from '@/components/ui/Toast'
-import { fmtDate, fmtTime } from '@/lib/dates'
+import { fmtDate, fmtTime, shownZone, zoneAbbr } from '@/lib/dates'
 import {
   listEvents, venues as loadVenues, committees as loadCommittees, registrations, searchPeople,
   createEvent, updateEvent, setStatus, deleteEvent, saveSpeakers, saveSessions, duplicateEvent, checkIn,
@@ -244,7 +244,7 @@ export default function EventsPanel() {
     const d = dateBlock(e)
     const where = e.venue ? `${e.venue.name}${e.venue.city ? ` · ${e.venue.city}, ${e.venue.state ?? ''}` : ''}` : e.location
     const unv = unverifiedRegs(e).length
-    const za = zoned(e.starts_at, e.timezone), zb = zoned(e.ends_at, e.timezone)
+    const za = zoned(e.starts_at, shownZone(e)), zb = zoned(e.ends_at, shownZone(e))
     // Across months or years, spell both ends out: "Oct 13, 2026 – Sep 14, 2027".
     const date = isOngoing(e) ? 'Ongoing'
       : za && zb && (zb.m !== za.m || zb.y !== za.y) ? `${MON[za.m]} ${za.d}${zb.y !== za.y ? `, ${za.y}` : ''} – ${MON[zb.m]} ${zb.d}, ${zb.y}`
@@ -270,7 +270,7 @@ export default function EventsPanel() {
   }
   const table = (items: EventRow[]) => <div className="evt-table"><div className="evt-row head"><span>Date</span><span>Time</span><span>Title</span><span>Location</span><span>Tags</span><span /></div>{items.map(row)}</div>
   const months: Record<string, { y: number; m: number; items: EventRow[] }> = {}
-  if (layout === 'cal') for (const e of list) { const z = zoned(e.starts_at, e.timezone); if (!z) continue; const k = `${z.y}-${String(z.m).padStart(2, '0')}`; (months[k] ??= { y: z.y, m: z.m, items: [] }).items.push(e) }
+  if (layout === 'cal') for (const e of list) { const z = zoned(e.starts_at, shownZone(e)); if (!z) continue; const k = `${z.y}-${String(z.m).padStart(2, '0')}`; (months[k] ??= { y: z.y, m: z.m, items: [] }).items.push(e) }
   const current = open ? rows.find((x) => x.id === open) ?? null : null
 
   return (
@@ -361,7 +361,7 @@ function DetailDialog({ e, canManage, onClose, onEdit, onDuplicate, onRegs, onCh
           {e.description && <><div className="sec">About</div>{e.description.split(/\n\n+/).map((p, i) => <p key={i}>{p}</p>)}</>}
           {e.prerequisites && <div className="kv" style={{ marginTop: 6 }}>{kv('Prerequisites', e.prerequisites)}</div>}
           {(agenda.length > 0 || sessions.length > 0) && <><div className="sec">Agenda</div><ul className="agenda">
-            {sessions.map((s, i) => { const z = zoned(s.starts_at, e.timezone); const z2 = zoned(s.ends_at, e.timezone); return <li key={s.id ?? i}><b>{z ? `${MON[z.m]} ${z.d} · ${z.time}` : ''}{z2 ? `–${z2.time}` : ''}</b><span>{s.title}{s.speaker ? ` — ${s.speaker}` : ''}{s.ce_hours ? <em className="muted"> ({s.ce_hours} CE hrs)</em> : null}</span></li> })}
+            {sessions.map((s, i) => { const sz = shownZone(e); const z = zoned(s.starts_at, sz); const z2 = zoned(s.ends_at, sz); return <li key={s.id ?? i}><b>{z ? `${MON[z.m]} ${z.d} · ${z.time}` : ''}{z2 ? `–${z2.time}` : ''}{z && s.starts_at ? ` ${zoneAbbr(sz, new Date(s.starts_at))}` : ''}</b><span>{s.title}{s.speaker ? ` — ${s.speaker}` : ''}{s.ce_hours ? <em className="muted"> ({s.ce_hours} CE hrs)</em> : null}</span></li> })}
             {agenda.map((line, i) => { const m = line.match(/^(\d+\.|Day \d+:|MOD \d+|[A-Z][a-z]+day, [A-Za-z]+ \d+:)\s*(.*)$/); return <li key={`a${i}`}><b>{m ? m[1]!.replace(/:$/, '') : ''}</b><span>{m ? m[2] : line}</span></li> })}
           </ul></>}
           {speakers.length > 0 && <><div className="sec">Speakers</div><div className="evt-spk">{speakers.map((s, i) => <div key={s.id ?? i} className={`s${s.is_keynote ? ' key' : ''}`}><div className="av">{initials(s.name)}</div><div><b>{s.name}</b><small>{s.speaker_title || s.note || (s.is_keynote ? 'Keynote' : 'Speaker')}</small></div></div>)}</div></>}
