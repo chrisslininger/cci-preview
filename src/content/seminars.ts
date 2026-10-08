@@ -178,12 +178,12 @@ export const SEMINARS = {
     learn:['Why Advanced Orthogonal: what the technique is built on and the outcomes it measures','The patient history: findings that point to upper cervical involvement','The exam: supine leg check, muscle balance, arm strength, head rotation and palpation','X-ray setup for the sagittal, axial, frontal and horizontal views','CBCT setup','The Advanced Orthogonal terminology'],
     sched:[['OCT–JAN',`${listDates(zoomDates('fund1', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: why AdvO, the history and exam, and setting up the X-ray series, then open time for your cases and questions.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
     ctaH:'Begin the Fundamentals Series.', ctaP:'Members only · live on Zoom, recorded for later', ctaBtn:'RSVP for the Monthly Huddle',
-    spk:['cs','jk'], keynote:null,
+    spk:['beadle'], keynote:null,
     agenda:[{day:null,items:[
-      {...huddleDay('fund1', 0),title:'Introduction — Why AdvO',desc:'What the technique is built on, the outcomes it measures, and the atlas subluxation.',who:['cs']},
-      {...huddleDay('fund1', 1),title:'History & Exam',desc:'The patient history and the exam: supine leg check, muscle balance, arm strength, head rotation and palpation.',who:['cs']},
-      {...huddleDay('fund1', 2),title:'X-Ray Setup — Sagittal & Axial',desc:'Positioning basics, then the sagittal and axial views: why each is taken and how to get a reliable X-ray.',who:['jk']},
-      {...huddleDay('fund1', 3),title:'X-Ray Setup — Frontal, Horizontal & CBCT',desc:'The frontal and horizontal views, controlling tilt and rotation, and CBCT setup.',who:['cs','jk']}]}]
+      {...huddleDay('fund1', 0),title:'Introduction — Why AdvO',desc:'What the technique is built on, the outcomes it measures, and the atlas subluxation.',who:['beadle']},
+      {...huddleDay('fund1', 1),title:'History & Exam',desc:'The patient history and the exam: supine leg check, muscle balance, arm strength, head rotation and palpation.',who:['beadle']},
+      {...huddleDay('fund1', 2),title:'X-Ray Setup — Sagittal & Axial',desc:'Positioning basics, then the sagittal and axial views: why each is taken and how to get a reliable X-ray.',who:['beadle']},
+      {...huddleDay('fund1', 3),title:'X-Ray Setup — Frontal, Horizontal & CBCT',desc:'The frontal and horizontal views, controlling tilt and rotation, and CBCT setup.',who:['beadle']}]}]
   },
   fund2:{
     photo:'analyze',
@@ -199,12 +199,12 @@ export const SEMINARS = {
     learn:['Digital X-ray line drawing and analysis software','Measuring CBCT studies and using them to verify the X-ray analysis','Measuring displacement against the patient\'s own normal','Accounting for genetic anomalies in the analysis','Deriving the correction vector from the misalignment variables','Inter- and intra-examiner reliability protocols','Analysis case reviews with real patient X-rays'],
     sched:[['FEB–MAY',`${listDates(zoomDates('fund2', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: analyzing the sagittal, axial, frontal and horizontal X-rays, the correction vector, and misalignment patterns, plus CBCT analysis, worked through on real patient cases.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
     ctaH:'Continue the series.', ctaP:'Members only · live on Zoom, recorded for later', ctaBtn:'RSVP for the Monthly Huddle',
-    spk:['jk','cs'], keynote:null,
+    spk:['beadle'], keynote:null,
     agenda:[{day:null,items:[
-      {...huddleDay('fund2', 0),title:'X-Ray Analysis — Sagittal & Axial',desc:'Templates and the analysis software, then the sagittal and axial measurements.',who:['jk']},
-      {...huddleDay('fund2', 1),title:'X-Ray Analysis — Frontal',desc:'Marking the frontal X-ray and measuring the cranium, atlas and axis lines.',who:['jk']},
-      {...huddleDay('fund2', 2),title:'X-Ray Analysis — Horizontal & Vectors',desc:'The horizontal X-ray, then turning the measurements into the correction vector.',who:['cs']},
-      {...huddleDay('fund2', 3),title:'Misalignment Patterns',desc:'Contralateral and ipsilateral patterns and their biomechanics, with time for case review.',who:['jk','cs']}]}]
+      {...huddleDay('fund2', 0),title:'X-Ray Analysis — Sagittal & Axial',desc:'Templates and the analysis software, then the sagittal and axial measurements.',who:['beadle']},
+      {...huddleDay('fund2', 1),title:'X-Ray Analysis — Frontal',desc:'Marking the frontal X-ray and measuring the cranium, atlas and axis lines.',who:['beadle']},
+      {...huddleDay('fund2', 2),title:'X-Ray Analysis — Horizontal & Vectors',desc:'The horizontal X-ray, then turning the measurements into the correction vector.',who:['beadle']},
+      {...huddleDay('fund2', 3),title:'Misalignment Patterns',desc:'Contralateral and ipsilateral patterns and their biomechanics, with time for case review.',who:['beadle']}]}]
   },
   fund3:{
     photo:'adjust',
@@ -220,12 +220,12 @@ export const SEMINARS = {
     learn:['Five-step table placement and mastoid support','Measuring the head height angle and aligning the Y vector','Contralateral and ipsilateral misalignment patterns','The percussive instrument: aligning the vectors and leading the stylus','Evaluating the patient before and after the adjustment','Preparing for Level 1 Certification'],
     sched:[['JUN–SEP',`${listDates(zoomDates('fund3', ZOOM_SEASON))}, 9:00 pm Eastern, live on Zoom: corrective setup, the adjustment, leading the stylus, and upper cervical biomechanics.`],['HANDS-ON','Not part of the Zoom sessions: attend an AdvO Intensive, whose hands-on training covers all three Fundamentals.']],
     ctaH:'Complete your foundation.', ctaP:'Members only · live on Zoom, recorded for later', ctaBtn:'RSVP for the Monthly Huddle',
-    spk:['cs','jk'], keynote:null,
+    spk:['beadle'], keynote:null,
     agenda:[{day:null,items:[
-      {...huddleDay('fund3', 0),title:'Corrective Setup — Presetting & Patient Setup',desc:'Presetting the table and placing the patient: head placement, mastoid support and a neutral spine.',who:['cs']},
-      {...huddleDay('fund3', 1),title:'Corrective Setup — Table Setup & Verification',desc:'Headpiece and shoulder settings, then verifying the patient before the adjustment.',who:['cs']},
-      {...huddleDay('fund3', 2),title:'The Adjustment — Instrument & Finding the TP',desc:'The percussion instrument, aligning the vectors, and finding the transverse process.',who:['cs','jk']},
-      {...huddleDay('fund3', 3),title:'Leading the Stylus, Biomechanics & Wrap-Up',desc:'Leading the stylus through real cases, upper cervical biomechanics, and bringing the series together.',who:['jk']}]}]
+      {...huddleDay('fund3', 0),title:'Corrective Setup — Presetting & Patient Setup',desc:'Presetting the table and placing the patient: head placement, mastoid support and a neutral spine.',who:['beadle']},
+      {...huddleDay('fund3', 1),title:'Corrective Setup — Table Setup & Verification',desc:'Headpiece and shoulder settings, then verifying the patient before the adjustment.',who:['beadle']},
+      {...huddleDay('fund3', 2),title:'The Adjustment — Instrument & Finding the TP',desc:'The percussion instrument, aligning the vectors, and finding the transverse process.',who:['beadle']},
+      {...huddleDay('fund3', 3),title:'Leading the Stylus, Biomechanics & Wrap-Up',desc:'Leading the stylus through real cases, upper cervical biomechanics, and bringing the series together.',who:['beadle']}]}]
   },
   intensive:{
     photo:'instrument',
