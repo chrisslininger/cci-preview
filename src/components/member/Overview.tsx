@@ -189,11 +189,9 @@ export default function Overview({ onOpen }: { onOpen: (tab: string) => void }) 
         {greeting()}
         {person?.last_name ? `, Dr. ${person.last_name}.` : '.'}
       </h1>
-      <div className="ma-sub">
-        {access.roles.length > 0 || access.tier !== 'guest'
-          ? 'Here’s what’s waiting for you.'
-          : 'Your account is active. Membership unlocks the rest.'}
-      </div>
+      {access.roles.length === 0 && access.tier === 'guest' && (
+        <div className="ma-sub">Your account is active. Membership unlocks the rest.</div>
+      )}
       <RoleChips />
 
       <div className="ma-grid" style={{ marginTop: '22px' }}>
