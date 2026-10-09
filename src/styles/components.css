@@ -907,18 +907,13 @@ dialog.bio-bg::backdrop {
 }
 
 /* -------------------------------------------- Seminars page on a phone ---
-   The filter buttons fold into one menu, and the event cards become compact:
+   The filter is hidden, and the event cards become compact:
    a short photo strip on top, then the title, dates and place, and format —
    so the list reads at a glance instead of one tall card per screen. */
-.fselect { display: none; }
 .card .when { display: none; }
 #semgrid .semcard[data-cat="free"] { display: none; }
 @media (max-width: 640px) {
   #filterrow { display: none !important; }
-  .fselect { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
-  .fselect > span { font-family: var(--font-label); font-weight: 700; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-content-muted); }
-  .fselect select { flex: 1; min-height: 46px; padding: 0 40px 0 14px; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-brand-primary-deep); background-color: var(--color-surface-base); border: 1.5px solid var(--color-brand-primary); border-radius: var(--radius-control); appearance: none; -webkit-appearance: none; }
-  .fselect select { background-image: linear-gradient(45deg, transparent 50%, var(--color-brand-accent) 50%), linear-gradient(135deg, var(--color-brand-accent) 50%, transparent 50%); background-position: calc(100% - 22px) 50%, calc(100% - 16px) 50%; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; }
   .startfree { display: none; }
   #semgrid .semcard[data-cat="free"] { display: block; }
   .featintro-media { min-height: 170px; }

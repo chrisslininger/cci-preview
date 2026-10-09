@@ -61,13 +61,7 @@ export default function SeminarsPage() {
 
       <section className="tight">
         <div className="wrap">
-          {/* On a phone the filter buttons fold into one menu */}
-          <label className="fselect">
-            <span>Show</span>
-            <select value={filter} onChange={(ev) => setFilter(ev.target.value)}>
-              {FILTERS.map((f) => <option key={f.cat} value={f.cat}>{f.label}</option>)}
-            </select>
-          </label>
+          {/* On a phone the filter is hidden and every event is listed */}
           <div
             style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '34px' }}
             id="filterrow"
