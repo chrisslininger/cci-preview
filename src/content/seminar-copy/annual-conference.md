@@ -16,7 +16,7 @@ this file.
 
 ## Hero
 Label: Inflection Point · The Homecoming of the AOI Community
-Subtitle: Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward, November 6–7 at the Pierce Clinic of Chiropractic, St. Petersburg.
+Subtitle: Two days of advanced clinical training, imaging, research, and case studies with the doctors moving this work forward.
 Button: Register for the Conference
 - Explore what’s new in CBCT, 3D analysis, research, and the AdvO protocol
 - Put updated analysis and clinical concepts into practice in two supervised labs
