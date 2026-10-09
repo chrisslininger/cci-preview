@@ -842,10 +842,98 @@ dialog.bio-bg::backdrop {
   .featintro-body {
     padding: 40px 28px 32px;
   }
+  .featintro-flag {
+    left: 28px;
+  }
 }
 
 
 
+
+/* ------------------------------------------- "START HERE · FREE" pointer ---
+   A small strip pointing to the free intro course, above the featured event. */
+.startfree {
+  display: flex;
+  align-items: center;
+  gap: 14px 20px;
+  flex-wrap: wrap;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 4px solid var(--color-brand-accent);
+  border-radius: var(--radius-card);
+  padding: 14px 20px;
+  margin-bottom: 18px;
+}
+.startfree-flag {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  background: var(--color-brand-accent);
+  color: var(--color-surface-inverse);
+  padding: 6px 12px;
+  border-radius: var(--radius-control);
+  white-space: nowrap;
+}
+.startfree > p {
+  flex: 1 1 280px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--color-content-secondary);
+  margin: 0;
+}
+.startfree > p b {
+  color: var(--color-content-primary);
+}
+.startfree-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+
+
+
+/* ------------------------------------------ Page banners on a phone ---
+   The banner at the top of every inside page is shorter on a phone, so the
+   page's own content starts on the first screen. */
+@media (max-width: 640px) {
+  .hero-img.short .inner { padding: 30px 20px 28px; }
+  .hero-img.short .crumbs { margin-bottom: 10px; }
+  .hero-img.short .kick { margin-bottom: 6px; }
+  .hero-img.short h1 { font-size: 28px; }
+  .hero-img.short p.sub { margin-top: 8px; font-size: 15px; line-height: 1.5; }
+}
+
+/* -------------------------------------------- Seminars page on a phone ---
+   The filter is hidden, and the event cards become compact:
+   no photo (only the featured event keeps one), a thin gold line on top, then
+   the title, dates and place, and format —
+   so the list reads at a glance instead of one tall card per screen. */
+.card .when { display: none; }
+#semgrid .semcard[data-cat="free"] { display: none; }
+@media (max-width: 640px) {
+  #filterrow { display: none !important; }
+  .startfree { display: none; }
+  #semgrid .semcard[data-cat="free"] { display: block; }
+  .featintro-media { min-height: 170px; }
+  .featintro > div:first-child { min-height: 170px !important; }
+  .featintro-body { padding: 34px 22px 24px; }
+  .featintro-flag { left: 22px; }
+  .featintro-eyebrow { font-size: 12px; }
+  .featintro-body h3 { font-size: 24px; line-height: 1.2; }
+  .featintro-body > p { font-size: 14px; margin-bottom: 20px; }
+  #semgrid { grid-template-columns: 1fr; gap: 12px; }
+  #semgrid .semcard { display: block; border-top: 3px solid var(--color-brand-accent); }
+  #semgrid .semcard .imgwrap { display: none; }
+  #semgrid .semcard .datechip, #semgrid .semcard .loc, #semgrid .semcard .desc, #semgrid .semcard .foot { display: none; }
+  #semgrid .semcard .bd { padding: 14px 40px 16px 18px; position: relative; display: flex; flex-direction: column; justify-content: center; }
+  #semgrid .semcard .bd::after { content: '→'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--color-brand-accent); font-weight: 700; }
+  #semgrid .semcard h3 { font-size: 16.5px; margin-bottom: 4px; }
+  #semgrid .semcard .when { display: block; font-family: var(--font-sans); font-weight: 600; font-size: 12.5px; line-height: 1.4; color: var(--color-content-secondary); margin-bottom: 4px; }
+  #semgrid .semcard .meta { margin-bottom: 0; }
+}
 
 /* ------------------------------------------------- seminar detail page ---
    These rules replace inline styles that the old renderer wrote into
