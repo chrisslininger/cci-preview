@@ -908,7 +908,8 @@ dialog.bio-bg::backdrop {
 
 /* -------------------------------------------- Seminars page on a phone ---
    The filter is hidden, and the event cards become compact:
-   a short photo strip on top, then the title, dates and place, and format —
+   no photo (only the featured event keeps one), a thin gold line on top, then
+   the title, dates and place, and format —
    so the list reads at a glance instead of one tall card per screen. */
 .card .when { display: none; }
 #semgrid .semcard[data-cat="free"] { display: none; }
@@ -924,8 +925,8 @@ dialog.bio-bg::backdrop {
   .featintro-body h3 { font-size: 24px; line-height: 1.2; }
   .featintro-body > p { font-size: 14px; margin-bottom: 20px; }
   #semgrid { grid-template-columns: 1fr; gap: 12px; }
-  #semgrid .semcard { display: block; }
-  #semgrid .semcard .imgwrap { height: 112px; }
+  #semgrid .semcard { display: block; border-top: 3px solid var(--color-brand-accent); }
+  #semgrid .semcard .imgwrap { display: none; }
   #semgrid .semcard .datechip, #semgrid .semcard .loc, #semgrid .semcard .desc, #semgrid .semcard .foot { display: none; }
   #semgrid .semcard .bd { padding: 14px 40px 16px 18px; position: relative; display: flex; flex-direction: column; justify-content: center; }
   #semgrid .semcard .bd::after { content: '→'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--color-brand-accent); font-weight: 700; }
