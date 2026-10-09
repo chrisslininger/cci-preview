@@ -8,7 +8,7 @@ name, protocol, and its Level 1 / Level 2 certification are unchanged.
 
 The previous build was a single `index.html` where every page was shown and
 hidden by JavaScript, so the whole site lived at one URL. This build gives every
-page its own real URL — 30 of them — each served as a complete static HTML file.
+page its own real URL — 29 public pages — each served as a complete static HTML file.
 
 That fixes the thing the Board raised on 18 August: event pages can now be
 linked to and shared directly, which is what hyper-targeted registration needs.

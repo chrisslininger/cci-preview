@@ -82,8 +82,9 @@ npx tsc --noEmit -p tsconfig.json   # type check
 - Person and status chips use the `.cpill` classes and the helpers in
   `src/lib/chips.ts`. Gold is reserved for a person's highest certification.
 - Emails all render through `supabase/functions/_email/email.ts` (the "Obsidian"
-  layout). Copies of it live in each function folder that sends mail; keep them
-  identical.
+  layout). It is meant to be copied into each function folder that sends mail,
+  and the copies kept identical; no copies are in the repo yet (see
+  `OPERATIONS-TODO.md`).
 - Write for the reader, not the system: "Members awaiting RSVP", not
   "unconfirmed registrations".
 
