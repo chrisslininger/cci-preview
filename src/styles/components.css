@@ -895,6 +895,17 @@ dialog.bio-bg::backdrop {
 
 
 
+/* ------------------------------------------ Page banners on a phone ---
+   The banner at the top of every inside page is shorter on a phone, so the
+   page's own content starts on the first screen. */
+@media (max-width: 640px) {
+  .hero-img.short .inner { padding: 30px 20px 28px; }
+  .hero-img.short .crumbs { margin-bottom: 10px; }
+  .hero-img.short .kick { margin-bottom: 6px; }
+  .hero-img.short h1 { font-size: 28px; }
+  .hero-img.short p.sub { margin-top: 8px; font-size: 15px; line-height: 1.5; }
+}
+
 /* -------------------------------------------- Seminars page on a phone ---
    The filter buttons fold into one menu, and the event cards become compact:
    a short photo strip on top, then the title, dates and place, and format —
