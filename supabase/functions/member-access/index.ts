@@ -218,6 +218,24 @@ function signInEmail(name: string, link: string): { subject: string; html: strin
     }),
   };
 }
+/** A member changing their own login: sent to the new address to prove they own it. */
+function confirmEmailChange(name: string, link: string, from: string, to: string): { subject: string; html: string } {
+  return {
+    subject: "Confirm your new Advanced Orthogonal Institute login email",
+    html: renderEmail({
+      origin: SITE_ORIGIN, logoSrc: "cid:aoilogo",
+      preheader: `One click and you sign in with ${to}.`,
+      eyebrow: "Members area", title: "Confirm your new", titleAccent: "email.",
+      paragraphs: [
+        `Hi ${name}, you asked to sign in to the members area with this address instead of ${from}. Click below to confirm it. Your password stays the same.`,
+        "If you did not ask for this, you can ignore this email; nothing changes until the button is clicked.",
+      ],
+      rows: [["Before", from], ["New", to]],
+      cta: { label: "Confirm my new email", href: link },
+      note: "This link is good for 4 hours.",
+    }),
+  };
+}
 /** Sent to both the old and the new address when the Board changes someone's login. */
 function loginChangedEmail(name: string, from: string, to: string): { subject: string; html: string } {
   return {
@@ -227,7 +245,7 @@ function loginChangedEmail(name: string, from: string, to: string): { subject: s
       preheader: `You now sign in with ${to}.`,
       eyebrow: "Members area", title: "Your login", titleAccent: "changed.",
       paragraphs: [
-        `Hi ${name}, the Institute changed the email you sign in with. Your password stays the same.`,
+        `Hi ${name}, the email you sign in with has changed. Your password stays the same.`,
         "If you did not expect this, reply to this email and we will sort it out.",
       ],
       rows: [["Before", from], ["Now", to]],
@@ -282,6 +300,49 @@ async function invitePerson(p: Person, overrideEmail?: string): Promise<{ ok: bo
   const m = inviteEmail(p, l.link, email, l.code);
   const sent = await send(email, m.subject, m.html);
   return { ok: sent, email, detail: sent ? undefined : "the link was created but the email did not send" };
+}
+
+/* ------------------------------------------------- own email change token
+ * A member asks to move their login to a new address; the new address gets a
+ * link carrying a signed, 4-hour token naming the login and the address.
+ * Clicking it proves they own the address, and only then does the login move.
+ * Nothing is stored: the signature (keyed on the service key) is the proof. */
+const b64url = (b: Uint8Array) => btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const fromB64url = (s: string) => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
+async function hmac(data: string): Promise<string> {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(SERVICE_KEY), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return b64url(new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(data))));
+}
+async function emailToken(uid: string, email: string): Promise<string> {
+  const body = b64url(new TextEncoder().encode(JSON.stringify({ u: uid, e: email, x: Date.now() + 4 * 3600_000 })));
+  return `${body}.${await hmac(body)}`;
+}
+async function readEmailToken(token: string): Promise<{ u: string; e: string } | null> {
+  const [body, sig] = token.split(".");
+  if (!body || !sig || (await hmac(body)) !== sig) return null;
+  try {
+    const t = JSON.parse(new TextDecoder().decode(fromB64url(body)));
+    return typeof t.u === "string" && typeof t.e === "string" && Number(t.x) > Date.now() ? { u: t.u, e: t.e } : null;
+  } catch { return null; }
+}
+/** The test address and the live site may both send members here; anything else goes to the live site. */
+function returnOrigin(req: Request): string {
+  const o = (req.headers.get("origin") ?? "").replace(/\/+$/, "");
+  return /^https:\/\/(www\.)?advancedorthogonal\.com$|^https:\/\/[a-z0-9-]+\.aoi-website-6nd\.pages\.dev$/.test(o) ? o : SITE_ORIGIN;
+}
+/** Moves a login to a new address and keeps the profile and the contact record with it. */
+async function moveLogin(uid: string, personId: string | null, to: string): Promise<{ ok: true } | { error: string; detail: string }> {
+  const taken = await sb(`/rest/v1/profiles?email=ilike.${encodeURIComponent(likeEscape(to))}&select=id&limit=1`);
+  const takenRows = taken.ok ? await taken.json() : [];
+  if (Array.isArray(takenRows) && takenRows[0] && takenRows[0].id !== uid) return { error: "taken", detail: "Another member already signs in with that address." };
+  const up = await sb(`/auth/v1/admin/users/${uid}`, { method: "PUT", body: JSON.stringify({ email: to, email_confirm: true }) });
+  if (!up.ok) {
+    const t = (await up.text()).slice(0, 200);
+    return { error: "update_failed", detail: /already|registered|exists/i.test(t) ? "Another account already uses that address." : t };
+  }
+  await sb(`/rest/v1/profiles?id=eq.${uid}`, { method: "PATCH", body: JSON.stringify({ email: to }) });
+  if (personId) await sb(`/rest/v1/people?id=eq.${personId}`, { method: "PATCH", body: JSON.stringify({ email: to, updated_at: new Date().toISOString() }) });
+  return { ok: true };
 }
 
 async function staffOk(req: Request): Promise<boolean> {
@@ -353,22 +414,50 @@ Deno.serve(async (req: Request) => {
     const p = await personBy(`id=eq.${encodeURIComponent(String(body?.person_id ?? ""))}`);
     if (!p) return json(404, { error: "person_not_found" });
     if (!p.auth_user_id) return json(422, { error: "no_login", detail: "They have no login yet; just pick the address and save." });
-    const taken = await sb(`/rest/v1/profiles?email=ilike.${encodeURIComponent(likeEscape(to))}&select=id&limit=1`);
-    const takenRows = taken.ok ? await taken.json() : [];
-    if (Array.isArray(takenRows) && takenRows[0] && takenRows[0].id !== p.auth_user_id) return json(409, { error: "taken", detail: "Another member already signs in with that address." });
     const u = await sb(`/auth/v1/admin/users/${p.auth_user_id}`);
     const from = u.ok ? String((await u.json())?.email ?? p.email ?? "") : String(p.email ?? "");
     if (from.toLowerCase() === to) return json(200, { ok: true, email: to, unchanged: true });
-    const up = await sb(`/auth/v1/admin/users/${p.auth_user_id}`, { method: "PUT", body: JSON.stringify({ email: to, email_confirm: true }) });
-    if (!up.ok) {
-      const t = (await up.text()).slice(0, 200);
-      return json(422, { error: "update_failed", detail: /already|registered|exists/i.test(t) ? "Another account already uses that address." : t });
-    }
-    await sb(`/rest/v1/profiles?id=eq.${p.auth_user_id}`, { method: "PATCH", body: JSON.stringify({ email: to }) });
-    await sb(`/rest/v1/people?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ email: to, updated_at: new Date().toISOString() }) });
+    const mv = await moveLogin(p.auth_user_id, p.id, to);
+    if ("error" in mv) return json(mv.error === "taken" ? 409 : 422, mv);
     const m = loginChangedEmail(greeting(p), from, to);
     for (const addr of [...new Set([from, to].filter((a) => EMAIL_RE.test(a)))]) await send(addr, m.subject, m.html);
     return json(200, { ok: true, email: to, from });
+  }
+
+  /* A signed-in member moves their own login: the new address must confirm first. */
+  if (action === "change_my_email") {
+    const jwt = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+    const me = await fetch(`${SB_URL}/auth/v1/user`, { headers: { apikey: ANON_KEY || SERVICE_KEY, Authorization: `Bearer ${jwt}` } });
+    const user = me.ok ? await me.json() : null;
+    if (!user?.id || !user?.email) return json(401, { error: "signed_out" });
+    const to = String(body?.email ?? "").trim().toLowerCase();
+    if (!EMAIL_RE.test(to)) return json(400, { error: "invalid_email" });
+    if (to === String(user.email).toLowerCase()) return json(200, { ok: true, unchanged: true });
+    const taken = await sb(`/rest/v1/profiles?email=ilike.${encodeURIComponent(likeEscape(to))}&select=id&limit=1`);
+    const takenRows = taken.ok ? await taken.json() : [];
+    if (Array.isArray(takenRows) && takenRows[0] && takenRows[0].id !== user.id) return json(409, { error: "taken", detail: "Another member already signs in with that address." });
+    const p = await personBy(`auth_user_id=eq.${user.id}`);
+    const link = `${returnOrigin(req)}/account?confirm_email=${encodeURIComponent(await emailToken(user.id, to))}`;
+    const m = confirmEmailChange(p ? greeting(p) : "there", link, user.email, to);
+    const sent = await send(to, m.subject, m.html);
+    return json(sent ? 200 : 502, sent ? { ok: true, email: to } : { error: "send_failed", detail: "The confirmation email did not send. Please try again." });
+  }
+
+  /* The link from that email: no sign-in needed, the signed token is the proof. */
+  if (action === "confirm_my_email") {
+    const t = await readEmailToken(String(body?.token ?? ""));
+    if (!t) return json(400, { error: "expired", detail: "This link has expired. Ask for a new one from My Account → Personal." });
+    const u = await sb(`/auth/v1/admin/users/${t.u}`);
+    const from = u.ok ? String((await u.json())?.email ?? "") : "";
+    if (!from) return json(404, { error: "no_login" });
+    if (from.toLowerCase() === t.e) return json(200, { ok: true, email: t.e, unchanged: true });
+    const p = await personBy(`auth_user_id=eq.${t.u}`);
+    const mv = await moveLogin(t.u, p?.id ?? null, t.e);
+    if ("error" in mv) return json(mv.error === "taken" ? 409 : 422, mv);
+    // The old address hears about it too, in case it was not them.
+    const n = loginChangedEmail(p ? greeting(p) : "there", from, t.e);
+    if (EMAIL_RE.test(from)) await send(from, n.subject, n.html);
+    return json(200, { ok: true, email: t.e, from });
   }
 
   /* ------- public: same answer either way, so nothing can be fished out ---- */

@@ -12,13 +12,15 @@
  * row. Until the function exists, saving says so and offers the contact form.
  *
  * Sign-in: chosen from the member's own addresses rather than typed again.
- * Picking a different one goes through Supabase Auth, which mails a
- * confirmation link to it first; `people.email` follows once it is clicked.
+ * Picking a different one goes through member-access, which mails a
+ * confirmation link to it first in the Institute's design; the login and
+ * `people.email` move once it is clicked.
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { Link } from '@/lib/router'
 import PhotoCard from './PhotoCard'
 import { useAccess } from '@/lib/queries/AccessProvider'
+import { changeMyEmail } from '@/lib/queries/access'
 import { select, ensureSession, headers, session, SB_URL } from '@/lib/supabase'
 
 type Form = {
@@ -50,16 +52,10 @@ const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim()
 const same = (a: string, b: string) => !!a.trim() && a.trim().toLowerCase() === b.trim().toLowerCase()
 const missingFn = (status: number, text: string) => status === 404 || text.includes('PGRST202') || text.includes('PGRST205')
 
-/** Supabase Auth mails a confirmation link to the new address; the sign-in changes when it is clicked. */
+/** The Institute mails a confirmation link to the new address, in its own design; the login moves when it is clicked. */
 async function changeSignInEmail(email: string): Promise<{ ok?: true; error?: string }> {
-  await ensureSession()
-  const res = await fetch(`${SB_URL}/auth/v1/user?redirect_to=${encodeURIComponent(`${window.location.origin}/account`)}`, {
-    method: 'PUT',
-    headers: headers(true),
-    body: JSON.stringify({ email: email.trim() }),
-  })
-  if (res.ok) return { ok: true }
-  try { const j = await res.json(); return { error: String(j.msg ?? j.message ?? j.error_description ?? res.status) } } catch { return { error: String(res.status) } }
+  const r = await changeMyEmail(email.trim())
+  return r.ok ? { ok: true } : { error: r.detail ?? (r.error === 'taken' ? 'Another member already signs in with that address.' : 'Could not send the confirmation email. Please try again.') }
 }
 
 async function saveInfo(v: Form, vis: Visibility, sh: Share): Promise<{ ok?: true; missing?: true; error?: string }> {
