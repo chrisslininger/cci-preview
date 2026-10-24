@@ -3561,11 +3561,13 @@ section.ov-sec { margin-top: 28px; padding: 0; }
 /* ---- My Account forms: the person card's tighter label / field rows ---- */
 .pf .sec { font-family: var(--font-label); font-weight: 600; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-brand-primary); margin: 18px 0 8px; display: flex; align-items: center; gap: 12px; }
 .pf .sec:after { content: ''; flex: 1; height: 1px; background: var(--color-border-subtle); }
-.pf-kv { display: grid; grid-template-columns: 150px minmax(0, 1fr) 120px; gap: 8px 14px; align-items: center; font-size: 14px; }
+.pf-kv { display: grid; grid-template-columns: 150px minmax(0, 1fr) 120px; gap: 8px 14px; align-items: start; font-size: 14px; }
 .pf-kv.two { grid-template-columns: 150px minmax(0, 1fr); }
-.pf-kv > .k { color: var(--color-content-muted); }
+/* Labels sit at the top of their row, level with the first line of the field. */
+.pf-kv > .k { color: var(--color-content-muted); padding-top: 7px; }
 .pf-kv .fi { padding: 6px 10px; font-size: 13.5px; margin: 0; width: 100%; }
-.pf-kv .mv { display: flex; justify-content: center; }
+.pf-kv .mv { display: flex; justify-content: center; padding-top: 8px; }
+.pf-kv .pf-ro { display: block; padding-top: 7px; }
 .pf-kv input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--color-brand-primary); cursor: pointer; }
 .pf-head { margin-top: 18px; }
 .pf-head .mv { font-family: var(--font-label); font-weight: 600; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-content-muted); text-align: center; }
@@ -3578,7 +3580,7 @@ section.ov-sec { margin-top: 28px; padding: 0; }
 @media (max-width: 700px) {
   .pf-kv { grid-template-columns: minmax(0, 1fr) 56px; }
   .pf-kv.two { grid-template-columns: minmax(0, 1fr); }
-  .pf-kv > .k { grid-column: 1 / -1; margin-bottom: -4px; }
+  .pf-kv > .k { grid-column: 1 / -1; margin-bottom: -4px; padding-top: 0; }
   .pf-head > span:not(.mv) { display: none; }
   .pf-head .mv { grid-column: 2; }
 }
