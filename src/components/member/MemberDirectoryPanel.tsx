@@ -30,6 +30,7 @@ const tel = (n: string) => `tel:${n.replace(/[^\d+]/g, '')}`
 const webHost = (url: string) => url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '')
 const href = (url: string) => (/^https?:\/\//.test(url) ? url : `https://${url}`)
 const place = (city: string | null, state: string | null, zip: string | null) => [city, [state, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')
+const SORT_KEY = 'aoi-member-dir-sort'
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’‘`]/g, "'").toLowerCase()
 
 async function fetchMembers(): Promise<{ rows: Row[]; missing?: true; error?: string }> {
@@ -93,6 +94,9 @@ function Card({ r }: { r: Row }) {
 export default function MemberDirectoryPanel() {
   const [data, setData] = useState<{ rows: Row[]; missing?: true; error?: string } | null>(null)
   const [q, setQ] = useState('')
+  // Sort by last or first name; remembered in this browser only.
+  const [by, setBy] = useState<'last' | 'first'>(() => { try { return localStorage.getItem(SORT_KEY) === 'first' ? 'first' : 'last' } catch { return 'last' } })
+  const sortBy = (b: 'last' | 'first') => { setBy(b); try { localStorage.setItem(SORT_KEY, b) } catch { /* private window */ } }
 
   useEffect(() => {
     let cancelled = false
@@ -102,15 +106,17 @@ export default function MemberDirectoryPanel() {
 
   const hits = useMemo(() => {
     const words = fold(q).split(/\s+/).filter(Boolean)
-    if (!data || !words.length) return data?.rows ?? []
-    return data.rows.filter((r) => {
+    const key = (r: Row) => (by === 'first' ? `${r.first_name} ${r.last_name}` : `${r.last_name} ${r.first_name}`)
+    const rows = [...(data?.rows ?? [])].sort((a, b) => key(a).localeCompare(key(b), 'en', { sensitivity: 'base' }))
+    if (!words.length) return rows
+    return rows.filter((r) => {
       const hay = fold([
         r.first_name, r.last_name, r.credentials, r.clinic_name, r.clinic_city, r.clinic_state, r.clinic_state && stateLabel(r.clinic_state), r.clinic_zip,
         r.home_city, r.home_state,
       ].filter(Boolean).join(' '))
       return words.every((w) => hay.includes(w))
     })
-  }, [data, q])
+  }, [data, q, by])
 
   return (
     <>
@@ -128,6 +134,11 @@ export default function MemberDirectoryPanel() {
             <div className="dir-bar mdir-bar">
               <input className="fi" type="search" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Escape' && setQ('')}
                 placeholder="Name, clinic, city or state…" aria-label="Search the Directory" autoComplete="off" />
+              <div className="sd-seg" role="group" aria-label="Sort by">
+                {([['last', 'Last name'], ['first', 'First name']] as const).map(([k, l]) => (
+                  <button type="button" key={k} className={by === k ? 'on' : ''} aria-pressed={by === k} onClick={() => sortBy(k)}>{l}</button>
+                ))}
+              </div>
             </div>
             <p className="dir-count">
               {q.trim() ? `${hits.length} of ${data.rows.length} members` : `${data.rows.length} members`}
