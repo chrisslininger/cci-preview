@@ -23,6 +23,7 @@ import { chipsFor } from './PersonChips'
 import { askConfirm } from './opsUi'
 import { DuplicatesDialog, findPairs, pairKey } from './DuplicatesDialog'
 import { loadNotDuplicates } from '@/lib/queries/contacts'
+import MemberDirectoryPanel from './MemberDirectoryPanel'
 
 type Tab = 'all' | 'lead' | 'current' | 'recent' | 'inactive' | 'vendor' | 'deceased'
 type Where = Exclude<Tab, 'all' | 'vendor'>
@@ -44,7 +45,15 @@ const STATUS: Record<Where, string> = { lead: 'Lead', current: 'Member', recent:
 const statusText = (p: Contact) => { const w = where(p); return w ? STATUS[w] : 'Vendor' }
 const editIcon = <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
 
+/** Who works with the full records; everyone else (members) gets the read-only view of fellow members. */
+export const DIRECTORY_STAFF = ['board', 'full_admin', 'manage_leads', 'manage_certifications', 'manage_instructors', 'manage_internships'] as const
+
 export default function DirectoryPanel() {
+  const { can } = useAccess()
+  return DIRECTORY_STAFF.some((c) => can(c)) ? <StaffDirectory /> : <MemberDirectoryPanel />
+}
+
+function StaffDirectory() {
   const { access, can } = useAccess()
   const me = displayName(access), meId = access.person?.id ?? null
   const seeAll = can('full_admin') || can('board') || can('manage_leads')
