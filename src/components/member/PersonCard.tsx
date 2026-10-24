@@ -202,32 +202,16 @@ function SignInPick({ v, setVal, hasLogin, was }: { v: V; setVal: (k: string, va
   </>
 }
 
-/* The emails a member keeps under My Account → Personal, and what they let members see.
- * Read on its own so the card still opens before the database has these fields. */
-type Privacy = {
-  date_of_birth: string | null; mail_address_line1: string | null; mail_city: string | null; mail_region: string | null; mail_postal_code: string | null
-  personal_email: string | null; professional_email: string | null; practice_email: string | null; professional_email_visibility: string | null
-  share_personal_email: boolean; share_mobile: boolean; share_home_phone: boolean; share_home_address: boolean
-}
+/* Birthday, home address and the emails a member keeps under My Account, with what they let members see. */
 const VIS_LABEL: Record<string, string> = { board: 'Board only', members: 'Members', public: 'Public' }
-const mail = (e: string | null) => (e ? <a href={`mailto:${e}`}>{e}</a> : null)
-function PrivacySec({ id }: { id: string }) {
-  const [x, setX] = useState<Privacy | null>(null)
-  useEffect(() => {
-    let off = false
-    void select<Privacy>('people', `select=date_of_birth,mail_address_line1,mail_city,mail_region,mail_postal_code,personal_email,professional_email,practice_email,professional_email_visibility,share_personal_email,share_mobile,share_home_phone,share_home_address&id=eq.${id}`)
-      .then((r) => { if (!off) setX(r.data?.[0] ?? null) })
-    return () => { off = true }
-  }, [id])
-  if (!x) return null
-  const hidden = [!x.share_personal_email && 'personal email', !x.share_mobile && 'mobile', !x.share_home_phone && 'home phone', !x.share_home_address && 'home address'].filter(Boolean).join(', ')
-  const home = [x.mail_address_line1, [x.mail_city, [x.mail_region, x.mail_postal_code].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean)
-  return <Sec title="Emails, birthday and home" items={[
-    kv('Birthday', fmtD(x.date_of_birth)),
+const mail = (e?: string | null) => (e ? <a href={`mailto:${e}`}>{e}</a> : null)
+function PrivacySec({ p }: { p: Contact }) {
+  const hidden = [!p.share_personal_email && 'personal email', !p.share_mobile && 'mobile', !p.share_home_phone && 'home phone', !p.share_home_address && 'home address'].filter(Boolean).join(', ')
+  const home = [p.mail_address_line1, [p.mail_city, [p.mail_region, p.mail_postal_code].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean)
+  return <Sec title="Birthday, home and who sees what" items={[
+    kv('Birthday', fmtD(p.date_of_birth)),
     kv('Home address', home.length ? <>{home.map((l) => <div key={l}>{l}</div>)}</> : null),
-    kv('Personal email', mail(x.personal_email)),
-    kv('Professional email', x.professional_email ? <>{mail(x.professional_email)} · {VIS_LABEL[x.professional_email_visibility ?? 'board']}</> : null),
-    kv('Office email', x.practice_email ? <>{mail(x.practice_email)} · Public</> : null),
+    kv('Professional email', p.professional_email ? <>{VIS_LABEL[p.professional_email_visibility ?? 'board']}</> : null),
     kv('Board only', hidden || 'Nothing: members can view all of it'),
   ]} />
 }
@@ -407,8 +391,8 @@ export function PersonCard({ p: given, newStatus = 'never', vendorReady = false,
               <Row k="Bio"><textarea className="fi" rows={4} value={v.bio} onChange={set('bio')} placeholder="Shown on the public directory once they are a member." aria-label="Bio" /></Row>
             </div>
           </> : <>
-            <Sec title="Contact" items={[kv('Email', p.email ? <a href={`mailto:${p.email}`}>{p.email}</a> : null), kv('Other emails', p.other_emails?.length ? <>{p.other_emails.map((e, i) => <span key={e}>{i > 0 && ', '}<a href={`mailto:${e}`}>{e}</a></span>)}</> : null), kv('Mobile', p.mobile_phone), kv('Home phone', p.personal_phone)]} />
-            <PrivacySec id={p.id} />
+            <Sec title="Contact" items={[kv('Sign-in email', mail(p.email)), kv('Personal email', mail(p.personal_email)), kv('Professional email', mail(p.professional_email)), kv('Other emails', p.other_emails?.length ? <>{p.other_emails.map((e, i) => <span key={e}>{i > 0 && ', '}<a href={`mailto:${e}`}>{e}</a></span>)}</> : null), kv('Mobile', p.mobile_phone), kv('Home phone', p.personal_phone)]} />
+            <PrivacySec p={p} />
             <Sec title="Profile" items={[kv('Type', TYPE_LABEL[p.contact_type ?? ''] ?? p.contact_type), kv('Vendor', p.is_vendor ? (p.vendor_company || 'Yes') : null), kv('Title', p.title), kv('Bio', p.bio)]} />
             {canInvite && !p.deceased_on && <>
               <div className="sec">Members area</div>
@@ -441,7 +425,7 @@ export function PersonCard({ p: given, newStatus = 'never', vendorReady = false,
             </div>)}
             <div className="act" style={{ justifyContent: 'flex-start' }}><button type="button" className="b s-btn on-light xs" onClick={() => f.setOffices((x) => [...x, { name: '', address: '', city: '', state: '', zip: '', phone: '', website: '', is_primary: false, is_internship_site: false, is_seminar_venue: false }])}>+ Add another office</button></div>
           </> : <>
-            <Sec title="Practice" items={[kv('Practice', p.practice_name), kv('Office phone', p.office_phone ?? p.practice_phone), kv('Address', addr ? <>{addr}<br /><a href={`https://maps.google.com/?q=${encodeURIComponent([p.practice_name, addr].filter(Boolean).join(', '))}`} target="_blank" rel="noreferrer">Open in maps</a></> : null), kv('Website', web(p.practice_website))]} />
+            <Sec title="Practice" items={[kv('Practice', p.practice_name), kv('Office phone', p.office_phone ?? p.practice_phone), kv('Office email', mail(p.practice_email)), kv('Address', addr ? <>{addr}<br /><a href={`https://maps.google.com/?q=${encodeURIComponent([p.practice_name, addr].filter(Boolean).join(', '))}`} target="_blank" rel="noreferrer">Open in maps</a></> : null), kv('Website', web(p.practice_website))]} />
             {offices.length > 0 && <><div className="sec">Other offices</div>{offices.map((o) => <div key={o.id} className="kv" style={{ marginBottom: 10 }}>{kv(o.name || 'Office', <>{[o.address, [o.city, [o.state, o.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean).join(', ')}{o.phone ? <><br />{o.phone}</> : null}{o.website ? <><br />{web(o.website)}</> : null}{(o.is_internship_site || o.is_seminar_venue) && <div className="cert-chips" style={{ marginTop: 6, marginBottom: 0 }}>{o.is_internship_site && <Pill>Internship site</Pill>}{o.is_seminar_venue && <Pill>Seminar venue</Pill>}</div>}</>)}</div>)}</>}
             {!p.practice_name && !addr && !p.practice_website && offices.length === 0 && <p className="muted" style={{ marginTop: 14 }}>No practice on file.</p>}
           </>)}

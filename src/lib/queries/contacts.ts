@@ -42,12 +42,18 @@ export type Contact = {
   person_roles: Role[]; contact_notes: Note[]; practice_locations: Office[]
   /** Read separately (vendorDetails) and merged in, so the list still loads before the database has these fields. */
   is_vendor?: boolean | null; vendor_company?: string | null; vendor_services?: string | null; vendor_website?: string | null; vendor_notes?: string | null
+  /** What the member keeps under My Account → Personal and Business, and what they let members see (#69). */
+  personal_email?: string | null; professional_email?: string | null; practice_email?: string | null; professional_email_visibility?: string | null
+  date_of_birth?: string | null; mail_address_line1?: string | null; mail_city?: string | null; mail_region?: string | null; mail_postal_code?: string | null
+  share_personal_email?: boolean | null; share_mobile?: boolean | null; share_home_phone?: boolean | null; share_home_address?: boolean | null
 }
 
 const SELECT =
   'id,first_name,last_name,credentials,title,email,other_emails,personal_phone,mobile_phone,office_phone,practice_name,practice_address,' +
   'practice_city,practice_state,practice_zip,practice_phone,practice_website,membership_status,member_since,membership_expires,' +
   'contact_type,techniques,cert_level,instructor_status,alma_mater,grad_year,npi,bio,photo_url,notes,deceased_on,profile_completed,auth_user_id,' +
+  'personal_email,professional_email,practice_email,professional_email_visibility,date_of_birth,mail_address_line1,mail_city,mail_region,mail_postal_code,' +
+  'share_personal_email,share_mobile,share_home_phone,share_home_address,' +
   'person_certifications(id,technique,level,cert_date,certificate_number,grandfathered,certified_by),' +
   'instructor_records!instructor_records_person_id_fkey(id,level,status,technique,instructor_date),' +
   'board_service!board_service_person_id_fkey(id,term_label,status,term_start,term_end),' +
