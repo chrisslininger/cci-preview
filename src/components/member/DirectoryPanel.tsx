@@ -79,6 +79,9 @@ function StaffDirectory() {
   const dupCount = useMemo(() => (notDup ? findPairs(rows).filter((p) => !notDup.has(pairKey(p))).length : 0), [rows, notDup])
   /* Compact (one row per person) or comfortable (cards), remembered on this device; phones always get the cards. */
   const { compact, narrow, setDensity } = useDensity('aoi.directory.density', canEdit ? 'compact' : 'comfortable')
+  // Sort by first or last name, remembered on this device.
+  const [by, setBy] = useState<'first' | 'last'>(() => { try { return localStorage.getItem('aoi.directory.sort') === 'last' ? 'last' : 'first' } catch { return 'first' } })
+  const sortBy = (b: 'first' | 'last') => { setBy(b); try { localStorage.setItem('aoi.directory.sort', b) } catch { /* private window */ } }
 
   const load = useCallback(async () => {
     const [r, v] = await Promise.all([seeAll ? everyone() : membersOnly(), seeAll ? vendorDetails() : Promise.resolve({ rows: [], ready: false })])
@@ -100,8 +103,11 @@ function StaffDirectory() {
     const t = q.trim().toLowerCase()
     return rows.filter((p) => inTab(p, tab) && (!tech || (p.techniques ?? []).includes(tech)) &&
       (!t || [fullName(p), `${p.first_name} ${p.last_name}`, p.email, p.personal_email, p.professional_email, p.practice_email, (p.other_emails ?? []).join(' '), p.practice_name, p.practice_city, p.practice_state, p.alma_mater, p.office_phone, p.mobile_phone, p.vendor_company, (p.techniques ?? []).join(' ')].filter(Boolean).some((v) => String(v).toLowerCase().includes(t))))
-      .sort((a, b) => (a.first_name ?? '').localeCompare(b.first_name ?? '', undefined, { sensitivity: 'base' }) || (a.last_name ?? '').localeCompare(b.last_name ?? '', undefined, { sensitivity: 'base' }))
-  }, [rows, tab, q, tech])
+      .sort((a, b) => {
+        const cmp = (x?: string | null, y?: string | null) => (x ?? '').localeCompare(y ?? '', undefined, { sensitivity: 'base' })
+        return by === 'last' ? cmp(a.last_name, b.last_name) || cmp(a.first_name, b.first_name) : cmp(a.first_name, b.first_name) || cmp(a.last_name, b.last_name)
+      })
+  }, [rows, tab, q, tech, by])
   /* Nothing matches what was typed: show the closest names instead, from the
    * database's typo-proof search, best first. */
   const [near, setNear] = useState<{ q: string; ids: string[] }>({ q: '', ids: [] })
@@ -175,8 +181,9 @@ function StaffDirectory() {
         </div>
         <select className="fi" style={{ margin: 0 }} value={tech} onChange={(e) => setTech(e.target.value)} aria-label="Filter by technique"><option value="">All techniques</option>{TECHNIQUES.map((t) => <option key={t}>{t}</option>)}</select>
       </div>
-      <div className="evt-bar"><span className="cnt">{closest.length ? `No exact match for “${q.trim()}” · ${closest.length} closest name${closest.length === 1 ? '' : 's'}${tech ? ` · ${tech}` : ''} · closest first` : `${list.length} of ${counts[tab]}${q ? ` match “${q}”` : ''}${tech ? ` · ${tech}` : ''} · alphabetical by first name`}</span>
-        {!narrow && <div className="evt-segs"><div className="evt-seg"><button type="button" className={compact ? 'on' : ''} onClick={() => setDensity('compact')}>Compact</button><button type="button" className={!compact ? 'on' : ''} onClick={() => setDensity('comfortable')}>Comfortable</button></div></div>}</div>
+      <div className="evt-bar"><span className="cnt">{closest.length ? `No exact match for “${q.trim()}” · ${closest.length} closest name${closest.length === 1 ? '' : 's'}${tech ? ` · ${tech}` : ''} · closest first` : `${list.length} of ${counts[tab]}${q ? ` match “${q}”` : ''}${tech ? ` · ${tech}` : ''} · alphabetical by ${by} name`}</span>
+        <div className="evt-segs"><div className="evt-seg" role="group" aria-label="Sort by">{([['last', 'Last name'], ['first', 'First name']] as const).map(([k, l]) => <button type="button" key={k} className={by === k ? 'on' : ''} aria-pressed={by === k} onClick={() => sortBy(k)}>{l}</button>)}</div>
+        {!narrow && <div className="evt-seg"><button type="button" className={compact ? 'on' : ''} onClick={() => setDensity('compact')}>Compact</button><button type="button" className={!compact ? 'on' : ''} onClick={() => setDensity('comfortable')}>Comfortable</button></div>}</div></div>
       {list.length === 0 && <div className="cert-card" style={{ textAlign: 'center', color: 'var(--color-content-muted)', padding: 30 }}>{q ? `No one in ${tabLabel} matches “${q}”.` : tab === 'vendor' && !vendorReady ? 'Vendors appear here once the database has the vendor fields.' : 'No one in this list.'}</div>}
       {living.length > 0 && (compact ? table(living) : living.map(card))}
       {gone.length > 0 && tab !== 'deceased' && <div className="msec">Deceased · {gone.length}</div>}
