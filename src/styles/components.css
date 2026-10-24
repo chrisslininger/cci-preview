@@ -2184,7 +2184,9 @@ a.othercard {
 .ctc-card.editing .fi { padding: 7px 10px; font-size: 13.5px; }
 .ctc-card.editing .ctc-chk label { padding: 5px 9px; font-size: 13px; }
 .ctc-card.editing .ctc-locbox { margin-top: 10px; }
-.cc.editing .kv { align-items: center; }
+.cc.editing .kv { align-items: start; }
+/* Labels sit at the top of their row, level with the first line of the field. */
+.cc.editing .kv > span { padding-top: 7px; }
 .cc.editing .kv .fi { padding: 6px 10px; font-size: 13.5px; margin: 0; }
 .mform.cert-grid > div:last-child { grid-column: auto; }
 .mform .full { grid-column: 1 / -1; }
