@@ -12,10 +12,11 @@
  * flagged it as scaffolding to remove before public launch, and the site is now
  * public.
  * -------------------------------------------------------------------------- */
-import { Suspense, lazy, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { Link } from '@/lib/router'
 import { signIn, linkError, clearLinkError } from '@/lib/supabase'
-import { activateAccount } from '@/lib/queries/access'
+import { activateAccount, confirmMyEmail } from '@/lib/queries/access'
+import { useToast } from '@/components/ui/Toast'
 import { useAccess } from '@/lib/queries/AccessProvider'
 
 /* The members area is the heaviest part of the site and only this page uses it,
@@ -30,6 +31,23 @@ export default function AccountPage() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState<string | null>(() => (typeof window === 'undefined' ? null : linkError()))
+  const toast = useToast()
+
+  /* The link from "Confirm your new login email" lands here with ?confirm_email=…;
+   * it works signed in or out, because the signed token is the proof. */
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get('confirm_email')
+    if (!token) return
+    window.history.replaceState(null, '', window.location.pathname + window.location.hash)
+    void confirmMyEmail(token).then(async (r) => {
+      const text = r.ok
+        ? r.unchanged ? `You already sign in with ${r.email}.` : `Done. You now sign in with ${r.email}. Your password is the same.`
+        : r.detail ?? 'That link did not work. Ask for a new one from My Account → Personal.'
+      toast(text)
+      if (!signedIn) setNotice(text)
+      if (r.ok) await refresh()
+    })
+  }, [])
 
   async function handleSignIn(event: React.FormEvent) {
     event.preventDefault()

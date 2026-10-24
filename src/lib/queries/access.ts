@@ -19,6 +19,14 @@ export const activateAccount = (email: string) => invoke<AccessReply>('member-ac
 export const changeLogin = (personId: string, email: string) =>
   invoke<AccessReply & { from?: string; unchanged?: boolean }>('member-access', { action: 'change_login', person_id: personId, email })
 
+/** A member moving their own login: the Institute emails a confirm link to the new address. */
+export const changeMyEmail = (email: string) =>
+  invoke<AccessReply & { unchanged?: boolean }>('member-access', { action: 'change_my_email', email })
+
+/** The link from that email (`/account?confirm_email=…`): moves the login. */
+export const confirmMyEmail = (token: string) =>
+  invoke<AccessReply & { from?: string; unchanged?: boolean }>('member-access', { action: 'confirm_my_email', token })
+
 /** Forgot password. Sent through the Institute's own mail, not Supabase's. */
 export const requestReset = (email: string) => invoke<AccessReply>('member-access', { action: 'reset', email })
 
