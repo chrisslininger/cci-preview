@@ -15,6 +15,10 @@ export type InviteRow = { id?: string; name: string; email?: string | null; ok?:
  *  the form cannot be used to find out who is a member. */
 export const activateAccount = (email: string) => invoke<AccessReply>('member-access', { action: 'activate', email })
 
+/** Board only: move someone's login to another of their addresses. Both addresses get a notice. */
+export const changeLogin = (personId: string, email: string) =>
+  invoke<AccessReply & { from?: string; unchanged?: boolean }>('member-access', { action: 'change_login', person_id: personId, email })
+
 /** Forgot password. Sent through the Institute's own mail, not Supabase's. */
 export const requestReset = (email: string) => invoke<AccessReply>('member-access', { action: 'reset', email })
 

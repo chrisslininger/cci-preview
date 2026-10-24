@@ -4,9 +4,10 @@
 --
 -- Who sees what (James, 2026-10-24):
 --   Board        everything.
---   Members      every personal detail by default; a member unticks "Members can view" to keep one Board only.
+--   Members      a personal detail the member ticked "Members can view" (Board only until they do;
+--                James, 2026-10-24, step 6). Only current, paid-up members see the Directory.
 --   Public       clinic details, always (Find a Doctor); members see them too.
---   Professional email: Board only, Members (default) or Public (public includes members).
+--   Professional email: Board only (default), Members or Public (public includes members).
 -- Personal details other than the professional email are never public.
 --
 -- Reuses columns that already exist and were empty: date_of_birth (birthday) and
@@ -191,3 +192,55 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke execute on function public.member_directory() from public, anon;
 grant execute on function public.member_directory() to authenticated;
+
+-- ---------------------------------------------------------------- step 6 --
+-- Later the same day (James): start every personal detail as Board only, not Members.
+-- Nobody had saved a choice yet, so the update below overrides no one's decision.
+alter table public.people
+  alter column professional_email_visibility set default 'board',
+  alter column share_personal_email set default false,
+  alter column share_mobile set default false,
+  alter column share_home_phone set default false,
+  alter column share_home_address set default false;
+
+update public.people set
+  professional_email_visibility = 'board',
+  share_personal_email = false, share_mobile = false, share_home_phone = false, share_home_address = false;
+
+-- update_my_info falls back to Board only when a choice is missing.
+create or replace function public.update_my_info(
+  p_first_name text, p_last_name text, p_credentials text, p_birthday date,
+  p_personal_email text, p_professional_email text, p_professional_email_visibility text,
+  p_mobile_phone text, p_personal_phone text,
+  p_home_address text, p_home_city text, p_home_state text, p_home_zip text,
+  p_share_personal_email boolean, p_share_mobile boolean, p_share_home_phone boolean, p_share_home_address boolean
+) returns integer
+language sql security definer set search_path = public as $$
+  with u as (
+    update people set
+      first_name           = coalesce(nullif(trim(p_first_name), ''), first_name),
+      last_name            = coalesce(nullif(trim(p_last_name), ''), last_name),
+      credentials          = nullif(trim(p_credentials), ''),
+      date_of_birth        = p_birthday,
+      personal_email       = nullif(lower(trim(p_personal_email)), ''),
+      professional_email   = nullif(lower(trim(p_professional_email)), ''),
+      professional_email_visibility = case when p_professional_email_visibility in ('board', 'members', 'public')
+                                           then p_professional_email_visibility else 'board' end,
+      mobile_phone         = nullif(trim(p_mobile_phone), ''),
+      personal_phone       = nullif(trim(p_personal_phone), ''),
+      mail_address_line1   = nullif(trim(p_home_address), ''),
+      mail_city            = nullif(trim(p_home_city), ''),
+      mail_region          = nullif(upper(trim(p_home_state)), ''),
+      mail_postal_code     = nullif(trim(p_home_zip), ''),
+      share_personal_email = coalesce(p_share_personal_email, false),
+      share_mobile         = coalesce(p_share_mobile, false),
+      share_home_phone     = coalesce(p_share_home_phone, false),
+      share_home_address   = coalesce(p_share_home_address, false)
+    where auth_user_id = auth.uid()
+    returning 1
+  )
+  select count(*)::int from u;
+$$;
+revoke execute on function public.update_my_info(text, text, text, date, text, text, text, text, text, text, text, text, text, boolean, boolean, boolean, boolean) from public, anon;
+grant execute on function public.update_my_info(text, text, text, date, text, text, text, text, text, text, text, text, text, boolean, boolean, boolean, boolean) to authenticated;
+

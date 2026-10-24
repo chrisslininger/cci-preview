@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react'
 import { friendlyError } from '@/lib/friendlyError'
 import { webHref } from '@/lib/safeHref'
 import { useToast } from '@/components/ui/Toast'
-import { inviteMember, requestReset, type AccessReply } from '@/lib/queries/access'
+import { inviteMember, requestReset, changeLogin, type AccessReply } from '@/lib/queries/access'
 import { uploadPhotoFor } from '@/lib/queries/photo'
 import { select, patch } from '@/lib/supabase'
 import {
@@ -122,9 +122,11 @@ export function useContactForm(p: Contact | null, canRoles: boolean, me: string,
     setErr(null)
     if (!v.first_name!.trim() || !v.last_name!.trim()) { setErr('First and last name are required.'); return { ok: false, name: true } }
     const dead = v.membership_status === 'deceased'
+    const loginMoves = !!p?.auth_user_id && !!v.email?.trim() && v.email.trim().toLowerCase() !== (p.email ?? '').trim().toLowerCase()
     const prof: Profile = {
       first_name: v.first_name!.trim(), last_name: v.last_name!.trim(), credentials: v.credentials || null, title: v.title || null, contact_type: v.contact_type || 'doctor',
-      email: v.email || null, other_emails: emailList(v.other_emails), mobile_phone: v.mobile_phone || null, office_phone: v.office_phone || null, personal_phone: v.personal_phone || null,
+      // Someone with a login keeps their address here; a new one goes through changeLogin below.
+      email: (loginMoves ? p?.email : v.email) || null, other_emails: emailList(v.other_emails), mobile_phone: v.mobile_phone || null, office_phone: v.office_phone || null, personal_phone: v.personal_phone || null,
       practice_name: v.practice_name || null, practice_address: v.practice_address || null, practice_city: v.practice_city || null, practice_state: v.practice_state || null, practice_zip: v.practice_zip || null, practice_phone: v.office_phone !== phone0 ? (v.office_phone || null) : (p?.practice_phone ?? null), practice_website: v.practice_website || null,
       alma_mater: v.alma_mater || null, grad_year: v.grad_year ? Number(v.grad_year) : null, npi: v.npi || null, photo_url: v.photo_url || null, bio: v.bio || null,
       techniques: tq, member_since: v.member_since || null, membership_expires: v.membership_expires || null,
@@ -146,6 +148,14 @@ export function useContactForm(p: Contact | null, canRoles: boolean, me: string,
         const why = /vendor|PGRST204|column/i.test(w.error) ? 'the database does not have the vendor fields yet.' : friendlyError(w.error)
         if (p) { setSaving(false); setErr('Saved, but not the vendor details: ' + why); return { ok: false } }
         vendorNote = ' The vendor details were not saved: ' + why
+      }
+    }
+    if (p && loginMoves) {
+      const c = await changeLogin(p.id, v.email!.trim())
+      if (c.error || c.ok === false) {
+        setSaving(false)
+        setErr('Saved, but the login did not move: ' + (c.error === 'not_allowed' ? 'only the Board can change a login.' : c.detail ?? friendlyError(c.error ?? 'unknown')))
+        return { ok: false }
       }
     }
     if (p && EXTRA_KEYS.some((k) => (v[k] ?? '') !== (extra0.current[k] ?? ''))) {
@@ -173,10 +183,10 @@ function Row({ k, children }: { k: string; children: React.ReactNode }) { return
 function Sec({ title, items }: { title: string; items: React.ReactNode[] }) { const has = items.some(Boolean); return has ? <><div className="sec">{title}</div><div className="kv">{items}</div></> : null }
 const kv = (k: string, v: React.ReactNode) => (v ? <Row key={k} k={k}>{v}</Row> : null)
 
-/* The sign-in email is picked from the person's own addresses, not typed again. Once they have
- * a login, only they can change it (My Account → Personal, which confirms by email); changing
- * it here would leave their real login behind. */
-function SignInPick({ v, setVal, hasLogin }: { v: V; setVal: (k: string, val: string) => void; hasLogin: boolean }) {
+/* The sign-in email is picked from the person's own addresses, not typed again. For someone
+ * with a login, saving moves the login itself (member-access, Board only) and emails both
+ * addresses; there is no confirmation step (James, 2026-10-24). */
+function SignInPick({ v, setVal, hasLogin, was }: { v: V; setVal: (k: string, val: string) => void; hasLogin: boolean; was: string }) {
   const cur = (v.email ?? '').trim()
   const opts: [string, string][] = [['Personal', v.personal_email ?? ''], ['Professional', v.professional_email ?? ''], ['Office', v.practice_email ?? ''],
     ...(v.other_emails ?? '').split(/[\s,;]+/).map((e): [string, string] => ['Other', e])]
@@ -184,11 +194,11 @@ function SignInPick({ v, setVal, hasLogin }: { v: V; setVal: (k: string, val: st
   const list = opts.map(([l, e]) => [l, e.trim()] as [string, string]).filter(([, e]) => e && !seen.has(e.toLowerCase()) && seen.add(e.toLowerCase()))
   if (cur && !seen.has(cur.toLowerCase())) list.unshift(['Current', cur])
   return <>
-    <select className="fi" value={cur} onChange={(e) => setVal('email', e.target.value)} disabled={hasLogin} aria-label="Sign-in email">
+    <select className="fi" value={cur} onChange={(e) => setVal('email', e.target.value)} aria-label="Sign-in email">
       {!cur && <option value="">Choose an address…</option>}
       {list.map(([l, e]) => <option key={e} value={e}>{l} · {e}</option>)}
     </select>
-    {hasLogin && <div className="cc-note">They have a login, so they change this themselves under My Account → Personal.</div>}
+    {hasLogin && cur.toLowerCase() !== was.trim().toLowerCase() && <div className="cc-note">Saving moves their login to this address. We email both addresses to let them know; their password stays the same.</div>}
   </>
 }
 
@@ -380,7 +390,7 @@ export function PersonCard({ p: given, newStatus = 'never', vendorReady = false,
                 ? <Row k="Sign-in email">{I('email', 'email')}</Row>
                 : <>
                   <Row k="Personal email">{I('personal_email', 'email')}</Row><Row k="Professional email">{I('professional_email', 'email')}</Row>
-                  <Row k="Sign-in email"><SignInPick v={v} setVal={f.setVal} hasLogin={!!p?.auth_user_id} /></Row>
+                  <Row k="Sign-in email"><SignInPick v={v} setVal={f.setVal} hasLogin={!!p?.auth_user_id} was={p?.email ?? ''} /></Row>
                 </>}
               <Row k="Other emails">{I('other_emails')}</Row><Row k="Mobile">{I('mobile_phone', 'tel')}</Row><Row k="Home phone">{I('personal_phone', 'tel')}</Row>
             </div>

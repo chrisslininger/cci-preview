@@ -218,6 +218,23 @@ function signInEmail(name: string, link: string): { subject: string; html: strin
     }),
   };
 }
+/** Sent to both the old and the new address when the Board changes someone's login. */
+function loginChangedEmail(name: string, from: string, to: string): { subject: string; html: string } {
+  return {
+    subject: "Your Advanced Orthogonal Institute login email changed",
+    html: renderEmail({
+      origin: SITE_ORIGIN, logoSrc: "cid:aoilogo",
+      preheader: `You now sign in with ${to}.`,
+      eyebrow: "Members area", title: "Your login", titleAccent: "changed.",
+      paragraphs: [
+        `Hi ${name}, the Institute changed the email you sign in with. Your password stays the same.`,
+        "If you did not expect this, reply to this email and we will sort it out.",
+      ],
+      rows: [["Before", from], ["Now", to]],
+      cta: { label: "Sign in", href: `${SITE_ORIGIN}/account` },
+    }),
+  };
+}
 function resetEmail(name: string, link: string, email: string, code = "", alreadySetUp = false): { subject: string; html: string } {
   return {
     subject: "Reset your Advanced Orthogonal Institute password",
@@ -325,6 +342,33 @@ Deno.serve(async (req: Request) => {
       await new Promise((res) => setTimeout(res, 700)); // Resend rate limit
     }
     return json(200, { count: people.length, dry_run: !!body?.dry_run, results });
+  }
+
+  /* The Board changes someone's login email: no confirmation step, so both
+   * addresses are told. The login, the profile and the contact record move together. */
+  if (action === "change_login") {
+    if (!(await staffOk(req))) return json(403, { error: "not_allowed" });
+    const to = String(body?.email ?? "").trim().toLowerCase();
+    if (!EMAIL_RE.test(to)) return json(400, { error: "invalid_email" });
+    const p = await personBy(`id=eq.${encodeURIComponent(String(body?.person_id ?? ""))}`);
+    if (!p) return json(404, { error: "person_not_found" });
+    if (!p.auth_user_id) return json(422, { error: "no_login", detail: "They have no login yet; just pick the address and save." });
+    const taken = await sb(`/rest/v1/profiles?email=ilike.${encodeURIComponent(likeEscape(to))}&select=id&limit=1`);
+    const takenRows = taken.ok ? await taken.json() : [];
+    if (Array.isArray(takenRows) && takenRows[0] && takenRows[0].id !== p.auth_user_id) return json(409, { error: "taken", detail: "Another member already signs in with that address." });
+    const u = await sb(`/auth/v1/admin/users/${p.auth_user_id}`);
+    const from = u.ok ? String((await u.json())?.email ?? p.email ?? "") : String(p.email ?? "");
+    if (from.toLowerCase() === to) return json(200, { ok: true, email: to, unchanged: true });
+    const up = await sb(`/auth/v1/admin/users/${p.auth_user_id}`, { method: "PUT", body: JSON.stringify({ email: to, email_confirm: true }) });
+    if (!up.ok) {
+      const t = (await up.text()).slice(0, 200);
+      return json(422, { error: "update_failed", detail: /already|registered|exists/i.test(t) ? "Another account already uses that address." : t });
+    }
+    await sb(`/rest/v1/profiles?id=eq.${p.auth_user_id}`, { method: "PATCH", body: JSON.stringify({ email: to }) });
+    await sb(`/rest/v1/people?id=eq.${p.id}`, { method: "PATCH", body: JSON.stringify({ email: to, updated_at: new Date().toISOString() }) });
+    const m = loginChangedEmail(greeting(p), from, to);
+    for (const addr of [...new Set([from, to].filter((a) => EMAIL_RE.test(a)))]) await send(addr, m.subject, m.html);
+    return json(200, { ok: true, email: to, from });
   }
 
   /* ------- public: same answer either way, so nothing can be fished out ---- */

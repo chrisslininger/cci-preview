@@ -3,7 +3,7 @@
  * home address, and who may see each one.
  *
  * Who sees what (James, 2026-10-24): the Board sees everything. Each personal
- * detail has a "Members can view" box, ticked to start; unticked keeps it to
+ * detail has a "Members can view" box, unticked to start, which keeps it to
  * the Board. Personal details are never public, except the professional email
  * when the member also ticks "Also show in Find a Doctor".
  *
@@ -31,8 +31,8 @@ const EMPTY: Form = { first: '', last: '', credentials: '', birthday: '', person
 type Visibility = 'board' | 'members' | 'public'
 /** Personal details other members may see; matches the share_* columns on people. */
 type Share = { personal_email: boolean; mobile: boolean; home_phone: boolean; home_address: boolean }
-// Every personal detail starts visible to members (James, 2026-10-24).
-const ALL: Share = { personal_email: true, mobile: true, home_phone: true, home_address: true }
+// Every personal detail starts Board only until the member ticks it (James, 2026-10-24).
+const NONE: Share = { personal_email: false, mobile: false, home_phone: false, home_address: false }
 
 /** Which address the member signs in with: one of their own, or the current one when it matches none. */
 type Slot = 'personal' | 'professional' | 'office' | 'current'
@@ -84,8 +84,8 @@ export default function MyInfoPanel() {
   const { access } = useAccess()
   const id = access.person?.id
   const [v, setV] = useState<Form>(EMPTY)
-  const [vis, setVis] = useState<Visibility>('members')
-  const [share, setShare] = useState<Share>(ALL)
+  const [vis, setVis] = useState<Visibility>('board')
+  const [share, setShare] = useState<Share>(NONE)
   const [login, setLogin] = useState('')
   const [office, setOffice] = useState('')
   const [slot, setSlot] = useState<Slot>('current')
@@ -118,7 +118,7 @@ export default function MyInfoPanel() {
         address: p?.mail_address_line1 ?? '', city: p?.mail_city ?? '', state: p?.mail_region ?? '', zip: p?.mail_postal_code ?? '',
       })
       if (ex) {
-        setVis(ex.professional_email_visibility ?? 'members')
+        setVis(ex.professional_email_visibility ?? 'board')
         setShare({ personal_email: ex.share_personal_email, mobile: ex.share_mobile, home_phone: ex.share_home_phone, home_address: ex.share_home_address })
       }
       setLogin(signIn)
@@ -174,7 +174,7 @@ export default function MyInfoPanel() {
     <>
       <h1>Personal Information</h1>
       <div className="ma-sub">
-        The Board can see everything on this page. Untick <b>Members can view</b> to keep an item to the Board only.
+        The Board can see everything on this page. Tick <b>Members can view</b> to show an item to current members in the Directory.
         Your clinic details, which are public, are under <a href="#mylisting">Business Information</a>.
       </div>
       <div className="ma-panel">
