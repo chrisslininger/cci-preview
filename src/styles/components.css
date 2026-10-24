@@ -3557,3 +3557,28 @@ section.ov-sec { margin-top: 28px; padding: 0; }
 .mi-office a { color: var(--color-brand-primary-deep); font-weight: 600; }
 .ml-public { margin-bottom: 6px; padding: 10px 14px; border-radius: var(--radius-control); background: var(--color-surface-raised); border: 1px solid var(--color-border-subtle); font-size: 14px; color: var(--color-content-secondary); }
 .ml-public b { color: var(--color-content-primary); }
+
+/* ---- My Account forms: the person card's tighter label / field rows ---- */
+.pf .sec { font-family: var(--font-label); font-weight: 600; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-brand-primary); margin: 18px 0 8px; display: flex; align-items: center; gap: 12px; }
+.pf .sec:after { content: ''; flex: 1; height: 1px; background: var(--color-border-subtle); }
+.pf-kv { display: grid; grid-template-columns: 150px minmax(0, 1fr) 120px; gap: 8px 14px; align-items: center; font-size: 14px; }
+.pf-kv.two { grid-template-columns: 150px minmax(0, 1fr); }
+.pf-kv > .k { color: var(--color-content-muted); }
+.pf-kv .fi { padding: 6px 10px; font-size: 13.5px; margin: 0; width: 100%; }
+.pf-kv .mv { display: flex; justify-content: center; }
+.pf-kv input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--color-brand-primary); cursor: pointer; }
+.pf-head { margin-top: 18px; }
+.pf-head .mv { font-family: var(--font-label); font-weight: 600; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-content-muted); text-align: center; }
+.pf-sub { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; color: var(--color-content-secondary); cursor: pointer; }
+.pf-note { display: block; margin-top: 4px; font-size: 12px; color: var(--color-content-muted); }
+.pf-ro { font-size: 13.5px; color: var(--color-content-secondary); }
+.pf-ro a, .pf-note a { color: var(--color-brand-primary-deep); font-weight: 600; }
+.pf-pub { font-size: 12px; font-weight: 600; color: var(--color-content-muted); }
+.pf-place { display: grid; grid-template-columns: minmax(0, 1fr) 64px 96px; gap: 8px; }
+@media (max-width: 700px) {
+  .pf-kv { grid-template-columns: minmax(0, 1fr) 56px; }
+  .pf-kv.two { grid-template-columns: minmax(0, 1fr); }
+  .pf-kv > .k { grid-column: 1 / -1; margin-bottom: -4px; }
+  .pf-head > span:not(.mv) { display: none; }
+  .pf-head .mv { grid-column: 2; }
+}

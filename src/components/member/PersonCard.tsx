@@ -14,7 +14,7 @@ import { webHref } from '@/lib/safeHref'
 import { useToast } from '@/components/ui/Toast'
 import { inviteMember, requestReset, type AccessReply } from '@/lib/queries/access'
 import { uploadPhotoFor } from '@/lib/queries/photo'
-import { select } from '@/lib/supabase'
+import { select, patch } from '@/lib/supabase'
 import {
   saveProfile, createContact, addNote, saveOffices, saveRoles, saveVendor,
   TECHNIQUES, ROLE_LABEL, LEVEL_LABEL, fullName, state, duesLapsed, advoLevel, otherCerts, initials,
@@ -55,6 +55,9 @@ const TOGGLE_LABEL: Record<string, string> = { board_member: 'Board member (Dire
 const SEAT_KEYS = ['committee_chair', 'committee_cochair', 'committee_member', 'research_director']
 type V = Record<string, string>
 const VENDOR_KEYS = ['is_vendor', 'vendor_company', 'vendor_services', 'vendor_website', 'vendor_notes']
+/* What a member keeps under My Account (emails, birthday, home address). Read and saved on
+ * their own, so the card still works before the database has the new email columns. */
+const EXTRA_KEYS = ['personal_email', 'professional_email', 'practice_email', 'date_of_birth', 'mail_address_line1', 'mail_city', 'mail_region', 'mail_postal_code']
 
 /** The contact form: its fields' state and the save. Shared by the card's in-place editor and the Add contact window. */
 export function useContactForm(p: Contact | null, canRoles: boolean, me: string, meId: string | null, newStatus = 'never') {
@@ -62,7 +65,9 @@ export function useContactForm(p: Contact | null, canRoles: boolean, me: string,
   const emailList = (x?: string) => { const a = (x ?? '').split(/[\s,;]+/).filter(Boolean); return a.length ? a : null }
   // The record has two phone columns for the office (office and practice); the form shows one and keeps both in step.
   const phone0 = p?.office_phone || p?.practice_phone || ''
+  const extra0 = useRef<V>({})
   const init = (): V => ({
+    ...Object.fromEntries(EXTRA_KEYS.map((k) => [k, ''])), ...extra0.current,
     first_name: p?.first_name ?? '', last_name: p?.last_name ?? '', credentials: p?.credentials ?? 'DC', title: p?.title ?? '', contact_type: p?.contact_type ?? 'doctor',
     email: p?.email ?? '', other_emails: (p?.other_emails ?? []).join(', '), mobile_phone: p?.mobile_phone ?? '', office_phone: phone0, personal_phone: p?.personal_phone ?? '',
     practice_name: p?.practice_name ?? '', practice_address: p?.practice_address ?? '', practice_city: p?.practice_city ?? '', practice_state: p?.practice_state ?? '', practice_zip: p?.practice_zip ?? '', practice_website: p?.practice_website ?? '',
@@ -72,6 +77,17 @@ export function useContactForm(p: Contact | null, canRoles: boolean, me: string,
   })
   const initSeats = (): Seat[] => (p?.person_roles ?? []).map((r) => ({ role_key: r.role_key, committee_id: r.committee_id }))
   const [v, setV] = useState<V>(init)
+  useEffect(() => {
+    if (!p?.id) return
+    let off = false
+    void select<Record<string, string | null>>('people', `select=${EXTRA_KEYS.join(',')}&id=eq.${p.id}`).then((r) => {
+      const row = r.data?.[0]
+      if (off || !row) return
+      extra0.current = Object.fromEntries(EXTRA_KEYS.map((k) => [k, row[k] ?? '']))
+      setV((s) => ({ ...s, ...extra0.current }))
+    })
+    return () => { off = true }
+  }, [p?.id])
   const [tq, setTq] = useState<string[]>(p?.techniques ?? [])
   const [offices, setOffices] = useState<Office[]>(p?.practice_locations ?? [])
   const [seats, setSeats] = useState<Seat[]>(initSeats)
@@ -132,6 +148,11 @@ export function useContactForm(p: Contact | null, canRoles: boolean, me: string,
         vendorNote = ' The vendor details were not saved: ' + why
       }
     }
+    if (p && EXTRA_KEYS.some((k) => (v[k] ?? '') !== (extra0.current[k] ?? ''))) {
+      const x = await patch('people', `id=eq.${id}`, Object.fromEntries(EXTRA_KEYS.map((k) => [k, (v[k] ?? '').trim() || null])))
+      if (x.error) { setSaving(false); setErr('Saved, but not the emails, birthday and home address: ' + (/column|PGRST204/i.test(x.error) ? 'the database does not have those fields yet.' : friendlyError(x.error))); return { ok: false } }
+      extra0.current = Object.fromEntries(EXTRA_KEYS.map((k) => [k, (v[k] ?? '').trim()]))
+    }
     if (v.newNote && v.newNote.trim()) { const n = await addNote(id, v.newNote.trim(), me, meId); if (n.error) { setSaving(false); setErr('Saved, but the note was not. ' + friendlyError(n.error)); return { ok: false } } }
     let photoNote = ''
     if (!p && pendingPhoto) {
@@ -155,6 +176,7 @@ const kv = (k: string, v: React.ReactNode) => (v ? <Row key={k} k={k}>{v}</Row> 
 /* The emails a member keeps under My Account → Personal, and what they let members see.
  * Read on its own so the card still opens before the database has these fields. */
 type Privacy = {
+  date_of_birth: string | null; mail_address_line1: string | null; mail_city: string | null; mail_region: string | null; mail_postal_code: string | null
   personal_email: string | null; professional_email: string | null; practice_email: string | null; professional_email_visibility: string | null
   share_personal_email: boolean; share_mobile: boolean; share_home_phone: boolean; share_home_address: boolean
 }
@@ -164,17 +186,20 @@ function PrivacySec({ id }: { id: string }) {
   const [x, setX] = useState<Privacy | null>(null)
   useEffect(() => {
     let off = false
-    void select<Privacy>('people', `select=personal_email,professional_email,practice_email,professional_email_visibility,share_personal_email,share_mobile,share_home_phone,share_home_address&id=eq.${id}`)
+    void select<Privacy>('people', `select=date_of_birth,mail_address_line1,mail_city,mail_region,mail_postal_code,personal_email,professional_email,practice_email,professional_email_visibility,share_personal_email,share_mobile,share_home_phone,share_home_address&id=eq.${id}`)
       .then((r) => { if (!off) setX(r.data?.[0] ?? null) })
     return () => { off = true }
   }, [id])
   if (!x) return null
-  const shared = [x.share_personal_email && 'personal email', x.share_mobile && 'mobile', x.share_home_phone && 'home phone', x.share_home_address && 'home address'].filter(Boolean).join(', ')
-  return <Sec title="Who sees what" items={[
+  const hidden = [!x.share_personal_email && 'personal email', !x.share_mobile && 'mobile', !x.share_home_phone && 'home phone', !x.share_home_address && 'home address'].filter(Boolean).join(', ')
+  const home = [x.mail_address_line1, [x.mail_city, [x.mail_region, x.mail_postal_code].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean)
+  return <Sec title="Emails, birthday and home" items={[
+    kv('Birthday', fmtD(x.date_of_birth)),
+    kv('Home address', home.length ? <>{home.map((l) => <div key={l}>{l}</div>)}</> : null),
     kv('Personal email', mail(x.personal_email)),
     kv('Professional email', x.professional_email ? <>{mail(x.professional_email)} · {VIS_LABEL[x.professional_email_visibility ?? 'board']}</> : null),
     kv('Office email', x.practice_email ? <>{mail(x.practice_email)} · Public</> : null),
-    kv('Members can see', shared || 'Nothing personal'),
+    kv('Board only', hidden || 'Nothing: members can view all of it'),
   ]} />
 }
 const TYPE_LABEL: Record<string, string> = { doctor: 'Doctor', student: 'Student', staff: 'Staff' }
@@ -326,18 +351,30 @@ export function PersonCard({ p: given, newStatus = 'never', vendorReady = false,
             <div className="kv">
               <Row k="First name">{I('first_name')}</Row><Row k="Last name">{I('last_name')}</Row>
               <Row k="Credentials">{I('credentials', 'text', 'DC, BCAO')}</Row><Row k="Title">{I('title', 'text', 'e.g. Clinic Director')}</Row>
+              {!isNew && <Row k="Birthday">{I('date_of_birth', 'date')}</Row>}
               <Row k="Type"><select className="fi" value={v.contact_type} onChange={set('contact_type')} aria-label="Type"><option value="doctor">Doctor</option><option value="student">Student</option><option value="staff">Staff / other</option></select></Row>
               <Row k="Vendor">{chk(v.is_vendor === '1', 'Also a vendor — adds a Vendor tab', (on) => f.setVal('is_vendor', on ? '1' : ''))}</Row>
             </div>
             <div className="sec">Contact</div>
-            <div className="kv"><Row k="Email">{I('email', 'email')}</Row><Row k="Other emails">{I('other_emails')}</Row><Row k="Mobile">{I('mobile_phone', 'tel')}</Row><Row k="Personal phone">{I('personal_phone', 'tel')}</Row></div>
+            <div className="kv">
+              <Row k="Sign-in email">{I('email', 'email')}</Row>
+              {!isNew && <><Row k="Personal email">{I('personal_email', 'email')}</Row><Row k="Professional email">{I('professional_email', 'email')}</Row></>}
+              <Row k="Other emails">{I('other_emails')}</Row><Row k="Mobile">{I('mobile_phone', 'tel')}</Row><Row k="Home phone">{I('personal_phone', 'tel')}</Row>
+            </div>
+            {!isNew && <>
+              <div className="sec">Home address</div>
+              <div className="kv">
+                <Row k="Street">{I('mail_address_line1')}</Row>
+                <Row k="City · State · ZIP"><div className="cc-3">{I('mail_city', 'text', 'City')}{I('mail_region', 'text', 'State')}{I('mail_postal_code', 'text', 'ZIP')}</div></Row>
+              </div>
+            </>}
             <div className="sec">Headshot &amp; bio</div>
             <div className="kv">
               <Row k="Headshot"><div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{I('photo_url', 'url', 'https://…')}<input ref={f.photoRef} type="file" accept="image/*" hidden onChange={(e) => void f.pickPhoto(e.target.files?.[0])} /><button type="button" className="b s-btn on-light xs" disabled={f.photoBusy} onClick={() => f.photoRef.current?.click()}>{f.photoBusy ? 'Uploading…' : isNew && f.pendingPhoto ? 'Change' : 'Upload'}</button></div>{isNew && f.pendingPhoto && <div className="evt-hint">{f.pendingPhoto.name} — uploads when you save.</div>}</Row>
               <Row k="Bio"><textarea className="fi" rows={4} value={v.bio} onChange={set('bio')} placeholder="Shown on the public directory once they are a member." aria-label="Bio" /></Row>
             </div>
           </> : <>
-            <Sec title="Contact" items={[kv('Email', p.email ? <a href={`mailto:${p.email}`}>{p.email}</a> : null), kv('Other emails', p.other_emails?.length ? <>{p.other_emails.map((e, i) => <span key={e}>{i > 0 && ', '}<a href={`mailto:${e}`}>{e}</a></span>)}</> : null), kv('Mobile', p.mobile_phone), kv('Personal phone', p.personal_phone)]} />
+            <Sec title="Contact" items={[kv('Email', p.email ? <a href={`mailto:${p.email}`}>{p.email}</a> : null), kv('Other emails', p.other_emails?.length ? <>{p.other_emails.map((e, i) => <span key={e}>{i > 0 && ', '}<a href={`mailto:${e}`}>{e}</a></span>)}</> : null), kv('Mobile', p.mobile_phone), kv('Home phone', p.personal_phone)]} />
             <PrivacySec id={p.id} />
             <Sec title="Profile" items={[kv('Type', TYPE_LABEL[p.contact_type ?? ''] ?? p.contact_type), kv('Vendor', p.is_vendor ? (p.vendor_company || 'Yes') : null), kv('Title', p.title), kv('Bio', p.bio)]} />
             {canInvite && !p.deceased_on && <>
@@ -355,7 +392,7 @@ export function PersonCard({ p: given, newStatus = 'never', vendorReady = false,
             <div className="kv">
               <Row k="Practice name">{I('practice_name')}</Row><Row k="Street address">{I('practice_address')}</Row>
               <Row k="City · State · ZIP"><div className="cc-3">{I('practice_city', 'text', 'City')}{I('practice_state', 'text', 'State')}{I('practice_zip', 'text', 'ZIP')}</div></Row>
-              <Row k="Office phone">{I('office_phone', 'tel')}</Row><Row k="Website">{I('practice_website', 'text', 'https://…')}</Row>
+              <Row k="Office phone">{I('office_phone', 'tel')}</Row>{!isNew && <Row k="Office email">{I('practice_email', 'email')}</Row>}<Row k="Website">{I('practice_website', 'text', 'https://…')}</Row>
             </div>
             {f.offices.map((o, i) => <div key={i}>
               <div className="sec">Office {i + 2}</div>

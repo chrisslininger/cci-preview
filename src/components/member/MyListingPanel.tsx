@@ -73,12 +73,10 @@ export default function MyListingPanel() {
   }, [id])
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => { setV({ ...v, [k]: e.target.value }); if (state !== 'loading') setState('ready') }
-  const field = (k: keyof Form, label: string, opts: { full?: boolean; type?: string; placeholder?: string } = {}) => (
-    <label className="ml-cell" htmlFor={`ml-${k}`}>
-      <span className="ml-lbl">{label}</span>
-      <input id={`ml-${k}`} className="ml-in" type={opts.type ?? 'text'} value={v[k]} onChange={set(k)} placeholder={opts.placeholder} disabled={state === 'loading' || state === 'saving'} />
-    </label>
+  const input = (k: keyof Form, label: string, opts: { type?: string; placeholder?: string } = {}) => (
+    <input className="fi" type={opts.type ?? 'text'} value={v[k]} onChange={set(k)} placeholder={opts.placeholder} aria-label={label} disabled={state === 'loading' || state === 'saving'} />
   )
+  const row = (label: string, field: React.ReactNode) => <><span className="k">{label}</span><div className="f">{field}</div></>
 
   async function save() {
     if (v.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email.trim())) { setErr('The clinic email does not look like an email address.'); setState('error'); return }
@@ -102,19 +100,20 @@ export default function MyListingPanel() {
       <div className="ma-panel">
         <div className="ml-public"><b>Everything on this page is public.</b> It appears in Find a Doctor and in the members' Directory.</div>
         {state === 'error' && err && <div className="cert-err">{err}</div>}
-        <div className="ml-table">
-          {field('name', 'Clinic name')}
-          {field('website', 'Website', { placeholder: 'yourclinic.com' })}
-          <div className="ml-cell ml-ro" title="Your certification level is set by the Institute">
-            <span className="ml-lbl">Listed as · set by the Institute</span>
-            <span className="ml-val">{levelText}</span>
+        <div className="pf">
+          <div className="sec">Clinic</div>
+          <div className="pf-kv two">
+            {row('Clinic name', input('name', 'Clinic name'))}
+            {row('Listed as', <span className="pf-ro" title="Your certification level is set by the Institute"><b>{levelText}</b> · set by the Institute</span>)}
+            {row('Street', input('address', 'Street address', { placeholder: '123 Main St, Suite 4' }))}
+            {row('City, state, ZIP', <div className="pf-place">{input('city', 'City', { placeholder: 'City' })}{input('state', 'State', { placeholder: 'ST' })}{input('zip', 'ZIP', { placeholder: 'ZIP' })}</div>)}
           </div>
-          {field('address', 'Street address', { placeholder: '123 Main St, Suite 4' })}
-          {field('city', 'City')}
-          {field('state', 'State', { placeholder: 'FL' })}
-          {field('zip', 'ZIP')}
-          {field('phone', 'Clinic phone', { type: 'tel' })}
-          {field('email', 'Office email', { type: 'email', placeholder: 'info@yourclinic.com' })}
+          <div className="sec">Contact</div>
+          <div className="pf-kv two">
+            {row('Clinic phone', input('phone', 'Clinic phone', { type: 'tel' }))}
+            {row('Office email', input('email', 'Office email', { type: 'email', placeholder: 'info@yourclinic.com' }))}
+            {row('Website', input('website', 'Website', { placeholder: 'yourclinic.com' }))}
+          </div>
         </div>
         <div className="ml-actions">
           <button type="button" className="b sm p-btn" onClick={() => void save()} disabled={state === 'loading' || state === 'saving'}>

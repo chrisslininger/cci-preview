@@ -2,10 +2,10 @@
  * Personal Information — a member's own name, birthday, emails, phones and
  * home address, and who may see each one.
  *
- * Who sees what (James, 2026-10-24): the Board sees everything. A personal
- * detail is shown to other members in the Directory only when the member ticks
- * "Members can see"; it is never public. The professional email alone can be
- * Board only, Members, or Public (Find a Doctor, and members too).
+ * Who sees what (James, 2026-10-24): the Board sees everything. Each personal
+ * detail has a "Members can view" box, ticked to start; unticked keeps it to
+ * the Board. Personal details are never public, except the professional email
+ * when the member also ticks "Also show in Find a Doctor".
  *
  * Reads the member's own `people` row and saves through `update_my_info`, a
  * database function that changes only these fields on the signed-in member's
@@ -31,7 +31,8 @@ const EMPTY: Form = { first: '', last: '', credentials: '', birthday: '', person
 type Visibility = 'board' | 'members' | 'public'
 /** Personal details other members may see; matches the share_* columns on people. */
 type Share = { personal_email: boolean; mobile: boolean; home_phone: boolean; home_address: boolean }
-const NONE: Share = { personal_email: false, mobile: false, home_phone: false, home_address: false }
+// Every personal detail starts visible to members (James, 2026-10-24).
+const ALL: Share = { personal_email: true, mobile: true, home_phone: true, home_address: true }
 
 /** Which address the member signs in with: one of their own, or the current one when it matches none. */
 type Slot = 'personal' | 'professional' | 'office' | 'current'
@@ -83,8 +84,8 @@ export default function MyInfoPanel() {
   const { access } = useAccess()
   const id = access.person?.id
   const [v, setV] = useState<Form>(EMPTY)
-  const [vis, setVis] = useState<Visibility>('board')
-  const [share, setShare] = useState<Share>(NONE)
+  const [vis, setVis] = useState<Visibility>('members')
+  const [share, setShare] = useState<Share>(ALL)
   const [login, setLogin] = useState('')
   const [office, setOffice] = useState('')
   const [slot, setSlot] = useState<Slot>('current')
@@ -106,7 +107,7 @@ export default function MyInfoPanel() {
       const ex = x.data?.[0]
       const a = access.person
       const signIn = session.user?.email ?? p?.email ?? a?.email ?? ''
-      // Before anyone has sorted their addresses, the sign-in one starts as the personal email (Board only).
+      // Before anyone has sorted their addresses, the sign-in one starts as the personal email.
       let personalEmail = ex?.personal_email ?? ''
       const professionalEmail = ex?.professional_email ?? ''
       const officeEmail = ex?.practice_email ?? ''
@@ -117,7 +118,7 @@ export default function MyInfoPanel() {
         address: p?.mail_address_line1 ?? '', city: p?.mail_city ?? '', state: p?.mail_region ?? '', zip: p?.mail_postal_code ?? '',
       })
       if (ex) {
-        setVis(ex.professional_email_visibility ?? 'board')
+        setVis(ex.professional_email_visibility ?? 'members')
         setShare({ personal_email: ex.share_personal_email, mobile: ex.share_mobile, home_phone: ex.share_home_phone, home_address: ex.share_home_address })
       }
       setLogin(signIn)
@@ -130,17 +131,16 @@ export default function MyInfoPanel() {
   const busy = state === 'loading' || state === 'saving'
   const touch = () => { if (!busy) setState('ready') }
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => { setV({ ...v, [k]: e.target.value }); touch() }
-  const shareBox = (k: keyof Share) => (
-    <label className="mi-share">
-      <input type="checkbox" checked={share[k]} onChange={(e) => { setShare({ ...share, [k]: e.target.checked }); touch() }} disabled={busy} /> Members can see
-    </label>
+  const input = (k: keyof Form, label: string, opts: { type?: string; placeholder?: string } = {}) => (
+    <input className="fi" type={opts.type ?? 'text'} value={v[k]} onChange={set(k)} placeholder={opts.placeholder} aria-label={label} disabled={busy} />
   )
-  const cell = (k: keyof Form, label: string, cls: string, opts: { type?: string; placeholder?: string; share?: keyof Share } = {}) => (
-    <div className={`ml-cell ${cls}`}>
-      <label className="ml-lbl" htmlFor={`mi-${k}`}>{label}</label>
-      <input id={`mi-${k}`} className="ml-in" type={opts.type ?? 'text'} value={v[k]} onChange={set(k)} placeholder={opts.placeholder} disabled={busy} />
-      {opts.share && shareBox(opts.share)}
-    </div>
+  const tick = (on: boolean, change: (on: boolean) => void, label: string, disabled = false) => (
+    <input type="checkbox" checked={on} onChange={(e) => { change(e.target.checked); touch() }} disabled={busy || disabled} aria-label={label} />
+  )
+  const shareTick = (k: keyof Share, label: string) => tick(share[k], (on) => setShare({ ...share, [k]: on }), `Members can view your ${label}`)
+  /** One line of the table: the label, the field, and what goes in the Members can view column. */
+  const row = (label: string, field: React.ReactNode, view: React.ReactNode = null) => (
+    <><span className="k">{label}</span><div className="f">{field}</div><div className="mv">{view}</div></>
   )
 
   // The addresses a member can sign in with: their own, plus the current one if it is none of them.
@@ -174,57 +174,58 @@ export default function MyInfoPanel() {
     <>
       <h1>Personal Information</h1>
       <div className="ma-sub">
-        The Board can see everything on this page. Tick <b>Members can see</b> to show an item to other members in the
-        Directory. Your clinic details, which are public, are under <a href="#mylisting">Business Information</a>.
+        The Board can see everything on this page. Untick <b>Members can view</b> to keep an item to the Board only.
+        Your clinic details, which are public, are under <a href="#mylisting">Business Information</a>.
       </div>
       <div className="ma-panel">
         <PhotoCard />
         {state === 'error' && err && <div className="cert-err">{err}</div>}
-        <div className="ml-table mi-table">
-          {cell('first', 'First name', 'mi-c4')}
-          {cell('last', 'Last name', 'mi-c4')}
-          {cell('credentials', 'Credentials', 'mi-c2', { placeholder: 'DC' })}
-          {cell('birthday', 'Birthday', 'mi-c2', { type: 'date' })}
+        <div className="pf">
+          <div className="pf-kv pf-head"><span /><span /><span className="mv">Members can view</span></div>
 
-          <h2 className="mi-h">Email</h2>
-          {cell('personalEmail', 'Personal email', 'mi-c6', { type: 'email', placeholder: 'you@gmail.com', share: 'personal_email' })}
-          <div className="ml-cell mi-c6">
-            <label className="ml-lbl" htmlFor="mi-professionalEmail">Professional email</label>
-            <input id="mi-professionalEmail" className="ml-in" type="email" value={v.professionalEmail} onChange={set('professionalEmail')} placeholder="drsmith@yourclinic.com" disabled={busy} />
-            <label className="mi-vis">
-              Who can see it
-              <select value={vis} onChange={(e) => { setVis(e.target.value as Visibility); touch() }} disabled={busy}>
-                <option value="board">Board only</option>
-                <option value="members">Members</option>
-                <option value="public">Public · Find a Doctor and members</option>
+          <div className="sec">Name</div>
+          <div className="pf-kv">
+            {row('First name', input('first', 'First name'))}
+            {row('Last name', input('last', 'Last name'))}
+            {row('Credentials', input('credentials', 'Credentials', { placeholder: 'DC' }))}
+            {row('Birthday', input('birthday', 'Birthday', { type: 'date' }))}
+          </div>
+
+          <div className="sec">Email</div>
+          <div className="pf-kv">
+            {row('Personal', input('personalEmail', 'Personal email', { type: 'email', placeholder: 'you@gmail.com' }), shareTick('personal_email', 'personal email'))}
+            {row('Professional', <>
+              {input('professionalEmail', 'Professional email', { type: 'email', placeholder: 'drsmith@yourclinic.com' })}
+              <label className="pf-sub">
+                {tick(vis === 'public', (on) => setVis(on ? 'public' : 'members'), 'Also show your professional email in Find a Doctor')} Also show in Find a Doctor (public)
+              </label>
+            </>, tick(vis !== 'board', (on) => setVis(on ? 'members' : 'board'), 'Members can view your professional email', vis === 'public'))}
+            {row('Office', <span className="pf-ro">{office
+              ? <>{office} · edit under <a href="#mylisting">Business Information</a></>
+              : <>Add your front-desk email under <a href="#mylisting">Business Information</a></>}</span>, <span className="pf-pub">Public</span>)}
+            {row('Sign in with', <>
+              <select className="fi" value={chosen?.slot ?? ''} onChange={(e) => { setSlot(e.target.value as Slot); touch() }} disabled={busy || !choices.length} aria-label="Sign in with">
+                {choices.map((c) => <option key={c.slot} value={c.slot}>{c.label} · {c.email}</option>)}
               </select>
-            </label>
-          </div>
-          <div className="ml-cell mi-c6">
-            <label className="ml-lbl" htmlFor="mi-signin">Sign in with</label>
-            <select id="mi-signin" className="ml-in" value={chosen?.slot ?? ''} onChange={(e) => { setSlot(e.target.value as Slot); touch() }} disabled={busy || !choices.length}>
-              {choices.map((c) => <option key={c.slot} value={c.slot}>{c.label} · {c.email}</option>)}
-            </select>
-            <span className="ml-note">
-              {signInChanges
-                ? `When you save, we'll email a confirmation link to ${chosen!.email}. Until you click it, keep signing in with ${login}.`
-                : 'The address you use to sign in to this site. It is never shown to anyone.'}
-            </span>
-          </div>
-          <div className="ml-cell mi-c6">
-            <span className="ml-lbl">Office email</span>
-            <span className="ml-note mi-office">
-              {office ? <>{office} is public. Change it under <a href="#mylisting">Business Information</a>.</> : <>Add your front-desk email under <a href="#mylisting">Business Information</a>. It is public.</>}
-            </span>
+              <span className="pf-note">
+                {signInChanges
+                  ? `When you save, we'll email a confirmation link to ${chosen!.email}. Until you click it, keep signing in with ${login}.`
+                  : 'Only used to sign in. Never shown to anyone.'}
+              </span>
+            </>)}
           </div>
 
-          <h2 className="mi-h">Phone and home address</h2>
-          {cell('mobile', 'Mobile phone', 'mi-c6', { type: 'tel', share: 'mobile' })}
-          {cell('personal', 'Home phone', 'mi-c6', { type: 'tel', share: 'home_phone' })}
-          {cell('address', 'Home address', 'mi-c6', { placeholder: 'Street', share: 'home_address' })}
-          {cell('city', 'City', 'mi-c3')}
-          {cell('state', 'State', 'mi-c1')}
-          {cell('zip', 'ZIP', 'mi-c2')}
+          <div className="sec">Phone</div>
+          <div className="pf-kv">
+            {row('Mobile', input('mobile', 'Mobile phone', { type: 'tel' }), shareTick('mobile', 'mobile phone'))}
+            {row('Home phone', input('personal', 'Home phone', { type: 'tel' }), shareTick('home_phone', 'home phone'))}
+          </div>
+
+          <div className="sec">Home address</div>
+          <div className="pf-kv">
+            {row('Street', input('address', 'Street'), shareTick('home_address', 'home address'))}
+            {row('City, state, ZIP', <div className="pf-place">{input('city', 'City', { placeholder: 'City' })}{input('state', 'State', { placeholder: 'ST' })}{input('zip', 'ZIP', { placeholder: 'ZIP' })}</div>)}
+          </div>
         </div>
         {loginMsg && <div className={loginMsg.ok ? 'ml-ok mi-msg' : 'cert-err mi-msg'}>{loginMsg.text}</div>}
         <div className="ml-actions">

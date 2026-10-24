@@ -3,11 +3,11 @@
 -- Run one step at a time and check the preview address before the next.
 --
 -- Who sees what (James, 2026-10-24):
---   Board        everything (the default for every personal detail).
---   Members      a personal detail the member ticked "Members can see".
+--   Board        everything.
+--   Members      every personal detail by default; a member unticks "Members can view" to keep one Board only.
 --   Public       clinic details, always (Find a Doctor); members see them too.
---   Professional email: the member picks Board only, Members, or Public (public includes members).
--- Personal details are never public.
+--   Professional email: Board only, Members (default) or Public (public includes members).
+-- Personal details other than the professional email are never public.
 --
 -- Reuses columns that already exist and were empty: date_of_birth (birthday) and
 -- mail_address_line1 / mail_city / mail_region / mail_postal_code (home address).
@@ -25,12 +25,12 @@ alter table public.people
   add column if not exists personal_email text,
   add column if not exists professional_email text,
   add column if not exists practice_email text,
-  add column if not exists professional_email_visibility text not null default 'board'
+  add column if not exists professional_email_visibility text not null default 'members'
     check (professional_email_visibility in ('board', 'members', 'public')),
-  add column if not exists share_personal_email boolean not null default false,
-  add column if not exists share_mobile boolean not null default false,
-  add column if not exists share_home_phone boolean not null default false,
-  add column if not exists share_home_address boolean not null default false;
+  add column if not exists share_personal_email boolean not null default true,
+  add column if not exists share_mobile boolean not null default true,
+  add column if not exists share_home_phone boolean not null default true,
+  add column if not exists share_home_address boolean not null default true;
 
 -- ---------------------------------------------------------------- step 2 --
 -- Find a Doctor: the public, read-only list of current members' clinics.
@@ -111,17 +111,17 @@ language sql security definer set search_path = public as $$
       personal_email       = nullif(lower(trim(p_personal_email)), ''),
       professional_email   = nullif(lower(trim(p_professional_email)), ''),
       professional_email_visibility = case when p_professional_email_visibility in ('board', 'members', 'public')
-                                           then p_professional_email_visibility else 'board' end,
+                                           then p_professional_email_visibility else 'members' end,
       mobile_phone         = nullif(trim(p_mobile_phone), ''),
       personal_phone       = nullif(trim(p_personal_phone), ''),
       mail_address_line1   = nullif(trim(p_home_address), ''),
       mail_city            = nullif(trim(p_home_city), ''),
       mail_region          = nullif(upper(trim(p_home_state)), ''),
       mail_postal_code     = nullif(trim(p_home_zip), ''),
-      share_personal_email = coalesce(p_share_personal_email, false),
-      share_mobile         = coalesce(p_share_mobile, false),
-      share_home_phone     = coalesce(p_share_home_phone, false),
-      share_home_address   = coalesce(p_share_home_address, false)
+      share_personal_email = coalesce(p_share_personal_email, true),
+      share_mobile         = coalesce(p_share_mobile, true),
+      share_home_phone     = coalesce(p_share_home_phone, true),
+      share_home_address   = coalesce(p_share_home_address, true)
     where auth_user_id = auth.uid()
     returning 1
   )
