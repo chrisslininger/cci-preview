@@ -116,8 +116,8 @@ export default function MemberDirectoryPanel() {
     <>
       <h1>Directory</h1>
       <div className="ma-sub">
-        Current members of the Institute, their clinics, and any direct contact details each has chosen to share with
-        members. To change what others see of you, open <a href="#myinfo">Personal Information</a>.
+        Your fellow members and their clinics. A member's personal email, phone or home address shows only if they
+        have chosen to share it. To choose what members see of you, open <a href="#myinfo">Personal Information</a>.
       </div>
       <div className="ma-panel">
         {!data && <p className="ma-empty">Loading the directory…</p>}
