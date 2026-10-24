@@ -43,7 +43,28 @@ function where(p: Contact): Where | null {
 }
 const STATUS: Record<Where, string> = { lead: 'Lead', current: 'Member', recent: 'Recently expired', inactive: 'Inactive', deceased: 'Deceased' }
 const statusText = (p: Contact) => { const w = where(p); return w ? STATUS[w] : 'Vendor' }
-const editIcon = <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+const rolesOf = (p: Contact) => [...chipsFor(p, advoLevel(p), otherCerts(p)).map((x) => x.label), ...(p.is_vendor ? ['Vendor'] : [])].join(' · ')
+
+/* The compact table's columns. Name keeps the order already chosen (first or last
+ * name); the others sort on what the column shows, blanks always last. */
+type SortCol = 'name' | 'phone' | 'email' | 'status' | 'expires' | 'roles'
+const COL_VALUE: Record<Exclude<SortCol, 'name'>, (p: Contact) => string> = {
+  phone: (p) => (p.office_phone ?? p.practice_phone ?? p.mobile_phone ?? '').replace(/\D/g, ''),
+  email: (p) => p.email ?? '',
+  status: statusText,
+  expires: (p) => p.membership_expires ?? '',
+  roles: rolesOf,
+}
+const COL_LABEL: Record<SortCol, string> = { name: 'Name', phone: 'Phone', email: 'Email', status: 'Status', expires: 'Expires', roles: 'Certification & roles' }
+function sortedBy(rows: Contact[], key: SortCol, desc: boolean): Contact[] {
+  if (key === 'name') return desc ? [...rows].reverse() : rows
+  const val = COL_VALUE[key]
+  return rows.map((p, i) => ({ p, i, v: val(p) })).sort((a, b) => {
+    if (!a.v || !b.v) return a.v ? -1 : b.v ? 1 : a.i - b.i
+    return (desc ? -1 : 1) * a.v.localeCompare(b.v, undefined, { sensitivity: 'base', numeric: true }) || a.i - b.i
+  }).map((x) => x.p)
+}
+const editIcon =<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
 
 /** Who works with the full records; everyone else (members) gets the read-only view of fellow members. */
 export const DIRECTORY_STAFF = ['board', 'full_admin', 'manage_leads', 'manage_certifications', 'manage_instructors', 'manage_internships'] as const
@@ -81,7 +102,10 @@ function StaffDirectory() {
   const { compact, narrow, setDensity } = useDensity('aoi.directory.density', canEdit ? 'compact' : 'comfortable')
   // Sort by first or last name, remembered on this device.
   const [by, setBy] = useState<'first' | 'last'>(() => { try { return localStorage.getItem('aoi.directory.sort') === 'last' ? 'last' : 'first' } catch { return 'first' } })
-  const sortBy = (b: 'first' | 'last') => { setBy(b); try { localStorage.setItem('aoi.directory.sort', b) } catch { /* private window */ } }
+  const sortBy = (b: 'first' | 'last') => { setBy(b); setCol({ key: 'name', desc: false }); try { localStorage.setItem('aoi.directory.sort', b) } catch { /* private window */ } }
+  // Compact view: click a column heading to sort by it; click again to reverse.
+  const [col, setCol] = useState<{ key: SortCol; desc: boolean }>({ key: 'name', desc: false })
+  const sortCol = (key: SortCol) => setCol((c) => ({ key, desc: c.key === key ? !c.desc : false }))
 
   const load = useCallback(async () => {
     const [r, v] = await Promise.all([seeAll ? everyone() : membersOnly(), seeAll ? vendorDetails() : Promise.resolve({ rows: [], ready: false })])
@@ -121,7 +145,7 @@ function StaffDirectory() {
   const closest = wantNear && near.q === q.trim()
     ? rows.filter((p) => near.ids.includes(p.id) && inTab(p, tab) && (!tech || (p.techniques ?? []).includes(tech))).sort((a, b) => near.ids.indexOf(a.id) - near.ids.indexOf(b.id))
     : []
-  const list = closest.length ? closest : exact
+  const list = closest.length ? closest : sortedBy(exact, col.key, col.desc)
 
   function exportCsv() {
     const cols = ['first_name', 'last_name', 'credentials', 'status', 'member_since', 'membership_expires', 'email', 'mobile_phone', 'office_phone', 'practice_name', 'practice_address', 'practice_city', 'practice_state', 'practice_zip', 'practice_website', 'techniques', 'advo_level', 'roles', 'vendor_company', 'alma_mater', 'grad_year', 'npi']
@@ -138,7 +162,7 @@ function StaffDirectory() {
     const seen = logins?.[p.id]
     return !seen ? '—' : seen.last_sign_in_at ? fmtD(seen.last_sign_in_at.slice(0, 10)) : 'Never'
   }
-  const rolesText = (p: Contact) => [...chipsFor(p, advoLevel(p), otherCerts(p)).map((x) => x.label), ...(p.is_vendor ? ['Vendor'] : [])].join(' · ')
+  const rolesText = rolesOf
   const living = list.filter((p) => !p.deceased_on), gone = list.filter((p) => p.deceased_on)
   const card = (p: Contact) => {
     const line = [p.email ? <a key="e" href={`mailto:${p.email}`} onClick={(e) => e.stopPropagation()}>{p.email}</a> : null, p.office_phone ?? p.practice_phone ?? p.mobile_phone, p.practice_name, [p.practice_city, p.practice_state].filter(Boolean).join(', ')].filter(Boolean)
@@ -161,7 +185,12 @@ function StaffDirectory() {
       <span className="ac">{canEdit && <button type="button" className="evt-ic" title="Edit" aria-label={`Edit ${fullName(p)}`} onClick={(e) => { e.stopPropagation(); show(p.id, true) }}>{editIcon}</button>}</span>
     </div>
   )
-  const table = (items: Contact[]) => <div className="mem-table dir-table"><div className="mem-row head"><span>Name</span><span>Phone</span><span>Email</span><span>Status</span><span>Expires</span><span>Certification &amp; roles</span><span /></div>{items.map(line)}</div>
+  const th = (key: SortCol, label: string) => (
+    <span key={key} aria-sort={col.key === key ? (col.desc ? 'descending' : 'ascending') : 'none'}>
+      <button type="button" className={`th-sort${col.key === key ? ' on' : ''}`} onClick={() => sortCol(key)}>{label}<i aria-hidden="true">{col.key === key ? (col.desc ? '▼' : '▲') : ''}</i></button>
+    </span>
+  )
+  const table = (items: Contact[]) => <div className="mem-table dir-table"><div className="mem-row head">{(Object.keys(COL_LABEL) as SortCol[]).map((k) => th(k, COL_LABEL[k]))}<span /></div>{items.map(line)}</div>
   const current = open ? rows.find((x) => x.id === open) ?? null : null
   const cardProps = { comms, me, meId, canEdit, canRoles, canInvite: canRoles, canCert: can('manage_certifications'), vendorReady, onChanged: load }
 
@@ -181,7 +210,7 @@ function StaffDirectory() {
         </div>
         <select className="fi" style={{ margin: 0 }} value={tech} onChange={(e) => setTech(e.target.value)} aria-label="Filter by technique"><option value="">All techniques</option>{TECHNIQUES.map((t) => <option key={t}>{t}</option>)}</select>
       </div>
-      <div className="evt-bar"><span className="cnt">{closest.length ? `No exact match for “${q.trim()}” · ${closest.length} closest name${closest.length === 1 ? '' : 's'}${tech ? ` · ${tech}` : ''} · closest first` : `${list.length} of ${counts[tab]}${q ? ` match “${q}”` : ''}${tech ? ` · ${tech}` : ''} · alphabetical by ${by} name`}</span>
+      <div className="evt-bar"><span className="cnt">{closest.length ? `No exact match for “${q.trim()}” · ${closest.length} closest name${closest.length === 1 ? '' : 's'}${tech ? ` · ${tech}` : ''} · closest first` : `${list.length} of ${counts[tab]}${q ? ` match “${q}”` : ''}${tech ? ` · ${tech}` : ''} · ${col.key === 'name' ? `by ${by} name${col.desc ? ', Z to A' : ''}` : `by ${COL_LABEL[col.key].toLowerCase()}${col.desc ? ', reversed' : ''}`}`}</span>
         <div className="evt-segs"><div className="evt-seg" role="group" aria-label="Sort by">{([['last', 'Last name'], ['first', 'First name']] as const).map(([k, l]) => <button type="button" key={k} className={by === k ? 'on' : ''} aria-pressed={by === k} onClick={() => sortBy(k)}>{l}</button>)}</div>
         {!narrow && <div className="evt-seg"><button type="button" className={compact ? 'on' : ''} onClick={() => setDensity('compact')}>Compact</button><button type="button" className={!compact ? 'on' : ''} onClick={() => setDensity('comfortable')}>Comfortable</button></div>}</div></div>
       {list.length === 0 && <div className="cert-card" style={{ textAlign: 'center', color: 'var(--color-content-muted)', padding: 30 }}>{q ? `No one in ${tabLabel} matches “${q}”.` : tab === 'vendor' && !vendorReady ? 'Vendors appear here once the database has the vendor fields.' : 'No one in this list.'}</div>}
