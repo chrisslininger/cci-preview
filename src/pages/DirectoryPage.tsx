@@ -35,7 +35,10 @@ function ClinicCard({ c }: { c: Clinic }) {
           const chip = LEVEL_CHIP[d.level]
           return (
             <li key={d.id}>
-              <span className="dir-doc">Dr. {d.name}{d.credentials ? `, ${d.credentials}` : ''}</span>
+              <span className="dir-doc">
+                Dr. {d.name}{d.credentials ? `, ${d.credentials}` : ''}
+                {d.email && <a className="dir-docmail" href={`mailto:${d.email}`}>{d.email}</a>}
+              </span>
               <span className={`cpill ${chip.kind}`}>{chip.label}</span>
             </li>
           )

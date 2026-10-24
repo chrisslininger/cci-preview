@@ -36,7 +36,6 @@ import RecordsPanel from './RecordsPanel'
 import ControlPanel from './ControlPanel'
 import MyListingPanel from './MyListingPanel'
 import MyInfoPanel from './MyInfoPanel'
-import MemberDirectoryPanel from './MemberDirectoryPanel'
 import VaultPanel from './VaultPanel'
 import OrgPanel from './OrgPanel'
 import { fmtDate } from '@/lib/dates'
@@ -107,7 +106,6 @@ export default function MemberPanel({ tab, label }: { tab: string; label: string
   if (tab === 'oversight') return <OperatingSystem />
   if (tab === 'certification') return <CertificationPanel />
   if (tab === 'directory') return <DirectoryPanel />
-  if (tab === 'members') return <MemberDirectoryPanel />
   if (tab === 'events') return <EventsPanel />
   if (tab === 'board') return <BoardPanel />
   if (tab === 'internships') return <InternshipsPanel />

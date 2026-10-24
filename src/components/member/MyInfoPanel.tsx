@@ -1,17 +1,19 @@
 /* ----------------------------------------------------------------------------
  * Personal Information — a member's own name, birthday, emails, phones and
- * home address. None of it is public.
+ * home address, and who may see each one.
+ *
+ * Who sees what (James, 2026-10-24): the Board sees everything. A personal
+ * detail is shown to other members in the Directory only when the member ticks
+ * "Members can see"; it is never public. The professional email alone can be
+ * Board only, Members, or Public (Find a Doctor, and members too).
  *
  * Reads the member's own `people` row and saves through `update_my_info`, a
  * database function that changes only these fields on the signed-in member's
  * row. Until the function exists, saving says so and offers the contact form.
  *
- * Emails: the main email is the sign-in address and changes through Supabase
- * Auth, which mails a confirmation link first. The other email is the first of
- * `other_emails`. The public email is the clinic's, under Business Information.
- *
- * Sharing: each "Share with other members" box decides what the Member
- * Directory shows of this person. All start unticked (#67).
+ * Sign-in: chosen from the member's own addresses rather than typed again.
+ * Picking a different one goes through Supabase Auth, which mails a
+ * confirmation link to it first; `people.email` follows once it is clicked.
  * -------------------------------------------------------------------------- */
 import { useEffect, useState } from 'react'
 import { Link } from '@/lib/router'
@@ -20,22 +22,31 @@ import { useAccess } from '@/lib/queries/AccessProvider'
 import { select, ensureSession, headers, session, SB_URL } from '@/lib/supabase'
 
 type Form = {
-  first: string; last: string; credentials: string; birthday: string; mobile: string; personal: string
+  first: string; last: string; credentials: string; birthday: string
+  personalEmail: string; professionalEmail: string; mobile: string; personal: string
   address: string; city: string; state: string; zip: string
 }
-const EMPTY: Form = { first: '', last: '', credentials: '', birthday: '', mobile: '', personal: '', address: '', city: '', state: '', zip: '' }
+const EMPTY: Form = { first: '', last: '', credentials: '', birthday: '', personalEmail: '', professionalEmail: '', mobile: '', personal: '', address: '', city: '', state: '', zip: '' }
 
-/** What other members may see; matches the share_* columns on people. */
-type Share = { email: boolean; other_emails: boolean; mobile: boolean; home_phone: boolean; home_address: boolean }
-const NONE: Share = { email: false, other_emails: false, mobile: false, home_phone: false, home_address: false }
+type Visibility = 'board' | 'members' | 'public'
+/** Personal details other members may see; matches the share_* columns on people. */
+type Share = { personal_email: boolean; mobile: boolean; home_phone: boolean; home_address: boolean }
+const NONE: Share = { personal_email: false, mobile: false, home_phone: false, home_address: false }
+
+/** Which address the member signs in with: one of their own, or the current one when it matches none. */
+type Slot = 'personal' | 'professional' | 'office' | 'current'
 
 type Own = {
   first_name: string | null; last_name: string | null; credentials: string | null; email: string | null; mobile_phone: string | null; personal_phone: string | null
-  date_of_birth: string | null; mail_address_line1: string | null; mail_city: string | null; mail_region: string | null; mail_postal_code: string | null; other_emails: string[] | null
+  date_of_birth: string | null; mail_address_line1: string | null; mail_city: string | null; mail_region: string | null; mail_postal_code: string | null
 }
-type Shared = { share_email: boolean; share_other_emails: boolean; share_mobile: boolean; share_home_phone: boolean; share_home_address: boolean }
+type Extra = {
+  personal_email: string | null; professional_email: string | null; practice_email: string | null; professional_email_visibility: Visibility
+  share_personal_email: boolean; share_mobile: boolean; share_home_phone: boolean; share_home_address: boolean
+}
 
 const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim())
+const same = (a: string, b: string) => !!a.trim() && a.trim().toLowerCase() === b.trim().toLowerCase()
 const missingFn = (status: number, text: string) => status === 404 || text.includes('PGRST202') || text.includes('PGRST205')
 
 /** Supabase Auth mails a confirmation link to the new address; the sign-in changes when it is clicked. */
@@ -50,18 +61,17 @@ async function changeSignInEmail(email: string): Promise<{ ok?: true; error?: st
   try { const j = await res.json(); return { error: String(j.msg ?? j.message ?? j.error_description ?? res.status) } } catch { return { error: String(res.status) } }
 }
 
-async function saveInfo(v: Form, others: string[], sh: Share): Promise<{ ok?: true; missing?: true; error?: string }> {
+async function saveInfo(v: Form, vis: Visibility, sh: Share): Promise<{ ok?: true; missing?: true; error?: string }> {
   await ensureSession()
   const res = await fetch(`${SB_URL}/rest/v1/rpc/update_my_info`, {
     method: 'POST',
     headers: headers(true),
     body: JSON.stringify({
       p_first_name: v.first, p_last_name: v.last, p_credentials: v.credentials, p_birthday: v.birthday || null,
+      p_personal_email: v.personalEmail, p_professional_email: v.professionalEmail, p_professional_email_visibility: vis,
       p_mobile_phone: v.mobile, p_personal_phone: v.personal,
       p_home_address: v.address, p_home_city: v.city, p_home_state: v.state.toUpperCase(), p_home_zip: v.zip,
-      p_other_emails: others.map((e) => e.trim().toLowerCase()).filter(Boolean),
-      p_share_email: sh.email, p_share_other_emails: sh.other_emails, p_share_mobile: sh.mobile,
-      p_share_home_phone: sh.home_phone, p_share_home_address: sh.home_address,
+      p_share_personal_email: sh.personal_email, p_share_mobile: sh.mobile, p_share_home_phone: sh.home_phone, p_share_home_address: sh.home_address,
     }),
   })
   if (res.ok) return { ok: true }
@@ -73,11 +83,11 @@ export default function MyInfoPanel() {
   const { access } = useAccess()
   const id = access.person?.id
   const [v, setV] = useState<Form>(EMPTY)
-  const [login, setLogin] = useState('')
-  const [main, setMain] = useState('')
-  // The first other email is editable; any more (from merged records) are kept as they are.
-  const [others, setOthers] = useState<string[]>([''])
+  const [vis, setVis] = useState<Visibility>('board')
   const [share, setShare] = useState<Share>(NONE)
+  const [login, setLogin] = useState('')
+  const [office, setOffice] = useState('')
+  const [slot, setSlot] = useState<Slot>('current')
   const [loginMsg, setLoginMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'saving' | 'saved' | 'missing' | 'error'>('loading')
   const [err, setErr] = useState('')
@@ -88,24 +98,31 @@ export default function MyInfoPanel() {
       await ensureSession()
       const me = `id=eq.${id}`
       const [r, x] = await Promise.all([
-        select<Own>('people', `select=first_name,last_name,credentials,email,mobile_phone,personal_phone,date_of_birth,mail_address_line1,mail_city,mail_region,mail_postal_code,other_emails&${me}`),
-        // The sharing columns may not exist yet; an error just leaves every box unticked.
-        select<Shared>('people', `select=share_email,share_other_emails,share_mobile,share_home_phone,share_home_address&${me}`),
+        select<Own>('people', `select=first_name,last_name,credentials,email,mobile_phone,personal_phone,date_of_birth,mail_address_line1,mail_city,mail_region,mail_postal_code&${me}`),
+        // The new email and sharing columns may not exist yet; an error just leaves the defaults.
+        select<Extra>('people', `select=personal_email,professional_email,practice_email,professional_email_visibility,share_personal_email,share_mobile,share_home_phone,share_home_address&${me}`),
       ])
       const p = r.data?.[0]
-      const sh = x.data?.[0]
+      const ex = x.data?.[0]
       const a = access.person
+      const signIn = session.user?.email ?? p?.email ?? a?.email ?? ''
+      // Before anyone has sorted their addresses, the sign-in one starts as the personal email (Board only).
+      let personalEmail = ex?.personal_email ?? ''
+      const professionalEmail = ex?.professional_email ?? ''
+      const officeEmail = ex?.practice_email ?? ''
+      if (!personalEmail && !same(professionalEmail, signIn) && !same(officeEmail, signIn)) personalEmail = signIn
       setV({
         first: p?.first_name ?? a?.first_name ?? '', last: p?.last_name ?? a?.last_name ?? '', credentials: p?.credentials ?? a?.credentials ?? '',
-        birthday: p?.date_of_birth ?? '', mobile: p?.mobile_phone ?? '', personal: p?.personal_phone ?? '',
+        birthday: p?.date_of_birth ?? '', personalEmail, professionalEmail, mobile: p?.mobile_phone ?? '', personal: p?.personal_phone ?? '',
         address: p?.mail_address_line1 ?? '', city: p?.mail_city ?? '', state: p?.mail_region ?? '', zip: p?.mail_postal_code ?? '',
       })
-      if (sh) setShare({ email: sh.share_email, other_emails: sh.share_other_emails, mobile: sh.share_mobile, home_phone: sh.share_home_phone, home_address: sh.share_home_address })
-      const signIn = session.user?.email ?? p?.email ?? a?.email ?? ''
+      if (ex) {
+        setVis(ex.professional_email_visibility ?? 'board')
+        setShare({ personal_email: ex.share_personal_email, mobile: ex.share_mobile, home_phone: ex.share_home_phone, home_address: ex.share_home_address })
+      }
       setLogin(signIn)
-      setMain(signIn)
-      const rest = (p?.other_emails ?? []).filter((e) => e.toLowerCase() !== signIn.toLowerCase())
-      setOthers(rest.length ? rest : [''])
+      setOffice(officeEmail)
+      setSlot(same(personalEmail, signIn) ? 'personal' : same(professionalEmail, signIn) ? 'professional' : same(officeEmail, signIn) ? 'office' : 'current')
       setState('ready')
     })()
   }, [id])
@@ -115,7 +132,7 @@ export default function MyInfoPanel() {
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) => { setV({ ...v, [k]: e.target.value }); touch() }
   const shareBox = (k: keyof Share) => (
     <label className="mi-share">
-      <input type="checkbox" checked={share[k]} onChange={(e) => { setShare({ ...share, [k]: e.target.checked }); touch() }} disabled={busy} /> Share with other members
+      <input type="checkbox" checked={share[k]} onChange={(e) => { setShare({ ...share, [k]: e.target.checked }); touch() }} disabled={busy} /> Members can see
     </label>
   )
   const cell = (k: keyof Form, label: string, cls: string, opts: { type?: string; placeholder?: string; share?: keyof Share } = {}) => (
@@ -125,30 +142,29 @@ export default function MyInfoPanel() {
       {opts.share && shareBox(opts.share)}
     </div>
   )
-  const emailCell = (i: 0 | 1, label: string) => (
-    <div className="ml-cell mi-c6">
-      <label className="ml-lbl" htmlFor={`mi-email-${i}`}>{label}</label>
-      <input id={`mi-email-${i}`} className="ml-in" type="email" value={i === 0 ? main : others[0] ?? ''}
-        onChange={(e) => { if (i === 0) setMain(e.target.value); else setOthers([e.target.value, ...others.slice(1)]); touch() }}
-        placeholder={i === 0 ? 'you@example.com' : 'Optional'} disabled={busy} />
-      {shareBox(i === 0 ? 'email' : 'other_emails')}
-    </div>
-  )
+
+  // The addresses a member can sign in with: their own, plus the current one if it is none of them.
+  const choices: { slot: Slot; label: string; email: string }[] = [
+    { slot: 'personal' as Slot, label: 'Personal', email: v.personalEmail.trim() },
+    { slot: 'professional' as Slot, label: 'Professional', email: v.professionalEmail.trim() },
+    { slot: 'office' as Slot, label: 'Office', email: office.trim() },
+  ].filter((c) => c.email)
+  if (login && !choices.some((c) => same(c.email, login))) choices.push({ slot: 'current', label: 'Current', email: login })
+  const chosen = choices.find((c) => c.slot === slot) ?? choices.find((c) => same(c.email, login))
+  const signInChanges = !!chosen && !same(chosen.email, login)
 
   async function save() {
     if (!v.first.trim() || !v.last.trim()) { setErr('First and last name are needed.'); setState('error'); return }
-    const signIn = main.trim()
-    if (!looksLikeEmail(signIn)) { setErr('Your main email needs to be a full email address.'); setState('error'); return }
-    const other = (others[0] ?? '').trim()
-    if (other && !looksLikeEmail(other)) { setErr(`"${other}" doesn't look like an email address.`); setState('error'); return }
+    for (const [label, e] of [['personal', v.personalEmail], ['professional', v.professionalEmail]] as const) {
+      if (e.trim() && !looksLikeEmail(e)) { setErr(`Your ${label} email doesn't look like an email address.`); setState('error'); return }
+    }
+    if (!chosen) { setErr('Choose the email you sign in with.'); setState('error'); return }
     setState('saving'); setErr(''); setLoginMsg(null)
-    // A new main email is not changed directly: Supabase Auth mails a confirmation link first.
-    const loginChanged = signIn.toLowerCase() !== login.toLowerCase()
     const [r, l] = await Promise.all([
-      saveInfo(v, others, share),
-      loginChanged ? changeSignInEmail(signIn) : Promise.resolve(null),
+      saveInfo(v, vis, share),
+      signInChanges ? changeSignInEmail(chosen.email) : Promise.resolve(null),
     ])
-    if (l) setLoginMsg(l.ok ? { ok: true, text: `We sent a confirmation link to ${signIn}. You'll sign in with it once you click the link.` } : { ok: false, text: l.error ?? 'Could not start the email change.' })
+    if (l) setLoginMsg(l.ok ? { ok: true, text: `We sent a confirmation link to ${chosen.email}. You'll sign in with it once you click the link.` } : { ok: false, text: l.error ?? 'Could not start the email change.' })
     if (r.error) { setErr(r.error); setState('error') }
     else if (r.missing) setState('missing')
     else setState('saved')
@@ -158,9 +174,8 @@ export default function MyInfoPanel() {
     <>
       <h1>Personal Information</h1>
       <div className="ma-sub">
-        How the Institute reaches you. None of this is public. Tick "Share with other members" on anything you want
-        members to see in the Member Directory; your clinic details are under{' '}
-        <a href="#mylisting">Business Information</a>.
+        The Board can see everything on this page. Tick <b>Members can see</b> to show an item to other members in the
+        Directory. Your clinic details, which are public, are under <a href="#mylisting">Business Information</a>.
       </div>
       <div className="ma-panel">
         <PhotoCard />
@@ -171,13 +186,42 @@ export default function MyInfoPanel() {
           {cell('credentials', 'Credentials', 'mi-c2', { placeholder: 'DC' })}
           {cell('birthday', 'Birthday', 'mi-c2', { type: 'date' })}
 
-          {emailCell(0, 'Main email · used to sign in')}
-          {emailCell(1, 'Other email')}
+          <h2 className="mi-h">Email</h2>
+          {cell('personalEmail', 'Personal email', 'mi-c6', { type: 'email', placeholder: 'you@gmail.com', share: 'personal_email' })}
+          <div className="ml-cell mi-c6">
+            <label className="ml-lbl" htmlFor="mi-professionalEmail">Professional email</label>
+            <input id="mi-professionalEmail" className="ml-in" type="email" value={v.professionalEmail} onChange={set('professionalEmail')} placeholder="drsmith@yourclinic.com" disabled={busy} />
+            <label className="mi-vis">
+              Who can see it
+              <select value={vis} onChange={(e) => { setVis(e.target.value as Visibility); touch() }} disabled={busy}>
+                <option value="board">Board only</option>
+                <option value="members">Members</option>
+                <option value="public">Public · Find a Doctor and members</option>
+              </select>
+            </label>
+          </div>
+          <div className="ml-cell mi-c6">
+            <label className="ml-lbl" htmlFor="mi-signin">Sign in with</label>
+            <select id="mi-signin" className="ml-in" value={chosen?.slot ?? ''} onChange={(e) => { setSlot(e.target.value as Slot); touch() }} disabled={busy || !choices.length}>
+              {choices.map((c) => <option key={c.slot} value={c.slot}>{c.label} · {c.email}</option>)}
+            </select>
+            <span className="ml-note">
+              {signInChanges
+                ? `When you save, we'll email a confirmation link to ${chosen!.email}. Until you click it, keep signing in with ${login}.`
+                : 'The address you use to sign in to this site. It is never shown to anyone.'}
+            </span>
+          </div>
+          <div className="ml-cell mi-c6">
+            <span className="ml-lbl">Office email</span>
+            <span className="ml-note mi-office">
+              {office ? <>{office} is public. Change it under <a href="#mylisting">Business Information</a>.</> : <>Add your front-desk email under <a href="#mylisting">Business Information</a>. It is public.</>}
+            </span>
+          </div>
 
+          <h2 className="mi-h">Phone and home address</h2>
           {cell('mobile', 'Mobile phone', 'mi-c6', { type: 'tel', share: 'mobile' })}
-          {cell('address', 'Home address', 'mi-c6', { placeholder: 'Street', share: 'home_address' })}
-
           {cell('personal', 'Home phone', 'mi-c6', { type: 'tel', share: 'home_phone' })}
+          {cell('address', 'Home address', 'mi-c6', { placeholder: 'Street', share: 'home_address' })}
           {cell('city', 'City', 'mi-c3')}
           {cell('state', 'State', 'mi-c1')}
           {cell('zip', 'ZIP', 'mi-c2')}

@@ -14,6 +14,7 @@ import { webHref } from '@/lib/safeHref'
 import { useToast } from '@/components/ui/Toast'
 import { inviteMember, requestReset, type AccessReply } from '@/lib/queries/access'
 import { uploadPhotoFor } from '@/lib/queries/photo'
+import { select } from '@/lib/supabase'
 import {
   saveProfile, createContact, addNote, saveOffices, saveRoles, saveVendor,
   TECHNIQUES, ROLE_LABEL, LEVEL_LABEL, fullName, state, duesLapsed, advoLevel, otherCerts, initials,
@@ -150,6 +151,32 @@ function Row({ k, children }: { k: string; children: React.ReactNode }) { return
 /* A section heading and its rows; hidden when every row is empty. */
 function Sec({ title, items }: { title: string; items: React.ReactNode[] }) { const has = items.some(Boolean); return has ? <><div className="sec">{title}</div><div className="kv">{items}</div></> : null }
 const kv = (k: string, v: React.ReactNode) => (v ? <Row key={k} k={k}>{v}</Row> : null)
+
+/* The emails a member keeps under My Account → Personal, and what they let members see.
+ * Read on its own so the card still opens before the database has these fields. */
+type Privacy = {
+  personal_email: string | null; professional_email: string | null; practice_email: string | null; professional_email_visibility: string | null
+  share_personal_email: boolean; share_mobile: boolean; share_home_phone: boolean; share_home_address: boolean
+}
+const VIS_LABEL: Record<string, string> = { board: 'Board only', members: 'Members', public: 'Public' }
+const mail = (e: string | null) => (e ? <a href={`mailto:${e}`}>{e}</a> : null)
+function PrivacySec({ id }: { id: string }) {
+  const [x, setX] = useState<Privacy | null>(null)
+  useEffect(() => {
+    let off = false
+    void select<Privacy>('people', `select=personal_email,professional_email,practice_email,professional_email_visibility,share_personal_email,share_mobile,share_home_phone,share_home_address&id=eq.${id}`)
+      .then((r) => { if (!off) setX(r.data?.[0] ?? null) })
+    return () => { off = true }
+  }, [id])
+  if (!x) return null
+  const shared = [x.share_personal_email && 'personal email', x.share_mobile && 'mobile', x.share_home_phone && 'home phone', x.share_home_address && 'home address'].filter(Boolean).join(', ')
+  return <Sec title="Who sees what" items={[
+    kv('Personal email', mail(x.personal_email)),
+    kv('Professional email', x.professional_email ? <>{mail(x.professional_email)} · {VIS_LABEL[x.professional_email_visibility ?? 'board']}</> : null),
+    kv('Office email', x.practice_email ? <>{mail(x.practice_email)} · Public</> : null),
+    kv('Members can see', shared || 'Nothing personal'),
+  ]} />
+}
 const TYPE_LABEL: Record<string, string> = { doctor: 'Doctor', student: 'Student', staff: 'Staff' }
 const chk = (on: boolean, label: string, onChange: (on: boolean) => void, disabled = false) =>
   <label key={label} className="cert-tog" style={{ margin: 0 }}><input type="checkbox" checked={on} disabled={disabled} onChange={(e) => onChange(e.target.checked)} /> {label}</label>
@@ -311,6 +338,7 @@ export function PersonCard({ p: given, newStatus = 'never', vendorReady = false,
             </div>
           </> : <>
             <Sec title="Contact" items={[kv('Email', p.email ? <a href={`mailto:${p.email}`}>{p.email}</a> : null), kv('Other emails', p.other_emails?.length ? <>{p.other_emails.map((e, i) => <span key={e}>{i > 0 && ', '}<a href={`mailto:${e}`}>{e}</a></span>)}</> : null), kv('Mobile', p.mobile_phone), kv('Personal phone', p.personal_phone)]} />
+            <PrivacySec id={p.id} />
             <Sec title="Profile" items={[kv('Type', TYPE_LABEL[p.contact_type ?? ''] ?? p.contact_type), kv('Vendor', p.is_vendor ? (p.vendor_company || 'Yes') : null), kv('Title', p.title), kv('Bio', p.bio)]} />
             {canInvite && !p.deceased_on && <>
               <div className="sec">Members area</div>

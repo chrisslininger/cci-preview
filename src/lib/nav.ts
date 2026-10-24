@@ -105,10 +105,10 @@ export const NAV: NavItem[] = [
     key: 'directory',
     label: 'Directory',
     group: 'people',
-    any: ['board', 'full_admin', 'manage_leads', 'manage_certifications', 'manage_instructors', 'manage_internships'],
+    // Staff see the full records; current members see fellow members and what each allows (#67).
+    always: true,
+    when: (a) => a.tier === 'member' || ['board', 'full_admin', 'manage_leads', 'manage_certifications', 'manage_instructors', 'manage_internships'].some((c) => a.capabilities.includes(c as Capability)),
   },
-  // Every current member sees fellow members and what each chose to share (#67).
-  { key: 'members', label: 'Member Directory', group: 'people', always: true, when: (a) => a.tier === 'member' || a.capabilities.includes('board') || a.capabilities.includes('full_admin') },
   { key: 'board', label: 'Board', group: 'people', any: ['board', 'manage_board'] },
   { key: 'org', label: 'Org Chart', group: 'people', any: ['board', 'full_admin'] },
 

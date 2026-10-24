@@ -29,9 +29,11 @@ export type DirectoryRow = {
   website: string | null
   /** The clinic's public email, from Business Information. */
   email?: string | null
+  /** The doctor's own email, only when they chose to make it public. */
+  professional_email?: string | null
 }
 
-export type Doctor = { id: string; name: string; credentials: string | null; level: 'level_2' | 'level_1' | 'member' }
+export type Doctor = { id: string; name: string; credentials: string | null; level: 'level_2' | 'level_1' | 'member'; email?: string | null }
 
 export type Clinic = {
   key: string
@@ -102,7 +104,7 @@ export function groupClinics(rows: DirectoryRow[]): Clinic[] {
     c.address ??= r.address; c.zip ??= r.zip; c.phone ??= r.phone; c.website ??= r.website; c.email ??= r.email ?? null
     if (!c.doctors.some((d) => d.id === r.person_id)) {
       const level = r.cert_level === 'level_2' || r.cert_level === 'level_1' ? r.cert_level : 'member'
-      c.doctors.push({ id: r.person_id, name: `${r.first_name} ${r.last_name}`.trim(), credentials: r.credentials, level })
+      c.doctors.push({ id: r.person_id, name: `${r.first_name} ${r.last_name}`.trim(), credentials: r.credentials, level, email: r.professional_email ?? null })
     }
   }
   const out = [...map.values()]
