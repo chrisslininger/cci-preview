@@ -173,6 +173,25 @@ function Row({ k, children }: { k: string; children: React.ReactNode }) { return
 function Sec({ title, items }: { title: string; items: React.ReactNode[] }) { const has = items.some(Boolean); return has ? <><div className="sec">{title}</div><div className="kv">{items}</div></> : null }
 const kv = (k: string, v: React.ReactNode) => (v ? <Row key={k} k={k}>{v}</Row> : null)
 
+/* The sign-in email is picked from the person's own addresses, not typed again. Once they have
+ * a login, only they can change it (My Account → Personal, which confirms by email); changing
+ * it here would leave their real login behind. */
+function SignInPick({ v, setVal, hasLogin }: { v: V; setVal: (k: string, val: string) => void; hasLogin: boolean }) {
+  const cur = (v.email ?? '').trim()
+  const opts: [string, string][] = [['Personal', v.personal_email ?? ''], ['Professional', v.professional_email ?? ''], ['Office', v.practice_email ?? ''],
+    ...(v.other_emails ?? '').split(/[\s,;]+/).map((e): [string, string] => ['Other', e])]
+  const seen = new Set<string>()
+  const list = opts.map(([l, e]) => [l, e.trim()] as [string, string]).filter(([, e]) => e && !seen.has(e.toLowerCase()) && seen.add(e.toLowerCase()))
+  if (cur && !seen.has(cur.toLowerCase())) list.unshift(['Current', cur])
+  return <>
+    <select className="fi" value={cur} onChange={(e) => setVal('email', e.target.value)} disabled={hasLogin} aria-label="Sign-in email">
+      {!cur && <option value="">Choose an address…</option>}
+      {list.map(([l, e]) => <option key={e} value={e}>{l} · {e}</option>)}
+    </select>
+    {hasLogin && <div className="cc-note">They have a login, so they change this themselves under My Account → Personal.</div>}
+  </>
+}
+
 /* The emails a member keeps under My Account → Personal, and what they let members see.
  * Read on its own so the card still opens before the database has these fields. */
 type Privacy = {
@@ -357,8 +376,12 @@ export function PersonCard({ p: given, newStatus = 'never', vendorReady = false,
             </div>
             <div className="sec">Contact</div>
             <div className="kv">
-              <Row k="Sign-in email">{I('email', 'email')}</Row>
-              {!isNew && <><Row k="Personal email">{I('personal_email', 'email')}</Row><Row k="Professional email">{I('professional_email', 'email')}</Row></>}
+              {isNew
+                ? <Row k="Sign-in email">{I('email', 'email')}</Row>
+                : <>
+                  <Row k="Personal email">{I('personal_email', 'email')}</Row><Row k="Professional email">{I('professional_email', 'email')}</Row>
+                  <Row k="Sign-in email"><SignInPick v={v} setVal={f.setVal} hasLogin={!!p?.auth_user_id} /></Row>
+                </>}
               <Row k="Other emails">{I('other_emails')}</Row><Row k="Mobile">{I('mobile_phone', 'tel')}</Row><Row k="Home phone">{I('personal_phone', 'tel')}</Row>
             </div>
             {!isNew && <>
