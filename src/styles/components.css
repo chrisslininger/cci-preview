@@ -2239,6 +2239,10 @@ a.othercard {
 .mem-row:hover { background: var(--color-surface-raised); }
 .mem-row:focus-visible { outline: 2px solid var(--color-brand-accent); outline-offset: -2px; }
 .mem-row.head { cursor: default; min-height: 0; background: var(--color-surface-sunken); padding-top: 8px; padding-bottom: 8px; font-family: var(--font-label); font-weight: 600; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-content-tertiary); }
+.mem-row.head .th-sort { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; }
+.mem-row.head .th-sort:hover, .mem-row.head .th-sort.on { color: var(--color-brand-primary-deep); }
+.mem-row.head .th-sort:focus-visible { outline: 2px solid var(--color-brand-primary); outline-offset: 2px; }
+.mem-row.head .th-sort i { font-style: normal; font-size: 8px; min-width: 8px; }
 .mem-row.dead { opacity: .72; }
 .mem-row .n { font-weight: 600; color: var(--color-brand-primary-deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mem-row .w { color: var(--color-content-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
